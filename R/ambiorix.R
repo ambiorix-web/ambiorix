@@ -5,6 +5,8 @@
 #' @field not_found 404 Response, defaults to [response_404()].
 #' 
 #' @importFrom assertthat assert_that
+#' 
+#' @export 
 Ambiorix <- R6::R6Class(
   "Ambiorix",
   public = list(

@@ -4,7 +4,7 @@
 \alias{responses}
 \alias{response}
 \alias{response_404}
-\title{Responses}
+\title{Plain Responses}
 \usage{
 response(body, headers = list(`Content-Type` = "text/html"), status = 200L)
 
@@ -22,5 +22,5 @@ response_404(
 \item{status}{Response status}
 }
 \description{
-HTTP Responses.
+Plain HTTP Responses.
 }
