@@ -1,9 +1,13 @@
-# ambiorix
-
 <!-- badges: start -->
 <!-- badges: end -->
 
-## Usage
+# ambiorix
+
+## Project
+
+The easiest way to get setup is by creating an ambiorix project with `create_ambiorix("path/to/project")`
+
+## Basic Usage
 
 ``` r
 library(ambiorix)
@@ -11,13 +15,13 @@ library(ambiorix)
 app <- Ambiorix$new()
 
 app$get("/", function(req){
-  response("Homepage!")
+  response(htmltools::h1("Homepage!"))
 })
 
-app$get("/about", function(req){
-  response("About!")
+app$get("/hello", function(req){
+  # ?name=John
+  response(htmltools::h3("Your name is:", req$params$name))
 })
 
 app$start()
 ```
-

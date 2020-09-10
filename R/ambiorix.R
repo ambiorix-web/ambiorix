@@ -99,6 +99,7 @@ Ambiorix <- R6::R6Class(
       for(i in 1:length(private$.routes)){
         if(private$.routes[[i]]$path == req$PATH_INFO && private$.routes[[i]]$method == req$REQUEST_METHOD){
           cli::cli_alert_success("GET 127.0.0.1:{private$.port}{req$PATH_INFO}")
+          req <- Request$new(req)
           return(private$.routes[[i]]$fun(req))
         }
       }

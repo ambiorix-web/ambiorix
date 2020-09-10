@@ -17,5 +17,7 @@ Imports:
     fs,
     cli,
     httpuv,
-    assertthat,
-    jsonlite
+    jsonlite,
+    assertthat
+Suggests:
+    htmltools
