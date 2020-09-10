@@ -78,7 +78,7 @@ Ambiorix <- R6::R6Class(
         }
       }
 
-      cli::cli_alert_warning("GET 127.0.0.1:{private$.port}{req$PATH_INFO} - Not Found")
+      cli::cli_alert_warning("{req$REQUEST_METHOD} 127.0.0.1:{private$.port}{req$PATH_INFO} - Not Found")
 
       # return 404
       return(self$not_found())
