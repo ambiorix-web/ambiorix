@@ -18,6 +18,7 @@ Web server.
 \itemize{
 \item \href{#method-new}{\code{Ambiorix$new()}}
 \item \href{#method-get}{\code{Ambiorix$get()}}
+\item \href{#method-post}{\code{Ambiorix$post()}}
 \item \href{#method-start}{\code{Ambiorix$start()}}
 \item \href{#method-stop}{\code{Ambiorix$stop()}}
 \item \href{#method-clone}{\code{Ambiorix$clone()}}
@@ -64,7 +65,32 @@ describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-Routes
+GET Method
+
+Add routes to listen to.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-post"></a>}}
+\if{latex}{\out{\hypertarget{method-post}{}}}
+\subsection{Method \code{post()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$post(path, fun)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Route to listen to.}
+
+\item{\code{fun}}{Function that accepts the request and returns an object
+describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+POSTT Method
 
 Add routes to listen to.
 }
