@@ -33,7 +33,7 @@ Ambiorix <- R6::R6Class(
       private$.routes[[uuid()]] <- list(path = path, fun = fun, method = "GET")
       invisible(self)
     },
-#' @details POSTT Method
+#' @details POST Method
 #' 
 #' Add routes to listen to.
 #' 
@@ -46,20 +46,42 @@ Ambiorix <- R6::R6Class(
       private$.routes[[uuid()]] <- list(path = path, fun = fun, method = "POST")
       invisible(self)
     },
+#' @details Sets the 404 page.
+#' @param fun Function that accepts the request and returns an object 
+#' describing an httpuv response, e.g.: [response()].
+    set_404 = function(fun){
+      self$not_found <- fun
+      invisible(self)
+    },
+#' @details Static directories
+#' 
+#' @param path Local path to directory of assets.
+#' @param uri URL path where the directory will be available.
+    serve_static = function(path, uri){
+      assert_that(not_missing(uri))
+      assert_that(not_missing(path))
+
+      lst <- list(path)
+      names(lst) <- uri
+      private$.static <- append(private$.static, lst)
+      invisible(self)
+    },
 #' @details Start 
 #' Start the webserver.
     start = function(){
       private$.server <- httpuv::startServer(host = private$.host, port = private$.port,
-        app = list(call = private$.call)
+        app = list(call = private$.call, staticPaths = private$.static)
       )
       msg <- sprintf("Listening on http://127.0.0.1:%d", private$.port)
       cli::cli_alert_success(msg)
+      invisible(self)
     },
 #' @details Stop
 #' Stop the webserver.
     stop = function(){
       private$.server$stop()
       cli::cli_alert_danger("Server Stopped")
+      invisible(self)
     }
   ),
   private = list(
@@ -70,6 +92,7 @@ Ambiorix <- R6::R6Class(
     .server = NULL,
     .calls = NULL,
     .routes = list(),
+    .static = list(),
     .call = function(req){
 
       # loop over routes

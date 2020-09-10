@@ -2,6 +2,8 @@ library(ambiorix)
 
 app <- Ambiorix$new()
 
+app$serve_static("assets", "static")
+
 app$get("/", function(req){
   response_render("home", list(title = "Hello from R"))
 })

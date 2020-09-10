@@ -1,8 +1,9 @@
-
 # ambiorix
 
 <!-- badges: start -->
 <!-- badges: end -->
+
+## Usage
 
 ``` r
 library(ambiorix)

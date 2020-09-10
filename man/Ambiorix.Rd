@@ -19,6 +19,8 @@ Web server.
 \item \href{#method-new}{\code{Ambiorix$new()}}
 \item \href{#method-get}{\code{Ambiorix$get()}}
 \item \href{#method-post}{\code{Ambiorix$post()}}
+\item \href{#method-set_404}{\code{Ambiorix$set_404()}}
+\item \href{#method-serve_static}{\code{Ambiorix$serve_static()}}
 \item \href{#method-start}{\code{Ambiorix$start()}}
 \item \href{#method-stop}{\code{Ambiorix$stop()}}
 \item \href{#method-clone}{\code{Ambiorix$clone()}}
@@ -90,9 +92,52 @@ describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-POSTT Method
+POST Method
 
 Add routes to listen to.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_404"></a>}}
+\if{latex}{\out{\hypertarget{method-set_404}{}}}
+\subsection{Method \code{set_404()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$set_404(fun)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{fun}}{Function that accepts the request and returns an object
+describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Sets the 404 page.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-serve_static"></a>}}
+\if{latex}{\out{\hypertarget{method-serve_static}{}}}
+\subsection{Method \code{serve_static()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$serve_static(path, uri)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Local path to directory of assets.}
+
+\item{\code{uri}}{URL path where the directory will be available.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Static directories
 }
 
 }
