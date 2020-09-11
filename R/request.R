@@ -69,6 +69,32 @@ Request <- R6::R6Class(
 
       if(route$dynamic)
         private$.parse_path(route$components, req$PATH_INFO)
+    },
+    print = function(){
+      cli::cli_li("HEADERS: {.val {self$HEADERS}}")
+      cli::cli_li("HTTP_ACCEPT: {.val {self$HTTP_ACCEPT}}")
+      cli::cli_li("HTTP_ACCEPT_ENCODING: {.val {self$HTTP_ACCEPT_ENCODING}}")
+      cli::cli_li("HTTP_ACCEPT_LANGUAGE: {.val {self$HTTP_ACCEPT_LANGUAGE}}")
+      cli::cli_li("HTTP_CACHE_CONTROL: {.val {self$HTTP_CACHE_CONTROL}}")
+      cli::cli_li("HTTP_CONNECTION: {.val {self$HTTP_CONNECTION}}")
+      cli::cli_li("HTTP_COOKIE: {.val {self$HTTP_COOKIE}}")
+      cli::cli_li("HTTP_DNT: {.val {self$HTTP_DNT}}")
+      cli::cli_li("HTTP_HOST: {.val {self$HTTP_HOST}}")
+      cli::cli_li("HTTP_SEC_FETCH_DEST: {.val {self$HTTP_SEC_FETCH_DEST}}")
+      cli::cli_li("HTTP_SEC_FETCH_MODE: {.val {self$HTTP_SEC_FETCH_MODE}}")
+      cli::cli_li("HTTP_SEC_FETCH_SITE: {.val {self$HTTP_SEC_FETCH_SITE}}")
+      cli::cli_li("HTTP_SEC_FETCH_USER: {.val {self$HTTP_SEC_FETCH_USER}}")
+      cli::cli_li("HTTP_UPGRADE_INSECURE_REQUESTS: {.val {self$HTTP_UPGRADE_INSECURE_REQUESTS}}")
+      cli::cli_li("HTTP_USER_AGENT: {.val {self$HTTP_USER_AGENT}}")
+      cli::cli_li("httpuv.version {.val {self$httpuv.version}}")
+      cli::cli_li("PATH_INFO: {.val {self$PATH_INFO}}")
+      cli::cli_li("QUERY_STRING: {.val {self$QUERY_STRING}}")
+      cli::cli_li("REMOTE_ADDR: {.val {self$REMOTE_ADDR}}")
+      cli::cli_li("REMOTE_PORT: {.val {self$REMOTE_PORT}}")
+      cli::cli_li("REQUEST_METHOD: {.val {self$REQUEST_METHOD}}")
+      cli::cli_li("SCRIPT_NAME: {.val {self$SCRIPT_NAME}}")
+      cli::cli_li("SERVER_NAME: {.val {self$SERVER_NAME}}")
+      cli::cli_li("SERVER_PORT: {.val {self$SERVER_PORT}}")
     }
   ),
   private = list(
