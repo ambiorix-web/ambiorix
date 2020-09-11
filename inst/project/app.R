@@ -1,15 +1,12 @@
 library(ambiorix)
+import("views")
 
 app <- Ambiorix$new()
 
 app$serve_static("assets", "static")
 
-app$get("/", function(req){
-  response_render("home", list(title = "Hello from R"))
-})
+app$get("/", render_home)
 
-app$get("/about", function(req){
-  response("About!")
-})
+app$get("/about", render_about)
 
 app$start()
