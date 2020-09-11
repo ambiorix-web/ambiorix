@@ -1,7 +1,7 @@
+# ambiorix
+
 <!-- badges: start -->
 <!-- badges: end -->
-
-# ambiorix
 
 ## Project
 
@@ -18,10 +18,24 @@ app$get("/", function(req){
   response(htmltools::h1("Homepage!"))
 })
 
-app$get("/hello", function(req){
-  # ?name=John
-  response(htmltools::h3("Your name is:", req$params$name))
+app$get("/hello$", function(req){
+  # ?firstname=John&lastname=Coene
+  response(htmltools::h3("Hi", req$query$firstname, req$query$lastname))
+})
+
+app$get("/books/:category", function(req){
+  response(htmltools::h3("Books of", req$params$category))
+})
+
+app$get("/books/:category/book/:id", function(req){
+  response(htmltools::h3("Books of category", req$params$category, "has id", req$params$id))
+})
+
+app$get("/books$", function(req){
+  response(htmltools::h2("List of Books!"))
 })
 
 app$start()
 ```
+
+

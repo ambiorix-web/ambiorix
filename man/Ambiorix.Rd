@@ -10,6 +10,8 @@ Web server.
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{not_found}}{404 Response, defaults to \code{\link[=response_404]{response_404()}}.}
+
+\item{\code{is_running}}{Boolean indicating whether the server is running.}
 }
 \if{html}{\out{</div>}}
 }

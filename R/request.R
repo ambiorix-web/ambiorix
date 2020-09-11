@@ -33,8 +33,9 @@ Request <- R6::R6Class(
     SCRIPT_NAME = NULL,
     SERVER_NAME = NULL,
     SERVER_PORT = NULL,
+    query = list(),
     params = list(),
-    initialize = function(req){
+    initialize = function(req, route){
       self$HEADERS <- req$HEADERS
       self$HTTP_ACCEPT <- req$HTTP_ACCEPT
       self$HTTP_ACCEPT_ENCODING <- req$HTTP_ACCEPT_ENCODING
@@ -65,17 +66,15 @@ Request <- R6::R6Class(
       self$SERVER_PORT <- req$SERVER_NAME
 
       private$.parse_query_string(req$QUERY_STRING)
-    },
-    get_query = function(param){
-      if(!length(self$params)) return(list())
 
-      tryCatch(parse_query_value(self$params[[param]]), error = function(e) NULL)
+      if(route$dynamic)
+        private$.parse_path(route$components, req$PATH_INFO)
     }
   ),
   private = list(
     .parse_query_string = function(query){
       if(query == ""){
-        self$params <- list()
+        self$query <- list()
         return()
       }
       
@@ -86,8 +85,24 @@ Request <- R6::R6Class(
       lst <- sapply(params_split, function(x) x[2])
       names(lst) <- sapply(params_split, function(x) x[1])
 
-      self$params <- as.list(lst)
+      self$query <- as.list(lst)
       invisible()
+    },
+    .parse_path = function(params, path){
+      path_split <- strsplit(path, "/")[[1]]
+      path_split <- path_split[path_split != ""]
+
+      nms <- c()
+      pms <- list()
+      for(i in 1:length(path_split)){
+        if(params[[i]]$dynamic){
+          nms <- c(nms, params[[i]]$name)
+          pms <- append(pms, path_split[i])
+        }
+      }
+
+      names(pms) <- nms
+      self$params <- pms
     }
   )
 )

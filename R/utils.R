@@ -24,19 +24,3 @@ seralise <- function(data, ...){
   
   jsonlite::toJSON(data, auto_unbox = TRUE, dataframe = "rows", ...)
 }
-
-#' Parse Query Value
-#' 
-#' Attemps to parse the query value to return a valid R object.
-#' 
-#' @noRd 
-#' @keywords internal
-parse_query_value <- function(x){
-  if(x %in% c("true", "false", "TRUE", "FALSE"))
-    return(as.logical(as.factor(x)))
-
-  if(!grepl("[[:alpha:]]", x))
-    return(as.numeric(x))
-
-  return(x)
-}

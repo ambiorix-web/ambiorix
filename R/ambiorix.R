@@ -3,6 +3,7 @@
 #' Web server.
 #' 
 #' @field not_found 404 Response, defaults to [response_404()].
+#' @field is_running Boolean indicating whether the server is running.
 #' 
 #' @importFrom assertthat assert_that
 #' 
@@ -11,6 +12,7 @@ Ambiorix <- R6::R6Class(
   "Ambiorix",
   public = list(
     not_found = NULL,
+    is_running = FALSE,
 #' @details Define the webserver.
 #' 
 #' @param host A string defining the host.
@@ -30,7 +32,7 @@ Ambiorix <- R6::R6Class(
     get = function(path, fun){
       assert_that(valid_path(path))
       assert_that(not_missing(fun))
-      private$.routes[[uuid()]] <- list(path = path, fun = fun, method = "GET")
+      private$.routes[[uuid()]] <- list(route = Route$new(path), path = path, fun = fun, method = "GET")
       invisible(self)
     },
 #' @details POST Method
@@ -43,7 +45,7 @@ Ambiorix <- R6::R6Class(
     post = function(path, fun){
       assert_that(valid_path(path))
       assert_that(not_missing(fun))
-      private$.routes[[uuid()]] <- list(path = path, fun = fun, method = "POST")
+      private$.routes[[uuid()]] <- list(route = Route$new(path), path = path, fun = fun, method = "POST")
       invisible(self)
     },
 #' @details Sets the 404 page.
@@ -74,6 +76,7 @@ Ambiorix <- R6::R6Class(
       )
       msg <- sprintf("Listening on http://127.0.0.1:%d", private$.port)
       cli::cli_alert_success(msg)
+      self$is_running <- TRUE
       invisible(self)
     },
 #' @details Stop
@@ -81,6 +84,7 @@ Ambiorix <- R6::R6Class(
     stop = function(){
       private$.server$stop()
       cli::cli_alert_danger("Server Stopped")
+      self$is_running <- FALSE
       invisible(self)
     }
   ),
@@ -97,9 +101,9 @@ Ambiorix <- R6::R6Class(
 
       # loop over routes
       for(i in 1:length(private$.routes)){
-        if(private$.routes[[i]]$path == req$PATH_INFO && private$.routes[[i]]$method == req$REQUEST_METHOD){
+        if(grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) && private$.routes[[i]]$method == req$REQUEST_METHOD){
           cli::cli_alert_success("GET 127.0.0.1:{private$.port}{req$PATH_INFO}")
-          req <- Request$new(req)
+          req <- Request$new(req, private$.routes[[i]]$route)
           return(private$.routes[[i]]$fun(req))
         }
       }
