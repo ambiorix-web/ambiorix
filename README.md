@@ -1,7 +1,13 @@
+<div align="center">
+
 # ambiorix
 
 <!-- badges: start -->
 <!-- badges: end -->
+
+Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and inspired by [express](https://github.com/expressjs/express).
+
+</div>
 
 ## Project
 
