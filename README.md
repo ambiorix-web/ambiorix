@@ -61,7 +61,7 @@ http://127.0.0.1:3000/hello?firstname=John&lastname=Coene
 http://127.0.0.1:3000/books/fiction
 ```
 
-## Advanced Usage
+## Advanced
 
 The easiest way to get setup is by creating an ambiorix project with `create_ambiorix("path/to/project")`. This allows using templates and rendering them with `response_render`.
 
