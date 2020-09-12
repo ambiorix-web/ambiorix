@@ -15,30 +15,16 @@ response <- function(body, headers = list('Content-Type' = 'text/html'), status 
 
 #' @rdname responses
 #' @export
-response_404 <- function(body = "Not found", headers = list('Content-Type' = 'text/html'), status = 404L){
+response_404 <- function(body = "404: Not found", headers = list('Content-Type' = 'text/html'), status = 404L){
   list(status = status, headers = headers, body = as.character(body))
 }
 
-#' Make Template Path
+#' Remove Extensions
 #' 
-#' Make a full template path from a template name.
-#' 
-#' @param file Name of template file.
+#' Remove extensions from files.
 #' 
 #' @noRd 
 #' @keywords internal
-make_template_path <- function(file){
-  # clean input
-  file <- remove_extensions(file)
-
-  # list possible files
-  files <- fs::dir_ls("templates")
-  files <- remove_extensions(files)
-
-  template <- sprintf("./templates/%s.html", template)
-  normalizePath(template)
-}
-
 remove_extensions <- function(files){
   tools::file_path_sans_ext(files)
 }
@@ -63,10 +49,7 @@ Response <- R6::R6Class(
     send_file = function(file, status = 200L){
       assert_that(not_missing(file))
 
-      file_path <- make_template_path(file)
-      file_content <- readLines(file_path)
-
-      response(file_content, status = status)
+      self$render(file, data = list(), status = status)
     },
     render = function(file, data = list(), status = 200L){
       assert_that(not_missing(file))
@@ -124,31 +107,32 @@ Response <- R6::R6Class(
       # render
       ext <- tools::file_ext(file)
 
-      for(i in 1:length(data)){
-        pattern <- sprintf("\\[%% ?%s ?%%\\]", names(data)[i]) # [% mustache %]
+      if(length(data) > 0){
+        for(i in 1:length(data)){
+          pattern <- sprintf("\\[%% ?%s ?%%\\]", names(data)[i]) # [% mustache %]
 
-        # only serialise if HTML
-        if(ext == "html"){
-          value <- seralise(value)
-        } else {
-          value <- data[[i]]
-
-          if (inherits(value, "character")) {
-            value <- sprintf("'%s'", as.character(value))
-          } else if (is.null(value)) {
-            value <- "NULL"
-          } else if (is.na(value)) {
-            value <- "NA"
-          } else if (inherits(value, "data.frame") || inherits(value, "list")) {
-            value <- as.character(dput(value))
+          # only serialise if HTML
+          if(ext == "html"){
+            value <- seralise(data[[i]])
           } else {
-            print(value)
-            value <- as.character(value)
-          }
+            value <- data[[i]]
 
+            if (inherits(value, "character")) {
+              value <- sprintf("'%s'", as.character(value))
+            } else if (is.null(value)) {
+              value <- "NULL"
+            } else if (is.na(value)) {
+              value <- "NA"
+            } else if (inherits(value, "AsIs")) {
+              value <- as.character(value)
+            } else {
+              value <- as.character(dput(value))
+            } 
+
+          }
+          
+          file_content <- gsub(pattern, value, file_content)
         }
-        
-        file_content <- gsub(pattern, value, file_content)
       }
 
       # collapse html
@@ -156,7 +140,7 @@ Response <- R6::R6Class(
         return(paste0(file_content, collapse = ""))
 
       # parse R
-      as.character(eval(parse(text = file_content)))
+      render_html(file_content)
 
     },
     .make_template_path = function(file){

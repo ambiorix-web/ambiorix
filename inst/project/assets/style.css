@@ -1,3 +1,7 @@
-h1{
+.brand{
   color: royalblue;
+}
+
+.error{
+  color: lightcoral;
 }

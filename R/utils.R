@@ -24,3 +24,26 @@ seralise <- function(data, ...){
   
   jsonlite::toJSON(data, auto_unbox = TRUE, dataframe = "rows", ...)
 }
+
+#' Render HTML
+#' 
+#' Evaluates a string to collect [htmltools::tags], evaluates,
+#' and returns the render HTML as a collapsed string.
+#' 
+#' @param expr Expression to evaluate.
+#' 
+#' @noRd 
+#' @keywords internal
+render_html <- function(expr){
+
+  tags <- eval(parse(text = expr))
+
+  tmp <- tempfile(fileext = ".html")
+  on.exit({
+    fs::file_delete(tmp)
+  })
+
+  htmltools::save_html(tags, file = tmp, background = "none")
+
+  paste0(readLines(tmp), collapse = "")
+}
