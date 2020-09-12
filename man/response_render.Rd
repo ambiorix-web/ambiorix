@@ -4,10 +4,10 @@
 \alias{response_render}
 \title{Template Responses}
 \usage{
-response_render(template, data = list(), status = 200L)
+response_render(file, data = list(), status = 200L)
 }
 \arguments{
-\item{template}{Name of HTML template file to use (without extension),
+\item{file}{Name of HTML template file to use (without extension),
 looks up the name of the file in \code{templates} directory.}
 
 \item{data}{Named list of data objects to place in \verb{[\% tags \%]} found in template.}
