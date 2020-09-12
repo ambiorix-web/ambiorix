@@ -73,20 +73,23 @@ This allows using templates and rendering them with `res$render`. These template
 
 The following template
 
-```html
-<!-- templates/home.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="static/style.css">
-  <title>Ambiorix</title>
-</head>
-<body>
-  <h1>[% title %]</h1>
-</body>
-</html>
+```r
+# templates/home.R
+library(htmltools)
+
+tags$html(
+  lang = "en",
+  tags$head(
+    tags$meta(charset= "UTF-8"),
+    tags$meta(name = "viewport", content = "width=device-width, initial-scale=1.0"),
+    tags$link(rel = "stylesheet", href = "static/style.css"),
+    tags$title("Ambiorix")
+  ),
+  tags$body(
+    tags$h1("[% title %]") # tag
+  )
+)
+
 ```
 
 The `[% title %]` can then be replaced with.
@@ -94,3 +97,5 @@ The `[% title %]` can then be replaced with.
 ```r
 res$render("home", data = list(title = "Hello from R"))
 ```
+
+One can also use `HTML` templates in which case the data is serialised to JSON.
