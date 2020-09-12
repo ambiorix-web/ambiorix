@@ -1,5 +1,7 @@
 <div align="center">
 
+:construction:
+
 # ambiorix
 
 <!-- badges: start -->
@@ -10,7 +12,7 @@ Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and ins
 </div>
 
 
-## Hello World
+## :wave: Hello World
 
 ``` r
 library(ambiorix)
@@ -26,7 +28,7 @@ app$start()
 
 Kill the server with `app$stop()`.
 
-## Usage
+## :crystal_ball: Usage
 
 Use `:<param>` to indicate a parameter which can then be accessed with `req$params$<name>`.
 
@@ -59,7 +61,7 @@ http://localhost:3000/hello?firstname=John&lastname=Coene
 http://localhost:3000/books/fiction
 ```
 
-## Advanced
+## :microscope: Advanced
 
 The easiest way to get setup is by creating an ambiorix project with `create_ambiorix("path/to/project")`. 
 
