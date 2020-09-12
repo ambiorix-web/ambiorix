@@ -13,7 +13,7 @@ not_missing <- function(x){
 }
 
 assertthat::on_failure(not_missing) <- function(call, env){
-  paste0("Missing", deparse(call$x))
+  paste("Missing", deparse(call$x))
 }
 
 has_dir <- function(x){
@@ -21,5 +21,5 @@ has_dir <- function(x){
 }
 
 assertthat::on_failure(has_dir) <- function(call, env){
-  paste0("Cannot find", deparse(call$x))
+  paste("Cannot find", deparse(call$x))
 }

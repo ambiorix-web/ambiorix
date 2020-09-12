@@ -26,7 +26,7 @@ app$start()
 
 Then visit: `http://localhost:3000`, Kill the server with `app$stop()`.
 
-## :crystal_ball: Usage
+## :bookmark_tabs: Usage
 
 Use `:<param>` to indicate a parameter which can then be accessed with `req$params$<name>`.
 
@@ -59,7 +59,7 @@ http://localhost:3000/hello?firstname=John&lastname=Coene
 http://localhost:3000/books/fiction
 ```
 
-## :microscope: Advanced
+## :hammer_and_wrench: Advanced
 
 The easiest way to get setup is by creating an ambiorix project with `create_ambiorix("path/to/project")`. 
 
@@ -99,3 +99,17 @@ res$render("home", data = list(title = "Hello from R"))
 Lists and dataframes are `dput` in the template.
 
 One can also use HTML templates (`.html` files) in which case the data is serialised to JSON.
+
+## :mag_right: 404
+
+You can set the 404 page in two ways.
+
+```r
+app$not_found <- function(req, res){
+  res$send(htmltools::h2("404"), status = 404L)
+}
+
+app$set_404(function(req, res){
+  res$send(htmltools::h2("Not found"), status = 404L)
+})
+```

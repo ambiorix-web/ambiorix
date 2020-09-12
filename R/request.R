@@ -35,7 +35,7 @@ Request <- R6::R6Class(
     SERVER_PORT = NULL,
     query = list(),
     params = list(),
-    initialize = function(req, route){
+    initialize = function(req, route = NULL){
       self$HEADERS <- req$HEADERS
       self$HTTP_ACCEPT <- req$HTTP_ACCEPT
       self$HTTP_ACCEPT_ENCODING <- req$HTTP_ACCEPT_ENCODING
@@ -66,6 +66,9 @@ Request <- R6::R6Class(
       self$SERVER_PORT <- req$SERVER_NAME
 
       private$.parse_query_string(req$QUERY_STRING)
+
+      if(is.null(route))
+        return(self)
 
       if(route$dynamic)
         private$.parse_path(route$components, req$PATH_INFO)

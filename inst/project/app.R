@@ -3,6 +3,8 @@ import("views")
 
 app <- Ambiorix$new()
 
+app$not_found <- render_404
+
 app$serve_static("assets", "static")
 
 app$get("/", render_home)

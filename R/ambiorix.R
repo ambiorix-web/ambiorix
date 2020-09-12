@@ -20,7 +20,9 @@ Ambiorix <- R6::R6Class(
     initialize = function(host = "0.0.0.0", port = 3000L){
       private$.host <- host
       private$.port <- port
-      self$not_found <- response_404
+      self$not_found <- function(res, req){
+        response_404()
+      }
     },
 #' @details GET Method
 #' 
@@ -134,7 +136,7 @@ Ambiorix <- R6::R6Class(
       cli::cli_alert_warning("{req$REQUEST_METHOD} {.val {req$PATH_INFO}} - Not Found")
 
       # return 404
-      return(self$not_found())
+      return(self$not_found(Request$new(req, Route$new(req$PATH_INFO)), Response$new()))
     },
     nRoutes = function(){
       length(private$.routes)
