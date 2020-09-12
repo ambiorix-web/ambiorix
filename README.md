@@ -1,7 +1,5 @@
 <div align="center">
 
-:construction:
-
 # ambiorix
 
 <!-- badges: start -->
@@ -26,7 +24,7 @@ app$get("/", function(req, res){
 app$start()
 ```
 
-Kill the server with `app$stop()`.
+Then visit: `http://localhost:3000`, Kill the server with `app$stop()`.
 
 ## :crystal_ball: Usage
 
