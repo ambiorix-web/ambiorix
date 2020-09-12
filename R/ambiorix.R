@@ -90,11 +90,18 @@ Ambiorix <- R6::R6Class(
 #' Start the webserver.
     start = function(){
       private$.server <- httpuv::startServer(host = private$.host, port = private$.port,
-        app = list(call = private$.call, staticPaths = private$.static)
+        app = list(call = private$.call, staticPaths = private$.static, onWSOpen = private$.wss)
       )
       msg <- sprintf("Listening on http://localhost:%d", private$.port)
       cli::cli_alert_success(msg)
       self$is_running <- TRUE
+      invisible(self)
+    },
+#' @details Receive Websocket Message
+#' @param name Name of message.
+#' @param fun Handler function to run when message is received.
+    receive = function(name, fun){
+      private$.receivers[[uuid()]] <- WebsocketHandler$new(name, fun)
       invisible(self)
     },
 #' @details Stop
@@ -115,6 +122,7 @@ Ambiorix <- R6::R6Class(
     .calls = NULL,
     .routes = list(),
     .static = list(),
+    .receivers = list(),
     .call = function(req){
 
       # loop over routes
@@ -138,6 +146,24 @@ Ambiorix <- R6::R6Class(
       # return 404
       return(self$not_found(Request$new(req, Route$new(req$PATH_INFO)), Response$new()))
     },
+    .wss = function(ws){
+
+      # receive
+      ws$onMessage(function(binary, message) {
+
+        message <- jsonlite::fromJSON(message)
+
+        # don't run if not
+        if(length(private$.receivers) == 0) return(NULL)
+
+        for(i in 1:length(private$.receivers)){
+          if(private$.receivers[[i]]$is_handler(message)){
+            return(private$.receivers[[i]]$receive(message, ws))
+          }
+        }
+
+      })
+    }, 
     nRoutes = function(){
       length(private$.routes)
     },

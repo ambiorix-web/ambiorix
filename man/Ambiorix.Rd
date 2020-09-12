@@ -24,6 +24,7 @@ Web server.
 \item \href{#method-set_404}{\code{Ambiorix$set_404()}}
 \item \href{#method-serve_static}{\code{Ambiorix$serve_static()}}
 \item \href{#method-start}{\code{Ambiorix$start()}}
+\item \href{#method-receive}{\code{Ambiorix$receive()}}
 \item \href{#method-stop}{\code{Ambiorix$stop()}}
 \item \href{#method-clone}{\code{Ambiorix$clone()}}
 }
@@ -154,6 +155,28 @@ Static directories
 \subsection{Details}{
 Start
 Start the webserver.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-receive"></a>}}
+\if{latex}{\out{\hypertarget{method-receive}{}}}
+\subsection{Method \code{receive()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$receive(name, fun)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Name of message.}
+
+\item{\code{fun}}{Handler function to run when message is received.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Receive Websocket Message
 }
 
 }
