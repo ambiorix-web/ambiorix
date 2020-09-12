@@ -98,4 +98,6 @@ The `[% title %]` can then be replaced with.
 res$render("home", data = list(title = "Hello from R"))
 ```
 
-One can also use `HTML` templates in which case the data is serialised to JSON.
+Lists and dataframes are `dput`.
+
+One can also use HTML templates (`.html` files) in which case the data is serialised to JSON.
