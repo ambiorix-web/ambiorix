@@ -32,7 +32,15 @@ Ambiorix <- R6::R6Class(
     get = function(path, fun){
       assert_that(valid_path(path))
       assert_that(not_missing(fun))
-      private$.routes[[uuid()]] <- list(route = Route$new(path), path = path, fun = fun, method = "GET")
+
+      private$.routes[[uuid()]] <- list(
+        route = Route$new(path), 
+        path = path, 
+        fun = fun, 
+        method = "GET",
+        res = Response$new()
+      )
+
       invisible(self)
     },
 #' @details POST Method
@@ -45,7 +53,15 @@ Ambiorix <- R6::R6Class(
     post = function(path, fun){
       assert_that(valid_path(path))
       assert_that(not_missing(fun))
-      private$.routes[[uuid()]] <- list(route = Route$new(path), path = path, fun = fun, method = "POST")
+
+      private$.routes[[uuid()]] <- list(
+        route = Route$new(path), 
+        path = path, 
+        fun = fun, 
+        method = "POST",
+        res = Response$new()
+      )
+
       invisible(self)
     },
 #' @details Sets the 404 page.
@@ -101,10 +117,17 @@ Ambiorix <- R6::R6Class(
 
       # loop over routes
       for(i in 1:length(private$.routes)){
+        # if path matches pattern and method
         if(grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) && private$.routes[[i]]$method == req$REQUEST_METHOD){
+          
           cli::cli_alert_success("GET 127.0.0.1:{private$.port}{req$PATH_INFO}")
+
+          # parse request
           req <- Request$new(req, private$.routes[[i]]$route)
-          return(private$.routes[[i]]$fun(req))
+
+          return(
+            private$.routes[[i]]$fun(req, private$.routes[[i]]$res)
+          )
         }
       }
 
