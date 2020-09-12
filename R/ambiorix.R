@@ -90,7 +90,7 @@ Ambiorix <- R6::R6Class(
       private$.server <- httpuv::startServer(host = private$.host, port = private$.port,
         app = list(call = private$.call, staticPaths = private$.static)
       )
-      msg <- sprintf("Listening on http://127.0.0.1:%d", private$.port)
+      msg <- sprintf("Listening on http://localhost:%d", private$.port)
       cli::cli_alert_success(msg)
       self$is_running <- TRUE
       invisible(self)
@@ -120,7 +120,7 @@ Ambiorix <- R6::R6Class(
         # if path matches pattern and method
         if(grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) && private$.routes[[i]]$method == req$REQUEST_METHOD){
           
-          cli::cli_alert_success("GET 127.0.0.1:{private$.port}{req$PATH_INFO}")
+          cli::cli_alert_success("{req$REQUEST_METHOD} {.val {req$PATH_INFO}}")
 
           # parse request
           req <- Request$new(req, private$.routes[[i]]$route)
@@ -131,7 +131,7 @@ Ambiorix <- R6::R6Class(
         }
       }
 
-      cli::cli_alert_warning("{req$REQUEST_METHOD} 127.0.0.1:{private$.port}{req$PATH_INFO} - Not Found")
+      cli::cli_alert_warning("{req$REQUEST_METHOD} {.val {req$PATH_INFO}} - Not Found")
 
       # return 404
       return(self$not_found())

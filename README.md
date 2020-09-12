@@ -24,6 +24,8 @@ app$get("/", function(req, res){
 app$start()
 ```
 
+Kill the server with `app$stop()`.
+
 ## Usage
 
 Use `:<param>` to indicate a parameter which can then be accessed with `req$params$<name>`.
@@ -37,13 +39,9 @@ app$get("/", function(req, res){
   res$send(htmltools::h1("Homepage!"))
 })
 
-app$get("/hello$", function(req, res){
+app$get("/hello", function(req, res){
   # ?firstname=John&lastname=Coene
   res$send(htmltools::h3("Hi", req$query$firstname, req$query$lastname))
-})
-
-app$get("/books$", function(req, res){
-  res$send(htmltools::h2("List of Books! (coming soon)"))
 })
 
 app$get("/books/:category", function(req, res){
@@ -56,9 +54,9 @@ app$start()
 Then try a few paths, e.g.:
 
 ```bash
-http://127.0.0.1:3000/
-http://127.0.0.1:3000/hello?firstname=John&lastname=Coene
-http://127.0.0.1:3000/books/fiction
+http://localhost:3000/
+http://localhost:3000/hello?firstname=John&lastname=Coene
+http://localhost:3000/books/fiction
 ```
 
 ## Advanced
