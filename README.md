@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="man/figures/ambiorix.png" height = "300px" />
+
 # ambiorix
 
 <!-- badges: start -->
