@@ -8,3 +8,5 @@
   - [Websocket](guide/websocket.md)
   - [404](guide/not-found.md)
   - [Start & Stop](guide/stop.md)
+
+- [Changelog](changelog.md)

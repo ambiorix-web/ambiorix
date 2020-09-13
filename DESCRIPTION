@@ -1,13 +1,13 @@
 Package: ambiorix
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Web Framework
+Version: 1.0.0
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "John",
+           family = "Coene",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "jcoenep@gmail.com",
+           comment = c(ORCID = "0000-0002-6637-4107"))
+Description: A web framework inspired by 'express.js'.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
