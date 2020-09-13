@@ -12,22 +12,6 @@ Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and ins
 </div>
 
 
-## :wave: Hello World
-
-``` r
-library(ambiorix)
-
-app <- Ambiorix$new()
-
-app$get("/", function(req, res){
-  res$send("Hello!")
-})
-
-app$start()
-```
-
-Then visit: `http://localhost:3000`, stop the server with `app$stop()`.
-
 ## :inbox_tray: Install
 
 Ambiorix is an R package than can be installed from github.
