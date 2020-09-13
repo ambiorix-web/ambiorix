@@ -63,7 +63,7 @@ Define the webserver.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{path}}{Route to listen to.}
+\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
 
 \item{\code{fun}}{Function that accepts the request and returns an object
 describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}

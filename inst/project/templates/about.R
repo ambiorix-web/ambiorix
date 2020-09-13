@@ -12,6 +12,6 @@ tags$html(
   ),
   tags$body(
     tags$h1("[% title %]", class = "brand"),
-    ifelse(is.null(name), h3("Hi everyone!"), h2("Hello", name))
+    h3("Hi", name)
   )
 )
