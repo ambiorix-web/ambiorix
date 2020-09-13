@@ -2,7 +2,7 @@
 
 By default ambiorix will serve the application on port `3000`, this can be changed, along with other things, when instantiating the class.
 
-``` r
+```r
 library(ambiorix)
 
 app <- Ambiorix$new()
@@ -13,5 +13,7 @@ app$get("/", function(req, res){
 
 app$start()
 ```
+
+![](../_assets/rstudio.png)
 
 Kill the server with `app$stop()`.
