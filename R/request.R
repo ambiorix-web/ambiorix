@@ -126,7 +126,10 @@ Request <- R6::R6Class(
 
         x[1]
       })
-      names(lst) <- sapply(params_split, function(x) x[1])
+      names(lst) <- sapply(params_split, function(x){
+        if(length(x) > 1) return(x[1])
+        return(NULL)
+      })
 
       self$query <- as.list(lst)
       invisible()
