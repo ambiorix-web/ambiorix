@@ -7,7 +7,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-[Docs](https://ambiorix.john-coene.com)
+[Website](https://ambiorix.john-coene.com) | [Quick start](http://ambiorix.john-coene.com/#/guide/hello-world)
 
 Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and inspired by [express](https://github.com/expressjs/express).
 
