@@ -7,6 +7,20 @@
 
 Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and inspired by [express](https://github.com/expressjs/express).
 
+## Example
+
+``` r
+library(ambiorix)
+
+app <- Ambiorix$new()
+
+app$get("/", function(req, res){
+  res$send("Hello!")
+})
+
+app$start()
+```
+
 ## Install
 
 Ambiorix is an R package than can be installed from github.
