@@ -18,6 +18,7 @@ Imports:
     cli,
     httpuv,
     jsonlite,
-    assertthat
+    assertthat,
+    shiny
 Suggests:
     htmltools
