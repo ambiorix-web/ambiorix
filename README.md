@@ -1,8 +1,8 @@
-<img src="man/figures/ambiorix.png" height = "200px" align="left"/>
-
 <div align="center">
 
 # ambiorix
+
+<img src="man/figures/ambiorix.png" height = "200px"/>
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -70,7 +70,7 @@ http://localhost:3000/hello?firstname=John&lastname=Coene
 http://localhost:3000/books/fiction
 ```
 
-## :hammer_and_wrench: Advanced
+## :hammer_and_wrench: Project & Templates
 
 The easiest way to get setup is by creating an ambiorix project with `create_ambiorix`. 
 
