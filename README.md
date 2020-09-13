@@ -1,8 +1,8 @@
+<img src="man/figures/ambiorix.png" height = "200px" align="left"/>
+
 <div align="center">
 
 # ambiorix
-
-<img src="man/figures/ambiorix.png" height = "200px"/>
 
 <!-- badges: start -->
 <!-- badges: end -->
