@@ -111,7 +111,11 @@ Request <- R6::R6Class(
       params <- strsplit(q, "&")[[1]]
       params_split <- strsplit(params, "=")
 
-      lst <- sapply(params_split, function(x) x[2])
+      lst <- sapply(params_split, function(x){
+        if(length(x) > 1) return(x[2])
+
+        x[1]
+      })
       names(lst) <- sapply(params_split, function(x) x[1])
 
       self$query <- as.list(lst)
