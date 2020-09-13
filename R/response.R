@@ -63,6 +63,9 @@ Response <- R6::R6Class(
 
       response(file_content, status = status)
     },
+    json = function(body, headers = list("Content-Type" = "application/json"), status = 200L){
+      response(serialise(body), headers = headers, status = status)
+    },
     print = function(){
       cli::cli_li("{.code send(body, headers, status)}")
       cli::cli_li("{.code send_file(file, status)}")

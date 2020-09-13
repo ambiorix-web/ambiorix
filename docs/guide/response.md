@@ -34,3 +34,13 @@ app$get("/:book", function(req, res){
   res$render("home", data = list(title = req$params$book))
 })
 ```
+
+## JSON
+
+You can also send JSON responses with `json`.
+
+```r
+app$get("/:book", function(req, res){
+  res$json(cars)
+})
+```
