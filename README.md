@@ -5,6 +5,7 @@
 <img src="man/figures/ambiorix.png" height = "200px"/>
 
 <!-- badges: start -->
+[![Travis build status](https://img.shields.io/travis/com/JohnCoene/ambiorix?style=flat-square)](https://travis-ci.com/JohnCoene/ambiorix)
 <!-- badges: end -->
 
 [Website](https://ambiorix.john-coene.com) | [Quick start](http://ambiorix.john-coene.com/#/guide/hello-world)

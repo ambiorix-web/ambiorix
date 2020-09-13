@@ -8,3 +8,4 @@ test.R
 ^webpack\.prod\.js$
 ^webpack\.common\.js$
 ^docs$
+^\.travis\.yml$
