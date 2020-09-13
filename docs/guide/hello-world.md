@@ -23,4 +23,4 @@ app$start()
 
 ![](../_assets/rstudio.png)
 
-Kill the server with `app$stop()`.
+The `get` method will add a `GET` method on the path (`/`), kill the server with `app$stop()`.

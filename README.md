@@ -15,7 +15,7 @@ Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and ins
 </div>
 
 
-## Hello World
+## Example
 
 ``` r
 library(ambiorix)
