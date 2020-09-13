@@ -26,9 +26,18 @@ app$start()
 
 Then visit: `http://localhost:3000`, Kill the server with `app$stop()`.
 
-## :bookmark_tabs: Usage
+## :inbox_tray: Install
 
-Use `:<param>` to indicate a parameter which can then be accessed with `req$params$<name>`.
+Ambiorix is an R package than can be installed from github.
+
+```r
+# install.packages("ambiorix")
+remotes::install_github("JohnCoene/ambiorix")
+```
+
+## :bookmark_tabs: Parameters & Query
+
+Use `:<param>` to indicate a parameter which can then be accessed with `req$params$<name>`. Parsed query string can be accessed from the `req` object too.
 
 ``` r
 library(ambiorix)
@@ -61,7 +70,7 @@ http://localhost:3000/books/fiction
 
 ## :hammer_and_wrench: Advanced
 
-The easiest way to get setup is by creating an ambiorix project with `create_ambiorix("path/to/project")`. 
+The easiest way to get setup is by creating an ambiorix project with `create_ambiorix`. 
 
 ```r
 ambiorix::create_ambiorix("myapp")
