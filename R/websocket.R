@@ -20,6 +20,13 @@ WebsocketHandler <- R6::R6Class(
     },
     is_handler = function(message){
       private$.name == message$name
+    },
+    print = function(){
+      foo <- paste0(deparse(private$.fun), collapse = "\n")
+      cli::cli_alert_info("receive: {.code receive(message, ws)}")
+      cli::cli_ul("Listening on message:")
+      cli::cli_li("name: {.val {private$.name}}")
+      cli::cli_li("fun: {.code {foo}}")
     }
   ),
   private = list(
@@ -40,6 +47,9 @@ Websocket <- R6::R6Class(
         message = message
       )
       private$.ws$send(serialise(message))
+    },
+    print = function(){
+      cli::cli_li("send: {.code send(name, message)}")
     }
   ),
   private = list(

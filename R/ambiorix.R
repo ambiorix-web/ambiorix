@@ -127,13 +127,18 @@ Ambiorix <- R6::R6Class(
 
       if(!self$is_running){
         cli::cli_alert_warning("Server is not running")
-        return()
+        return(invisible())
       }
 
       private$.server$stop()
       cli::cli_alert_danger("Server Stopped")
       self$is_running <- FALSE
       invisible(self)
+    },
+#' @details Print
+    print = function(){
+      cli::cli_rule("Ambiorix", right = "web server")
+      cli::cli_li("routes: {.val {private$.nRoutes()}}")
     }
   ),
   private = list(

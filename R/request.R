@@ -98,6 +98,16 @@ Request <- R6::R6Class(
       cli::cli_li("SCRIPT_NAME: {.val {self$SCRIPT_NAME}}")
       cli::cli_li("SERVER_NAME: {.val {self$SERVER_NAME}}")
       cli::cli_li("SERVER_PORT: {.val {self$SERVER_PORT}}")
+
+      if(length(self$params)){
+        cli::cli_li("params: {.val params}")
+        str(self$params)
+      }
+
+      if(length(self$query)){
+        cli::cli_li("query: {.val query}")
+        str(self$query)
+      }
     }
   ),
   private = list(
