@@ -149,9 +149,16 @@ Static directories
 \if{latex}{\out{\hypertarget{method-start}{}}}
 \subsection{Method \code{start()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$start()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$start(open = interactive())}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{open}}{Whether to open the app the browser.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Details}{
 Start
 Start the webserver.

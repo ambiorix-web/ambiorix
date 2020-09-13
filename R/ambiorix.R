@@ -6,6 +6,7 @@
 #' @field is_running Boolean indicating whether the server is running.
 #' 
 #' @importFrom assertthat assert_that
+#' @importFrom utils browseURL
 #' 
 #' @export 
 Ambiorix <- R6::R6Class(
@@ -88,7 +89,8 @@ Ambiorix <- R6::R6Class(
     },
 #' @details Start 
 #' Start the webserver.
-    start = function(){
+#' @param open Whether to open the app the browser.
+    start = function(open = interactive()){
       
       if(self$is_running){
         cli::cli_alert_warning("Server is already running")
@@ -98,9 +100,18 @@ Ambiorix <- R6::R6Class(
       private$.server <- httpuv::startServer(host = private$.host, port = private$.port,
         app = list(call = private$.call, staticPaths = private$.static, onWSOpen = private$.wss)
       )
-      msg <- sprintf("Listening on http://localhost:%d", private$.port)
-      cli::cli_alert_success(msg)
+
+      url <- sprintf("http://localhost:%s", private$.port)
+      
+      # msg
+      cli::cli_alert_success("Listening on {url}")
+
+      # runs
       self$is_running <- TRUE
+
+      # open
+      browse_ambiorix(open, url)
+
       invisible(self)
     },
 #' @details Receive Websocket Message

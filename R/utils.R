@@ -47,3 +47,22 @@ render_html <- function(expr){
 
   paste0(readLines(tmp), collapse = "")
 }
+
+#' Browse App
+#' 
+#' Browses the application, if RStudio available uses pane.
+#' 
+#' @param open Whether to open the app.
+#' @param url URL to browse.
+#' 
+#' @noRd 
+#' @keywords internal
+browse_ambiorix <- function(open, url){
+  if(!open) return()
+
+  viewer <- getOption("viewer", browseURL)
+
+  viewer(url)
+
+  invisible()
+}
