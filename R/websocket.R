@@ -56,3 +56,17 @@ Websocket <- R6::R6Class(
     .ws = NULL
   )
 )
+
+#' Copy Websocket
+#' 
+#' Copies the websocket client file, useful when ambiorix was not setup with [create_ambiorix()].
+#' 
+#' @param path Path to copy the file to.
+#' 
+#' @export 
+copy_websocket_client <- function(path){
+  assert_that(not_missing(path))
+
+  lib <- system.file("project/assets/ambiorix.js", package = "ambiorix")
+  fs::file_copy(lib, path)
+}

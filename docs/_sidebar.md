@@ -9,4 +9,13 @@
   - [404](guide/not-found.md)
   - [Start & Stop](guide/stop.md)
 
+- Reference
+
+  - [Ambiorix](reference/Ambiorix.md)
+  - [Copy Websocket Client](reference/copy_websocket_client.md)
+  - [Create Ambiorix](reference/create_ambiorix.md)
+  - [Import](reference/import.md)
+  - [Response](reference/responses.md)
+  - [Stop](reference/stop_all.md)
+
 - [Changelog](changelog.md)

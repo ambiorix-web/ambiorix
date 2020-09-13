@@ -20,7 +20,7 @@ Ambiorix <- R6::R6Class(
 #' @param port Integer defining the port.
     initialize = function(host = "0.0.0.0", port = 3000L){
       private$.host <- host
-      private$.port <- port
+      private$.port <- as.integer(port)
       self$not_found <- function(res, req){
         response_404()
       }
@@ -29,7 +29,7 @@ Ambiorix <- R6::R6Class(
 #' 
 #' Add routes to listen to.
 #' 
-#' @param path Route to listen to.
+#' @param path Route to listen to, `:` defines a parameter.
 #' @param fun Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
     get = function(path, fun){
