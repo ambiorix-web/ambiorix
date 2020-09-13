@@ -26,6 +26,7 @@ Web server.
 \item \href{#method-start}{\code{Ambiorix$start()}}
 \item \href{#method-receive}{\code{Ambiorix$receive()}}
 \item \href{#method-stop}{\code{Ambiorix$stop()}}
+\item \href{#method-print}{\code{Ambiorix$print()}}
 \item \href{#method-clone}{\code{Ambiorix$clone()}}
 }
 }
@@ -198,6 +199,19 @@ Receive Websocket Message
 \subsection{Details}{
 Stop
 Stop the webserver.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-print"></a>}}
+\if{latex}{\out{\hypertarget{method-print}{}}}
+\subsection{Method \code{print()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$print()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Print
 }
 
 }
