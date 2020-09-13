@@ -7,12 +7,14 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
+[Docs](https://ambiorix.john-coene.com)
+
 Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and inspired by [express](https://github.com/expressjs/express).
 
 </div>
 
 
-## :wave: Hello World
+## Hello World
 
 ``` r
 library(ambiorix)
@@ -28,7 +30,7 @@ app$start()
 
 Then visit: `http://localhost:3000`, stop the server with `app$stop()`.
 
-## :inbox_tray: Install
+## Install
 
 Ambiorix is an R package than can be installed from github.
 
