@@ -139,3 +139,18 @@ app$set_404(function(req, res){
   res$send(htmltools::h2("Not found"), status = 404L)
 })
 ```
+
+## :heavy_multiplication_x: Stop
+
+You can stop one or all servers as well as check whether it is running.
+
+```r
+# is server running
+app$is_running
+
+# stop server
+app$stop()
+
+# stop all servers
+stop_all()
+```

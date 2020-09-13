@@ -107,6 +107,12 @@ Ambiorix <- R6::R6Class(
 #' @details Stop
 #' Stop the webserver.
     stop = function(){
+
+      if(!self$is_running){
+        cli::cli_alert_warning("Server is not running")
+        return()
+      }
+
       private$.server$stop()
       cli::cli_alert_danger("Server Stopped")
       self$is_running <- FALSE

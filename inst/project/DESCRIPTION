@@ -1,4 +1,5 @@
 Title: Ambiorix Project
 Version: 0.0.1.9000
 Imports:
-  ambiorix
+  ambiorix,
+  htmltools
