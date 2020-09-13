@@ -89,6 +89,12 @@ Ambiorix <- R6::R6Class(
 #' @details Start 
 #' Start the webserver.
     start = function(){
+      
+      if(self$is_running){
+        cli::cli_alert_warning("Server is already running")
+        return()
+      }
+
       private$.server <- httpuv::startServer(host = private$.host, port = private$.port,
         app = list(call = private$.call, staticPaths = private$.static, onWSOpen = private$.wss)
       )
