@@ -34,4 +34,3 @@ app$get("/:book", function(req, res){
   res$render("home", data = list(title = req$params$book))
 })
 ```
-
