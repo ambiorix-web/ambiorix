@@ -73,6 +73,18 @@ app$receive("hello", function(msg, ws){
 })
 ```
 
+## Serialiser
+
+Defines the serialiser to use internally, only use this if you are familiar with serialisation as this may lead to grave headaches.
+
+- `fun`: Function to use to serialise, this function should only accept one argument: the object to serialise.
+
+```r
+app$use_serialiser(function(x){
+  jsonlite::toJSON(x, dataframe = "columns", auto_unbox = TRUE)
+})
+```
+
 ### Start
 
 Start the server

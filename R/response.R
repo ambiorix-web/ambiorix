@@ -64,7 +64,8 @@ Response <- R6::R6Class(
       response(file_content, status = status)
     },
     json = function(body, headers = list("Content-Type" = "application/json"), status = 200L){
-      response(serialise(body), headers = headers, status = status)
+      to_json <- get_serialise()
+      response(to_json(body), headers = headers, status = status)
     },
     print = function(){
       cli::cli_li("{.code send(body, headers, status)}")
@@ -116,7 +117,8 @@ Response <- R6::R6Class(
 
           # only serialise if HTML
           if(ext == "html"){
-            value <- serialise(data[[i]])
+            to_json <- get_serialise()
+            value <- to_json(data[[i]])
           } else {
             value <- data[[i]]
 

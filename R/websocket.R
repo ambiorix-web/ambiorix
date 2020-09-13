@@ -42,11 +42,12 @@ Websocket <- R6::R6Class(
       private$.ws <- ws
     },
     send = function(name, message){
+      to_json <- get_serialise()
       message <- list(
         name = name,
         message = message
       )
-      private$.ws$send(serialise(message))
+      private$.ws$send(to_json(message))
     },
     print = function(){
       cli::cli_li("send: {.code send(name, message)}")

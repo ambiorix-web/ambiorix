@@ -8,23 +8,6 @@ uuid <- function(){
   paste0(x, collapse = "")
 }
 
-#' Serialise
-#' 
-#' Serialise data to JSON.
-#' 
-#' @param data Data to serialise.
-#' @param ... Options to pass to [jsonlite::toJSON()].
-#' 
-#' @noRd 
-#' @keywords internal
-serialise <- function(data, ...){
-  
-  # don't serialise scalar
-  if(length(data) == 1) return(data)
-  
-  jsonlite::toJSON(data, auto_unbox = TRUE, dataframe = "rows", ...)
-}
-
 #' Render HTML
 #' 
 #' Evaluates a string to collect [htmltools::tags], evaluates,

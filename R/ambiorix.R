@@ -121,6 +121,13 @@ Ambiorix <- R6::R6Class(
       private$.receivers[[uuid()]] <- WebsocketHandler$new(name, fun)
       invisible(self)
     },
+#' @details Define Serialiser
+#' @param fun Function to use to serialise. 
+#' This function should accept a single argument: the object to serialise.
+    use_serialiser = function(fun){
+      options(AMBIORIX_SERIALISER = fun)
+      invisible(self)
+    },
 #' @details Stop
 #' Stop the webserver.
     stop = function(){

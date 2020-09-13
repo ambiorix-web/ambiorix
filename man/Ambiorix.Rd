@@ -25,6 +25,7 @@ Web server.
 \item \href{#method-serve_static}{\code{Ambiorix$serve_static()}}
 \item \href{#method-start}{\code{Ambiorix$start()}}
 \item \href{#method-receive}{\code{Ambiorix$receive()}}
+\item \href{#method-use_serialiser}{\code{Ambiorix$use_serialiser()}}
 \item \href{#method-stop}{\code{Ambiorix$stop()}}
 \item \href{#method-print}{\code{Ambiorix$print()}}
 \item \href{#method-clone}{\code{Ambiorix$clone()}}
@@ -185,6 +186,27 @@ Start the webserver.
 }
 \subsection{Details}{
 Receive Websocket Message
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-use_serialiser"></a>}}
+\if{latex}{\out{\hypertarget{method-use_serialiser}{}}}
+\subsection{Method \code{use_serialiser()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$use_serialiser(fun)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{fun}}{Function to use to serialise.
+This function should accept a single argument: the object to serialise.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Define Serialiser
 }
 
 }
