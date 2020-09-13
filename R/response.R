@@ -113,7 +113,7 @@ Response <- R6::R6Class(
 
           # only serialise if HTML
           if(ext == "html"){
-            value <- seralise(data[[i]])
+            value <- serialise(data[[i]])
           } else {
             value <- data[[i]]
 

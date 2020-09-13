@@ -17,7 +17,7 @@ uuid <- function(){
 #' 
 #' @noRd 
 #' @keywords internal
-seralise <- function(data, ...){
+serialise <- function(data, ...){
   
   # don't serialise scalar
   if(length(data) == 1) return(data)
