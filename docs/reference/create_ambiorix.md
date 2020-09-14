@@ -12,7 +12,5 @@ create_ambiorix(path)
 
 ## Arguments
 
-Argument      |Description
-------------- |----------------
-```path```     |     Path where to create ambiorix application.
+- `path`: Path where to create ambiorix application.
 

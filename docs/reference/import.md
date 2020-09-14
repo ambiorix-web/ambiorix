@@ -12,7 +12,5 @@ import(dir)
 
 ## Arguments
 
-Argument      |Description
-------------- |----------------
-```dir```     |     Directory from which to import `.R` or `.r` files.
+- `dir`: Directory from which to import `.R` or `.r` files.
 

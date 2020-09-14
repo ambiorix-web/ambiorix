@@ -17,9 +17,7 @@ response_404(
 
 ## Arguments
 
-Argument      |Description
-------------- |----------------
-```body```     |     Body of response.
-```headers```     |     HTTP headers.
-```status```     |     Response status
+- `body`: Body of response.
+- `headers`: HTTP headers.
+- `status`: Response status
 
