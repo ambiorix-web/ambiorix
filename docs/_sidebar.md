@@ -19,4 +19,7 @@
   - [Response](reference/responses.md)
   - [Stop](reference/stop_all.md)
 
+- Examples
+  - [Post](examples/post.md)
+
 - [Changelog](changelog.md)
