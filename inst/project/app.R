@@ -7,7 +7,7 @@ app <- Ambiorix$new()
 app$not_found <- render_404
 
 # serve static files
-app$serve_static("assets", "static")
+app$static("assets", "static")
 
 # homepage
 app$get("/", render_home)

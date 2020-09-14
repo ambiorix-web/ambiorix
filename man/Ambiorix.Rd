@@ -20,9 +20,12 @@ Web server.
 \itemize{
 \item \href{#method-new}{\code{Ambiorix$new()}}
 \item \href{#method-get}{\code{Ambiorix$get()}}
+\item \href{#method-put}{\code{Ambiorix$put()}}
+\item \href{#method-patch}{\code{Ambiorix$patch()}}
+\item \href{#method-delete}{\code{Ambiorix$delete()}}
 \item \href{#method-post}{\code{Ambiorix$post()}}
 \item \href{#method-set_404}{\code{Ambiorix$set_404()}}
-\item \href{#method-serve_static}{\code{Ambiorix$serve_static()}}
+\item \href{#method-static}{\code{Ambiorix$static()}}
 \item \href{#method-start}{\code{Ambiorix$start()}}
 \item \href{#method-receive}{\code{Ambiorix$receive()}}
 \item \href{#method-use_serialiser}{\code{Ambiorix$use_serialiser()}}
@@ -58,7 +61,7 @@ Define the webserver.
 \if{latex}{\out{\hypertarget{method-get}{}}}
 \subsection{Method \code{get()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$get(path, fun)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$get(path, handler)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -66,7 +69,7 @@ Define the webserver.
 \describe{
 \item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
 
-\item{\code{fun}}{Function that accepts the request and returns an object
+\item{\code{handler}}{Function that accepts the request and returns an object
 describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
 }
 \if{html}{\out{</div>}}
@@ -79,11 +82,86 @@ Add routes to listen to.
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-put"></a>}}
+\if{latex}{\out{\hypertarget{method-put}{}}}
+\subsection{Method \code{put()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$put(path, handler)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
+
+\item{\code{handler}}{Function that accepts the request and returns an object
+describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+PUT Method
+
+Add routes to listen to.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-patch"></a>}}
+\if{latex}{\out{\hypertarget{method-patch}{}}}
+\subsection{Method \code{patch()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$patch(path, handler)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
+
+\item{\code{handler}}{Function that accepts the request and returns an object
+describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+PATCH Method
+
+Add routes to listen to.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-delete"></a>}}
+\if{latex}{\out{\hypertarget{method-delete}{}}}
+\subsection{Method \code{delete()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$delete(path, handler)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
+
+\item{\code{handler}}{Function that accepts the request and returns an object
+describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+DELETE Method
+
+Add routes to listen to.
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-post"></a>}}
 \if{latex}{\out{\hypertarget{method-post}{}}}
 \subsection{Method \code{post()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$post(path, fun)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$post(path, handler)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -91,7 +169,7 @@ Add routes to listen to.
 \describe{
 \item{\code{path}}{Route to listen to.}
 
-\item{\code{fun}}{Function that accepts the request and returns an object
+\item{\code{handler}}{Function that accepts the request and returns an object
 describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
 }
 \if{html}{\out{</div>}}
@@ -108,13 +186,13 @@ Add routes to listen to.
 \if{latex}{\out{\hypertarget{method-set_404}{}}}
 \subsection{Method \code{set_404()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$set_404(fun)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$set_404(handler)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{fun}}{Function that accepts the request and returns an object
+\item{\code{handler}}{Function that accepts the request and returns an object
 describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
 }
 \if{html}{\out{</div>}}
@@ -125,11 +203,11 @@ Sets the 404 page.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-serve_static"></a>}}
-\if{latex}{\out{\hypertarget{method-serve_static}{}}}
-\subsection{Method \code{serve_static()}}{
+\if{html}{\out{<a id="method-static"></a>}}
+\if{latex}{\out{\hypertarget{method-static}{}}}
+\subsection{Method \code{static()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$serve_static(path, uri)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$static(path, uri = "www")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -172,7 +250,7 @@ Start the webserver.
 \if{latex}{\out{\hypertarget{method-receive}{}}}
 \subsection{Method \code{receive()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$receive(name, fun)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$receive(name, handler)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -180,7 +258,7 @@ Start the webserver.
 \describe{
 \item{\code{name}}{Name of message.}
 
-\item{\code{fun}}{Handler function to run when message is received.}
+\item{\code{handler}}{Function to run when message is received.}
 }
 \if{html}{\out{</div>}}
 }
@@ -194,13 +272,13 @@ Receive Websocket Message
 \if{latex}{\out{\hypertarget{method-use_serialiser}{}}}
 \subsection{Method \code{use_serialiser()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$use_serialiser(fun)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$use_serialiser(handler)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{fun}}{Function to use to serialise.
+\item{\code{handler}}{Function to use to serialise.
 This function should accept a single argument: the object to serialise.}
 }
 \if{html}{\out{</div>}}

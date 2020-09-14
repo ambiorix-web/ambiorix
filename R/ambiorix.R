@@ -30,17 +30,80 @@ Ambiorix <- R6::R6Class(
 #' Add routes to listen to.
 #' 
 #' @param path Route to listen to, `:` defines a parameter.
-#' @param fun Function that accepts the request and returns an object 
+#' @param handler Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
-    get = function(path, fun){
+    get = function(path, handler){
       assert_that(valid_path(path))
-      assert_that(not_missing(fun))
+      assert_that(not_missing(handler))
 
       private$.routes[[uuid()]] <- list(
         route = Route$new(path), 
         path = path, 
-        fun = fun, 
+        fun = handler, 
         method = "GET",
+        res = Response$new()
+      )
+
+      invisible(self)
+    },
+#' @details PUT Method
+#' 
+#' Add routes to listen to.
+#' 
+#' @param path Route to listen to, `:` defines a parameter.
+#' @param handler Function that accepts the request and returns an object 
+#' describing an httpuv response, e.g.: [response()].
+    put = function(path, handler){
+      assert_that(valid_path(path))
+      assert_that(not_missing(handler))
+
+      private$.routes[[uuid()]] <- list(
+        route = Route$new(path), 
+        path = path, 
+        fun = handler, 
+        method = "PUT",
+        res = Response$new()
+      )
+
+      invisible(self)
+    },
+#' @details PATCH Method
+#' 
+#' Add routes to listen to.
+#' 
+#' @param path Route to listen to, `:` defines a parameter.
+#' @param handler Function that accepts the request and returns an object 
+#' describing an httpuv response, e.g.: [response()].
+    patch = function(path, handler){
+      assert_that(valid_path(path))
+      assert_that(not_missing(handler))
+
+      private$.routes[[uuid()]] <- list(
+        route = Route$new(path), 
+        path = path, 
+        fun = handler, 
+        method = "PATCH",
+        res = Response$new()
+      )
+
+      invisible(self)
+    },
+#' @details DELETE Method
+#' 
+#' Add routes to listen to.
+#' 
+#' @param path Route to listen to, `:` defines a parameter.
+#' @param handler Function that accepts the request and returns an object 
+#' describing an httpuv response, e.g.: [response()].
+    delete = function(path, handler){
+      assert_that(valid_path(path))
+      assert_that(not_missing(handler))
+
+      private$.routes[[uuid()]] <- list(
+        route = Route$new(path), 
+        path = path, 
+        fun = handler, 
+        method = "DELETE",
         res = Response$new()
       )
 
@@ -51,16 +114,16 @@ Ambiorix <- R6::R6Class(
 #' Add routes to listen to.
 #' 
 #' @param path Route to listen to.
-#' @param fun Function that accepts the request and returns an object 
+#' @param handler Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
-    post = function(path, fun){
+    post = function(path, handler){
       assert_that(valid_path(path))
-      assert_that(not_missing(fun))
+      assert_that(not_missing(handler))
 
       private$.routes[[uuid()]] <- list(
         route = Route$new(path), 
         path = path, 
-        fun = fun, 
+        fun = handler, 
         method = "POST",
         res = Response$new()
       )
@@ -68,17 +131,17 @@ Ambiorix <- R6::R6Class(
       invisible(self)
     },
 #' @details Sets the 404 page.
-#' @param fun Function that accepts the request and returns an object 
+#' @param handler Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
-    set_404 = function(fun){
-      self$not_found <- fun
+    set_404 = function(handler){
+      self$not_found <- handler
       invisible(self)
     },
 #' @details Static directories
 #' 
 #' @param path Local path to directory of assets.
 #' @param uri URL path where the directory will be available.
-    serve_static = function(path, uri){
+    static = function(path, uri = "www"){
       assert_that(not_missing(uri))
       assert_that(not_missing(path))
 
@@ -116,16 +179,16 @@ Ambiorix <- R6::R6Class(
     },
 #' @details Receive Websocket Message
 #' @param name Name of message.
-#' @param fun Handler function to run when message is received.
-    receive = function(name, fun){
-      private$.receivers[[uuid()]] <- WebsocketHandler$new(name, fun)
+#' @param handler Function to run when message is received.
+    receive = function(name, handler){
+      private$.receivers[[uuid()]] <- WebsocketHandler$new(name, handler)
       invisible(self)
     },
 #' @details Define Serialiser
-#' @param fun Function to use to serialise. 
+#' @param handler Function to use to serialise. 
 #' This function should accept a single argument: the object to serialise.
-    use_serialiser = function(fun){
-      options(AMBIORIX_SERIALISER = fun)
+    use_serialiser = function(handler){
+      options(AMBIORIX_SERIALISER = handler)
       invisible(self)
     },
 #' @details Stop

@@ -22,9 +22,9 @@ Instantiate an app.
 app$new(port = 5000L)
 ```
 
-### Get & Post
+### Get, post, put, delete, and patch 
 
-Add `GET` and `POST` routes.
+Add routes.
 
 - `path`: Path to check, when found runs `fun`.
 - `fun`: Callback function that _must_ accept two arguments `req`, and `res`. The former is the request, the latter the response.
@@ -56,7 +56,7 @@ Serves static files.
 
 ```r
 # <script src="www/script.js"></script>
-app$serve_static("path/to/static files", "www")
+app$static("path/to/static files", "www")
 ```
 
 ### Websocket
