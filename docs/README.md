@@ -1,6 +1,6 @@
-<img src="_assets/ambiorix.png" height = "350px" align="right"/>
-
 # ambiorix
+
+<img src="_assets/ambiorix.png" height = "350px"/>
 
 <!-- badges: start -->
 [![Travis build status](https://img.shields.io/travis/com/JohnCoene/ambiorix?style=flat-square)](https://travis-ci.com/JohnCoene/ambiorix)
