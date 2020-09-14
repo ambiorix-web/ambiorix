@@ -19,6 +19,9 @@ WebsocketHandler <- R6::R6Class(
       }
     },
     is_handler = function(message){
+      if(is.null(message$isAmbiorix))
+        return(FALSE)
+
       private$.name == message$name
     },
     print = function(){
@@ -45,7 +48,8 @@ Websocket <- R6::R6Class(
       to_json <- get_serialise()
       message <- list(
         name = name,
-        message = message
+        message = message,
+        isAmbiorix = TRUE
       )
       private$.ws$send(to_json(message))
     },

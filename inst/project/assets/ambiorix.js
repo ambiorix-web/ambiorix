@@ -19,6 +19,9 @@ class Ambiorix {
     ambiorixSocket.onmessage = function(msg){
       let msgParsed = JSON.parse(msg.data);
 
+      if(!msgParsed.isAmbiorix)
+        return ;
+
       if(that._handlers.has(msgParsed.name)){
         that._handlers.get(msgParsed.name)(msgParsed.message);
       }
