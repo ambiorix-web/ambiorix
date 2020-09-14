@@ -9,7 +9,7 @@ class Ambiorix {
   static send(name, message) {
 
     // build message
-    let msg = {name: name, message: message};
+    let msg = {name: name, message: message, isAmbiorix: true};
   
     ambiorixSocket.send(JSON.stringify(msg));
   
