@@ -11,15 +11,15 @@ library(ambiorix)
 
 app <- Ambiorix$new()
 
-app$get("/hello", function(req, res){
-  res$send(htmltools::h3("Hi", req$query$firstname, req$query$lastname))
+app$get("/books/:category", function(req, res){
+  res$send(htmltools::h3("Books of", req$params$category))
 })
 
 app$start()
 ```
 
 ```bash
-http://localhost:3000/hello?firstname=John&lastname=Coene
+http://localhost:3000/books/fiction
 ```
 
 ## Query
@@ -31,13 +31,14 @@ library(ambiorix)
 
 app <- Ambiorix$new()
 
-app$get("/books/:category", function(req, res){
-  res$send(htmltools::h3("Books of", req$params$category))
+app$get("/hello", function(req, res){
+  res$send(htmltools::h3("Hi", req$query$firstname, req$query$lastname))
 })
 
 app$start()
 ```
 
 ```bash
-http://localhost:3000/books/fiction
+http://localhost:3000/hello?firstname=John&lastname=Coene
 ```
+
