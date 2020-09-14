@@ -187,7 +187,7 @@ Ambiorix <- R6::R6Class(
 #' @details Define Serialiser
 #' @param handler Function to use to serialise. 
 #' This function should accept a single argument: the object to serialise.
-    use_serialiser = function(handler){
+    serialiser = function(handler){
       options(AMBIORIX_SERIALISER = handler)
       invisible(self)
     },

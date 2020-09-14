@@ -28,7 +28,7 @@ Web server.
 \item \href{#method-static}{\code{Ambiorix$static()}}
 \item \href{#method-start}{\code{Ambiorix$start()}}
 \item \href{#method-receive}{\code{Ambiorix$receive()}}
-\item \href{#method-use_serialiser}{\code{Ambiorix$use_serialiser()}}
+\item \href{#method-serialiser}{\code{Ambiorix$serialiser()}}
 \item \href{#method-stop}{\code{Ambiorix$stop()}}
 \item \href{#method-print}{\code{Ambiorix$print()}}
 \item \href{#method-clone}{\code{Ambiorix$clone()}}
@@ -268,11 +268,11 @@ Receive Websocket Message
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-use_serialiser"></a>}}
-\if{latex}{\out{\hypertarget{method-use_serialiser}{}}}
-\subsection{Method \code{use_serialiser()}}{
+\if{html}{\out{<a id="method-serialiser"></a>}}
+\if{latex}{\out{\hypertarget{method-serialiser}{}}}
+\subsection{Method \code{serialiser()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$use_serialiser(handler)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$serialiser(handler)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
