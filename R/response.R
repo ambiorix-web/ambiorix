@@ -10,23 +10,28 @@
 #' 
 #' @export
 response <- function(body, headers = list('Content-Type' = 'text/html'), status = 200L){
-  list(status = as.integer(status), headers = headers, body = as.character(body))
+  res <- list(status = as.integer(status), headers = headers, body = as.character(body))
+  construct_response(res)
 }
 
 #' @rdname responses
 #' @export
 response_404 <- function(body = "404: Not found", headers = list('Content-Type' = 'text/html'), status = 404L){
-  list(status = as.integer(status), headers = headers, body = as.character(body))
+  res <- list(status = as.integer(status), headers = headers, body = as.character(body))
+  construct_response(res)
 }
 
-#' Remove Extensions
-#' 
-#' Remove extensions from files.
+#' Construct Response
 #' 
 #' @noRd 
 #' @keywords internal
-remove_extensions <- function(files){
-  tools::file_path_sans_ext(files)
+construct_response <- function(res){
+  structure(res, class = c(class(res), "ambiorixResponse"))
+}
+
+#' @export
+print.ambiorixResponse <- function(x, ...){
+  cat("An ambiorix response")
 }
 
 #' Response
@@ -44,7 +49,7 @@ Response <- R6::R6Class(
         return(self)
     },
     send = function(body, headers = list('Content-Type' = 'text/html'), status = 200L){
-      list(status = status, headers = headers, body = as.character(body))
+      response(status = status, headers = headers, body = as.character(body))
     },
     send_file = function(file, status = 200L){
       assert_that(not_missing(file))

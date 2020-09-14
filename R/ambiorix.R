@@ -234,7 +234,7 @@ Ambiorix <- R6::R6Class(
           req <- Request$new(req, private$.routes[[i]]$route)
 
           return(
-            private$.routes[[i]]$fun(req, private$.routes[[i]]$res)
+            private$.routes[[i]]$fun(req, private$.routes[[i]]$res) %response% response("Must return a response", status = 206L)
           )
         }
       }

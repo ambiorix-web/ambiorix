@@ -49,3 +49,19 @@ browse_ambiorix <- function(open, url){
 
   invisible()
 }
+
+`%response%` <- function(lhs, rhs){
+  if(is.null(lhs)) return(rhs)
+  if(!inherits(lhs, "ambiorixResponse")) return(rhs)
+  return(lhs)
+}
+
+#' Remove Extensions
+#' 
+#' Remove extensions from files.
+#' 
+#' @noRd 
+#' @keywords internal
+remove_extensions <- function(files){
+  tools::file_path_sans_ext(files)
+}

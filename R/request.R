@@ -33,6 +33,10 @@ Request <- R6::R6Class(
     SCRIPT_NAME = NULL,
     SERVER_NAME = NULL,
     SERVER_PORT = NULL,
+    CONTENT_LENGTH = NULL,
+    CONTENT_TYPE = NULL,
+    HTTP_REFERER = NULL,
+    body = NULL,
     query = list(),
     params = list(),
     initialize = function(req, route = NULL){
@@ -64,6 +68,10 @@ Request <- R6::R6Class(
       self$SCRIPT_NAME <- req$SCRIPT_NAME
       self$SERVER_NAME <- req$SERVER_NAME
       self$SERVER_PORT <- req$SERVER_NAME
+      self$CONTENT_LENGTH <- req$CONTENT_LENGTH
+      self$CONTENT_TYPE <- req$CONTENT_TYPE
+      self$HTTP_REFERER <- req$HTTP_REFERER
+      self$body <- req
 
       private$.parse_query_string(req$QUERY_STRING)
 
@@ -72,6 +80,7 @@ Request <- R6::R6Class(
 
       if(route$dynamic)
         private$.parse_path(route$components, req$PATH_INFO)
+
     },
     print = function(){
       cli::cli_li("HEADERS: {.val {self$HEADERS}}")
@@ -98,6 +107,11 @@ Request <- R6::R6Class(
       cli::cli_li("SCRIPT_NAME: {.val {self$SCRIPT_NAME}}")
       cli::cli_li("SERVER_NAME: {.val {self$SERVER_NAME}}")
       cli::cli_li("SERVER_PORT: {.val {self$SERVER_PORT}}")
+      cli::cli_li("CONTENT_LENGTH: {.val {self$CONTENT_LENGTH}}")
+      cli::cli_li("CONTENT_TYPE: {.val {self$CONTENT_TYPE}}")
+      cli::cli_li("HTTP_REFERER: {.val {self$HTTP_REFERER}}")
+      cli::cli_li("rook.version: {.val {self$rook.version}}")
+      cli::cli_li("rook.url_scheme: {.val {self$rook.url_scheme}}")
 
       if(length(self$params)){
         cli::cli_li("params: {.val params}")
