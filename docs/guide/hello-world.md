@@ -15,7 +15,7 @@ library(ambiorix)
 app <- Ambiorix$new()
 
 app$get("/", function(req, res){
-  res$send("Hello!")
+  res$send("Using {ambiorix}!")
 })
 
 app$start()

@@ -22,6 +22,8 @@ app$start()
 http://localhost:3000/books/fiction
 ```
 
+![](../_assets/parameters.png)
+
 ## Query
 
 Parsed query string also can be accessed from the `req` object.
@@ -41,4 +43,6 @@ app$start()
 ```bash
 http://localhost:3000/hello?firstname=John&lastname=Coene
 ```
+
+![](../_assets/query.png)
 

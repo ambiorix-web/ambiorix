@@ -98,3 +98,5 @@ app$receive("hello", function(msg, ws){
 
 app$start()
 ```
+
+![](../_assets/websocket-ex.gif)

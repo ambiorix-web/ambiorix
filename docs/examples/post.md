@@ -34,3 +34,5 @@ app$post("/submit", function(req, res){
 
 app$start()
 ```
+
+![](../_assets/post-ex.gif)

@@ -11,6 +11,23 @@ Create the project with `create_ambiorix`.
 ambiorix::create_ambiorix("myapp")
 ```
 
+This creates a directory with the following file structure.
+
+```
+.
+├── DESCRIPTION
+├── app.R
+├── assets
+│   ├── ambiorix.js
+│   └── style.css
+├── templates
+│   ├── 404.html
+│   ├── about.R
+│   └── home.html
+└── views
+    └── base.R
+```
+
 ## Templates
 
 A project allows using templates and rendering them with `res$render`. These templates can make use of `[% tags %]` which are replaced with item found in data.
@@ -41,10 +58,10 @@ tags$html(
 The `[% title %]` can then be replaced with.
 
 ```r
-res$render("home", data = list(title = "Hello from R"))
+res$render("home", data = list(title = I("Hello from R")))
 ```
 
-Lists and dataframes are `dput` in the template so you can use them to dynamically create content.
+Lists and dataframes are `dput` in the template so you can use them to dynamically create content. Note that since we use `dput` to place the data in the template above we use `I` to specify that the title should be used as-is, i.e.: without quotes. Otherwise the title would appear as `"Hello form R"` rather than `Hello from R`. 
 
 ### HTML
 
@@ -69,7 +86,7 @@ One can also use HTML templates (`.html` files) in which case the data is serial
   <title>Ambiorix</title>
 </head>
 <body>
-  <h1 class="brand">[% title %]</h1>
+  <h1 class="brand">[% title %]</h1> <!-- tag -->
   <button onclick="Ambiorix.send('hello', 'Hi from the client')">Send a message</button>
 </body>
 </html>
