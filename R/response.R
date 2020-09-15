@@ -115,35 +115,57 @@ Response <- R6::R6Class(
 
       # render
       ext <- tools::file_ext(file)
+      if(ext == "html"){
+        to_json <- get_serialise()
+        data <- lapply(data, function(x){
+          to_json(x)
+        })
+      } else {
+        data <- lapply(data, function(x){
+          if(!inherits(x, "AsIs"))
+            return(x)
 
-      if(length(data) > 0){
-        for(i in 1:length(data)){
-          pattern <- sprintf("\\[%% ?%s ?%%\\]", names(data)[i]) # [% mustache %]
+          # remove AsIs
+          # causes warnings on NULL and NA
+          # will have side effects
+          class(x) <- class(x)[class(x) != "AsIs"]
 
-          # only serialise if HTML
-          if(ext == "html"){
-            to_json <- get_serialise()
-            value <- to_json(data[[i]])
-          } else {
-            value <- data[[i]]
-
-            if (inherits(value, "character")) {
-              value <- sprintf("'%s'", as.character(value))
-            } else if (is.null(value)) {
-              value <- "NULL"
-            } else if (is.na(value)) {
-              value <- "NA"
-            } else if (inherits(value, "AsIs")) {
-              value <- as.character(value)
-            } else {
-              value <- as.character(dput(value))
-            } 
-
-          }
-          
-          file_content <- gsub(pattern, value, file_content)
-        }
+          paste0(capture.output(dput(x)), collapse = "")
+        })
       }
+
+      file_content <- lapply(file_content, function(x, data){
+        glue::glue_data(data, x, .open = "[%", .close = "%]")
+      }, data = data)
+
+      # if(length(data) > 0){
+      #   for(i in 1:length(data)){
+      #     pattern <- sprintf("\\[%% ?%s ?%%\\]", names(data)[i]) # [% mustache %]
+
+      #     # only serialise if HTML
+      #     if(ext == "html"){
+      #       to_json <- get_serialise()
+      #       value <- to_json(data[[i]])
+      #     } else {
+      #       value <- data[[i]]
+
+      #       if (inherits(value, "character")) {
+      #         value <- sprintf("'%s'", as.character(value))
+      #       } else if (is.null(value)) {
+      #         value <- "NULL"
+      #       } else if (is.na(value)) {
+      #         value <- "NA"
+      #       } else if (inherits(value, "AsIs")) {
+      #         value <- as.character(value)
+      #       } else {
+      #         value <- as.character(dput(value))
+      #       } 
+
+      #     }
+          
+      #     file_content <- gsub(pattern, value, file_content)
+      #   }
+      # }
 
       # collapse html
       if(ext == "html")

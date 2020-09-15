@@ -1,11 +1,11 @@
 # render homepage
 render_home <- function(req, res){
-  res$render("home", list(title = "Hello from R"))
+  res$render("home", list(title = "Hello from R", subtitle = "This is rendered with {glue}"))
 }
 
 # render about
 render_about <- function(req, res){
-  res$render("about", list(title = I("About"), name = req$query$name))
+  res$render("about", list(title = "About", name = I(req$query$name)))
 }
 
 # 404: not found

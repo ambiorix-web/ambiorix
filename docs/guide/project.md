@@ -49,19 +49,70 @@ tags$html(
     tags$title("Ambiorix")
   ),
   tags$body(
-    tags$h1("[% title %]") # tag
+    tags$h1("[% title %]")
   )
 )
-
 ```
 
 The `[% title %]` can then be replaced with.
 
 ```r
-res$render("home", data = list(title = I("Hello from R")))
+res$render("home", data = list(title = "Hello from R"))
 ```
 
-Lists and dataframes are `dput` in the template so you can use them to dynamically create content. Note that since we use `dput` to place the data in the template above we use `I` to specify that the title should be used as-is, i.e.: without quotes. Otherwise the title would appear as `"Hello form R"` rather than `Hello from R`. 
+R objects can also be passed by placing it in `I()` which indicates the object should be used as-is: internally ambiorix will use `dput`.
+
+```r
+# templates/home.R
+library(htmltools)
+
+dataset <- [% df %]
+
+tags$html(
+  lang = "en",
+  tags$head(
+    tags$meta(charset= "UTF-8"),
+    tags$meta(name = "viewport", content = "width=device-width, initial-scale=1.0"),
+    tags$link(rel = "stylesheet", href = "static/style.css"),
+    tags$title("Ambiorix")
+  ),
+  tags$body(
+    tags$pre(
+      tags$code(
+        jsonlite::toJSON(dataset)
+      )
+    )
+  )
+)
+```
+
+```r
+res$render("home", data = list(df = I(cars)))
+```
+
+Note that the `[% tags %]` are passed to `glue::glue_data` internally and therefore can include R code.
+
+```r
+# templates/home.R
+library(htmltools)
+
+tags$html(
+  lang = "en",
+  tags$head(
+    tags$meta(charset= "UTF-8"),
+    tags$meta(name = "viewport", content = "width=device-width, initial-scale=1.0"),
+    tags$link(rel = "stylesheet", href = "static/style.css"),
+    tags$title("Ambiorix")
+  ),
+  tags$body(
+    tags$h1("[% if(x) 'Hello' else 'Bye!' %]")
+  )
+)
+```
+
+```r
+res$render("home", data = list(x = TRUE))
+```
 
 ### HTML
 
