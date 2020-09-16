@@ -74,7 +74,7 @@ The `[% title %]` can then be replaced with.
 res$render("home", data = list(title = "Hello from R"))
 ```
 
-R objects can also be passed by placing it in `I()` which indicates the object should be used as-is: internally ambiorix will use `dput`.
+R objects can also be passed by placing it in `robj()` which indicates the object should be used as-is: internally ambiorix will use `dput`.
 
 ```r
 # templates/home.R
@@ -101,7 +101,7 @@ tags$html(
 ```
 
 ```r
-res$render("home", data = list(df = I(cars)))
+res$render("home", data = list(df = robj(cars)))
 ```
 
 Note that since the `[% tags %]` are passed to `glue::glue_data` internally they can therefore include R code.

@@ -66,6 +66,16 @@ remove_extensions <- function(files){
   tools::file_path_sans_ext(files)
 }
 
+#' Replaces Partials Tags
+#' 
+#' Replaces partials tags `[! partial.html !]` so it can be intrepreted by [glue::glue_data()]
+#' 
+#' @param file_content Content of the template file containing tags, output of [readLines()]:
+#' a character vector.
+#' @param ext Extension of template file.
+#' 
+#' @noRd 
+#' @keywords internal
 replace_partials <- function(file_content, ext = c("html", "R")){
 
   assert_that(not_missing(file_content))

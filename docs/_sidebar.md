@@ -16,6 +16,7 @@
   - [Copy Websocket Client](reference/copy_websocket_client.md)
   - [Create Ambiorix](reference/create_ambiorix.md)
   - [Import](reference/import.md)
+  - [R Object](reference/robj.md)
   - [Response](reference/responses.md)
   - [Stop](reference/stop_all.md)
 

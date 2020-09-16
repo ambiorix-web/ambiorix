@@ -5,7 +5,7 @@ render_home <- function(req, res){
 
 # render about
 render_about <- function(req, res){
-  res$render("about", list(title = "About", name = I(req$query$name)))
+  res$render("about", list(title = "About", name = robj(req$query$name)))
 }
 
 # 404: not found

@@ -133,20 +133,12 @@ Response <- R6::R6Class(
         data <- lapply(data, function(x){
 
         # If not AsIs can use object
-        if(!inherits(x, "AsIs"))
+        if(!inherits(x, "robj"))
           return(x)
 
-        # remove AsIs
-        # causes warnings on NULL and NA
-        # will have side effects
-        class(x) <- class(x)[class(x) != "AsIs"]
-
-        
         paste0(
           capture.output(
-            suppressWarnings(
-              dput(x)
-            )
+            dput(x)
           ), 
           collapse = ""
         )
@@ -177,3 +169,34 @@ Response <- R6::R6Class(
     }
   )
 )
+
+#' Data Object
+#' 
+#' Treats a data element rendered in a response (`res$render`) as 
+#' a data object and ultimately uses [dput()].
+#' 
+#' For instance in a template, `x <- [% var %]` will not work with
+#' `res$render(data=list(var = "hello"))` because this will be replace
+#' like `x <- hello` (missing quote): breaking the template. Using `robj` one would 
+#' obtain `x <- "hello"`.
+#' 
+#' @param obj R object to treat.
+#' 
+#' @export
+robj <- function(obj){
+  assert_that(not_missing(obj))
+
+  # Supress warnings otherwise
+  # NULL, NA, and the likes
+  # raise messages
+  suppressWarnings(
+    structure(obj, class = c("robj", class(obj)))
+  )
+}
+
+#' @export 
+print.robj <- function(x, ...){
+  cli::cli_alert_info("R object")
+  class(x) <- class(x)[class(x) != "robj"]
+  print(x)
+}
