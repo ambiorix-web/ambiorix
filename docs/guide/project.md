@@ -5,11 +5,23 @@ The easiest way to get setup by creating an ambiorix project. This will setup a 
 
 ## Project 
 
-Create the project with `create_ambiorix`. 
+Create the project with `create_ambiorix` or with the [ambiorix-cli](https://github.com/JohnCoene/ambiorix-cli).
+
+<!-- tabs:start -->
+
+#### ** R **
 
 ```r
 ambiorix::create_ambiorix("myapp")
 ```
+
+#### ** CLI **
+
+```bash
+ambiorix-cli create myapp
+```
+
+<!-- tabs:end -->
 
 This creates a directory with the following file structure.
 
@@ -23,7 +35,9 @@ This creates a directory with the following file structure.
 ├── templates
 │   ├── 404.html
 │   ├── about.R
-│   └── home.html
+│   ├── home.html
+│   └── partials
+│       └── header.html
 └── views
     └── base.R
 ```

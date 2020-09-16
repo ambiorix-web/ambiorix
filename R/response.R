@@ -118,11 +118,11 @@ Response <- R6::R6Class(
 
       # handle partials
       # replace brackets so glue::glue_data evals
-      file_content <- gsub("\\[\\! ?", "[% paste0(readLines(here::here('templates', 'partials', '", file_content)
-      file_content <- gsub(" ?\\!\\]", "')), collapse='') %]", file_content)
+      file_content <- replace_partials(file_content, ext = ext)
 
-      # serialise to JSON
       if(ext == "html"){
+
+        # needs serialisation
         to_json <- get_serialise()
 
         # serialise to each object individually
@@ -132,23 +132,24 @@ Response <- R6::R6Class(
       } else {
         data <- lapply(data, function(x){
 
-          # If not AsIs can use object
-          if(!inherits(x, "AsIs"))
-            return(x)
+        # If not AsIs can use object
+        if(!inherits(x, "AsIs"))
+          return(x)
 
-          # remove AsIs
-          # causes warnings on NULL and NA
-          # will have side effects
-          class(x) <- class(x)[class(x) != "AsIs"]
+        # remove AsIs
+        # causes warnings on NULL and NA
+        # will have side effects
+        class(x) <- class(x)[class(x) != "AsIs"]
 
-          suppressWarnings(
-            paste0(
-              capture.output(
-                dput(x)
-              ), 
-              collapse = ""
+        
+        paste0(
+          capture.output(
+            suppressWarnings(
+              dput(x)
             )
-          )
+          ), 
+          collapse = ""
+        )
         })
       }
 

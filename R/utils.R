@@ -65,3 +65,22 @@ browse_ambiorix <- function(open, url){
 remove_extensions <- function(files){
   tools::file_path_sans_ext(files)
 }
+
+replace_partials <- function(file_content, ext = c("html", "R")){
+
+  assert_that(not_missing(file_content))
+
+  ext <- match.arg(ext)
+
+  if(ext == "html"){
+    # here only need read and collapse
+    file_content <- gsub("\\[\\! ?", "[% paste0(readLines(here::here('templates', 'partials', '", file_content)
+    file_content <- gsub(" ?\\!\\]", "')), collapse='') %]", file_content)
+  } else {
+    # here needs read collapse and wrap in `HTML`
+    file_content <- gsub("\\[\\! ?", "[% HTML(paste0(readLines(here::here('templates', 'partials', '", file_content)
+    file_content <- gsub(" ?\\!\\]", "')), collapse='')) %]", file_content)
+  }
+
+  return(file_content)
+}
