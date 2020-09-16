@@ -39,7 +39,7 @@ Web server.
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$new(host = "0.0.0.0", port = 3000L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$new(host = "0.0.0.0", port = httpuv::randomPort())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -47,7 +47,7 @@ Web server.
 \describe{
 \item{\code{host}}{A string defining the host.}
 
-\item{\code{port}}{Integer defining the port.}
+\item{\code{port}}{Integer defining the port, defaults to \code{\link[httpuv:randomPort]{httpuv::randomPort()}}.}
 }
 \if{html}{\out{</div>}}
 }
