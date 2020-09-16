@@ -163,7 +163,7 @@ This is rendered with the same method.
 res$render("home", data = list(title = "Hello from R"))
 ```
 
-### Partials
+### Partials
 
 You can also use partials (inspired by [gohugo](https://gohugo.io)), blocks of reusable HTML content. These are used with a different tag: `[! partial_name.html !]`.
 
