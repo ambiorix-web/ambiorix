@@ -90,7 +90,7 @@ tags$html(
 res$render("home", data = list(df = I(cars)))
 ```
 
-Note that the `[% tags %]` are passed to `glue::glue_data` internally and therefore can include R code.
+Note that since the `[% tags %]` are passed to `glue::glue_data` internally they can therefore include R code.
 
 ```r
 # templates/home.R
@@ -116,7 +116,7 @@ res$render("home", data = list(x = TRUE))
 
 ### HTML
 
-One can also use HTML templates (`.html` files) in which case the data is serialised to JSON.
+One can also use HTML templates (`.html` files) in which case the data is serialised to JSON. This also uses `glue::glue_data` internally.
 
 ```html
 <!-- templates/home.html -->
@@ -147,4 +147,53 @@ This is rendered with the same method.
 
 ```r
 res$render("home", data = list(title = "Hello from R"))
+```
+
+### Partials
+
+You can also use partials (inspired by [gohugo](https://gohugo.io)), blocks of reusable HTML content. These are used with a different tag: `[! partial_name.html !]`.
+
+Therefore the template below (`templates/home.html`).
+
+```html
+<!-- templates/home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  [! header.html !]
+  <title>Ambiorix</title>
+</head>
+<body>
+  <h1 class="brand">Hello</h1>
+</body>
+</html>
+```
+
+Imports the HTML at: `templates/partials/header.html `
+
+```html
+<!-- templates/partials/header.html -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="static/style.css">
+<script src="static/ambiorix.js"></script>
+```
+
+To produce the following output.
+
+```html
+<!-- templates/home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="static/style.css">
+  <script src="static/ambiorix.js"></script>
+  <title>Ambiorix</title>
+</head>
+<body>
+  <h1 class="brand">Hello</h1>
+</body>
+</html>
 ```

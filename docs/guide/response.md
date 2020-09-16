@@ -25,7 +25,7 @@ app$get("/", function(req, res){
 
 ## Render
 
-An `.html` or `.R` file can also be rendered. The difference with `send_file` is that it will use `data` to replace `[% tags %]`. When an HTML file is used then the data is serialised to JSON, when using an `.R` file the data is `dput` in stead of the tag, unless the data object is wrapped with `I` in which case it is used as-is.
+An `.html` or `.R` file can also be rendered. The difference with `send_file` is that it will use `data` to replace `[% tags %]`. You can read more it in the [templates](/guide/project?id=templates) documentation.
 
 ```r
 # renders templates/home.html

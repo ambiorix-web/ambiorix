@@ -115,13 +115,24 @@ Response <- R6::R6Class(
 
       # render
       ext <- tools::file_ext(file)
+
+      # handle partials
+      # replace brackets so glue::glue_data evals
+      file_content <- gsub("\\[\\! ?", "[% paste0(readLines(here::here('templates', 'partials', '", file_content)
+      file_content <- gsub(" ?\\!\\]", "')), collapse='') %]", file_content)
+
+      # serialise to JSON
       if(ext == "html"){
         to_json <- get_serialise()
+
+        # serialise to each object individually
         data <- lapply(data, function(x){
           to_json(x)
         })
       } else {
         data <- lapply(data, function(x){
+
+          # If not AsIs can use object
           if(!inherits(x, "AsIs"))
             return(x)
 
@@ -130,42 +141,20 @@ Response <- R6::R6Class(
           # will have side effects
           class(x) <- class(x)[class(x) != "AsIs"]
 
-          paste0(capture.output(dput(x)), collapse = "")
+          suppressWarnings(
+            paste0(
+              capture.output(
+                dput(x)
+              ), 
+              collapse = ""
+            )
+          )
         })
       }
 
       file_content <- lapply(file_content, function(x, data){
         glue::glue_data(data, x, .open = "[%", .close = "%]")
       }, data = data)
-
-      # if(length(data) > 0){
-      #   for(i in 1:length(data)){
-      #     pattern <- sprintf("\\[%% ?%s ?%%\\]", names(data)[i]) # [% mustache %]
-
-      #     # only serialise if HTML
-      #     if(ext == "html"){
-      #       to_json <- get_serialise()
-      #       value <- to_json(data[[i]])
-      #     } else {
-      #       value <- data[[i]]
-
-      #       if (inherits(value, "character")) {
-      #         value <- sprintf("'%s'", as.character(value))
-      #       } else if (is.null(value)) {
-      #         value <- "NULL"
-      #       } else if (is.na(value)) {
-      #         value <- "NA"
-      #       } else if (inherits(value, "AsIs")) {
-      #         value <- as.character(value)
-      #       } else {
-      #         value <- as.character(dput(value))
-      #       } 
-
-      #     }
-          
-      #     file_content <- gsub(pattern, value, file_content)
-      #   }
-      # }
 
       # collapse html
       if(ext == "html")
