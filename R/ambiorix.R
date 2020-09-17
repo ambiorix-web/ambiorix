@@ -272,3 +272,15 @@ Ambiorix <- R6::R6Class(
     }
   )
 )
+
+#' New Application
+#' 
+#' Create a new Ambiorix Application.
+#' 
+#' @param host A string defining the host.
+#' @param port Integer defining the port, defaults to [httpuv::randomPort()].
+#' 
+#' @export
+new_app <- function(host = "0.0.0.0", port = httpuv::randomPort()){
+  Ambiorix$new(host = host, port = port)
+}
