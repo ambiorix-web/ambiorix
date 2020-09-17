@@ -152,8 +152,9 @@ Ambiorix <- R6::R6Class(
     },
 #' @details Start 
 #' Start the webserver.
+#' @param auto_stop Whether to automatically stop the server when the functon exits.
 #' @param open Whether to open the app the browser.
-    start = function(open = interactive()){
+    start = function(auto_stop = TRUE, open = interactive()){
       
       if(self$is_running){
         cli::cli_alert_warning("Server is already running")
@@ -175,7 +176,19 @@ Ambiorix <- R6::R6Class(
       # open
       browse_ambiorix(open, url)
 
-      invisible(self$.server)
+      # stop the server
+      if(auto_stop){
+        on.exit({
+          self$stop()
+        })
+      }
+
+      # keep R "alive"
+      while (TRUE) {
+        httpuv::service()
+      }
+
+      invisible(self)
     },
 #' @details Receive Websocket Message
 #' @param name Name of message.
