@@ -5,6 +5,7 @@
 <img src="man/figures/ambiorix.png" height = "200px"/>
 
 <!-- badges: start -->
+![](https://img.shields.io/badge/experimental--orange)
 [![Travis build status](https://img.shields.io/travis/com/JohnCoene/ambiorix?style=flat-square)](https://travis-ci.com/JohnCoene/ambiorix)
 <!-- badges: end -->
 
