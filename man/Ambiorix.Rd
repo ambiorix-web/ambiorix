@@ -19,6 +19,7 @@ Web server.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Ambiorix$new()}}
+\item \href{#method-listen}{\code{Ambiorix$listen()}}
 \item \href{#method-get}{\code{Ambiorix$get()}}
 \item \href{#method-put}{\code{Ambiorix$put()}}
 \item \href{#method-patch}{\code{Ambiorix$patch()}}
@@ -53,6 +54,26 @@ Web server.
 }
 \subsection{Details}{
 Define the webserver.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-listen"></a>}}
+\if{latex}{\out{\hypertarget{method-listen}{}}}
+\subsection{Method \code{listen()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$listen(port)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{port}}{Port number.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Specifies the port to listen on.
 }
 
 }
@@ -229,12 +250,14 @@ Static directories
 \if{latex}{\out{\hypertarget{method-start}{}}}
 \subsection{Method \code{start()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$start(open = interactive())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$start(auto_stop = TRUE, open = interactive())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{auto_stop}}{Whether to automatically stop the server when the functon exits.}
+
 \item{\code{open}}{Whether to open the app the browser.}
 }
 \if{html}{\out{</div>}}

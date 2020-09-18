@@ -25,6 +25,13 @@ Ambiorix <- R6::R6Class(
         response_404()
       }
     },
+#' @details Specifies the port to listen on.
+#' @param port Port number.
+    listen = function(port){
+      assert_that(not_missing(port))
+      private$.port <- as.integer(port)
+      invisible(self)
+    },
 #' @details GET Method
 #' 
 #' Add routes to listen to.
