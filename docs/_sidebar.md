@@ -23,5 +23,6 @@
 
 - Examples
   - [Post](examples/post.md)
+  - [API](examples/api.md)
 
 - [Changelog](changelog.md)
