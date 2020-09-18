@@ -16,7 +16,7 @@ parse_json(req)
 - `req`: The request object.
 - `...`: Additional arguments for the internal parsers.
 
-## Sections
+## Functions
 
 - `parse_multipart`: Parse `multipart/form-data` using `mime::parse_multipart()`.
 - `parse_json`: Parse `multipart/form-data` using `jsonlite::fromJSON()`.
