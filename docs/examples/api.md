@@ -24,10 +24,10 @@ app$get("/dataset", function(req, res){
 app$run()
 ```
 
-Note that you can change the serialiser with the `serialiser` method: pass it a function that accepts the data, it should return the JSON.
+Note that you can change the serialiser with the `serialiser` method: pass it a function that accepts the data and the three-dot construct (`...`), it should return the JSON.
 
 ```r
-app$serialiser(function(data){
-  jsonify::to_json(data)
+app$serialiser(function(data, ...){
+  jsonify::to_json(data, ...)
 })
 ```

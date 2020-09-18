@@ -88,22 +88,60 @@ Response <- R6::R6Class(
 
       response(file_content, status = private$.get_status(status))
     },
-    json = function(body, headers = list("Content-Type" = "application/json"), status = NULL){
-      to_json <- get_serialise()
+    json = function(body, headers = list("Content-Type" = "application/json"), status = NULL, ...){
+      to_json <- get_serialise(...)
       response(to_json(body), headers = headers, status = private$.get_status(status))
     },
-    csv = function(data, name = "data", status = NULL){
+    csv = function(data, name = "data", status = NULL, ...){
+      assert_that(not_missing(data))
       check_installed("readr")
 
-      header <- list("Content-Type" = "text/csv")
+      name <- sprintf("attachment;charset=UTF-8;filename=%s.csv", name)
 
-      if(!is.null(name))
-        name <- sprintf("attachment;charset=UTF-8;filename=%s.csv", name)
-      
-      header <- append(header, list(`Content-Disposition` = name))
+      header <- list(
+        "Content-Type" = "text/csv",
+        "Content-Disposition" = name
+      )
 
-      data <- readr::format_csv(data)
+      data <- readr::format_csv(data, ...)
       response(data, header = header, status = private$.get_status(status))
+    },
+    tsv = function(data, name = "data", status = NULL, ...){
+      assert_that(not_missing(data))
+      check_installed("readr")
+
+      name <- sprintf("attachment;charset=UTF-8;filename=%s.tsv", name)
+
+      header <- list(
+        "Content-Type" = "tab-separated-values",
+        "Content-Disposition" = name
+      )
+
+      data <- readr::format_tsv(data, ...)
+      response(data, header = header, status = private$.get_status(status))
+    },
+    rds = function(data, name = "data", status = NULL, ...){
+      assert_that(not_missing(data))
+
+      name <- sprintf("attachment;charset=UTF-8;filename=%s.rds", name)
+      header <- list(
+        "Content-Type" = "application/rds",
+        "Content-Disposition" = name
+      )
+
+      data <- serialize(data, NULL, ...)
+      response(data, header = header, status = private$.get_status(status))
+    },
+    htmlwidget = function(widget, status = NULL){
+      check_installed("htmlwidgets")
+      if(!inherits(widget, "htmlwidget"))
+        stop("This is not an htmlwidget", call. = FALSE)
+      
+      # save and read
+      tmp <- tempfile(fileext = ".html")
+      htmlwidgets::saveWidget(widget, tmp, selfcontained = TRUE, ...)
+
+      response(body = paste0(readLines(tmp), collapse = ""), status = private$.get_status(status))
     },
     print = function(){
       cli::cli_li("{.code send(body, headers, status)}")
@@ -112,7 +150,10 @@ Response <- R6::R6Class(
       cli::cli_li("{.code json(body, headers, status)}")
       cli::cli_li("{.code redirect(path, status)}")
       cli::cli_li("{.code status(status)}")
-      cli::cli_li("{.code csv(data, name)}")
+      cli::cli_li("{.code csv(data, name, ...)}")
+      cli::cli_li("{.code tsv(data, name, ...)}")
+      cli::cli_li("{.code rds(data, name, ...)}")
+      cli::cli_li("{.code htmlwidget(widget, ...)}")
     }
   ),
   private = list(

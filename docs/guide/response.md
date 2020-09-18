@@ -58,8 +58,45 @@ app$get("/error", function(req, res){
 
 ## Redirect
 
+Redirect to a different url.
+
 ```r
 app$get("/redirect", function(req, res){
   res$redirect("/", status = 302L)
 })
 ```
+
+## CSV
+
+Serialises to CSV.
+
+```r
+app$get("/csv", function(req, res){
+  res$csv(cars, "cars-data")
+})
+```
+
+## TSV
+
+Serialises to tab separated file.
+
+```r
+app$get("/tsv", function(req, res){
+  res$tsv(mtcars, "more-cars")
+})
+```
+
+## htmlwidget
+
+Serialises an htmlwidget
+
+```r
+library(echarts4r)
+
+app$get("/tsv", function(req, res){
+  plot <- e_charts(cars, speed) %>% 
+    e_scatter(dist)
+  res$htmlwidget(plot)
+})
+```
+
