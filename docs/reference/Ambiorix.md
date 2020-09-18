@@ -16,7 +16,7 @@ Web server class.
 Instantiate an app.
 
 - `host`: A string defining the host, defaults to `0.0.0.0`.
-- `port`: Port to use, defaults to `3000L`
+- `port`: Port to use, defaults to `httpuv::randomPort()`
 
 ```r
 app$new(port = 5000L)
@@ -101,4 +101,12 @@ Stop the server
 
 ```r
 app$stop()
+```
+
+### Listen
+
+Specify port to listen on.
+
+```r
+app$listen(3000L)
 ```
