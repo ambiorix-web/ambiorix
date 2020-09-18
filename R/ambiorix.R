@@ -29,6 +29,7 @@ Ambiorix <- R6::R6Class(
       self$error <- function(res, req){
         response_500()
       }
+      invisible(self)
     },
 #' @details Specifies the port to listen on.
 #' @param port Port number.
@@ -244,6 +245,17 @@ Ambiorix <- R6::R6Class(
     print = function(){
       cli::cli_rule("Ambiorix", right = "web server")
       cli::cli_li("routes: {.val {private$.nRoutes()}}")
+    },
+#' @details Use a router
+#' @param router The router as returned by [Router].
+    use = function(router){
+      if(!inherits(router, "Router"))
+        stop("Must be a router, see Router")
+
+      private$.routes <- append(private$.routes, router$routes())
+      private$.receivers <- append(private$.routes, router$receivers())
+
+      invisible(self)
     }
   ),
   private = list(

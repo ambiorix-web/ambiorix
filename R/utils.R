@@ -99,3 +99,10 @@ replace_partials <- function(file_content, ext = c("html", "R")){
 
   return(file_content)
 }
+
+check_installed <- function(pkg){
+  path <- system.file(package = pkg)
+
+  if(!nchar(path))
+    stop(sprintf("This function requires the package {%s}", pkg))
+}

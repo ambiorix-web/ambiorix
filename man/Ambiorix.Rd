@@ -34,6 +34,7 @@ Web server.
 \item \href{#method-serialiser}{\code{Ambiorix$serialiser()}}
 \item \href{#method-stop}{\code{Ambiorix$stop()}}
 \item \href{#method-print}{\code{Ambiorix$print()}}
+\item \href{#method-use}{\code{Ambiorix$use()}}
 \item \href{#method-clone}{\code{Ambiorix$clone()}}
 }
 }
@@ -347,6 +348,26 @@ Stop the webserver.
 
 \subsection{Details}{
 Print
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-use"></a>}}
+\if{latex}{\out{\hypertarget{method-use}{}}}
+\subsection{Method \code{use()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$use(router)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{router}}{The router as returned by \link{Router}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Use a router
 }
 
 }

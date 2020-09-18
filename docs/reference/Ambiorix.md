@@ -91,6 +91,7 @@ app$serialiser(function(x){
 Start the server
 
 - `open`: Whether to open the homepage in the browser (or RStudio viewer).
+- `auto_stop`: Whether to automatically kill the server.
 
 ```r
 app$start()
