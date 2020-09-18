@@ -93,7 +93,7 @@ Serialises an htmlwidget
 ```r
 library(echarts4r)
 
-app$get("/tsv", function(req, res){
+app$get("/htmlwidget", function(req, res){
   plot <- e_charts(cars, speed) %>% 
     e_scatter(dist)
   res$htmlwidget(plot)
