@@ -56,6 +56,11 @@ browse_ambiorix <- function(open, url){
   return(lhs)
 }
 
+`%error%` <- function(lhs, rhs){
+  if(is.null(lhs)) return(rhs)
+  return(lhs)
+}
+
 #' Remove Extensions
 #' 
 #' Remove extensions from files.

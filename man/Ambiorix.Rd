@@ -9,9 +9,11 @@ Web server.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{not_found}}{404 Response, defaults to \code{\link[=response_404]{response_404()}}.}
+\item{\code{not_found}}{404 Response, must a handler function that accepts the request and the response, by default uses \code{\link[=response_404]{response_404()}}.}
 
 \item{\code{is_running}}{Boolean indicating whether the server is running.}
+
+\item{\code{error}}{500 response when the route errors, must a handler function that accepts the request and the response, by default uses \code{\link[=response_500]{response_500()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -82,7 +84,7 @@ Specifies the port to listen on.
 \if{latex}{\out{\hypertarget{method-get}{}}}
 \subsection{Method \code{get()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$get(path, handler)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$get(path, handler, error = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -92,6 +94,8 @@ Specifies the port to listen on.
 
 \item{\code{handler}}{Function that accepts the request and returns an object
 describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+
+\item{\code{error}}{Handler function to run on error.}
 }
 \if{html}{\out{</div>}}
 }
@@ -107,7 +111,7 @@ Add routes to listen to.
 \if{latex}{\out{\hypertarget{method-put}{}}}
 \subsection{Method \code{put()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$put(path, handler)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$put(path, handler, error = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -117,6 +121,8 @@ Add routes to listen to.
 
 \item{\code{handler}}{Function that accepts the request and returns an object
 describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+
+\item{\code{error}}{Handler function to run on error.}
 }
 \if{html}{\out{</div>}}
 }
@@ -132,7 +138,7 @@ Add routes to listen to.
 \if{latex}{\out{\hypertarget{method-patch}{}}}
 \subsection{Method \code{patch()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$patch(path, handler)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$patch(path, handler, error = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -142,6 +148,8 @@ Add routes to listen to.
 
 \item{\code{handler}}{Function that accepts the request and returns an object
 describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+
+\item{\code{error}}{Handler function to run on error.}
 }
 \if{html}{\out{</div>}}
 }
@@ -157,7 +165,7 @@ Add routes to listen to.
 \if{latex}{\out{\hypertarget{method-delete}{}}}
 \subsection{Method \code{delete()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$delete(path, handler)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$delete(path, handler, error = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -167,6 +175,8 @@ Add routes to listen to.
 
 \item{\code{handler}}{Function that accepts the request and returns an object
 describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+
+\item{\code{error}}{Handler function to run on error.}
 }
 \if{html}{\out{</div>}}
 }
@@ -182,7 +192,7 @@ Add routes to listen to.
 \if{latex}{\out{\hypertarget{method-post}{}}}
 \subsection{Method \code{post()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$post(path, handler)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$post(path, handler, error = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -192,6 +202,8 @@ Add routes to listen to.
 
 \item{\code{handler}}{Function that accepts the request and returns an object
 describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+
+\item{\code{error}}{Handler function to run on error.}
 }
 \if{html}{\out{</div>}}
 }

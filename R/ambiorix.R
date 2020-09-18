@@ -2,8 +2,9 @@
 #' 
 #' Web server.
 #' 
-#' @field not_found 404 Response, defaults to [response_404()].
+#' @field not_found 404 Response, must a handler function that accepts the request and the response, by default uses [response_404()].
 #' @field is_running Boolean indicating whether the server is running.
+#' @field error 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom utils browseURL
@@ -14,6 +15,7 @@ Ambiorix <- R6::R6Class(
   public = list(
     not_found = NULL,
     is_running = FALSE,
+    error = NULL,
 #' @details Define the webserver.
 #' 
 #' @param host A string defining the host.
@@ -23,6 +25,9 @@ Ambiorix <- R6::R6Class(
       private$.port <- as.integer(port)
       self$not_found <- function(res, req){
         response_404()
+      }
+      self$error <- function(res, req){
+        response_500()
       }
     },
 #' @details Specifies the port to listen on.
@@ -39,7 +44,8 @@ Ambiorix <- R6::R6Class(
 #' @param path Route to listen to, `:` defines a parameter.
 #' @param handler Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
-    get = function(path, handler){
+#' @param error Handler function to run on error.
+    get = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
 
@@ -48,7 +54,8 @@ Ambiorix <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "GET",
-        res = Response$new()
+        res = Response$new(),
+        error = error %error% self$error
       )
 
       invisible(self)
@@ -60,7 +67,8 @@ Ambiorix <- R6::R6Class(
 #' @param path Route to listen to, `:` defines a parameter.
 #' @param handler Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
-    put = function(path, handler){
+#' @param error Handler function to run on error.
+    put = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
 
@@ -69,7 +77,8 @@ Ambiorix <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "PUT",
-        res = Response$new()
+        res = Response$new(),
+        error = error %error% self$error
       )
 
       invisible(self)
@@ -81,7 +90,8 @@ Ambiorix <- R6::R6Class(
 #' @param path Route to listen to, `:` defines a parameter.
 #' @param handler Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
-    patch = function(path, handler){
+#' @param error Handler function to run on error.
+    patch = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
 
@@ -90,7 +100,8 @@ Ambiorix <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "PATCH",
-        res = Response$new()
+        res = Response$new(),
+        error = error %error% self$error
       )
 
       invisible(self)
@@ -102,7 +113,8 @@ Ambiorix <- R6::R6Class(
 #' @param path Route to listen to, `:` defines a parameter.
 #' @param handler Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
-    delete = function(path, handler){
+#' @param error Handler function to run on error.
+    delete = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
 
@@ -111,7 +123,8 @@ Ambiorix <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "DELETE",
-        res = Response$new()
+        res = Response$new(),
+        error = error %error% self$error
       )
 
       invisible(self)
@@ -123,7 +136,8 @@ Ambiorix <- R6::R6Class(
 #' @param path Route to listen to.
 #' @param handler Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
-    post = function(path, handler){
+#' @param error Handler function to run on error.
+    post = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
 
@@ -132,7 +146,8 @@ Ambiorix <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "POST",
-        res = Response$new()
+        res = Response$new(),
+        error = error %error% self$error
       )
 
       invisible(self)
@@ -253,8 +268,17 @@ Ambiorix <- R6::R6Class(
           # parse request
           req <- Request$new(req, private$.routes[[i]]$route)
 
+          # get response
+          response <- tryCatch(
+            private$.routes[[i]]$fun(req, private$.routes[[i]]$res),
+            error = function(e){
+              private$.routes[[i]]$error(req, private$.routes[[i]]$res)
+            }
+          )
+
+          # if not a response return something that is
           return(
-            private$.routes[[i]]$fun(req, private$.routes[[i]]$res) %response% response("Must return a response", status = 206L)
+            response %response% response("Must return a response", status = 206L)
           )
         }
       }

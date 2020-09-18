@@ -6,8 +6,9 @@ Web server class.
 
 ## Fields
 
-- `not_found`: Callback function ran when 404
-- `is_running`: Boolean indicating whether the server is running.
+- `not_found` 404 Response, must a handler function that accepts the request and the response, by default uses [response_404()].
+- `is_running` Boolean indicating whether the server is running.
+- `error` 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
 
 ## Methods
 

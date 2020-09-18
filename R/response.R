@@ -21,6 +21,13 @@ response_404 <- function(body = "404: Not found", headers = list('Content-Type' 
   construct_response(res)
 }
 
+#' @rdname responses
+#' @export
+response_500 <- function(body = "500: Server Error", headers = list('Content-Type' = 'text/html'), status = 500L){
+  res <- list(status = as.integer(status), headers = headers, body = as.character(body))
+  construct_response(res)
+}
+
 #' Construct Response
 #' 
 #' @noRd 

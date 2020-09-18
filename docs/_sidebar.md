@@ -8,6 +8,7 @@
   - [Response](guide/response.md)
   - [Websocket](guide/websocket.md)
   - [404](guide/not-found.md)
+  - [Error Handling](guide/errors.md)
   - [Start & Stop](guide/stop.md)
 
 - Reference

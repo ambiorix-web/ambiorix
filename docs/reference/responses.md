@@ -13,6 +13,11 @@ response_404(
   headers = list(`Content-Type` = "text/html"),
   status = 404L
 )
+response_500(
+  body = "500: Server Error",
+  headers = list(`Content-Type` = "text/html"),
+  status = 500L
+)
 ```
 
 ## Arguments
