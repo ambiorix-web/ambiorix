@@ -92,6 +92,19 @@ Response <- R6::R6Class(
       to_json <- get_serialise()
       response(to_json(body), headers = headers, status = private$.get_status(status))
     },
+    csv = function(data, name = "data", status = NULL){
+      check_installed("readr")
+
+      header <- list("Content-Type" = "text/csv")
+
+      if(!is.null(name))
+        name <- sprintf("attachment;charset=UTF-8;filename=%s.csv", name)
+      
+      header <- append(header, list(`Content-Disposition` = name))
+
+      data <- readr::format_csv(data)
+      response(data, header = header, status = private$.get_status(status))
+    },
     print = function(){
       cli::cli_li("{.code send(body, headers, status)}")
       cli::cli_li("{.code send_file(file, status)}")
@@ -99,6 +112,7 @@ Response <- R6::R6Class(
       cli::cli_li("{.code json(body, headers, status)}")
       cli::cli_li("{.code redirect(path, status)}")
       cli::cli_li("{.code status(status)}")
+      cli::cli_li("{.code csv(data, name)}")
     }
   ),
   private = list(
