@@ -44,3 +44,14 @@ app$get("/:book", function(req, res){
   res$json(cars)
 })
 ```
+
+## Status
+
+The status of the response can be specified in the response method (e.g.: `render('home', status = 200L)`), or with the `status` method.
+
+```r
+app$get("/error", function(req, res){
+  res$status(500)
+  res$send("Error!")
+})
+```

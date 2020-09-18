@@ -48,15 +48,20 @@ Response <- R6::R6Class(
       if(!private$.has_templates)
         return(self)
     },
-    send = function(body, headers = list('Content-Type' = 'text/html'), status = 200L){
-      response(status = status, headers = headers, body = as.character(body))
+    status = function(status){
+      assert_that(not_missing(status))
+      private$.status <- status
+      invisible(self)
     },
-    send_file = function(file, status = 200L){
+    send = function(body, headers = list('Content-Type' = 'text/html'), status = NULL){
+      response(status = private$.get_status(status), headers = headers, body = as.character(body))
+    },
+    send_file = function(file, status = NULL){
       assert_that(not_missing(file))
 
-      self$render(file, data = list(), status = status)
+      self$render(file, data = list(), status = private$.get_status(status))
     },
-    render = function(file, data = list(), status = 200L){
+    render = function(file, data = list(), status = NULL){
       assert_that(not_missing(file))
 
       if(!private$.has_templates)
@@ -66,21 +71,24 @@ Response <- R6::R6Class(
 
       file_content <- private$.render_template(file_path, data)
 
-      response(file_content, status = status)
+      response(file_content, status = private$.get_status(status))
     },
-    json = function(body, headers = list("Content-Type" = "application/json"), status = 200L){
+    json = function(body, headers = list("Content-Type" = "application/json"), status = NULL){
       to_json <- get_serialise()
-      response(to_json(body), headers = headers, status = status)
+      response(to_json(body), headers = headers, status = private$.get_status(status))
     },
     print = function(){
       cli::cli_li("{.code send(body, headers, status)}")
       cli::cli_li("{.code send_file(file, status)}")
       cli::cli_li("{.code render(file, data, status)}")
+      cli::cli_li("{.code json(body, headers, status)}")
+      cli::cli_li("{.code status(status)}")
     }
   ),
   private = list(
     .has_templates = FALSE,
     .templates = list(),
+    .status = 200L,
     .get_template_path = function(file){
       file <- remove_extensions(file)
 
@@ -166,6 +174,12 @@ Response <- R6::R6Class(
 
       template <- sprintf("./templates/%s.html", template)
       normalizePath(template)
+    },
+    .get_status = function(status){
+      if(is.null(status))
+        return(private$.status)
+      
+      status
     }
   )
 )
