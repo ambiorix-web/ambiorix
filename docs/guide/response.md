@@ -55,3 +55,11 @@ app$get("/error", function(req, res){
   res$send("Error!")
 })
 ```
+
+## Redirect
+
+```r
+app$get("/redirect", function(req, res){
+  res$redirect("/", status = 302L)
+})
+```

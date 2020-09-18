@@ -10,6 +10,7 @@
 #' 
 #' @export
 response <- function(body, headers = list('Content-Type' = 'text/html'), status = 200L){
+  assert_that(not_missing(body))
   res <- list(status = as.integer(status), headers = headers, body = as.character(body))
   construct_response(res)
 }
@@ -68,6 +69,13 @@ Response <- R6::R6Class(
 
       self$render(file, data = list(), status = private$.get_status(status))
     },
+    redirect = function(path, status = NULL){
+      status <- private$.get_status(status)
+      if(!grepl("^3", status))
+        status <- 302L
+
+      response(status = status, headers = list(Location = path), body = "")
+    },
     render = function(file, data = list(), status = NULL){
       assert_that(not_missing(file))
 
@@ -89,6 +97,7 @@ Response <- R6::R6Class(
       cli::cli_li("{.code send_file(file, status)}")
       cli::cli_li("{.code render(file, data, status)}")
       cli::cli_li("{.code json(body, headers, status)}")
+      cli::cli_li("{.code redirect(path, status)}")
       cli::cli_li("{.code status(status)}")
     }
   ),
