@@ -100,6 +100,14 @@ replace_partials <- function(file_content, ext = c("html", "R")){
   return(file_content)
 }
 
+#' Checks if Package is Installed
+#' 
+#' Checks if a package is installed, stops if not.
+#' 
+#' @param pkg Package to check.
+#' 
+#' @noRd 
+#' @keywords internal
 check_installed <- function(pkg){
   has_it <- base::requireNamespace(pkg, quietly = TRUE)
 

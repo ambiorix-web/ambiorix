@@ -22,4 +22,6 @@ Imports:
     assertthat
 Suggests:
     mime,
-    htmltools
+    readr,
+    htmltools,
+    htmlwidgets
