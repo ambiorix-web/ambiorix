@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="static/style.css">
+  <script src="static/ambiorix.js"></script>  
+  <script>
+    var wss = new Ambiorix();
+    wss.receive("hello", function(msg){
+      alert(msg);
+    });
+    wss.start();
+  </script>
+  <title>Ambiorix</title>
+</head>
+<body>
+  <h1>Ambiorix</h1>
+  <button onclick="Ambiorix.send('hello', 'Hi from the client')">Send a message</button>
+</body>
+</html>

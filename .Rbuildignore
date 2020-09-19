@@ -9,4 +9,4 @@ test.R
 ^webpack\.common\.js$
 ^docs$
 ^\.travis\.yml$
-^\./docker$
+docker/

@@ -27,6 +27,7 @@
   - [Response](reference/responses.md)
   - [Router](reference/Router.md)
   - [Stop](reference/stop_all.md)
+  - [Templates](reference/templates.md)
 
 - Examples
   - [Post](examples/post.md)
