@@ -162,7 +162,10 @@ if(interactive())
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$new(host = "0.0.0.0", port = getOption("ambiorix.port", NULL))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$new(
+  host = getOption("ambiorix.host", "0.0.0.0"),
+  port = getOption("ambiorix.port", NULL)
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

@@ -12,6 +12,7 @@
   - [Error Handling](guide/errors.md)
   - [Async Programing](guide/async.md)
   - [Start & Stop](guide/stop.md)
+  - [Deployment](guide/deploy.md)
 
 - Reference
 

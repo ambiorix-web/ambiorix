@@ -37,7 +37,7 @@ Ambiorix <- R6::R6Class(
 #' 
 #' @param host A string defining the host.
 #' @param port Integer defining the port, defaults to `ambiorix.port` option: uses a random port if `NULL`.
-    initialize = function(host = "0.0.0.0", port = getOption("ambiorix.port", NULL)){
+    initialize = function(host = getOption("ambiorix.host", "0.0.0.0"), port = getOption("ambiorix.port", NULL)){
 
       if(is.null(port))
         port <- httpuv::randomPort()
