@@ -18,9 +18,12 @@ add_template <- function(name, ext = c("html", "R")){
   # destination
   ext_pat <- sprintf("\\.%s$", ext)
   dest <- gsub(ext_pat, "", name) # remove extension if passed
-  dest <- sprintf("%s/%s.%s", here::here("templates"), dest, ext)
+  dest_path <- here::here("templates", sprintf("%s.%s", dest, ext))
+  assert_that(!fs::file_exists(dest_path), msg = "Template already exists")
 
-  fs::file_copy(template, dest)
+  fs::file_copy(template, dest_path)
+
+  cli::cli_alert_success("Created {.file {sprintf('templates/%s.%s', name, ext)}}")
 
   invisible()
 }
