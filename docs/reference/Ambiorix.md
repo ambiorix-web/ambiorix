@@ -6,7 +6,7 @@ Web server class.
 
 ## Fields
 
-- `not_found` 404 Response, must a handler function that accepts the request and the response, by default uses [response_404()].
+- `not_found` 404 Response, must be a handler function that accepts the request and the response, by default uses [response_404()].
 - `is_running` Boolean indicating whether the server is running.
 - `error` 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
 
@@ -27,8 +27,8 @@ app$new(port = 5000L)
 
 Add routes.
 
-- `path`: Path to check, when found runs `fun`.
-- `fun`: Callback function that _must_ accept two arguments `req`, and `res`. The former is the request, the latter the response.
+- `path`: Path to check, when found runs `handler`.
+- `handler`: Callback function that _must_ accept two arguments `req`, and `res`. The former is the request, the latter the response.
 
 ```r
 app$get("/", function(req, res){
@@ -40,7 +40,7 @@ app$get("/", function(req, res){
 
 Define view for 404 error.
 
-- `fun`: Callback function that _must_ accept two arguments `req`, and `res`. The former is the request, the latter the response.
+- `handler`: Callback function that _must_ accept two arguments `req`, and `res`. The former is the request, the latter the response.
 
 ```r
 app$set_404(function(req, res){
@@ -65,7 +65,7 @@ app$static("path/to/static files", "www")
 Receive and respond to websocket messages.
 
 - `name`: Name of the message.
-- `fun`: Callback function to handle the message, must accept the `message` as first argument and can optionally accept the websocket as second argument, useful to respond.
+- `handler`: Callback function to handle the message, must accept the `message` as first argument and can optionally accept the websocket as second argument, useful to respond.
 
 ```r
 app$receive("hello", function(msg, ws){
@@ -78,7 +78,7 @@ app$receive("hello", function(msg, ws){
 
 Defines the serialiser to use internally, only use this if you are familiar with serialisation as this may lead to grave headaches.
 
-- `fun`: Function to use to serialise, this function should only accept one argument: the object to serialise.
+- `handler`: Function to use to serialise, this function should only accept one argument: the object to serialise.
 
 ```r
 app$serialiser(function(x){

@@ -56,19 +56,31 @@ Response <- R6::R6Class(
       if(!private$.has_templates)
         return(self)
     },
+#' @details Set the status of the response.
+#' @param status An integer defining the status.
     status = function(status){
       assert_that(not_missing(status))
       private$.status <- status
       invisible(self)
     },
+#' @details Send a plain response.
+#' @param body Body of the response.
+#' @param headers HTTP headers to set.
+#' @param status Status of the response, if `NULL` uses `self$status`.
     send = function(body, headers = list('Content-Type' = 'text/html'), status = NULL){
       response(status = private$.get_status(status), headers = headers, body = as.character(body))
     },
+#' @details Send a file.
+#' @param file File to send.
+#' @param headers HTTP headers to set.
     send_file = function(file, status = NULL){
       assert_that(not_missing(file))
 
       self$render(file, data = list(), status = private$.get_status(status))
     },
+#' @details Redirect to a path or URL.
+#' @param path Path or URL to redirect to.
+#' @param status Status of the response, if `NULL` uses `self$status`.
     redirect = function(path, status = NULL){
       status <- private$.get_status(status)
       if(!grepl("^3", status))
@@ -76,6 +88,10 @@ Response <- R6::R6Class(
 
       response(status = status, headers = list(Location = path), body = "")
     },
+#' @details Render a template file. 
+#' @param file Template file.
+#' @param data List to fill `[% tags %]`.
+#' @param status Status of the response, if `NULL` uses `self$status`.
     render = function(file, data = list(), status = NULL){
       assert_that(not_missing(file))
 
@@ -88,10 +104,19 @@ Response <- R6::R6Class(
 
       response(file_content, status = private$.get_status(status))
     },
+#' @details Render an object as JSON.
+#' @param body Body of the response.
+#' @param headers HTTP headers to set.
+#' @param status Status of the response, if `NULL` uses `self$status`.
     json = function(body, headers = list("Content-Type" = "application/json"), status = NULL, ...){
       to_json <- get_serialise(...)
       response(to_json(body), headers = headers, status = private$.get_status(status))
     },
+#' @details Sends a comma separated value file
+#' @param data Data to convert to CSV.
+#' @param name Name of the file.
+#' @param status Status of the response, if `NULL` uses `self$status`.
+#' @param ... Additional arguments passed to [readr::format_csv()].
     csv = function(data, name = "data", status = NULL, ...){
       assert_that(not_missing(data))
       check_installed("readr")
@@ -106,6 +131,11 @@ Response <- R6::R6Class(
       data <- readr::format_csv(data, ...)
       response(data, header = header, status = private$.get_status(status))
     },
+#' @details Sends a tab separated value file
+#' @param data Data to convert to CSV.
+#' @param name Name of the file.
+#' @param status Status of the response, if `NULL` uses `self$status`.
+#' @param ... Additional arguments passed to [readr::format_tsv()].
     tsv = function(data, name = "data", status = NULL, ...){
       assert_that(not_missing(data))
       check_installed("readr")
@@ -120,19 +150,11 @@ Response <- R6::R6Class(
       data <- readr::format_tsv(data, ...)
       response(data, header = header, status = private$.get_status(status))
     },
-    rds = function(data, name = "data", status = NULL, ...){
-      assert_that(not_missing(data))
-
-      name <- sprintf("attachment;charset=UTF-8;filename=%s.rds", name)
-      header <- list(
-        "Content-Type" = "application/rds",
-        "Content-Disposition" = name
-      )
-
-      data <- serialize(data, NULL, ...)
-      response(data, header = header, status = private$.get_status(status))
-    },
-    htmlwidget = function(widget, status = NULL){
+#' @details Sends an htmlwidget.
+#' @param widget The widget to use.
+#' @param status Status of the response, if `NULL` uses `self$status`.
+#' @param ... Additional arguments passed to [htmlwidgets::saveWidget()].
+    htmlwidget = function(widget, status = NULL, ...){
       check_installed("htmlwidgets")
       if(!inherits(widget, "htmlwidget"))
         stop("This is not an htmlwidget", call. = FALSE)
