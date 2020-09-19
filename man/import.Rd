@@ -4,10 +4,10 @@
 \alias{import}
 \title{Import Files}
 \usage{
-import(dir)
+import(...)
 }
 \arguments{
-\item{dir}{Directory from which to import \code{.R} or \code{.r} files.}
+\item{...}{Directory from which to import \code{.R} or \code{.r} files.}
 }
 \description{
 Import all R-files in a directory.

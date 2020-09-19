@@ -20,13 +20,11 @@ create_ambiorix <- function(path){
 #' 
 #' Import all R-files in a directory.
 #' 
-#' @param dir Directory from which to import `.R` or `.r` files.
+#' @param ... Directory from which to import `.R` or `.r` files.
 #' 
 #' @export
-import <- function(dir){{
-  assert_that(not_missing(dir))
-  assert_that(has_dir(dir))
-  files <- fs::dir_ls(dir, pattern = ".R|.r") 
+import <- function(...){{
+  files <- fs::dir_ls(here::here(...), regexp = "\\.R$|\\.r$") 
   sapply(files, source)
   invisible()
 }}

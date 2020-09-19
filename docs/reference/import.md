@@ -7,10 +7,10 @@ Import all R-files in a directory.
 ## Usage
 
 ```r
-import(dir)
+import(...)
 ```
 
 ## Arguments
 
-- `dir`: Directory from which to import `.R` or `.r` files.
+- `...`: Directory from which to import `.R` or `.r` files, passed to `here::here()`.
 

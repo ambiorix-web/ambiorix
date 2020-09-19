@@ -6,7 +6,7 @@
   - [Project & Templates](guide/project.md)
   - [Parameters & Query](guide/params.md)
   - [Response](guide/response.md)
-  - [Routing](guide/routing.md)
+  - [Router](guide/router.md)
   - [Websocket](guide/websocket.md)
   - [404](guide/not-found.md)
   - [Error Handling](guide/errors.md)
