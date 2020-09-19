@@ -23,8 +23,7 @@ create_dockerfile <- function(port, host = "0.0.0.0"){
   dockerfile <- c(
     "FROM rocker/r-ver:latest",
     "RUN echo \"options(repos = c(CRAN = 'https://packagemanager.rstudio.com/all/latest'))\" >> /usr/local/lib/R/etc/Rprofile.site",
-    "RUN R -e 'install.packages(\"remotes\")'",
-    "RUN R -e 'remotes::install_github(\"JohnCoene/ambiorix\")'"
+    "RUN R -e 'install.packages(\"remotes\")'"
   )
 
   # CRAN packages
