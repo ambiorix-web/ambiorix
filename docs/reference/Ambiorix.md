@@ -17,7 +17,7 @@ Web server class.
 Instantiate an app.
 
 - `host`: A string defining the host, defaults to `0.0.0.0`.
-- `port`: Port to use, defaults to `httpuv::randomPort()`
+- `port`: Port to use, defaults to `getOption("ambiorix.port", NULL)`, if `NULL` uses a random port.
 
 ```r
 app$new(port = 5000L)
