@@ -2,7 +2,7 @@
 
 Routes that are specified are checked in order, meaning one can use `forward` to indicate that the next route should be checked.
 
-When a user points their browser to `/next` ambiorix checks the routes that match when found runs the handler function, when this handler returns `forward` ambiorix checks if another route matches this and so on.
+In the application below, when a user points their browser to `/next` ambiorix checks the routes that match when found runs the handler function, when this handler returns `forward` ambiorix checks if another route matches this and so on.
 
 ```r
 library(ambiorix)
