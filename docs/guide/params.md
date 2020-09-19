@@ -1,6 +1,9 @@
 # Parameters & Query
 
-Ambiorix allows using parameters in the URL and parses the query string for convenience.
+Ambiorix allows using parameters in the URL and also parses the query string for convenience. 
+
+- Parameters are accessible at `req$params$param_name`
+- Query are accessible at `req$query$query_name` or `req$query[[index]]` if unnamed.
 
 ## Parameters
 
@@ -18,15 +21,13 @@ app$get("/books/:category", function(req, res){
 app$start()
 ```
 
-```bash
-/books/fiction
-```
+Visiting `/books/fiction` produces:
 
 ![](../_assets/parameters.png)
 
 ## Query
 
-Parsed query string also can be accessed from the `req` object.
+The parsed query string can also be accessed from the `req` object.
 
 ``` r
 library(ambiorix)
@@ -40,9 +41,7 @@ app$get("/hello", function(req, res){
 app$start()
 ```
 
-```bash
-/hello?firstname=John&lastname=Coene
-```
+Visiting `/hello?firstname=John&lastname=Coene` produces:
 
 ![](../_assets/query.png)
 

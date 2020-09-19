@@ -1,6 +1,8 @@
 # Websocket
 
-You can listen to incoming messages with the `receive` method which takes 1) the name of the message to handle and 2) a callback function to run when message with `name` is recevied. The callback function must accept the message as first argument and optionally the socket as second argument.
+> If you are unfamiliar with websockets, this is what [shiny](https://shiny.rstudio.com/) uses for inputs: it allows sending messages from the client to the browser and vice versa.
+
+You can listen to incoming messages with the `receive` method which takes 1) the name of the message to handle and 2) a callback function to run when a message with `name` is received. The callback function must accept the message as first argument and optionally the socket as second argument.
 
 Below a handler listening to the message `hello`, prints the message and uses the websocket to send a response.
 
@@ -12,9 +14,11 @@ app$receive("hello", function(msg, ws){
 })
 ```
 
-These can be handled server side with the JavaScript websocket library or using the `Ambiorix` class. It provides a static method to send messages through the websocket, like other method in R it accepts 1) the `name` of the message and 2) the `message` itself: `Ambiorix.send('hello', 'Hello from the client')`.
+## JavaScript
 
-One can also instantiate the class to add handlers with `receive` method then run `start` to listen to the incoming messages.
+Messages sent from the server can be client-side with the JavaScript websocket library or using the `Ambiorix` class. It provides a static method to send messages through the websocket, like other method in R it accepts 1) the `name` of the message and 2) the `message` itself: `Ambiorix.send('hello', 'Hello from the client')`.
+
+One can also instantiate the class to add handlers with `receive` method then run `start` to have the handlers actually listen to incoming messages.
 
 ```js
 var wss = new Ambiorix();
@@ -23,8 +27,6 @@ wss.receive("hello", function(msg){
 });
 wss.start();
 ```
-
-## JavaScript
 
 When setting up a project with `create_ambiorix` an `ambiorix.js` file is placed in the static directory, this contains a class that will allow receiving and sending messages through the websocket.
 
@@ -100,3 +102,15 @@ app$start()
 ```
 
 ![](../_assets/websocket-ex.gif)
+
+## Bypass Ambiorix
+
+The above made use of ambiorix's convenience, if you wish to bypass it you can specify your own handler function which it must accept the websocket.
+
+```r
+app$websocket <- function(ws){
+  ws$onMessage(function(binary, message){
+    cat("Received a message:", message, "\n")
+  })
+}
+```

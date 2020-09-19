@@ -9,16 +9,16 @@ Create the project with `create_ambiorix` or with the [ambiorix-cli](https://git
 
 <!-- tabs:start -->
 
-#### ** R **
-
-```r
-ambiorix::create_ambiorix("myapp")
-```
-
 #### ** CLI **
 
 ```bash
 ambiorix-cli create myapp
+```
+
+#### ** R **
+
+```r
+ambiorix::create_ambiorix("myapp")
 ```
 
 <!-- tabs:end -->
@@ -44,7 +44,7 @@ This creates a directory with the following file structure.
 
 ## Templates
 
-A project allows using templates and rendering them with `res$render`. These templates can make use of `[% tags %]` which are replaced with item found in data.
+A project allows using templates and rendering them with `res$render`. These templates can make use of `[% tags %]` which are processed with item found in `data` and send a response. __Templates must be placed in a `/templates` directory__
 
 ### R
 
@@ -68,13 +68,13 @@ tags$html(
 )
 ```
 
-The `[% title %]` can then be replaced with.
+The `[% title %]` in the template above can then be replaced with.
 
 ```r
 res$render("home", data = list(title = "Hello from R"))
 ```
 
-R objects can also be passed by placing it in `robj()` which indicates the object should be used as-is: internally ambiorix will use `dput`.
+R objects can also be passed by wrapping them in `robj()` which indicate the object should be used as-is: internally ambiorix will use `dput`. This can be used to generate objects that will subsequently be used in the template.
 
 ```r
 # templates/home.R
@@ -104,7 +104,7 @@ tags$html(
 res$render("home", data = list(df = robj(cars)))
 ```
 
-Note that since the `[% tags %]` are passed to `glue::glue_data` internally they can therefore include R code.
+Since the `[% tags %]` are internally passed to `glue::glue_data` internally __they can therefore include R code__.
 
 ```r
 # templates/home.R
@@ -141,18 +141,10 @@ One can also use HTML templates (`.html` files) in which case the data is serial
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="static/style.css">
   <script src="static/ambiorix.js"></script>
-  <script>
-    var wss = new Ambiorix();
-    wss.receive("hello", function(msg){
-      alert(msg);
-    });
-    wss.start();
-  </script>
   <title>Ambiorix</title>
 </head>
 <body>
-  <h1 class="brand">[% title %]</h1> <!-- tag -->
-  <button onclick="Ambiorix.send('hello', 'Hi from the client')">Send a message</button>
+  <h1 class="brand">[% title %]</h1>
 </body>
 </html>
 ```
@@ -165,7 +157,7 @@ res$render("home", data = list(title = "Hello from R"))
 
 ### Partials
 
-You can also use partials (inspired by [gohugo](https://gohugo.io)), blocks of reusable HTML content. These are used with a different tag: `[! partial_name.html !]`.
+You can also use partials (inspired by [gohugo](https://gohugo.io)), these are blocks of reusable HTML content. They are indicated by a different tag: `[! partial_name.html !]` where the `partial_name.html` points to a file in the `templates/partials` directory.
 
 Therefore the template below (`templates/home.html`).
 

@@ -2,7 +2,7 @@
 
 In order to better structure the app ambiorix comes with the ability to create _routers_. These allow having a base path prepended to every route subsequently added to it; thereby enabling to physically and mentally better structure the routing logic of an application.
 
-Consider the application below without router.
+Consider the application below which does not make use of a router.
 
 ```r
 library(ambiorix)
@@ -55,10 +55,12 @@ router$get("/:id/profile", function(req, res){
 })
 ```
 
-We can then simplify `app.R`: it needs to source the router from `router.R`, the router then needs to be mounted on the core application with `use`.
+We can then simplify `app.R`: it needs to source the router from `router.R`, the router then needs to be mounted on the core application with the `use` method.
 
 ```r
 library(ambiorix)
+
+# import all R files in route directory
 import("/")
 
 # core app
@@ -68,6 +70,7 @@ app$get("/", function(req, res){
   res$send("Home!")
 })
 
+# mount the router
 app$use(router)
 
 app$start()

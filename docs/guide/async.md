@@ -4,7 +4,7 @@ Ambiorix supports asynchronous programming so requests do not block R's single t
 
 ## Example
 
-The application below demonstrates asynchronous programming and its benefit. Once can visit `/async` then `/sync` and get a response on the latter, despite the fact that `/async` is still processing (`Sys.sleep(10)` = 10 seconds). Were `/async` not returning a promise, `/sync` would have to wait until `/async` had stopped processing (10 seconds) before the server could return a response.
+The application below demonstrates asynchronous programming and its benefit. One can visit `/async` then `/sync` and get a response on the latter, despite the fact that `/async` is still processing (`Sys.sleep(10)` = 10 seconds). Were `/async` not returning a promise, `/sync` would have to wait until `/async` had stopped processing (10 seconds) before the server could return a response.
 
 ```r
 library(future)

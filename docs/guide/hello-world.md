@@ -1,13 +1,13 @@
 # Hello World
 
-Make sure you have the package installed.
+First, make sure you have the package installed. It is not yet available from CRAN but can be installed from Github with the [remotes](https://remotes.r-lib.org/) package.
 
 ```r
 # install.packages("ambiorix")
 remotes::install_github("JohnCoene/ambiorix")
 ```
 
-By default ambiorix will serve the application on a random port, this can be changed, along with other things, when instantiating the class.
+By default ambiorix will serve the application on a random port, this can be changed, along with other things, when instantiating the class. 
 
 ```r
 library(ambiorix)
@@ -23,4 +23,3 @@ app$start()
 
 ![](../_assets/rstudio.png)
 
-The `get` method will add a `GET` method on the path `/` (the homepage).

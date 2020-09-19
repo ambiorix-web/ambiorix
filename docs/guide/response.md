@@ -1,10 +1,10 @@
 # Response
 
-Every get handler should accept the request (`req`) and the response (`res`).
+Every route (`get`, `post`, etc.) handler should accept the request (`req`) and the response (`res`). Note that routes may optionally accept a different handler for [errors](/guide/errors).
 
 ## Plain
 
-One can send a plain HTTP response with `send`.
+One can send a plain HTTP response with `send`, by default `html`.
 
 ```r
 app$get("/", function(req, res){
@@ -25,7 +25,7 @@ app$get("/", function(req, res){
 
 ## Render
 
-An `.html` or `.R` file can also be rendered. The difference with `send_file` is that it will use `data` to replace `[% tags %]`. You can read more it in the [templates](/guide/project?id=templates) documentation.
+An `.html` or `.R` file can also be rendered. The difference with `send_file` is that it will use `data` to process `[% tags %]`. You can read more it in the [templates](/guide/project?id=templates) documentation.
 
 ```r
 # renders templates/home.html
@@ -37,7 +37,7 @@ app$get("/:book", function(req, res){
 
 ## JSON
 
-You can also send JSON responses with `json`.
+You can also send JSON responses with `json`, e.g.: to build an [api](/examples/api)
 
 ```r
 app$get("/:book", function(req, res){
@@ -54,11 +54,16 @@ app$get("/error", function(req, res){
   res$status(500)
   res$send("Error!")
 })
+
+# or
+app$get("/error", function(req, res){
+  res$send("Error!", status = 500L)
+})
 ```
 
 ## Redirect
 
-Redirect to a different url.
+One can also redirect to a different url, note that these should have a `status` starting in `3`.
 
 ```r
 app$get("/redirect", function(req, res){
@@ -68,7 +73,7 @@ app$get("/redirect", function(req, res){
 
 ## CSV
 
-Serialises to CSV.
+Serialises to CSV, when this endpoint is visited the CSV file is downloaded. It takes the data as first argument and the name of the file to download as second argument.
 
 ```r
 app$get("/csv", function(req, res){
@@ -78,7 +83,7 @@ app$get("/csv", function(req, res){
 
 ## TSV
 
-Serialises to tab separated file.
+Serialises to tab separated file; it takes the same arguments as the [csv response](guide/response?id=csv).
 
 ```r
 app$get("/tsv", function(req, res){
@@ -88,7 +93,7 @@ app$get("/tsv", function(req, res){
 
 ## htmlwidget
 
-Serialises an htmlwidget
+Serialises an htmlwidget.
 
 ```r
 library(echarts4r)
