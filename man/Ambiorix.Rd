@@ -6,6 +6,112 @@
 \description{
 Web server.
 }
+\examples{
+app <- Ambiorix$new()
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+if(interactive())
+ app$start()
+
+
+## ------------------------------------------------
+## Method `Ambiorix$listen`
+## ------------------------------------------------
+
+app <- Ambiorix$new()
+
+app$listen(3000L)
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+if(interactive())
+ app$start()
+
+## ------------------------------------------------
+## Method `Ambiorix$get`
+## ------------------------------------------------
+
+app <- Ambiorix$new()
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+if(interactive())
+ app$start()
+
+## ------------------------------------------------
+## Method `Ambiorix$set_404`
+## ------------------------------------------------
+
+app <- Ambiorix$new()
+
+app$set_404(function(req, res){
+ res$send("Nothing found here")
+})
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+if(interactive())
+ app$start()
+
+## ------------------------------------------------
+## Method `Ambiorix$start`
+## ------------------------------------------------
+
+app <- Ambiorix$new()
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+if(interactive())
+ app$start()
+
+## ------------------------------------------------
+## Method `Ambiorix$receive`
+## ------------------------------------------------
+
+app <- Ambiorix$new()
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+app$receive("hello", function(msg, ws){
+ print(msg) # print msg received
+ 
+ # send a message back
+ ws$send("hello", "Hello back! (sent from R)")
+})
+
+if(interactive())
+ app$start()
+
+## ------------------------------------------------
+## Method `Ambiorix$serialiser`
+## ------------------------------------------------
+
+app <- Ambiorix$new()
+
+app$serialiser(function(data, ...){
+ jsonlite::toJSON(x, ..., pretty = TRUE)
+})
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+if(interactive())
+ app$start()
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
@@ -86,6 +192,23 @@ Define the webserver.
 Specifies the port to listen on.
 }
 
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{app <- Ambiorix$new()
+
+app$listen(3000L)
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+if(interactive())
+ app$start()
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get"></a>}}
@@ -111,6 +234,21 @@ describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
 GET Method
 
 Add routes to listen to.
+}
+
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{app <- Ambiorix$new()
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+if(interactive())
+ app$start()
+}
+\if{html}{\out{</div>}}
+
 }
 
 }
@@ -242,6 +380,25 @@ describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
 Sets the 404 page.
 }
 
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{app <- Ambiorix$new()
+
+app$set_404(function(req, res){
+ res$send("Nothing found here")
+})
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+if(interactive())
+ app$start()
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-static"></a>}}
@@ -287,6 +444,21 @@ Start
 Start the webserver.
 }
 
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{app <- Ambiorix$new()
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+if(interactive())
+ app$start()
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-receive"></a>}}
@@ -309,6 +481,28 @@ Start the webserver.
 Receive Websocket Message
 }
 
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{app <- Ambiorix$new()
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+app$receive("hello", function(msg, ws){
+ print(msg) # print msg received
+ 
+ # send a message back
+ ws$send("hello", "Hello back! (sent from R)")
+})
+
+if(interactive())
+ app$start()
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-serialiser"></a>}}
@@ -322,12 +516,31 @@ Receive Websocket Message
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{handler}}{Function to use to serialise.
-This function should accept a single argument: the object to serialise.}
+This function should accept two arguments: the object to serialise and \code{...}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
 Define Serialiser
+}
+
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{app <- Ambiorix$new()
+
+app$serialiser(function(data, ...){
+ jsonlite::toJSON(x, ..., pretty = TRUE)
+})
+
+app$get("/", function(req, res){
+ res$send("Using {ambiorix}!")
+})
+
+if(interactive())
+ app$start()
+}
+\if{html}{\out{</div>}}
+
 }
 
 }

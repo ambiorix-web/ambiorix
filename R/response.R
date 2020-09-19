@@ -108,6 +108,7 @@ Response <- R6::R6Class(
 #' @param body Body of the response.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
+#' @param ... Additional arguments passed to the serialiser.
     json = function(body, headers = list("Content-Type" = "application/json"), status = NULL, ...){
       to_json <- get_serialise(...)
       response(to_json(body), headers = headers, status = private$.get_status(status))

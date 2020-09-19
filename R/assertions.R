@@ -16,10 +16,10 @@ assertthat::on_failure(not_missing) <- function(call, env){
   paste("Missing", deparse(call$x))
 }
 
-has_dir <- function(x){
-  fs::dir_exists(x)
+has_file <- function(x){
+  fs::file_exists(x)
 }
 
-assertthat::on_failure(has_dir) <- function(call, env){
+assertthat::on_failure(has_file) <- function(call, env){
   paste("Cannot find", deparse(call$x))
 }

@@ -10,6 +10,16 @@
 #' @importFrom assertthat assert_that
 #' @importFrom utils browseURL
 #' 
+#' @examples 
+#' app <- Ambiorix$new()
+#' 
+#' app$get("/", function(req, res){
+#'  res$send("Using {ambiorix}!")
+#' })
+#' 
+#' if(interactive())
+#'  app$start()
+#' 
 #' @export 
 Ambiorix <- R6::R6Class(
   "Ambiorix",
@@ -38,6 +48,18 @@ Ambiorix <- R6::R6Class(
     },
 #' @details Specifies the port to listen on.
 #' @param port Port number.
+#' 
+#' @examples 
+#' app <- Ambiorix$new()
+#' 
+#' app$listen(3000L)
+#' 
+#' app$get("/", function(req, res){
+#'  res$send("Using {ambiorix}!")
+#' })
+#' 
+#' if(interactive())
+#'  app$start()
     listen = function(port){
       assert_that(not_missing(port))
       private$.port <- as.integer(port)
@@ -51,6 +73,16 @@ Ambiorix <- R6::R6Class(
 #' @param handler Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
 #' @param error Handler function to run on error.
+#' 
+#' @examples 
+#' app <- Ambiorix$new()
+#' 
+#' app$get("/", function(req, res){
+#'  res$send("Using {ambiorix}!")
+#' })
+#' 
+#' if(interactive())
+#'  app$start()
     get = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
@@ -161,6 +193,20 @@ Ambiorix <- R6::R6Class(
 #' @details Sets the 404 page.
 #' @param handler Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
+#' 
+#' @examples 
+#' app <- Ambiorix$new()
+#' 
+#' app$set_404(function(req, res){
+#'  res$send("Nothing found here")
+#' })
+#' 
+#' app$get("/", function(req, res){
+#'  res$send("Using {ambiorix}!")
+#' })
+#' 
+#' if(interactive())
+#'  app$start()
     set_404 = function(handler){
       self$not_found <- handler
       invisible(self)
@@ -182,6 +228,16 @@ Ambiorix <- R6::R6Class(
 #' Start the webserver.
 #' @param auto_stop Whether to automatically stop the server when the functon exits.
 #' @param open Whether to open the app the browser.
+#' 
+#' @examples 
+#' app <- Ambiorix$new()
+#' 
+#' app$get("/", function(req, res){
+#'  res$send("Using {ambiorix}!")
+#' })
+#' 
+#' if(interactive())
+#'  app$start()
     start = function(auto_stop = TRUE, open = interactive()){
       
       if(self$is_running){
@@ -221,13 +277,44 @@ Ambiorix <- R6::R6Class(
 #' @details Receive Websocket Message
 #' @param name Name of message.
 #' @param handler Function to run when message is received.
+#' 
+#' @examples 
+#' app <- Ambiorix$new()
+#' 
+#' app$get("/", function(req, res){
+#'  res$send("Using {ambiorix}!")
+#' })
+#' 
+#' app$receive("hello", function(msg, ws){
+#'  print(msg) # print msg received
+#'  
+#'  # send a message back
+#'  ws$send("hello", "Hello back! (sent from R)")
+#' })
+#' 
+#' if(interactive())
+#'  app$start()
     receive = function(name, handler){
       private$.receivers[[uuid()]] <- WebsocketHandler$new(name, handler)
       invisible(self)
     },
 #' @details Define Serialiser
 #' @param handler Function to use to serialise. 
-#' This function should accept a single argument: the object to serialise.
+#' This function should accept two arguments: the object to serialise and `...`.
+#' 
+#' @examples 
+#' app <- Ambiorix$new()
+#' 
+#' app$serialiser(function(data, ...){
+#'  jsonlite::toJSON(x, ..., pretty = TRUE)
+#' })
+#' 
+#' app$get("/", function(req, res){
+#'  res$send("Using {ambiorix}!")
+#' })
+#' 
+#' if(interactive())
+#'  app$start()
     serialiser = function(handler){
       options(AMBIORIX_SERIALISER = handler)
       invisible(self)

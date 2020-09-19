@@ -8,7 +8,7 @@ library(ambiorix)
 app <- Ambiorix$new()
 
 app$get("/cars", function(req, res){
-  res$json("cars")
+  res$json(cars)
 })
 
 app$get("/dataset", function(req, res){
@@ -21,7 +21,7 @@ app$get("/dataset", function(req, res){
   
 })
 
-app$run()
+app$start()
 ```
 
 Note that you can change the serialiser with the `serialiser` method: pass it a function that accepts the data and the three-dot construct (`...`), it should return the JSON.
