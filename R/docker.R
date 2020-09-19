@@ -42,13 +42,13 @@ create_dockerfile <- function(port, host = "0.0.0.0"){
     rmts <- strsplit(rmts, ",")[[1]]
     rmts <- gsub("\\\n", "", rmts)
     rmts <- sapply(rmts, function(pkg){
-      sprintf("RUN R -e \"remotes::install_github('%s')\"", pkg)
+      sprintf("RUN R -e \"remotes::install_github('%s', force=FALSE)\"", pkg)
     })
     cran <- c(cran, rmts)
   }
 
   cmd <- sprintf(
-    "RUN R -e \"options(ambiorix.host='%s', 'ambiorix.port'=%s);source('app.R')\"", 
+    "CMD R -e \"options(ambiorix.host='%s', 'ambiorix.port'=%s);source('app.R')\"", 
     host, port
   )
 
