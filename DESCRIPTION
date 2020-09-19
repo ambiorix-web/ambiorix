@@ -26,5 +26,4 @@ Suggests:
     mime,
     readr,
     htmltools,
-    htmlwidgets,
-    dockerfiler
+    htmlwidgets
