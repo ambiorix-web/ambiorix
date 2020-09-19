@@ -4,22 +4,18 @@
 \alias{create_dockerfile}
 \title{Dockerfile}
 \usage{
-create_dockerfile(
-  port,
-  host = "0.0.0.0",
-  repos = c(CRAN = "https://packagemanager.rstudio.com/all/latest")
-)
+create_dockerfile(port, host = "0.0.0.0")
 }
 \arguments{
 \item{port, host}{Port and host to serve the application.}
-
-\item{repos}{Repositories to install packages, this is passed to \code{\link[=install.packages]{install.packages()}}, defaults to
-\href{https://packagemanager.rstudio.com/client/#/}{RStudio Public Package Manager} which comes with pre-built binaries
-that much improve the building of Dockerfiles.}
 }
 \description{
 Create the dockerfile required to run the application.
+The dockerfile created will install packages from
+\href{https://packagemanager.rstudio.com/client/#/}{RStudio Public Package Manager}
+which comes with pre-built binaries
+that much improve the speed of building of Dockerfiles.
 }
 \details{
-Reads the \code{DESCRIPTION} file of the project to produce the \code{Dockerfile} using \code{\link[dockerfiler:dock_from_desc]{dockerfiler::dock_from_desc()}}.
+Reads the \code{DESCRIPTION} file of the project to produce the \code{Dockerfile}.
 }
