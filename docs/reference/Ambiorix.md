@@ -9,6 +9,7 @@ Web server class.
 - `not_found` 404 Response, must be a handler function that accepts the request and the response, by default uses [response_404()].
 - `is_running` Boolean indicating whether the server is running.
 - `error` 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
+- `on_stop` Callback to run when the server stops running; takes no argument.
 
 ## Methods
 

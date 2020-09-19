@@ -6,6 +6,7 @@
 #' @field is_running Boolean indicating whether the server is running.
 #' @field error 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
 #' @field websocket A handler function that accepts a websocket which overrides ambiorix internal websocket handling.
+#' @field on_stop Callback function to run when the app stops, takes no argument.
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom utils browseURL
@@ -17,6 +18,10 @@
 #'  res$send("Using {ambiorix}!")
 #' })
 #' 
+#' app$on_stop <- function(){
+#'  cat("Bye!\n")
+#' }
+#' 
 #' if(interactive())
 #'  app$start()
 #' 
@@ -27,6 +32,7 @@ Ambiorix <- R6::R6Class(
     not_found = NULL,
     is_running = FALSE,
     error = NULL,
+    on_stop = NULL,
 #' @details Define the webserver.
 #' 
 #' @param host A string defining the host.
@@ -328,9 +334,14 @@ Ambiorix <- R6::R6Class(
         return(invisible())
       }
 
+      # run on stop
+      if(!is.null(self$on_stop))
+        self$on_stop()
+
       private$.server$stop()
       cli::cli_alert_danger("Server Stopped")
       self$is_running <- FALSE
+
       invisible(self)
     },
 #' @details Print
