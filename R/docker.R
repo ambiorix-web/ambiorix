@@ -21,8 +21,8 @@ create_dockerfile <- function(port, host = "0.0.0.0"){
   port <- as.integer(port)
 
   dockerfile <- c(
-    "FROM rocker/r-base",
-    "RUN echo \"options(repos = c(CRAN = 'https://packagemanager.rstudio.com/all/latest'), download.file.method = 'libcurl')\" >> /usr/local/lib/R/etc/Rprofile.site",
+    "FROM rocker/r-ver:4.0.0",
+    "RUN echo \"options(repos = c(CRAN = 'https://packagemanager.rstudio.com/all/latest'))\" >> /usr/local/lib/R/etc/Rprofile.site",
     "RUN R -e 'install.packages(\"remotes\")'",
     "RUN R -e 'remotes::install_github(\"JohnCoene/ambiorix\")'"
   )
@@ -37,13 +37,14 @@ create_dockerfile <- function(port, host = "0.0.0.0"){
   })
 
   # remotes
-  rmts <- tryCatch(desc[, 'Remotes'], error = function(e) "")
-  if(rmts != ""){
+  rmts <- tryCatch(desc[, 'Remotes'], error = function(e) NULL)
+  if(!is.null(rmts)){
     rmts <- strsplit(rmts, ",")[[1]]
     rmts <- gsub("\\\n", "", rmts)
     rmts <- sapply(rmts, function(pkg){
       sprintf("RUN R -e \"remotes::install_github('%s')\"", pkg)
     })
+    cran <- c(cran, rmts)
   }
 
   cmd <- sprintf(
@@ -54,12 +55,11 @@ create_dockerfile <- function(port, host = "0.0.0.0"){
   dockerfile <- c(
     dockerfile,
     cran,
-    rmts,
     "COPY . .",
     cmd
   )
 
-  writeLines(dockerfile, "Dockerfile")
+  x <- writeLines(dockerfile, "Dockerfile")
 
   cli::cli_alert_success("Created {.file Dockerfile}")
 
