@@ -298,7 +298,7 @@ Ambiorix <- R6::R6Class(
             }
           )
 
-          if(inherits(response, "next"))
+          if(inherits(response, "forward"))
             next
 
           # if not a response return something that is
