@@ -30,8 +30,6 @@ app$get("/", function(req, res){
 app$start()
 ```
 
-Then visit: `http://localhost:3000`, stop the server with `app$stop()`.
-
 ## Install
 
 Ambiorix is an R package than can be installed from github.

@@ -304,9 +304,6 @@ Ambiorix <- R6::R6Class(
               promises::then(
                 response, 
                 onFulfilled = function(response){
-                  if(inherits(response, "forward"))
-                    next
-                  
                   return(
                     response %response% response("Must return a response", status = 206L)
                   )

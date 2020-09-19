@@ -19,7 +19,7 @@ app$start()
 ```
 
 ```bash
-http://localhost:3000/books/fiction
+/books/fiction
 ```
 
 ![](../_assets/parameters.png)
@@ -41,7 +41,7 @@ app$start()
 ```
 
 ```bash
-http://localhost:3000/hello?firstname=John&lastname=Coene
+/hello?firstname=John&lastname=Coene
 ```
 
 ![](../_assets/query.png)

@@ -25,7 +25,7 @@ app$new(port = 5000L)
 
 ### Get, post, put, delete, and patch 
 
-Add routes.
+Add routes
 
 - `path`: Path to check, when found runs `handler`.
 - `handler`: Callback function that _must_ accept two arguments `req`, and `res`. The former is the request, the latter the response.
@@ -35,6 +35,10 @@ app$get("/", function(req, res){
   res$send("Welcome!")
 })
 ```
+
+### Details
+
+The handlers must return either 1) a response or 2) a promise which itself returns a response, see [async](/guide/async).
 
 ### Set 404
 

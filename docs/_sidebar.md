@@ -10,6 +10,7 @@
   - [Websocket](guide/websocket.md)
   - [404](guide/not-found.md)
   - [Error Handling](guide/errors.md)
+  - [Async Programing](guide/async.md)
   - [Start & Stop](guide/stop.md)
 
 - Reference
