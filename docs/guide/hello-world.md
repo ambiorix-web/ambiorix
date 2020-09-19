@@ -3,7 +3,7 @@
 First, make sure you have the package installed. It is not yet available from CRAN but can be installed from Github with the [remotes](https://remotes.r-lib.org/) package.
 
 ```r
-# install.packages("ambiorix")
+# install.packages("remotes")
 remotes::install_github("JohnCoene/ambiorix")
 ```
 
