@@ -294,6 +294,9 @@ Ambiorix <- R6::R6Class(
             }
           )
 
+          if(inherits(response, "next"))
+            next
+
           # if not a response return something that is
           return(
             response %response% response("Must return a response", status = 206L)
@@ -326,23 +329,6 @@ Ambiorix <- R6::R6Class(
     }, 
     nRoutes = function(){
       length(private$.routes)
-    },
-    getRoutes = function(){
-      sapply(private$.routes, function(x){
-        x$path
-      })
     }
   )
 )
-
-#' New Application
-#' 
-#' Create a new Ambiorix Application.
-#' 
-#' @param host A string defining the host.
-#' @param port Integer defining the port, defaults to [httpuv::randomPort()].
-#' 
-#' @export
-new_app <- function(host = "0.0.0.0", port = httpuv::randomPort()){
-  Ambiorix$new(host = host, port = port)
-}
