@@ -293,10 +293,31 @@ Ambiorix <- R6::R6Class(
           # get response
           response <- tryCatch(
             private$.routes[[i]]$fun(req, private$.routes[[i]]$res),
-            error = function(e){
+            error = function(error){
+              message(error)
               private$.routes[[i]]$error(req, private$.routes[[i]]$res)
             }
           )
+
+          if(promises::is.promising(response)){
+            return(
+              promises::then(
+                response, 
+                onFulfilled = function(response){
+                  if(inherits(response, "forward"))
+                    next
+                  
+                  return(
+                    response %response% response("Must return a response", status = 206L)
+                  )
+                },
+                onRejected = function(error){
+                  message(error)
+                  private$.routes[[i]]$error(req, private$.routes[[i]]$res)
+                }
+              )
+            )
+          }
 
           if(inherits(response, "forward"))
             next

@@ -18,6 +18,7 @@ Imports:
     cli,
     glue,
     httpuv,
+    promises,
     jsonlite,
     assertthat
 Suggests:
