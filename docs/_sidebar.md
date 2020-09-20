@@ -33,8 +33,11 @@
   - [Templates](reference/templates.md)
 
 - Examples
+
   - [Post](examples/post.md)
   - [API](examples/api.md)
+
+- Good to know
 
 - [Changelog](changelog.md)
 - [Contributing](coc.md)
