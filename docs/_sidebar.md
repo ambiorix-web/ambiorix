@@ -13,6 +13,7 @@
   - [Error Handling](guide/errors.md)
   - [Async Programing](guide/async.md)
   - [Start & Stop](guide/stop.md)
+  - [Logger](guide/logger.md)
   - [Deployment](guide/deploy.md)
 
 - Reference
@@ -23,6 +24,7 @@
   - [Dockerfile](reference/docker.md)
   - [Forward](reference/forward.md)
   - [Import](reference/import.md)
+  - [Logger](reference/logger.md)
   - [Parsers](reference/parsers.md)
   - [R Object](reference/robj.md)
   - [Response](reference/responses.md)

@@ -21,7 +21,7 @@ Instantiate an app.
 - `port`: Port to use, defaults to `getOption("ambiorix.port", NULL)`, if `NULL` uses a random port.
 
 ```r
-app$new(port = 5000L)
+Ambiorix$new(port = 5000L)
 ```
 
 ### Get, post, put, delete, and patch 

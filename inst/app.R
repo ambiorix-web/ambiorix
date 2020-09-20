@@ -1,6 +1,6 @@
 library(ambiorix)
 
-app <- Ambiorix$new()
+app <- Ambiorix$new(log = TRUE)
 
 app$get("/", function(req, res){
   res$send("Hello {ambiorix}!")

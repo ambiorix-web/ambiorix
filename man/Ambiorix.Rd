@@ -164,7 +164,8 @@ if(interactive())
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ambiorix$new(
   host = getOption("ambiorix.host", "0.0.0.0"),
-  port = getOption("ambiorix.port", NULL)
+  port = getOption("ambiorix.port", NULL),
+  log = getOption("ambiorix.logger", FALSE)
 )}\if{html}{\out{</div>}}
 }
 
@@ -174,6 +175,8 @@ if(interactive())
 \item{\code{host}}{A string defining the host.}
 
 \item{\code{port}}{Integer defining the port, defaults to \code{ambiorix.port} option: uses a random port if \code{NULL}.}
+
+\item{\code{log}}{Whether to generate a log of events.}
 }
 \if{html}{\out{</div>}}
 }
