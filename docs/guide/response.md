@@ -2,13 +2,23 @@
 
 Every route (`get`, `post`, etc.) handler should accept the request (`req`) and the response (`res`). Note that routes may optionally accept a different handler for [errors](/guide/errors).
 
-## Plain
+## HTML
 
-One can send a plain HTTP response with `send`, by default `html`.
+One can send plain HTML with `send`.
 
 ```r
 app$get("/", function(req, res){
   res$send("hello!")
+})
+```
+
+## Text
+
+One can send a plain text with `text`.
+
+```r
+app$get("/", function(req, res){
+  res$text("hello!")
 })
 ```
 

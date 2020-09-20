@@ -63,11 +63,18 @@ Response <- R6::R6Class(
       private$.status <- status
       invisible(self)
     },
-#' @details Send a plain response.
+#' @details Send a plain HTML response.
 #' @param body Body of the response.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
     send = function(body, headers = list('Content-Type' = 'text/html'), status = NULL){
+      response(status = private$.get_status(status), headers = headers, body = as.character(body))
+    },
+#' @details Send a plain text response.
+#' @param body Body of the response.
+#' @param headers HTTP headers to set.
+#' @param status Status of the response, if `NULL` uses `self$status`.
+    text = function(body, headers = list('Content-Type' = 'text/plain'), status = NULL){
       response(status = private$.get_status(status), headers = headers, body = as.character(body))
     },
 #' @details Send a file.
