@@ -10,3 +10,4 @@ test.R
 ^docs$
 ^\.travis\.yml$
 docker/
+^CODE_OF_CONDUCT\.md$

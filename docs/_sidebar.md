@@ -37,3 +37,4 @@
   - [API](examples/api.md)
 
 - [Changelog](changelog.md)
+- [Contributing](coc.md)
