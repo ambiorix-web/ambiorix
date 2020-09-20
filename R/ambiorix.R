@@ -44,10 +44,10 @@ Ambiorix <- R6::R6Class(
       private$.logger <- Logger$new(log)
       private$.host <- host
       private$.port <- get_port(port)
-      self$not_found <- function(res, req){
+      self$not_found <- function(req, res){
         response_404()
       }
-      self$error <- function(res, req){
+      self$error <- function(req, res){
         response_500()
       }
       invisible(self)

@@ -42,14 +42,14 @@ Visiting `/books/fiction` produces:
 
 <!-- div:left-panel -->
 
-The parsed query string can also be accessed from the `req` object.
+The parsed query string can also be accessed from the `req` object. Note that you may include named URL query arguments in the `path` for clarity __these are not taken into account when matching path to requests.__
 
 ``` r
 library(ambiorix)
 
 app <- Ambiorix$new()
 
-app$get("/hello", function(req, res){
+app$get("/hello?firstname&lastname", function(req, res){
   res$send(htmltools::h3("Hi", req$query$firstname, req$query$lastname))
 })
 
