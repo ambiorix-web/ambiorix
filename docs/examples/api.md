@@ -2,23 +2,34 @@
 
 One is not limited to sending HTML responses and can thus build APIs with ambiorix.
 
+Below we build a small API that has two endpoints:
+
+1. One that lists all the datasets in the base R `datasets` package
+2. An endpoint to retrieve the datasets
+
 ```r
 library(ambiorix)
 
-app <- Ambiorix$new()
+PORT <- 3000L
 
-app$get("/cars", function(req, res){
-  res$json(cars)
+app <- Ambiorix$new(port = PORT)
+
+app$get("/", function(req, res){
+
+  # get list of datasets
+  datasets <- as.data.frame(data(package = "datasets")$results)
+  datasets <- subset(datasets, !grepl("[[:space:]]", datasets$Item)) 
+
+  # add links
+  datasets$Endpoint <- sprintf("http://127.0.0.1:%s/dataset/%s", PORT, datasets$Item)
+  datasets$Endpoint <- sapply(datasets$Endpoint, URLencode)
+  res$json(datasets[, c("Item", "Title", "Endpoint")])
 })
 
-app$get("/dataset", function(req, res){
-  dataset <- req$query[[1]]
-
-  if(dataset == "iris")
-    res$json(iris)
-  else 
-    res$json(mtcars)
-  
+app$get("/dataset/:set", function(req, res){
+  res$json(
+    get(req$params$set)
+  )
 })
 
 app$start()
