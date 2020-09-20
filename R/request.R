@@ -157,7 +157,7 @@ Request <- R6::R6Class(
       for(i in 1:length(path_split)){
         if(params[[i]]$dynamic){
           nms <- c(nms, params[[i]]$name)
-          pms <- append(pms, path_split[i])
+          pms <- append(pms, URLdecode(path_split[i]))
         }
       }
 
