@@ -11,3 +11,4 @@ test.R
 ^\.travis\.yml$
 docker/
 ^CODE_OF_CONDUCT\.md$
+^FUNDING\.yml$
