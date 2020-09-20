@@ -15,15 +15,15 @@
   <meta property="og:title" content="Web framework for R" />
   <meta property="og:description" content="Web framework for R inspired by express.js" />
   <meta property="og:image" content="https://ambiorix.john-coene.com/_assets/ambiorix-banner.png" />
+  <link 
+    rel="stylesheet"
+    href="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/style.min.css"
+    title="docsify-darklight-theme"
+    type="text/css"
+  />
   <style>
-    body{
-      background-color: #fafaf7;
-    }
-    .sidebar{
-      background-color: #fafaf7;
-    }
-    pre, code{
-      background-color: #f7f7f2 !important;
+    code,pre{
+      font-weight: normal !important;
     }
   </style>
 </head> 
@@ -43,7 +43,6 @@
       loadNavbar: true,
       auto2top: true,
       notFoundPage: true,
-      themeColor: '#708d47',
       ga: 'UA-74544116-1',
       search : [
         '/',
@@ -57,10 +56,50 @@
         theme      : 'classic', // default
         tabComments: true,      // default
         tabHeadings: true       // default
+      },
+      darklightTheme: {
+        siteFont : "Raleway",
+        defaultTheme : 'light',
+        codeFontFamily : 'Fira Code, monospace',
+        bodyFontSize : '17px',
+        dark: {
+          accent: '#42b983',
+          toogleBackground : '#ffffff',
+          background: '#091a28',
+          textColor: '#b4b4b4',
+          codeTextColor : '#ffffff',
+          codeBackgroudColor : '#0e2233',
+          borderColor : '#0d2538',
+          blockQuoteColour : '#858585',
+          highlightColor : '#d22778',
+          sidebarSublink : '#b4b4b4',
+          codeTypeColor : '#ffffff',
+          coverBackground : 'linear-gradient(to left bottom, hsl(118, 100%, 85%) 0%,hsl(181, 100%, 85%) 100%)',
+          toogleImage : 'url(https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/icons/sun.svg)'
+        },
+        light: {
+          accent: '#4b522f',
+          toogleBackground : '#091a28',
+          background: '#fafaf7',
+          textColor: '#312917',
+          codeTextColor : '#525252',
+          codeBackgroudColor : '#f7f7f2',
+          borderColor : 'rgba(0, 0, 0, 0.07)',
+          blockQuoteColor : '#6e6e6e',
+          highlightColor : '#d22778',
+          sidebarSublink : '#6e6e6e',
+          codeTypeColor : '#091a28',
+          coverBackground : 'linear-gradient(to left bottom, hsl(118, 100%, 85%) 0%,hsl(181, 100%, 85%) 100%)',
+          toogleImage : 'url(https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/icons/moon.svg)'
+        }
       }
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script 
+    src="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js"
+    type="text/javascript">
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/docsify-example-panels"></script>
   <script src="//unpkg.com/prismjs/components/prism-r.min.js"></script>
   <script src="//unpkg.com/prismjs/components/prism-docker.min.js"></script>
