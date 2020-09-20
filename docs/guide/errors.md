@@ -1,10 +1,12 @@
 # Error Handling
 
-This details how to handle errors in ambiorix.
+This details how to handle errors in ambiorix. 
+
+When an error occurs server-side it should send the client a response with a status starting in `5` to indicates that was the case.
 
 ## Default
 
-By default ambiorix uses the follow handler on error.
+By default ambiorix uses the following handler on error.
 
 ```r
 function(req, res){
@@ -14,7 +16,7 @@ function(req, res){
 
 ## Global
 
-One can specify the default response when an error occurs across the entire application.
+One can specify the handler to use when an error occurs anywhere in the application.
 
 ```r
 app$error <- function(req, res){
@@ -28,7 +30,7 @@ app$error <- function(req, res){
 Alternatively one can specify errors specific to certain routes, if these are not specified the global handler (above) is used.
 
 ```r
-app$get("error", function(req, res){
+app$get("/error", function(req, res){
   print(eRrOr)
 }, function(req, res){
   res$send("This is an error on /error", status = 500)
