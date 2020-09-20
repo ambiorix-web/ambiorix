@@ -39,6 +39,7 @@
 
 - Good to know
 
-- [Changelog](changelog.md)
-- [Contributing](coc.md)
-- [Frameworks](frameworks.md)
+  - [Glossary](_glossary.md)
+  - [Changelog](changelog.md)
+  - [Contributing](coc.md)
+  - [Frameworks](frameworks.md)

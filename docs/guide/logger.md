@@ -1,6 +1,6 @@
 # Logger
 
-Ambiorix comes with a basic logger to record happenings in the server, this is stored in an `ambiorix.log` file placed in the root of the project.
+Ambiorix comes with a basic logger to record happenings in the server, this is stored in an `ambiorix.log` file placed in the root of the project. __The automatic and manual loggers can be used together.__
 
 <!-- panels:start -->
 <!-- div:title-panel -->
