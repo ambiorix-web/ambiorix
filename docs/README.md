@@ -9,25 +9,45 @@
 
 Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and inspired by [express.js](https://github.com/expressjs/express).
 
-## Install
+<!-- panels:start -->
+<!-- div:title-panel -->
 
-Ambiorix is an R package than can be installed from github.
+## Features
+
+<!-- div:left-panel -->
+
+Ambiorix is unopinionated giving you flexibility. 
+
+## Web Apps
+
+Build multi-page or single-page web applications.
+
+## APIs
+
+Quickly build web RESTful APIs.
+
+## Websocket
+
+Support for bidirectional websocket communication.
+
+<!-- div:right-panel -->
+
+Basic example:
 
 ```r
-# install.packages("ambiorix")
-remotes::install_github("JohnCoene/ambiorix")
-```
-
-## Example
-
-``` r
 library(ambiorix)
 
 app <- Ambiorix$new()
 
 app$get("/", function(req, res){
-  res$send("Hello!")
+  res$send("Using {ambiorix}!")
+})
+
+app$get("/about", function(req, res){
+  res$send("About page")
 })
 
 app$start()
 ```
+
+<!-- panels:end -->

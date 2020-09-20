@@ -5,7 +5,12 @@ Ambiorix allows using parameters in the URL and also parses the query string for
 - Parameters are accessible at `req$params$param_name`
 - Query are accessible at `req$query$query_name` or `req$query[[index]]` if unnamed.
 
+<!-- panels:start -->
+<!-- div:title-panel -->
+
 ## Parameters
+
+<!-- div:left-panel -->
 
 Use `:<param>` to indicate a parameter which can then be accessed with `req$params$<name>`.
 
@@ -21,11 +26,21 @@ app$get("/books/:category", function(req, res){
 app$start()
 ```
 
+<!-- div:right-panel -->
+
 Visiting `/books/fiction` produces:
 
 ![](../_assets/parameters.png)
 
+<!-- panels:end -->
+
+
+<!-- panels:start -->
+<!-- div:title-panel -->
+
 ## Query
+
+<!-- div:left-panel -->
 
 The parsed query string can also be accessed from the `req` object.
 
@@ -41,7 +56,11 @@ app$get("/hello", function(req, res){
 app$start()
 ```
 
+<!-- div:right-panel -->
+
 Visiting `/hello?firstname=John&lastname=Coene` produces:
 
 ![](../_assets/query.png)
+
+<!-- panels:end -->
 

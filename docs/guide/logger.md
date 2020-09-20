@@ -2,7 +2,10 @@
 
 Ambiorix comes with a basic logger to record happenings in the server, this is stored in an `ambiorix.log` file placed in the root of the project.
 
+<!-- panels:start -->
+<!-- div:title-panel -->
 ## Auto
+<!-- div:left-panel -->
 
 You can switch on the logging either with the `ambiorix.logger` option or when instantiating the application.
 
@@ -22,6 +25,8 @@ app$get("/about", function(req, res){
 app$start()
 ```
 
+<!-- div:right-panel -->
+
 Visiting both routes gives the following log.
 
 ```
@@ -32,8 +37,13 @@ Visiting both routes gives the following log.
 > 2020-09-20 13:47:48 - Server stopped
 ```
 
-## Manual
+<!-- panels:end -->
 
+
+<!-- panels:start -->
+<!-- div:title-panel -->
+## Manual
+<!-- div:left-panel -->
 The logger used internally (above) is exported and can be used by developers: this will work regardless of whether the internal logger is on or off. Note that it will automatically prepend every event logged with the time at which it happened.
 
 ```r
@@ -56,10 +66,12 @@ app$get("/about", function(req, res){
 
 app$start()
 ```
-
+<!-- div:right-panel -->
 Visiting both routes gives the following log.
 
 ```
 > 2020-09-20 13:48:34 - Home was visited
 > 2020-09-20 13:48:41 - About page was just viewed
 ```
+<!-- panels:end -->
+
