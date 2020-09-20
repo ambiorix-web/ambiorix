@@ -7,7 +7,7 @@ Route <- R6::R6Class(
     dynamic = FALSE,
     initialize = function(path){
       assert_that(not_missing(path))
-      self$path <- path
+      self$path <- gsub("\\?.*$", "", path) # remove query
       self$dynamic <- grepl(":", path)
       self$decompose()
       self$as_pattern()
