@@ -28,7 +28,7 @@ app$get("/", function(req, res){
 })
 
 app$post("/submit", function(req, res){
-  body <- mime::parse_multipart(req$body)
+  body <- parse_multipart(req$body)
   res$send(h1("Your name is", body$first_name))
 })
 
