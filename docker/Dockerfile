@@ -1,4 +1,7 @@
 FROM rocker/r-ver:latest
+RUN apt-get update && apt-get install -y \
+  git-core \
+  libssl-dev
 RUN echo "options(repos = c(CRAN = 'https://packagemanager.rstudio.com/all/latest'))" >> /usr/local/lib/R/etc/Rprofile.site
 RUN R -e 'install.packages("remotes")'
 RUN R -e 'remotes::install_github("JohnCoene/ambiorix")'
