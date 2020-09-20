@@ -21,7 +21,8 @@ Imports:
     httpuv,
     promises,
     jsonlite,
-    assertthat
+    websocket,
+    assertthat,
 Suggests:
     mime,
     readr,

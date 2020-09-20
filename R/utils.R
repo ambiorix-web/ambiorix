@@ -114,3 +114,20 @@ check_installed <- function(pkg){
   if(has_it)
     stop(sprintf("This function requires the package {%s}", pkg), call. = FALSE)
 }
+
+#' Retrieve Port
+#' 
+#' Retrieve the port to use.
+#' 
+#' @param port Input port, optional.
+#' 
+#' @return A port number.
+#' 
+#' @noRd
+#' @keywords internal
+get_port <- function(port = NULL){
+  if(!is.null(port))
+    return(port)
+
+  httpuv::randomPort()
+}

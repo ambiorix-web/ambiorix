@@ -39,8 +39,7 @@ Ambiorix <- R6::R6Class(
 #' @param port Integer defining the port, defaults to `ambiorix.port` option: uses a random port if `NULL`.
     initialize = function(host = getOption("ambiorix.host", "0.0.0.0"), port = getOption("ambiorix.port", NULL)){
 
-      if(is.null(port))
-        port <- httpuv::randomPort()
+      port <- get_port(port)
 
       private$.host <- host
       private$.port <- as.integer(port)
@@ -389,10 +388,9 @@ Ambiorix <- R6::R6Class(
           req <- Request$new(req, private$.routes[[i]]$route)
 
           # get response
-          response <- tryCatch(
-            private$.routes[[i]]$fun(req, private$.routes[[i]]$res),
+          response <- tryCatch(private$.routes[[i]]$fun(req, private$.routes[[i]]$res),
             error = function(error){
-              message(error)
+              warning(error)
               private$.routes[[i]]$error(req, private$.routes[[i]]$res)
             }
           )
@@ -441,6 +439,7 @@ Ambiorix <- R6::R6Class(
 
         for(i in 1:length(private$.receivers)){
           if(private$.receivers[[i]]$is_handler(message)){
+            cli::cli_alert_info("Received websocket message: {.val {message$name}}")
             return(private$.receivers[[i]]$receive(message, ws))
           }
         }
