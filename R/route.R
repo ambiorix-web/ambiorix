@@ -15,7 +15,7 @@ Route <- R6::R6Class(
     as_pattern = function(){
       pattern <- sapply(self$components, function(comp){
         if(comp$dynamic)
-          return("[[:alnum:]]*")
+          return("[[:alnum:][:space:][:punct:]]*")
 
         return(comp$name)
       })
