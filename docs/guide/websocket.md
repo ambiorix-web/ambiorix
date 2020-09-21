@@ -16,7 +16,7 @@ app$receive("hello", function(msg, ws){
 
 ## JavaScript
 
-Messages sent from the server can be client-side with the JavaScript websocket library or using the `Ambiorix` class. It provides a static method to send messages through the websocket, like other method in R it accepts 1) the `name` of the message and 2) the `message` itself: `Ambiorix.send('hello', 'Hello from the client')`.
+Messages sent from the server can be handled client-side with the JavaScript websocket library or using the `Ambiorix` class. It provides a static method to send messages through the websocket, like other methods in R it accepts 1) the `name` of the message and 2) the `message` itself: `Ambiorix.send('hello', 'Hello from the client')`.
 
 One can also instantiate the class to add handlers with `receive` method then run `start` to have the handlers actually listen to incoming messages.
 
@@ -92,7 +92,7 @@ app$get("/", function(req, res){
   res$send_file("home")
 })
 
-# websocket 
+# socket 
 app$receive("hello", function(msg, ws){
   print(msg)
   ws$send("hello", "Hello back! (sent from R)")

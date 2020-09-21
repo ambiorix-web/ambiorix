@@ -22,7 +22,8 @@ The response (message) served by the server upon request, these must be the retu
 
 ##### Method
 
-Requests can take have different methods, when one points their browser at a URL effectively the browser makes a `GET` request, to respond to this request using ambiorix one can use the `get` method. An HTML form (e.g.: login form) generally `POST`s data which can be handled with ambiorix using `post`, etc.
+1. Requests can take have different methods, when one points their browser at a URL effectively the browser makes a `GET` request, to respond to this request using ambiorix one can use the `get` method. An HTML form (e.g.: login form) generally `POST`s data which can be handled with ambiorix using `post`, etc.
+2. A method may also be used in the object-oriented programming (OOP) sense.
 
 ##### Parser
 

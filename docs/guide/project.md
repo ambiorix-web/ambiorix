@@ -203,3 +203,23 @@ To produce the following output.
 </body>
 </html>
 ```
+
+### Add Templates
+
+There is also a convenience function to add templates.
+
+<!-- tabs:start -->
+
+#### ** CLI **
+
+```bash
+ambiorix-cli template about
+```
+
+#### ** R **
+
+```r
+ambiorix::add_template("about")
+```
+
+<!-- tabs:end -->
