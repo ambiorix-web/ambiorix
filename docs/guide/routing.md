@@ -18,6 +18,18 @@ app$get("/about", function(req, res){
 app$start()
 ```
 
+In the app above when the client (browser) points to `/about` the server goes over the handlers in the order they are specified looking for a match, the first `/` does not match, the second `/about` does; it therefore runs the `handler` which sends a response back.
+
+```mermaid
+flowchart LR
+  subgraph server
+    h1(handler /) --> h2(handler /about)
+  end
+
+  C[client] --> |request /about| server;
+  h2 ----> |response | C;
+```
+
 ## Handler
 
 The handler function used for every route __must take 2 arguments__: the request, and the response. The first holds data on the request that is made to the server, which contains many things but importantly includes `parameters` and the parsed `query` string. You can learn more about these in the [parameters and query ](/guide/params) section.
