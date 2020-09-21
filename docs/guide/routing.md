@@ -20,7 +20,7 @@ app$start()
 
 ## Handler
 
-The handler function used for every route __must take 2 arguments_: the request, and the response. The first holds data on the request that is made to the server, which contains many things but importantly includes `parameters` and the parsed `query` string. You can learn more about these the [parameters and query ](/guide/params) section.
+The handler function used for every route __must take 2 arguments__: the request, and the response. The first holds data on the request that is made to the server, which contains many things but importantly includes `parameters` and the parsed `query` string. You can learn more about these the [parameters and query ](/guide/params) section.
 
 ```r
 library(ambiorix)
