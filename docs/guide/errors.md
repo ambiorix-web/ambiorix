@@ -33,6 +33,6 @@ Alternatively one can specify errors specific to certain routes, if these are no
 app$get("/error", function(req, res){
   print(eRrOr)
 }, function(req, res){
-  res$send("This is an error on /error", status = 500)
+  res$send("This is an error on /error", status = 500L)
 })
 ```

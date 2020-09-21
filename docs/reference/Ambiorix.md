@@ -30,6 +30,7 @@ Add routes
 
 - `path`: Path to check, when found runs `handler`.
 - `handler`: Callback function that _must_ accept two arguments `req`, and `res`. The former is the request, the latter the response.
+- `error`: A handler function to run when the `handler` errors, if none is specified then the global error is used instead (see [errors](/guide/errors)).
 
 ```r
 app$get("/", function(req, res){
