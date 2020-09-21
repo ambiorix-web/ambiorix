@@ -36,8 +36,9 @@
 
   - [Post](examples/post.md)
   - [API](examples/api.md)
+  - [Shiny](examples/shiny.md)
 
-- Good to know
+- Info
 
   - [Glossary](_glossary.md)
   - [Changelog](changelog.md)
