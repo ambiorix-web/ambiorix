@@ -60,7 +60,7 @@ We can then simplify `app.R`: it needs to source the router from `router.R`, the
 ```r
 library(ambiorix)
 
-# import all R files in route directory
+# import all R files in root directory
 import("/")
 
 # core app
