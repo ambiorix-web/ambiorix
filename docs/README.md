@@ -52,6 +52,8 @@ app$start()
 
 <!-- panels:end -->
 
+See also the [CLI](https://github.com/JohnCoene/ambiorix-cli), the [generator](https://github.com/JohnCoene/ambiorix.generator) package, and the [docker](https://hub.docker.com/r/jcoenep/ambiorix) image.
+
 ## Contributing
 
 Please note that the ambiorix project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.

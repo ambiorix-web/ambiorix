@@ -8,6 +8,8 @@
 create_ambiorix <- function(path){
   assert_that(not_missing(path))
 
+  .Deprecated("create_basic", package = "ambiorix.generator")
+
   if(dir.exists(path))
     stop("Path already exists", call. = FALSE)
 

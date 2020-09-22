@@ -9,7 +9,7 @@
 [![Travis build status](https://img.shields.io/travis/com/JohnCoene/ambiorix?style=flat-square)](https://travis-ci.com/JohnCoene/ambiorix)
 <!-- badges: end -->
 
-[Website](https://ambiorix.john-coene.com) | [CLI](https://github.com/JohnCoene/ambiorix-cli) | [Docker](https://hub.docker.com/r/jcoenep/ambiorix)
+[Website](https://ambiorix.john-coene.com) | [CLI](https://github.com/JohnCoene/ambiorix-cli) | [Generator](https://github.com/JohnCoene/ambiorix.generator) | [Docker](https://hub.docker.com/r/jcoenep/ambiorix)
 
 Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and inspired by [express.js](https://github.com/expressjs/express).
 

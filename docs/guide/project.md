@@ -5,7 +5,7 @@ The easiest way to get setup by creating an ambiorix project. This will setup a 
 
 ## Project 
 
-Create the project with `create_ambiorix` or with the [ambiorix-cli](https://github.com/JohnCoene/ambiorix-cli).
+Create the project with the [ambiorix.generator](https://github.com/JohnCoene/amborix.generator) or with the [ambiorix-cli](https://github.com/JohnCoene/ambiorix-cli).
 
 <!-- tabs:start -->
 
@@ -18,10 +18,12 @@ ambiorix-cli create myapp
 #### ** R **
 
 ```r
-ambiorix::create_ambiorix("myapp")
+ambiorix.generator::create_basic("myapp")
 ```
 
 <!-- tabs:end -->
+
+_There are a number of other templates to start from._
 
 This creates a directory with the following file structure.
 
