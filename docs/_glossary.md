@@ -40,3 +40,7 @@ A UI file (HTML or R) that can be used and re-used.
 ##### Partial
 
 A piece of HTML code that be inserted into template files.
+
+##### API
+
+Application Programming Interface (API) used in the book to mean REST (or RESTful) API.

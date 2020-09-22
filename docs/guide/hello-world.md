@@ -22,6 +22,10 @@ app$get("/", function(req, res){
   res$send("Using {ambiorix}!")
 })
 
+app$get("/about", function(req, res){
+  res$text("About")
+})
+
 app$start()
 ```
 
