@@ -5,7 +5,7 @@ The easiest way to get setup by creating an ambiorix project. This will setup a 
 
 ## Project 
 
-Create the project with the [ambiorix.generator](https://github.com/JohnCoene/amborix.generator) or with the [ambiorix-cli](https://github.com/JohnCoene/ambiorix-cli).
+Create the project with the [ambiorix.generator](https://github.com/JohnCoene/ambiorix.generator) or with the [ambiorix-cli](https://github.com/JohnCoene/ambiorix-cli).
 
 <!-- tabs:start -->
 
