@@ -72,6 +72,6 @@ app$get("/next", function(req, res){
 app$start()
 ```
 
-If no route are match the requested path then ambiorix runs the `404`/`not_found` handler, see [not found](guide/not-found). 
+If no route are matched the requested path then ambiorix runs the `404`/`not_found` handler, see [not found](guide/not-found). 
 
 Routing is crucial to ambiorix, it therefore also comes with a [router](guide/router) to better structure complex routing for large applications.
