@@ -9,8 +9,6 @@
 
 Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and inspired by [express.js](https://github.com/expressjs/express).
 
-__This is a beta version, do not use this in production__
-
 <!-- panels:start -->
 <!-- div:title-panel -->
 
