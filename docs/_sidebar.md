@@ -36,7 +36,8 @@
 
   - [Post](examples/post.md)
   - [API](examples/api.md)
-  - [Shiny](examples/shiny.md)
+  - [Shiny & Plotly](examples/shiny.md)
+  - [Shiny Input](examples/input.md)
 
 - Info
 

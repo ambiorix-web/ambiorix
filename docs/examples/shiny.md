@@ -102,7 +102,7 @@ Then in HTML we import plotly from the CDN in the `head`, add a button which run
 </head>
 <body>
   <h1>Ambiorix</h1>
-  <button onclick="randomize()">Send a message</button>
+  <button onclick="randomize()">Normalize</button>
   <div id="chart"></div>
   <script>
     randomize = function(){
