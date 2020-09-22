@@ -106,7 +106,7 @@ tags$html(
 res$render("home", data = list(df = robj(cars)))
 ```
 
-Since the `[% tags %]` are internally passed to `glue::glue_data` internally __they can therefore include R code__.
+Since the `[% tags %]` are internally passed to `glue::glue_data` __they can include R code__.
 
 ```r
 # templates/home.R
