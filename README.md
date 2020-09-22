@@ -28,7 +28,7 @@ app$get("/", function(req, res){
 })
 
 app$get("/about", function(req, res){
-  res$send("Hello!")
+  res$send("About page")
 })
 
 app$start()
