@@ -12,7 +12,7 @@ Create the project with the [ambiorix.generator](https://github.com/JohnCoene/am
 #### ** CLI **
 
 ```bash
-ambiorix-cli create myapp
+ambiorix-cli create myapp basic
 ```
 
 #### ** R **
