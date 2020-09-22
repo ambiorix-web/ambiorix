@@ -4,7 +4,7 @@
 
 The easiest way to deploy an ambiorix app is using docker. 
 
-### Pull
+### Existing Image
 
 This project comes with an image you can pull and use.
 
