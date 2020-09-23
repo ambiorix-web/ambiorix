@@ -20,7 +20,6 @@
 
   - [Ambiorix](reference/Ambiorix.md)
   - [Copy Websocket Client](reference/copy_websocket_client.md)
-  - [Create Ambiorix](reference/create_ambiorix.md)
   - [Dockerfile](reference/docker.md)
   - [Forward](reference/forward.md)
   - [Import](reference/import.md)

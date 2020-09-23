@@ -37,7 +37,7 @@ Here we build a shiny application that takes a text input, upon clicking a butto
 
 ## Ambiorix
 
-The easiest way to setup the structure for this application (with websocket support) is to use the [CLI](https://github.com/JohnCoene/ambiorix-cli) or `create_ambiorix()`.
+The easiest way to setup the structure for this application (with websocket support) is to use the [CLI](https://github.com/JohnCoene/ambiorix-cli) or `ambiorix.generator::create_basic()` from the [ambiorix.generator](https://github.com/JohnCoene/ambiorix.generator) package.
 
 The server only responds to one request to the homepage (`/`) to which it sends an HTML file we shall cover next. The server also listens to websocket messages named `textValue` which it sends back as another message with a different name: `setTextValue`.
 
