@@ -16,6 +16,13 @@
   - [Logger](guide/logger.md)
   - [Deployment](guide/deploy.md)
 
+- Examples
+
+  - [Post](examples/post.md)
+  - [API](examples/api.md)
+  - [Shiny & Plotly](examples/shiny.md)
+  - [Shiny Input](examples/input.md)
+
 - Reference
 
   - [Ambiorix](reference/Ambiorix.md)
@@ -30,13 +37,6 @@
   - [Router](reference/Router.md)
   - [Stop](reference/stop_all.md)
   - [Templates](reference/templates.md)
-
-- Examples
-
-  - [Post](examples/post.md)
-  - [API](examples/api.md)
-  - [Shiny & Plotly](examples/shiny.md)
-  - [Shiny Input](examples/input.md)
 
 - Info
 
