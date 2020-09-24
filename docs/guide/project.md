@@ -208,7 +208,7 @@ To produce the following output.
 
 ### Add Templates
 
-There is also a convenience function to add templates.
+There is also a convenience function to add templates in the [generator](https://github.com/JohnCoene/ambiorix.generator).
 
 <!-- tabs:start -->
 
@@ -221,7 +221,7 @@ ambiorix-cli template about
 #### ** R **
 
 ```r
-ambiorix::add_template("about")
+ambiorix.generator::add_template_basic("about")
 ```
 
 <!-- tabs:end -->

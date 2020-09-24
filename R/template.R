@@ -10,6 +10,8 @@ add_template <- function(name, ext = c("html", "R")){
   assert_that(not_missing(name))
   assert_that(fs::dir_exists("templates"), msg = "Missing templates directory")
 
+  .Deprecated("add_template_basic", package = "ambiorix.generator")
+
   # template
   ext <- match.arg(ext)
   template_path <- sprintf("templates/template.%s", ext)
