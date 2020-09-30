@@ -24,7 +24,7 @@ Instantiate an app.
 Ambiorix$new(port = 5000L)
 ```
 
-### Get, post, put, delete, and patch 
+### Get, post, put, delete, patch, and all 
 
 Add routes
 
@@ -37,6 +37,10 @@ app$get("/", function(req, res){
   res$send("Welcome!")
 })
 ```
+
+#### Note 
+
+`all` applies handler to all methods (`GET`, `POST`, `PUT`, `DELETE`, and `PATCH`).
 
 ### Details
 

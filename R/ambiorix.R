@@ -196,6 +196,31 @@ Ambiorix <- R6::R6Class(
 
       invisible(self)
     },
+#' @details All Methods
+#' 
+#' Add routes to listen to for all methods `GET`, `POST`, `PUT`, `DELETE`, and `PATCH`.
+#' 
+#' @param path Route to listen to.
+#' @param handler Function that accepts the request and returns an object 
+#' describing an httpuv response, e.g.: [response()].
+#' @param error Handler function to run on error.
+    all = function(path, handler, error = NULL){
+      assert_that(valid_path(path))
+      assert_that(not_missing(handler))
+
+      for(method in c("GET", "POST", "PUT", "DELETE", "PATCH")){
+      private$.routes[[uuid()]] <- list(
+          route = Route$new(path), 
+          path = path, 
+          fun = handler, 
+          method = method,
+          res = Response$new(),
+          error = error %error% self$error
+        )
+      }
+
+      invisible(self)
+    },
 #' @details Sets the 404 page.
 #' @param handler Function that accepts the request and returns an object 
 #' describing an httpuv response, e.g.: [response()].
