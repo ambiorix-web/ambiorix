@@ -38,7 +38,7 @@ app$get("/", function(req, res){
 })
 ```
 
-#### Note 
+**Note** 
 
 `all` applies handler to all methods (`GET`, `POST`, `PUT`, `DELETE`, and `PATCH`).
 
@@ -121,4 +121,16 @@ Specify port to listen on.
 
 ```r
 app$listen(3000L)
+```
+
+### Use 
+
+Use a router or middleware.
+
+- `use`: use Either a router as returned by [Router] or a function to use as middleware. If a function is passed, it must accept a single argument (the request): this function will be executed every time the server receivers a request.
+
+```r
+app$use(function(req){
+  print(Sys.time())
+})
 ```

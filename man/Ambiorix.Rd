@@ -616,18 +616,20 @@ Print
 \if{latex}{\out{\hypertarget{method-use}{}}}
 \subsection{Method \code{use()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$use(router)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$use(use)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{router}}{The router as returned by \link{Router}.}
+\item{\code{use}}{Either a router as returned by \link{Router} or a function to use as middleware.
+If a function is passed, it must accept a single argument (the request): this function
+will be executed every time the server receivers a request.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-Use a router
+Use a router or middleware
 }
 
 }

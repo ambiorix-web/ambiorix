@@ -377,14 +377,23 @@ Ambiorix <- R6::R6Class(
       cli::cli_rule("Ambiorix", right = "web server")
       cli::cli_li("routes: {.val {private$.nRoutes()}}")
     },
-#' @details Use a router
-#' @param router The router as returned by [Router].
-    use = function(router){
-      if(!inherits(router, "Router"))
-        stop("Must be a router, see Router")
+#' @details Use a router or middleware
+#' @param use Either a router as returned by [Router] or a function to use as middleware.
+#' If a function is passed, it must accept a single argument (the request): this function
+#' will be executed every time the server receivers a request.
+    use = function(use){
 
-      private$.routes <- append(private$.routes, router$routes())
-      private$.receivers <- append(private$.routes, router$receivers())
+      assert_that(not_missing(use))
+      
+      # mount router
+      if(inherits(use, "Router")){
+        private$.routes <- append(private$.routes, use$routes())
+        private$.receivers <- append(private$.routes, use$receivers())
+      } else if(is.function(use)) { # pass middleware
+        args <- formalArgs(use)
+        assert_that(length(args) == 1, msg = "Use function must accept one argument: the request")
+        private$.middleware <- use
+      }
 
       invisible(self)
     }
@@ -405,7 +414,11 @@ Ambiorix <- R6::R6Class(
     .routes = list(),
     .static = list(),
     .receivers = list(),
+    .middleware = NULL,
     .call = function(req){
+
+      if(!is.null(private$.middleware))
+        private$.middleware()
 
       # loop over routes
       for(i in 1:length(private$.routes)){
