@@ -30,12 +30,37 @@
     }
     :root{
       --highlightColor: #8d442d !important;
+      --coverBackground: #fafaf7 !important;
     } 
+    .cover::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url("_assets/celts.jpg");
+      filter: grayscale(.8) blur(7px);
+      background-size: cover;
+    }
+    .cover-main{
+      color: white !important;
+    }
+    .cover a, .cover span{
+      color:white !important;
+      border-color: white !important;
+    }
+    .cover h1{
+      font-size: 4em !important;
+    }
+    .cover blockquote{
+      font-size: 2rem !important;
+    }
+    #navig{
+      color:white;
+    }
   </style>
 </head> 
 <body>
-  <nav>
-    <a href="#/">Home</a>
+  <nav id="navig">
     <a href="https://github.com/JohnCoene/ambiorix-cli" target="_blank">CLI</a>
     <a href="https://github.com/JohnCoene/ambiorix.generator" target="_blank">Generator</a>
     <a href="https://hub.docker.com/r/jcoenep/ambiorix" target="_blank">Docker</a>
@@ -50,6 +75,7 @@
       loadNavbar: true,
       auto2top: true,
       notFoundPage: true,
+      coverpage: true,
       ga: 'UA-74544116-1',
       search : [
         '/',
