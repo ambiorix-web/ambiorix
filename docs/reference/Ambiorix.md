@@ -127,7 +127,7 @@ app$listen(3000L)
 
 Use a router or middleware.
 
-- `use`: use Either a router as returned by [Router] or a function to use as middleware. If a function is passed, it must accept a single argument (the request): this function will be executed every time the server receivers a request.
+- `use`: use Either a router as returned by [Router] or a function to use as middleware. If a function is passed, it must accept two arguments (the request, and the response): this function will be executed every time the server receivers a request. _Middleware does not have to return a response, unlike other methods such as `get`_
 
 ```r
 app$use(function(req){

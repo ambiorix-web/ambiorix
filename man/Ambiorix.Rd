@@ -623,8 +623,9 @@ Print
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{use}}{Either a router as returned by \link{Router} or a function to use as middleware.
-If a function is passed, it must accept a single argument (the request): this function
-will be executed every time the server receivers a request.}
+If a function is passed, it must accept two arguments (the request, and the response):
+this function will be executed every time the server receivers a request.
+\emph{Middleware does not have to return a response, unlike other methods such as \code{get}}}
 }
 \if{html}{\out{</div>}}
 }
