@@ -3,6 +3,7 @@
 - Guide
   
   - [Hello World](guide/hello-world.md)
+  - [From Shiny](guide/from-shiny)
   - [Routing](guide/routing.md)
   - [Parameters & Query](guide/params.md)
   - [Project & Templates](guide/project.md)

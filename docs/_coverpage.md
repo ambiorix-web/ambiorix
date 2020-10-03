@@ -2,5 +2,5 @@
 
 > A web framework for R inspired by express.js
 
-[GitHub](https://github.com/JohnCoene/ambiorix/)
+[From shiny](/guide/from-shiny)
 [Hello World](/guide/hello-world)

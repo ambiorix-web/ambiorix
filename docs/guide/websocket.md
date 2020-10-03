@@ -7,7 +7,7 @@ You can listen to incoming messages with the `receive` method which takes 1) the
 Below a handler listening to the message `hello`, prints the message and uses the websocket to send a response.
 
 ```r
-# websocket 
+# listen to incoming messages
 app$receive("hello", function(msg, ws){
   print(msg)
   ws$send("hello", "Hello back! (sent from R)")
