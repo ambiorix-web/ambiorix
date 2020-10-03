@@ -33,7 +33,7 @@ When setting up a project with `create_ambiorix` an `ambiorix.js` file is placed
 The `Ambiorix` object has two classes, `send` which is static and thus can be used without instantiating the class.
 
 ```js
-Ambiorix$send('messageName', 'Sent from the server')
+Ambiorix.send('messageName', 'Sent from the server')
 ```
 
 And `receive`, a method to add listeners, very much like the `receive` method in R, this also takes the name of the message as first argument and the callback function as second argument.
