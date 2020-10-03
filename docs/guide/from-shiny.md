@@ -2,7 +2,7 @@
 
 Though both [shiny](https://github.com/rstudio/shiny) and ambiorix are built on top of the same package, [httpuv](https://github.com/rstudio/httpuv), they work very differently. 
 
-While shiny is meant to build single page applications (SPA) with heavy bi-directional communication between the server and client via websocket, ambiorix is certainly not as opinionated and though one can build applications very similar to shiny applications (SPA) using websockets since it allows multiple page one is likely to make use of those instead.
+While shiny is meant to build single page applications (SPA) with heavy bi-directional communication between the server and client via websocket, ambiorix is certainly not as opinionated and though one can build applications very similar to shiny applications (SPA) using websockets with ambiorix since it allows multiple pages one is likely to make use of those instead.
 
 ## Inputs
 
@@ -27,3 +27,5 @@ app$post("/submit", function(req, res){
   res$send(h1("Your name is", body$first_name))
 })
 ```
+
+It will likely always be faster and easier to create applications with shiny!
