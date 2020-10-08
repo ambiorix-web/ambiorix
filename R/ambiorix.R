@@ -382,6 +382,7 @@ Ambiorix <- R6::R6Class(
 #' If a function is passed, it must accept two arguments (the request, and the response): 
 #' this function will be executed every time the server receives a request.
 #' _Middleware may but does not have to return a response, unlike other methods such as `get`_
+#' Note that multiple routers and middlewares can be used.
     use = function(use){
 
       assert_that(not_missing(use))
@@ -393,7 +394,7 @@ Ambiorix <- R6::R6Class(
       } else if(is.function(use)) { # pass middleware
         args <- formalArgs(use)
         assert_that(length(args) == 2, msg = "Use function must accept two arguments: the request, and the response")
-        private$.middleware <- use
+        private$.middleware <- append(private$.middleware, use)
       }
 
       invisible(self)
@@ -415,14 +416,18 @@ Ambiorix <- R6::R6Class(
     .routes = list(),
     .static = list(),
     .receivers = list(),
-    .middleware = NULL,
+    .middleware = list(),
     .call = function(req){
 
       if(!is.null(private$.middleware)){
-        res <- private$.middleware(Request$new(req), Response$new())
+        args <- list(Request$new(req), Response$new())
+        res <- lapply(private$.middleware, do.call, args = args)
 
         if(inherits(res, "ambiorixResponse"))
           return(res)
+
+          if(inherits(response, "forward"))
+            return()
       }
 
       # loop over routes
