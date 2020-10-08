@@ -1,3 +1,5 @@
+.requests <- new.env()
+
 #' Preprocess Request
 #' 
 #' @noRd 
@@ -39,7 +41,7 @@ Request <- R6::R6Class(
     body = NULL,
     query = list(),
     params = list(),
-    initialize = function(req, route = NULL){
+    initialize = function(req){
       self$HEADERS <- req$HEADERS
       self$HTTP_ACCEPT <- req$HTTP_ACCEPT
       self$HTTP_ACCEPT_ENCODING <- req$HTTP_ACCEPT_ENCODING
@@ -74,12 +76,6 @@ Request <- R6::R6Class(
       self$body <- req
 
       private$.parse_query_string(req$QUERY_STRING)
-
-      if(is.null(route))
-        return(self)
-
-      if(route$dynamic)
-        private$.parse_path(route$components, req$PATH_INFO)
 
     },
     print = function(){
@@ -122,10 +118,28 @@ Request <- R6::R6Class(
         cli::cli_li("query: {.val query}")
         str(self$query)
       }
+    },
+    set = function(name, value){
+      assert_that(not_missing(name))
+      assert_that(not_missing(value))
+
+      name <- deparse(substitute(name))
+      .requests[[name]] <- value
+    },
+    get = function(name){
+      assert_that(not_missing(name))
+
+      name <- deparse(substitute(name))
+      .requests[[name]]
     }
   ),
   private = list(
     .parse_query_string = function(query){
+      if(is.null(query)){
+        self$query <- list()
+        return()
+      }
+
       if(query == ""){
         self$query <- list()
         return()
@@ -147,22 +161,38 @@ Request <- R6::R6Class(
 
       self$query <- as.list(lst)
       invisible()
-    },
-    .parse_path = function(params, path){
-      path_split <- strsplit(path, "/")[[1]]
-      path_split <- path_split[path_split != ""]
-
-      nms <- c()
-      pms <- list()
-      for(i in 1:length(path_split)){
-        if(params[[i]]$dynamic){
-          nms <- c(nms, params[[i]]$name)
-          pms <- append(pms, URLdecode(path_split[i]))
-        }
-      }
-
-      names(pms) <- nms
-      self$params <- pms
     }
   )
 )
+
+#' Set Parameters
+#' 
+#' Set the query's parameters.
+#' 
+#' @param path Correspond's the the requests' `PATH_INFO`
+#' @param route See `Route`
+#' 
+#' @return Parameter list
+set_params <- function(path, route = NULL){
+
+  if(is.null(route))
+    return(list())
+
+  if(!route$dynamic)
+    return(list())
+
+  path_split <- strsplit(path, "/")[[1]]
+  path_split <- path_split[path_split != ""]
+
+  nms <- c()
+  pms <- list()
+  for(i in 1:length(path_split)){
+    if(route$components[[i]]$dynamic){
+      nms <- c(nms, route$components[[i]]$name)
+      pms <- append(pms, utils::URLdecode(path_split[i]))
+    }
+  }
+
+  names(pms) <- nms
+  return(pms)
+}

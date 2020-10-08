@@ -8,6 +8,7 @@
   - [Parameters & Query](guide/params.md)
   - [Project & Templates](guide/project.md)
   - [Response](guide/response.md)
+  - [Middleware](guide/middleware.md)
   - [Router](guide/router.md)
   - [Websocket](guide/websocket.md)
   - [404](guide/not-found.md)

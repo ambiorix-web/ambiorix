@@ -4,6 +4,7 @@
 - Deprecate `add_template`: moving to [ambiorix.generator](https://github.com/JohnCoene/ambiorix.generator) package.
 - Added `all` method to define route and handler for all methods `GET`, `POST`, `PUT`, `DELETE`, and `PATCH`.
 - The `use` method now accepts a function which is run every time the server receives a request.
+- Add `set` and `get` to request to add and retrieve params (namely with the middleware)
 
 # ambiorix 1.0.0
 

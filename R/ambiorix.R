@@ -419,15 +419,20 @@ Ambiorix <- R6::R6Class(
     .middleware = list(),
     .call = function(req){
 
+      # empty requests environment
+      rm(list = ls(envir = .requests), envir = .requests) 
+
+      request <- Request$new(req)
+
       if(!is.null(private$.middleware)){
-        args <- list(Request$new(req), Response$new())
+        args <- list(request, Response$new())
         res <- lapply(private$.middleware, do.call, args = args)
 
         if(inherits(res, "ambiorixResponse"))
           return(res)
 
-          if(inherits(response, "forward"))
-            return()
+        if(inherits(response, "forward"))
+          return()
       }
 
       # loop over routes
@@ -439,13 +444,13 @@ Ambiorix <- R6::R6Class(
           private$.logger$write(req$REQUEST_METHOD, "on", req$PATH_INFO, "by", paste0("'", req$HTTP_USER_AGENT, "'"))
 
           # parse request
-          req <- Request$new(req, private$.routes[[i]]$route)
+          request$params <- set_params(request$PATH_INFO, private$.routes[[i]]$route)
 
           # get response
-          response <- tryCatch(private$.routes[[i]]$fun(req, private$.routes[[i]]$res),
+          response <- tryCatch(private$.routes[[i]]$fun(request, private$.routes[[i]]$res),
             error = function(error){
               warning(error)
-              private$.routes[[i]]$error(req, private$.routes[[i]]$res)
+              private$.routes[[i]]$error(request, private$.routes[[i]]$res)
             }
           )
 
@@ -461,7 +466,7 @@ Ambiorix <- R6::R6Class(
                 onRejected = function(error){
                   message(error)
                   private$.logger$write(req$REQUEST_METHOD, "on", req$PATH_INFO, "-", "Server error")
-                  private$.routes[[i]]$error(req, private$.routes[[i]]$res)
+                  private$.routes[[i]]$error(request, private$.routes[[i]]$res)
                 }
               )
             )
@@ -478,10 +483,11 @@ Ambiorix <- R6::R6Class(
       }
 
       cli::cli_alert_warning("{req$REQUEST_METHOD} {.val {req$PATH_INFO}} - Not found")
-      private$.logger$write(req$REQUEST_METHOD, "on", req$PATH_INFO, "- Not found")
+      private$.logger$write(request$REQUEST_METHOD, "on", request$PATH_INFO, "- Not found")
 
       # return 404
-      return(self$not_found(Request$new(req, Route$new(req$PATH_INFO)), Response$new()))
+      request$params <- set_params(request$PATH_INFO, Route$new(request$PATH_INFO))
+      return(self$not_found(request, Response$new()))
     },
     .wss = function(ws){
 
