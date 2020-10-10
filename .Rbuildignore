@@ -12,3 +12,4 @@ test.R
 docker/
 ^CODE_OF_CONDUCT\.md$
 ^FUNDING\.yml$
+^\.github$

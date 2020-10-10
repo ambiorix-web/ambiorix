@@ -10,6 +10,7 @@
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom utils browseURL
+#' @importFrom methods formalArgs
 #' 
 #' @examples 
 #' app <- Ambiorix$new()

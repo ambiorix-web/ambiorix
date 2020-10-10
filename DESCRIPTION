@@ -19,6 +19,7 @@ Imports:
     glue,
     here,
     httpuv,
+    methods,
     promises,
     jsonlite,
     websocket,
