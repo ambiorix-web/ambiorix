@@ -52,7 +52,9 @@ app$start()
 
 <!-- panels:end -->
 
-See also the [CLI](https://github.com/JohnCoene/ambiorix-cli), the [generator](https://github.com/JohnCoene/ambiorix.generator) package, and the [docker](https://hub.docker.com/r/jcoenep/ambiorix) image.
+See also:
+
+[CLI](https://github.com/JohnCoene/ambiorix-cli) | [generator](https://github.com/JohnCoene/ambiorix.generator) | [docker](https://hub.docker.com/r/jcoenep/ambiorix)
 
 ## Contributing
 
