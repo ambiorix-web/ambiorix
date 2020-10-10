@@ -92,6 +92,7 @@ Ambiorix <- R6::R6Class(
     get = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
+      assert_that(is_handler(handler))
 
       private$.routes[[uuid()]] <- list(
         route = Route$new(path), 
@@ -115,6 +116,7 @@ Ambiorix <- R6::R6Class(
     put = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
+      assert_that(is_handler(handler))
 
       private$.routes[[uuid()]] <- list(
         route = Route$new(path), 
@@ -138,6 +140,7 @@ Ambiorix <- R6::R6Class(
     patch = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
+      assert_that(is_handler(handler))
 
       private$.routes[[uuid()]] <- list(
         route = Route$new(path), 
@@ -161,6 +164,7 @@ Ambiorix <- R6::R6Class(
     delete = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
+      assert_that(is_handler(handler))
 
       private$.routes[[uuid()]] <- list(
         route = Route$new(path), 
@@ -184,6 +188,7 @@ Ambiorix <- R6::R6Class(
     post = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
+      assert_that(is_handler(handler))
 
       private$.routes[[uuid()]] <- list(
         route = Route$new(path), 
@@ -207,6 +212,7 @@ Ambiorix <- R6::R6Class(
     all = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
+      assert_that(is_handler(handler))
 
       for(method in c("GET", "POST", "PUT", "DELETE", "PATCH")){
       private$.routes[[uuid()]] <- list(
@@ -430,9 +436,6 @@ Ambiorix <- R6::R6Class(
 
         if(inherits(res, "ambiorixResponse"))
           return(res)
-
-        if(inherits(response, "forward"))
-          return()
       }
 
       # loop over routes
