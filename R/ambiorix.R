@@ -245,6 +245,8 @@ Ambiorix <- R6::R6Class(
 #' if(interactive())
 #'  app$start()
     set_404 = function(handler){
+      assert_that(not_missing(handler))
+      assert_that(is_handler(handler))
       self$not_found <- handler
       invisible(self)
     },
