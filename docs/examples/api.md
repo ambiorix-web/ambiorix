@@ -35,6 +35,8 @@ app$get("/dataset/:set", function(req, res){
 app$start()
 ```
 
+![](../_assets/api_ex.png)
+
 Note that you can change the serialiser with the `serialiser` method: pass it a function that accepts the data and the three-dot construct (`...`), it should return the JSON.
 
 ```r
