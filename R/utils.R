@@ -111,7 +111,7 @@ replace_partials <- function(file_content, ext = c("html", "R")){
 check_installed <- function(pkg){
   has_it <- base::requireNamespace(pkg, quietly = TRUE)
 
-  if(has_it)
+  if(!has_it)
     stop(sprintf("This function requires the package {%s}", pkg), call. = FALSE)
 }
 
