@@ -5,6 +5,7 @@
 - Added `all` method to define route and handler for all methods `GET`, `POST`, `PUT`, `DELETE`, and `PATCH`.
 - The `use` method now accepts a function which is run every time the server receives a request.
 - Add `set` and `get` to request to add and retrieve params (namely with the middleware)
+- Fix `check_installed`, see [#33](https://github.com/JohnCoene/ambiorix/issues/33)
 
 # ambiorix 1.0.0
 
