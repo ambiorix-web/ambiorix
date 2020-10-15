@@ -1,7 +1,7 @@
 alphanum <- c(1:9, letters)
 
 #' Generate Random UUID
-#' @noRd 
+#' @noRd
 #' @keywords internal
 uuid <- function(){
   x <- sample(alphanum, 20)
@@ -9,13 +9,13 @@ uuid <- function(){
 }
 
 #' Render HTML
-#' 
+#'
 #' Evaluates a string to collect [htmltools::tags], evaluates,
 #' and returns the render HTML as a collapsed string.
-#' 
+#'
 #' @param expr Expression to evaluate.
-#' 
-#' @noRd 
+#'
+#' @noRd
 #' @keywords internal
 render_html <- function(expr){
 
@@ -32,13 +32,13 @@ render_html <- function(expr){
 }
 
 #' Browse App
-#' 
+#'
 #' Browses the application, if RStudio available uses pane.
-#' 
+#'
 #' @param open Whether to open the app.
 #' @param url URL to browse.
-#' 
-#' @noRd 
+#'
+#' @noRd
 #' @keywords internal
 browse_ambiorix <- function(open, url){
   if(!open) return()
@@ -62,24 +62,24 @@ browse_ambiorix <- function(open, url){
 }
 
 #' Remove Extensions
-#' 
+#'
 #' Remove extensions from files.
-#' 
-#' @noRd 
+#'
+#' @noRd
 #' @keywords internal
 remove_extensions <- function(files){
   tools::file_path_sans_ext(files)
 }
 
 #' Replaces Partials Tags
-#' 
+#'
 #' Replaces partials tags `[! partial.html !]` so it can be intrepreted by [glue::glue_data()]
-#' 
+#'
 #' @param file_content Content of the template file containing tags, output of [readLines()]:
 #' a character vector.
 #' @param ext Extension of template file.
-#' 
-#' @noRd 
+#'
+#' @noRd
 #' @keywords internal
 replace_partials <- function(file_content, ext = c("html", "R")){
 
@@ -101,28 +101,28 @@ replace_partials <- function(file_content, ext = c("html", "R")){
 }
 
 #' Checks if Package is Installed
-#' 
+#'
 #' Checks if a package is installed, stops if not.
-#' 
+#'
 #' @param pkg Package to check.
-#' 
-#' @noRd 
+#'
+#' @noRd
 #' @keywords internal
 check_installed <- function(pkg){
   has_it <- base::requireNamespace(pkg, quietly = TRUE)
 
-  if(has_it)
+  if(!has_it)
     stop(sprintf("This function requires the package {%s}", pkg), call. = FALSE)
 }
 
 #' Retrieve Port
-#' 
+#'
 #' Retrieve the port to use.
-#' 
+#'
 #' @param port Input port, optional.
-#' 
+#'
 #' @return A port number.
-#' 
+#'
 #' @noRd
 #' @keywords internal
 get_port <- function(port = NULL){
