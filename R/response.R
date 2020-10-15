@@ -1,13 +1,13 @@
 #' Plain Responses
-#' 
+#'
 #' Plain HTTP Responses.
-#' 
+#'
 #' @param body Body of response.
 #' @param headers HTTP headers.
 #' @param status Response status
-#' 
+#'
 #' @name responses
-#' 
+#'
 #' @export
 response <- function(body, headers = list('Content-Type' = 'text/html'), status = 200L){
   assert_that(not_missing(body))
@@ -30,8 +30,8 @@ response_500 <- function(body = "500: Server Error", headers = list('Content-Typ
 }
 
 #' Construct Response
-#' 
-#' @noRd 
+#'
+#' @noRd
 #' @keywords internal
 construct_response <- function(res){
   structure(res, class = c(class(res), "ambiorixResponse"))
@@ -43,8 +43,8 @@ print.ambiorixResponse <- function(x, ...){
 }
 
 #' Response
-#' 
-#' @noRd 
+#'
+#' @noRd
 #' @keywords internal
 Response <- R6::R6Class(
   "Response",
@@ -95,7 +95,7 @@ Response <- R6::R6Class(
 
       response(status = status, headers = list(Location = path), body = "")
     },
-#' @details Render a template file. 
+#' @details Render a template file.
 #' @param file Template file.
 #' @param data List to fill `[% tags %]`.
 #' @param status Status of the response, if `NULL` uses `self$status`.
@@ -166,12 +166,12 @@ Response <- R6::R6Class(
       check_installed("htmlwidgets")
       if(!inherits(widget, "htmlwidget"))
         stop("This is not an htmlwidget", call. = FALSE)
-      
+
       # save and read
       tmp <- tempfile(fileext = ".html")
       htmlwidgets::saveWidget(widget, tmp, selfcontained = TRUE, ...)
 
-      response(body = paste0(readLines(tmp), collapse = ""), status = private$.get_status(status))
+      response(body = paste0(readLines(tmp), "\n", collapse = ""), status = private$.get_status(status))
     },
     print = function(){
       cli::cli_li("{.code send(body, headers, status)}")
@@ -248,7 +248,7 @@ Response <- R6::R6Class(
         paste0(
           capture.output(
             dput(x)
-          ), 
+          ),
           collapse = ""
         )
         })
@@ -279,24 +279,24 @@ Response <- R6::R6Class(
     .get_status = function(status){
       if(is.null(status))
         return(private$.status)
-      
+
       status
     }
   )
 )
 
 #' Data Object
-#' 
-#' Treats a data element rendered in a response (`res$render`) as 
+#'
+#' Treats a data element rendered in a response (`res$render`) as
 #' a data object and ultimately uses [dput()].
-#' 
+#'
 #' For instance in a template, `x <- [% var %]` will not work with
 #' `res$render(data=list(var = "hello"))` because this will be replace
-#' like `x <- hello` (missing quote): breaking the template. Using `robj` one would 
+#' like `x <- hello` (missing quote): breaking the template. Using `robj` one would
 #' obtain `x <- "hello"`.
-#' 
+#'
 #' @param obj R object to treat.
-#' 
+#'
 #' @export
 robj <- function(obj){
   assert_that(not_missing(obj))
@@ -309,7 +309,7 @@ robj <- function(obj){
   )
 }
 
-#' @export 
+#' @export
 print.robj <- function(x, ...){
   cli::cli_alert_info("R object")
   class(x) <- class(x)[class(x) != "robj"]
