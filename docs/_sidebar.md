@@ -24,6 +24,7 @@
   - [API](examples/api.md)
   - [Shiny & Plotly](examples/shiny.md)
   - [Shiny Input](examples/input.md)
+  - [URL shortener](examples/shortener.md)
 
 - Reference
 
