@@ -17,3 +17,7 @@ If you can from Python, shiny is more like plotly dash while ambiorix is closer 
 [Fiery](https://github.com/thomasp85/fiery) by Thomas Lin Pedersen, though also built on top of httpuv, provides a very different interface:
 
 > Fiery is designed around a clear server life-cycle with events being triggered at specific points during the life-cycle that will call the handlers attached to these events.
+
+## RestRserve
+
+[RestRserve](https://restrserve.org/) is another R package to build "high-performance AND robust microservices and app backends" in R. Moreover its syntax is very similar to Ambiorix.
