@@ -1,5 +1,53 @@
 # Deploying
 
+These are just some of the ways in which one can deploy an ambiorix application.
+
+_Remember to open the open the port used by the application on your server._
+
+## Service
+
+The application can be deployed as a service on any Linux server. Create a new `.service` in the `/etc/systemd/system/` directory.
+
+**Note** that the name of the file defines the name of the service.
+
+```bash
+vim /etc/systemd/system/ambiorix.service
+```
+
+In that `.service` file place the following, it creates a service that runs the application at the defined path (`path/to/app`).
+
+```
+[Unit]
+Description=Ambiorix application
+
+[Service]
+ExecStart=cd path/to/app && /usr/bin/Rscript -e "source('app.R')"
+Restart=on-abnormal
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+```
+
+One the service is added restart the daemon, you might have to run it as `sudo`.
+
+```bash
+systemctl daemon-reload
+```
+
+You can then start and enable the service, again, you might have to run it as `sudo`.
+
+```bash
+systemctl start ambiorix
+systemctl enable ambiorix
+```
+
+Once the app has started, check its status to make sure that everything runs well.
+
+```bash
+systemctl status ambiorix
+```
+
 ## Docker
 
 The easiest way to deploy an ambiorix app is using docker. 
