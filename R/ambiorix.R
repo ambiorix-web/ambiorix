@@ -215,17 +215,15 @@ Ambiorix <- R6::R6Class(
       assert_that(not_missing(handler))
       assert_that(is_handler(handler))
 
-      for(method in c("GET", "POST", "PUT", "DELETE", "PATCH")){
       private$.routes[[uuid()]] <- list(
-          route = Route$new(path), 
-          path = path, 
-          fun = handler, 
-          method = method,
-          res = Response$new(),
-          error = error %error% self$error
-        )
-      }
-
+        route = Route$new(path), 
+        path = path, 
+        fun = handler, 
+        method = c("GET", "POST", "PUT", "DELETE", "PATCH"),
+        res = Response$new(),
+        error = error %error% self$error
+      )
+      
       invisible(self)
     },
 #' @details Sets the 404 page.
@@ -444,7 +442,7 @@ Ambiorix <- R6::R6Class(
       # loop over routes
       for(i in 1:length(private$.routes)){
         # if path matches pattern and method
-        if(grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) && private$.routes[[i]]$method == req$REQUEST_METHOD){
+        if(grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) && req$REQUEST_METHOD %in% private$.routes[[i]]$method){
           
           cli::cli_alert_success("{req$REQUEST_METHOD} {.val {req$PATH_INFO}}")
           private$.logger$write(req$REQUEST_METHOD, "on", req$PATH_INFO, "by", paste0("'", req$HTTP_USER_AGENT, "'"))
