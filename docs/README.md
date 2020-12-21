@@ -3,7 +3,6 @@
 <img src="_assets/ambiorix.png" height = "350px"/>
 
 <!-- badges: start -->
-![](https://img.shields.io/badge/experimental--orange)
 [![Travis build status](https://img.shields.io/travis/com/JohnCoene/ambiorix?style=flat-square)](https://travis-ci.com/JohnCoene/ambiorix)
 [![R build status](https://github.com/JohnCoene/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/JohnCoene/ambiorix/actions)
 <!-- badges: end -->
