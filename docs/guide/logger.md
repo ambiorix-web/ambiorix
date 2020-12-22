@@ -1,8 +1,10 @@
 # Logger
 
-Ambiorix comes with a basic logger to record happenings in the server, this is stored in an `ambiorix.log` file placed in the root of the project. __The automatic and manual loggers can be used together.__
+Ambiorix comes with a basic logger to record happenings in the server, this is stored in an `ambiorix.log` file placed in the root of the project. The automatic and manual loggers can be used together.
 
-_In the medium to long term the logger will be deprecated in favour of the [log](https://log.opifex.org/) package_
+_In the medium to long term the logger will be deprecated in favour of the [log](https://log.opifex.org/) package._
+
+__It is fully compatible with the [log](https://log.opifex.org/) package.__
 
 <!-- panels:start -->
 <!-- div:title-panel -->
@@ -57,12 +59,12 @@ app <- Ambiorix$new()
 logger <- Logger$new()
 
 app$get("/", function(req, res){
-  log$write("Home", "was visited")
+  logger$log("Home", "was visited")
   res$send("hello!")
 })
 
 app$get("/about", function(req, res){
-  log$write("About page", "was just viewed")
+  logger$log("About page", "was just viewed")
   res$send("Me me me")
 })
 
@@ -74,6 +76,41 @@ Visiting both routes gives the following log.
 ```
 > 2020-09-20 13:48:34 - Home was visited
 > 2020-09-20 13:48:41 - About page was just viewed
+```
+<!-- panels:end -->
+
+<!-- panels:start -->
+<!-- div:title-panel -->
+## Log package
+<!-- div:left-panel -->
+The logger used internally (above) is exported and can be used by developers: this will work regardless of whether the internal logger is on or off. Note that it will automatically prepend every event logged with the time at which it happened.
+
+```r
+library(ambiorix)
+
+app <- Ambiorix$new()
+
+# create logger with the log package
+logger <- log::Logger$new()
+
+app$get("/", function(req, res){
+  log$log("Home", "was visited")
+  res$send("hello!")
+})
+
+app$get("/about", function(req, res){
+  log$log("About page", "was just viewed")
+  res$send("Me me me")
+})
+
+app$start()
+```
+<!-- div:right-panel -->
+Visiting both routes gives the following log.
+
+```
+> Home was visited
+> About page was just viewed
 ```
 <!-- panels:end -->
 
