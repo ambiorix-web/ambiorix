@@ -14,18 +14,21 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1.9000
 Imports:
-    fs,
-    cli,
-    glue,
-    here,
-    httpuv,
-    methods,
-    promises,
-    jsonlite,
-    websocket,
-    assertthat,
+  fs,
+  log,
+  cli,
+  glue,
+  here,
+  httpuv,
+  methods,
+  promises,
+  jsonlite,
+  websocket,
+  assertthat
 Suggests:
-    mime,
-    readr,
-    htmltools,
-    htmlwidgets
+  mime,
+  readr,
+  htmltools,
+  htmlwidgets
+Remotes:
+  devOpifex/log

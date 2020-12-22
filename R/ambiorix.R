@@ -42,7 +42,9 @@ Ambiorix <- R6::R6Class(
     initialize = function(host = getOption("ambiorix.host", "0.0.0.0"), port = getOption("ambiorix.port", NULL),
       log = getOption("ambiorix.logger", FALSE)){
 
-      private$.logger <- Logger$new(log)
+      private$.logger <- log::Logger$new(sep = "")
+      private$.logger$predicate <- logPredicate(log)
+
       private$.host <- host
       private$.port <- get_port(port)
       self$not_found <- function(req, res){
@@ -291,7 +293,7 @@ Ambiorix <- R6::R6Class(
       
       # msg
       cli::cli_alert_success("Listening on {url}")
-      private$.logger$write("Listening on", url)
+      private$.logger$log("Listening on", url)
 
       # runs
       self$is_running <- TRUE
@@ -363,7 +365,7 @@ Ambiorix <- R6::R6Class(
     stop = function(){
 
       if(!self$is_running){
-        private$.logger$write("Server not running")
+        private$.logger$log("Server not running")
         cli::cli_alert_warning("Server is not running")
         return(invisible())
       }
@@ -373,7 +375,7 @@ Ambiorix <- R6::R6Class(
         self$on_stop()
 
       private$.server$stop()
-      private$.logger$write("Server stopped")
+      private$.logger$log("Server stopped")
       cli::cli_alert_danger("Server Stopped")
       self$is_running <- FALSE
 
@@ -445,7 +447,7 @@ Ambiorix <- R6::R6Class(
         if(grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) && req$REQUEST_METHOD %in% private$.routes[[i]]$method){
           
           cli::cli_alert_success("{req$REQUEST_METHOD} {.val {req$PATH_INFO}}")
-          private$.logger$write(req$REQUEST_METHOD, "on", req$PATH_INFO, "by", paste0("'", req$HTTP_USER_AGENT, "'"))
+          private$.logger$log(req$REQUEST_METHOD, "on", req$PATH_INFO, "by", paste0("'", req$HTTP_USER_AGENT, "'"))
 
           # parse request
           request$params <- set_params(request$PATH_INFO, private$.routes[[i]]$route)
@@ -469,7 +471,7 @@ Ambiorix <- R6::R6Class(
                 },
                 onRejected = function(error){
                   message(error)
-                  private$.logger$write(req$REQUEST_METHOD, "on", req$PATH_INFO, "-", "Server error")
+                  private$.logger$log(req$REQUEST_METHOD, "on", req$PATH_INFO, "-", "Server error")
                   private$.routes[[i]]$error(request, private$.routes[[i]]$res)
                 }
               )
@@ -487,7 +489,7 @@ Ambiorix <- R6::R6Class(
       }
 
       cli::cli_alert_warning("{req$REQUEST_METHOD} {.val {req$PATH_INFO}} - Not found")
-      private$.logger$write(request$REQUEST_METHOD, "on", request$PATH_INFO, "- Not found")
+      private$.logger$log(request$REQUEST_METHOD, "on", request$PATH_INFO, "- Not found")
 
       # return 404
       request$params <- set_params(request$PATH_INFO, Route$new(request$PATH_INFO))
@@ -506,7 +508,7 @@ Ambiorix <- R6::R6Class(
         for(i in 1:length(private$.receivers)){
           if(private$.receivers[[i]]$is_handler(message)){
             cli::cli_alert_info("Received websocket message: {.val {message$name}}")
-            private$.logger$write("Received message from websocket:",)
+            private$.logger$log("Received message from websocket:",)
             return(private$.receivers[[i]]$receive(message, ws))
           }
         }

@@ -20,14 +20,14 @@ Instantiate a logger.
 Logger$new()
 ```
 
-### Write
+### Log
 
 Write a line to the logger.
 
 - `label`: The event label.
-- `...`:  Any other text to write on the line.
+- `...`:  Any other text to log on the line.
 
 ```r
-Logger$new()$write("Homepage", "was visited!")
+Logger$new()$log("Homepage", "was visited!")
 ```
 

@@ -2,6 +2,8 @@
 
 Ambiorix comes with a basic logger to record happenings in the server, this is stored in an `ambiorix.log` file placed in the root of the project. __The automatic and manual loggers can be used together.__
 
+_In the medium to long term the logger will be deprecated in favour of the [log](https://log.opifex.org/) package_
+
 <!-- panels:start -->
 <!-- div:title-panel -->
 ## Auto

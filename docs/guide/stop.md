@@ -55,7 +55,7 @@ app$start(auto_stop = FALSE)
 app$stop()
 ```
 
-## On close
+## On stop
 
 One can also pass a callback to run when the server closes, this is ideal to do things like closing database connections.
 

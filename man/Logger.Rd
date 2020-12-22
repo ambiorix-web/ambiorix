@@ -21,7 +21,7 @@ log$write("Event", "happened!")
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{log}}{Whether to actually log events to the file.}
+\item{\code{run}}{Whether to actually log events to the file.}
 }
 \if{html}{\out{</div>}}
 }
@@ -30,6 +30,7 @@ log$write("Event", "happened!")
 \itemize{
 \item \href{#method-new}{\code{Logger$new()}}
 \item \href{#method-write}{\code{Logger$write()}}
+\item \href{#method-log}{\code{Logger$log()}}
 \item \href{#method-print}{\code{Logger$print()}}
 \item \href{#method-clone}{\code{Logger$clone()}}
 }
@@ -60,6 +61,28 @@ Initialise
 \subsection{Method \code{write()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Logger$write(label, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{label}}{Label of event to log.}
+
+\item{\code{...}}{Any other text to write alongside.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Write events to log file - deprecated
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-log"></a>}}
+\if{latex}{\out{\hypertarget{method-log}{}}}
+\subsection{Method \code{log()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Logger$log(label, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
