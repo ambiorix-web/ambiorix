@@ -13,3 +13,5 @@ docker/
 ^CODE_OF_CONDUCT\.md$
 ^FUNDING\.yml$
 ^\.github$
+^CRAN-RELEASE$
+^cran-comments\.md$
