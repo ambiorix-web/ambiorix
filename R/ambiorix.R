@@ -42,7 +42,7 @@ Ambiorix <- R6::R6Class(
     initialize = function(host = getOption("ambiorix.host", "0.0.0.0"), port = getOption("ambiorix.port", NULL),
       log = getOption("ambiorix.logger", FALSE)){
 
-      private$.logger <- log::Logger$new(sep = "")
+      private$.logger <- new_log()
       private$.logger$predicate <- logPredicate(log)
 
       private$.host <- host

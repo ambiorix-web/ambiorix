@@ -22,6 +22,12 @@ Logger <- R6::R6Class(
 #' @details Initialise
 #' @param log Whether to log events, if `FALSE` the `write` method does not have any effect.
     initialize = function(log = TRUE){
+      .Deprecated(
+        "Logger", 
+        package = "log",
+        msg = "Use `Logger` from the `log` package or see function `new_log`"
+      )
+
       self$run <- log
 
       if(!log) return(self)
@@ -76,4 +82,32 @@ logPredicate <- function(log){
       log
     }
   )
+}
+
+#' Logger
+#' 
+#' Returns a new logger using the `log` package.
+#' 
+#' @param prefix String to prefix all log messages.
+#' @param write Whether to write the log to the `file`.
+#' @param file Name of the file to dump the logs to, 
+#' only used if `write` is `TRUE`.
+#' @param sep Separator between `prefix` and other 
+#' flags and messages.
+#' 
+#' @return An R& of class `log::Logger`.
+#' 
+#' @export 
+new_log <- function(prefix = ">", write = FALSE, 
+  file = "ambiorix.log", sep = ""){
+
+  log::Logger$new(
+    prefix = prefix,
+    write = write,
+    file = file,
+    sep = sep
+  )$
+    date()$
+    time()
+  
 }

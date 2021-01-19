@@ -1,5 +1,7 @@
 # Logger
 
+__The logger has been deprecated in favour of `Logger` from the [log](https://log.opifex.org) package.__
+
 ## Description
 
 Log class to write to `ambiorix.log`
