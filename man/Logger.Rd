@@ -10,14 +10,6 @@ Log events to \code{ambiorix.log}.
 The logger prepends every \code{write} with the current timestamp obtained with \code{\link[=Sys.time]{Sys.time()}}.
 Every \code{write} is a single line in the log.
 }
-\examples{
-if(interactive()){
-logger <- Logger$new()
-
-log$write("Event", "happened!")
-}
-
-}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{

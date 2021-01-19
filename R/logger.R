@@ -4,13 +4,6 @@
 #' 
 #' @field run Whether to actually log events to the file.
 #' 
-#' @examples 
-#' if(interactive()){
-#' logger <- Logger$new()
-#' 
-#' log$write("Event", "happened!")
-#' }
-#' 
 #' @details The logger prepends every `write` with the current timestamp obtained with [Sys.time()].
 #' Every `write` is a single line in the log.
 #' 
@@ -94,6 +87,10 @@ logPredicate <- function(log){
 #' only used if `write` is `TRUE`.
 #' @param sep Separator between `prefix` and other 
 #' flags and messages.
+#' 
+#' @examples 
+#' log <- new_log()
+#' log$log("Hello world")
 #' 
 #' @return An R& of class `log::Logger`.
 #' 

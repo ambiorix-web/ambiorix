@@ -19,3 +19,7 @@ that much improve the speed of building of Dockerfiles.
 \details{
 Reads the \code{DESCRIPTION} file of the project to produce the \code{Dockerfile}.
 }
+\examples{
+\dontrun{create_dockerfile()}
+
+}

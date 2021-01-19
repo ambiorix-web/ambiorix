@@ -7,7 +7,7 @@ Every route (`get`, `post`, etc.) handler should accept the request (`req`) and 
 One can send plain HTML with `send`.
 
 ```r
-app$get("/", function(req, res){
+app$get("/html", function(req, res){
   res$send("hello!")
 })
 ```
@@ -17,7 +17,7 @@ app$get("/", function(req, res){
 One can send a plain text with `text`.
 
 ```r
-app$get("/", function(req, res){
+app$get("/text", function(req, res){
   res$text("hello!")
 })
 ```
@@ -28,7 +28,7 @@ An `.html` or `.R` file can also be used as response.
 
 ```r
 # sends templates/home.html
-app$get("/", function(req, res){
+app$get("/file", function(req, res){
   res$send_file("home")
 })
 ```

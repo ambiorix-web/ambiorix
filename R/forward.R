@@ -4,6 +4,20 @@
 #' 
 #' @return An object of class `forward`.
 #' 
+#' @examples 
+#' app <- Ambiorix$new()
+#' 
+#' app$get("/next", function(req, res){
+#'  forward()
+#' })
+#' 
+#' app$get("/next", function(req, res){
+#'  res$send("Hello")
+#' })
+#' 
+#' if(interactive())
+#'  app$start()
+#' 
 #' @export
 forward <- function(){
   structure("next", class = "forward")

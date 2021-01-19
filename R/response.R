@@ -5,6 +5,22 @@
 #' @param body Body of response.
 #' @param headers HTTP headers.
 #' @param status Response status
+#' 
+#' @examples
+#' app <- Ambiorix$new()
+#' 
+#' # html
+#' app$get("/", function(req, res){
+#'  res$send("hello!")
+#' })
+#' 
+#' # text
+#' app$get("/text", function(req, res){
+#'  res$text("hello!")
+#' })
+#' 
+#' if(interactive())
+#'  app$start()
 #'
 #' @name responses
 #'

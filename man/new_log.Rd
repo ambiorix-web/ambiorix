@@ -23,3 +23,8 @@ An R& of class \code{log::Logger}.
 \description{
 Returns a new logger using the \code{log} package.
 }
+\examples{
+log <- new_log()
+log$log("Hello world")
+
+}
