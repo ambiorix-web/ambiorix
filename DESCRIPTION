@@ -1,6 +1,6 @@
 Package: ambiorix
-Title: Web Framework
-Version: 1.0.1.9000
+Title: Web Framework Inspired by 'Express.js'
+Version: 1.0.1
 Authors@R: 
     person(given = "John",
            family = "Coene",
@@ -15,7 +15,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports:
   fs,
-  log,
   cli,
   glue,
   here,
@@ -26,9 +25,8 @@ Imports:
   websocket,
   assertthat
 Suggests:
+  log,
   mime,
   readr,
   htmltools,
   htmlwidgets
-Remotes:
-  devOpifex/log
