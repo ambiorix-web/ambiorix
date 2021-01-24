@@ -19,7 +19,7 @@ Handle ambiorix websocket client.
 \section{Functions}{
 
 \itemize{
-\item \code{copy_websocket_client} Copies the websocket client file, useful when ambiorix was not setup with \code{\link[=create_ambiorix]{create_ambiorix()}}.
+\item \code{copy_websocket_client} Copies the websocket client file, useful when ambiorix was not setup with the ambiorix generator.
 \item \code{get_websocket_client} Retrieves the full path to the local websocket client.
 }
 }

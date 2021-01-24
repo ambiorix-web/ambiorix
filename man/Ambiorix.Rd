@@ -3,6 +3,10 @@
 \name{Ambiorix}
 \alias{Ambiorix}
 \title{Ambiorix}
+\value{
+An object of class \code{Ambiorix} from which one can
+add routes, routers, and run the application.
+}
 \description{
 Web server.
 }

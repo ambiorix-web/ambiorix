@@ -15,6 +15,9 @@ parse_json(req, ...)
 
 \item{...}{Additional arguments passed to the internal parsers.}
 }
+\value{
+Returns the parsed value as a \code{list}.
+}
 \description{
 Collection of parsers to translate request data.
 }

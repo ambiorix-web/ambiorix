@@ -7,6 +7,9 @@
 #' @details The logger prepends every `write` with the current timestamp obtained with [Sys.time()].
 #' Every `write` is a single line in the log.
 #' 
+#' @return An object of class `Logger` that can be used to log
+#' events in an application.
+#' 
 #' @export
 Logger <- R6::R6Class(
   "Logger",

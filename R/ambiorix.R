@@ -26,6 +26,9 @@
 #' if(interactive())
 #'  app$start()
 #' 
+#' @return An object of class `Ambiorix` from which one can
+#' add routes, routers, and run the application.
+#' 
 #' @export 
 Ambiorix <- R6::R6Class(
   "Ambiorix",

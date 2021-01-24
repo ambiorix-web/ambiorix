@@ -9,6 +9,8 @@
 #' - [parse_multipart()]: Parse `multipart/form-data` using [mime::parse_multipart()].
 #' - [parse_json()]: Parse `multipart/form-data` using [jsonlite::fromJSON()].
 #' 
+#' @return Returns the parsed value as a `list`.
+#' 
 #' @name parsers
 #' @export 
 parse_multipart <- function(req, ...){

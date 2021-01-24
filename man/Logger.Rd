@@ -3,6 +3,10 @@
 \name{Logger}
 \alias{Logger}
 \title{Logger}
+\value{
+An object of class \code{Logger} that can be used to log
+events in an application.
+}
 \description{
 Log events to \code{ambiorix.log}.
 }
