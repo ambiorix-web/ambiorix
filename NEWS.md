@@ -3,7 +3,7 @@
 - Reaches CRAN
 - Removed `create_ambiorix`, see [ambiorix.generator](https://github.com/JohnCoene/ambiorix.generator).
 - Removed `add_template`, see [ambiorix.generator](https://github.com/JohnCoene/ambiorix.generator).
-- Deprecate the `Logger` class in favour of the [log](https://github/devOpifex/log) package.
+- Deprecate the `Logger` class in favour of the [log](https://github.com/devOpifex/log) package.
 
 # ambiorix 1.0.1
 
