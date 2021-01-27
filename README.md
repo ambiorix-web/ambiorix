@@ -36,7 +36,13 @@ app$start()
 
 ## Install
 
-Ambiorix is an R package than can be installed from github.
+The stable version is available on CRAN with:
+
+```r
+install.packages("ambiorix")
+```
+
+You can also install the development version from Github:
 
 ```r
 # install.packages("ambiorix")
