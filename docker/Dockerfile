@@ -3,7 +3,9 @@ RUN apt-get update && apt-get install -y \
   git-core \
   libssl-dev
 RUN echo "options(repos = c(CRAN = 'https://packagemanager.rstudio.com/all/latest'))" >> /usr/local/lib/R/etc/Rprofile.site
-RUN R -e 'install.packages(c("htmltools", "ambiorix"))'
+RUN R -e 'install.packages("remotes")'
+RUN R -e 'remotes::install_github("JohnCoene/ambiorix") '
+RUN R -e "install.packages('htmltools')"
 ARG app=/usr/local/lib/R/site-library/ambiorix/app.R
 WORKDIR /app
 RUN cp ${app} /app/app.R
