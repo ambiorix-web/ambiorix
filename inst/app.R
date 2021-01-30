@@ -1,4 +1,4 @@
-ibrary(ambiorix)
+library(ambiorix)
 
 app <- Ambiorix$new(log = TRUE)
 
