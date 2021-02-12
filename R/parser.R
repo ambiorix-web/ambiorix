@@ -19,7 +19,10 @@ parse_multipart <- function(req, ...){
   mime::parse_multipart(req$body, ...)
 }
 
+#' @export 
 #' @rdname parsers
 parse_json <- function(req, ...){
-  jsonlite::fromJSON(req$body()$read(), ...)
+  data <- req$body[["rook.input"]]
+  data <- data$read_lines()
+  jsonlite::fromJSON(data, ...)
 }
