@@ -4,6 +4,7 @@
 - Removed `create_ambiorix`, see [ambiorix.generator](https://github.com/JohnCoene/ambiorix.generator).
 - Removed `add_template`, see [ambiorix.generator](https://github.com/JohnCoene/ambiorix.generator).
 - Deprecate the `Logger` class in favour of the [log](https://github.com/devOpifex/log) package.
+- Fixed `parse_json` [#36](https://github.com/JohnCoene/ambiorix/issues/36)
 
 # ambiorix 1.0.1
 
