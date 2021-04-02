@@ -84,6 +84,7 @@ Response <- R6::R6Class(
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
     send = function(body, headers = list('Content-Type' = 'text/html'), status = NULL){
+      headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = as.character(body))
     },
 #' @details Send a plain text response.
@@ -91,6 +92,7 @@ Response <- R6::R6Class(
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
     text = function(body, headers = list('Content-Type' = 'text/plain'), status = NULL){
+      headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = as.character(body))
     },
 #' @details Send a file.
@@ -124,8 +126,9 @@ Response <- R6::R6Class(
       file_path <- private$.get_template_path(file)
 
       file_content <- private$.render_template(file_path, data)
+      headers <- private$.get_headers()
 
-      response(file_content, status = private$.get_status(status))
+      response(file_content, status = private$.get_status(status), headers = headers)
     },
 #' @details Render an object as JSON.
 #' @param body Body of the response.
@@ -134,6 +137,7 @@ Response <- R6::R6Class(
 #' @param ... Additional arguments passed to the serialiser.
     json = function(body, headers = list("Content-Type" = "application/json"), status = NULL, ...){
       to_json <- get_serialise(...)
+      headers <- private$.get_headers(headers)
       response(to_json(body), headers = headers, status = private$.get_status(status))
     },
 #' @details Sends a comma separated value file
@@ -147,13 +151,14 @@ Response <- R6::R6Class(
 
       name <- sprintf("attachment;charset=UTF-8;filename=%s.csv", name)
 
-      header <- list(
+      headers <- list(
         "Content-Type" = "text/csv",
         "Content-Disposition" = name
       )
+      headers <- private$.get_headers(headers)
 
       data <- readr::format_csv(data, ...)
-      response(data, header = header, status = private$.get_status(status))
+      response(data, header = headers, status = private$.get_status(status))
     },
 #' @details Sends a tab separated value file
 #' @param data Data to convert to CSV.
@@ -166,13 +171,14 @@ Response <- R6::R6Class(
 
       name <- sprintf("attachment;charset=UTF-8;filename=%s.tsv", name)
 
-      header <- list(
+      headers <- list(
         "Content-Type" = "tab-separated-values",
         "Content-Disposition" = name
       )
+      headers <- private$.get_headers(headers)
 
       data <- readr::format_tsv(data, ...)
-      response(data, header = header, status = private$.get_status(status))
+      response(data, header = headers, status = private$.get_status(status))
     },
 #' @details Sends an htmlwidget.
 #' @param widget The widget to use.
@@ -186,8 +192,17 @@ Response <- R6::R6Class(
       # save and read
       tmp <- tempfile(fileext = ".html")
       htmlwidgets::saveWidget(widget, tmp, selfcontained = TRUE, ...)
+      headers <- private$.get_headers(headers)
 
-      response(body = paste0(readLines(tmp), "\n", collapse = ""), status = private$.get_status(status))
+      response(body = paste0(readLines(tmp), "\n", collapse = ""), status = private$.get_status(status), headers = headers)
+    },
+#' @details Add headers to the response.
+#' @param name,value Name and value of the header.
+#' @return Invisibly returns self.
+    header = function(name, value){
+      header <- list(name = value)
+      private$.headers <- append(private$.headers, header)
+      invisible(self)
     },
     print = function(){
       cli::cli_li("{.code send(body, headers, status)}")
@@ -206,6 +221,7 @@ Response <- R6::R6Class(
     .has_templates = FALSE,
     .templates = list(),
     .status = 200L,
+    .headers = list(), 
     .get_template_path = function(file){
       file <- remove_extensions(file)
 
@@ -297,6 +313,9 @@ Response <- R6::R6Class(
         return(private$.status)
 
       status
+    },
+    .get_headers = function(headers = list()){
+      append(private$.headers, headers)
     }
   )
 )

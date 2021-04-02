@@ -115,3 +115,14 @@ app$get("/htmlwidget", function(req, res){
 })
 ```
 
+## Headers
+
+You can add headers with the `header` method on the response object.
+
+```r
+app$get("/hello", function(req, res){
+  res$header("Content-Type", "something")
+  res$send("Using {ambiorix}!")
+})
+```
+
