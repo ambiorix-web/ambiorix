@@ -207,6 +207,30 @@ Ambiorix <- R6::R6Class(
 
       invisible(self)
     },
+#' @details OPTIONS Method
+#'
+#' Add routes to listen to.
+#'
+#' @param path Route to listen to.
+#' @param handler Function that accepts the request and returns an object
+#' describing an httpuv response, e.g.: [response()].
+#' @param error Handler function to run on error.
+    options = function(path, handler, error = NULL){
+      assert_that(valid_path(path))
+      assert_that(not_missing(handler))
+      assert_that(is_handler(handler))
+
+      private$.routes[[uuid()]] <- list(
+        route = Route$new(path),
+        path = path,
+        fun = handler,
+        method = "OPTIONS",
+        res = Response$new(),
+        error = error %error% self$error
+      )
+
+      invisible(self)
+    },
 #' @details All Methods
 #' 
 #' Add routes to listen to for all methods `GET`, `POST`, `PUT`, `DELETE`, and `PATCH`.
