@@ -1,13 +1,15 @@
 ## Test environments
-* local R installation, R 4.0.1
-* ubuntu 16.04 (on travis-ci), R 4.0.1
+* local R installation, R 4.1.2
 * win-builder (devel)
+* Mac OS via Github actions
 
 ## R CMD check results
 
 0 errors | 0 warnings | 1 note
 
 * This is a new submission.
+
+---
 
 - The Description field is intended to be a (one paragraph) description of what the package does and why it may be useful. Please add a few more details about the package functionality and
 implemented methods in your Description text.
