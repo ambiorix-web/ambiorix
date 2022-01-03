@@ -150,6 +150,7 @@ if(interactive())
 \item \href{#method-patch}{\code{Ambiorix$patch()}}
 \item \href{#method-delete}{\code{Ambiorix$delete()}}
 \item \href{#method-post}{\code{Ambiorix$post()}}
+\item \href{#method-options}{\code{Ambiorix$options()}}
 \item \href{#method-all}{\code{Ambiorix$all()}}
 \item \href{#method-set_404}{\code{Ambiorix$set_404()}}
 \item \href{#method-static}{\code{Ambiorix$static()}}
@@ -372,6 +373,33 @@ describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
 }
 \subsection{Details}{
 POST Method
+
+Add routes to listen to.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-options"></a>}}
+\if{latex}{\out{\hypertarget{method-options}{}}}
+\subsection{Method \code{options()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$options(path, handler, error = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Route to listen to.}
+
+\item{\code{handler}}{Function that accepts the request and returns an object
+describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+
+\item{\code{error}}{Handler function to run on error.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+OPTIONS Method
 
 Add routes to listen to.
 }
