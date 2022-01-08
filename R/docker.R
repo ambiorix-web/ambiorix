@@ -2,7 +2,7 @@
 #' 
 #' Create the dockerfile required to run the application.
 #' The dockerfile created will install packages from 
-#' [RStudio Public Package Manager](https://packagemanager.rstudio.com/client/#/) 
+#' [RStudio Public Package Manager](https://packagemanager.rstudio.com/) 
 #' which comes with pre-built binaries
 #' that much improve the speed of building of Dockerfiles.
 #' 

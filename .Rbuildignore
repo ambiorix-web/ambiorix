@@ -16,3 +16,4 @@ docker/
 ^CRAN-RELEASE$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^makefile$
