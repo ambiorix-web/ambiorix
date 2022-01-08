@@ -6,6 +6,7 @@
 
 <!-- badges: start -->
 [![R build status](https://github.com/JohnCoene/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/JohnCoene/ambiorix/actions)
+[![R-CMD-check](https://github.com/JohnCoene/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/JohnCoene/ambiorix/actions)
 <!-- badges: end -->
 
 [Website](https://ambiorix.john-coene.com) | [CLI](https://github.com/JohnCoene/ambiorix-cli) | [Generator](https://github.com/JohnCoene/ambiorix.generator) | [Docker](https://hub.docker.com/r/jcoenep/ambiorix)
