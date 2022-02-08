@@ -1,17 +1,17 @@
 # Routing
 
-When a client (web browser) points to a path (e.g.: `/about`) a request is made to the server (`GET` in this case), ambiorix then looks through the handlers __in the order they were added__ and when it finds one that matches the requested path runs the handler function (`function(req, res)`). This function should return a response (using the `res` object) or a future (see [asynchronous programming](/guide/async)).
+When a client (web browser) points to a path (e.g.: `/about`) a request is made to the server (`GET` in this case), ambiorix then looks through the handlers __in the order they were added__ and when it finds one that matches the requested path runs the handler function (`\(req, res)`). This function should return a response (using the `res` object) or a future (see [asynchronous programming](/guide/async)).
 
 ```r
 library(ambiorix)
 
 app <- Ambiorix$new()
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$text("Home!")
 })
 
-app$get("/about", function(req, res){
+app$get("/about", \(req, res){
   res$send("About me!")
 })
 
@@ -39,12 +39,12 @@ library(ambiorix)
 
 app <- Ambiorix$new()
 
-app$get("/?name", function(req, res){
+app$get("/?name", \(req, res){
   msg <- htmltools::h1("Hello", req$query$name)
   res$send(msg)
 })
 
-app$get("/users/:id", function(req, res){
+app$get("/users/:id", \(req, res){
   msg <- sprintf("This is user id: #%s", req$params$id)
   res$text(msg)
 })
@@ -61,11 +61,11 @@ library(ambiorix)
 
 app <- Ambiorix$new()
 
-app$get("/next", function(req, res){
+app$get("/next", \(req, res){
   forward()
 })
 
-app$get("/next", function(req, res){
+app$get("/next", \(req, res){
   res$send("Hello")
 })
 

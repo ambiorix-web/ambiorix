@@ -4,11 +4,11 @@ You can set the 404 page in two ways, the function is identical and follows the 
 
 ```r
 # these are equivalent
-app$not_found <- function(req, res){
+app$not_found <- \(req, res){
   res$send(htmltools::h2("404"), status = 404L)
 }
 
-app$set_404(function(req, res){
+app$set_404(\(req, res){
   res$send(htmltools::h2("Not found"), status = 404L)
 })
 ```

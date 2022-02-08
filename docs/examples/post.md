@@ -9,7 +9,7 @@ library(htmltools)
 
 app <- Ambiorix$new()
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
 
   # form
   # sends to /submit
@@ -27,7 +27,7 @@ app$get("/", function(req, res){
   res$send(form)
 })
 
-app$post("/submit", function(req, res){
+app$post("/submit", \(req, res){
   body <- parse_multipart(req)
   res$send(h1("Your name is", body$first_name))
 })

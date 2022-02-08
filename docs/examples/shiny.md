@@ -65,11 +65,11 @@ library(ambiorix)
 app <- Ambiorix$new()
 
 # homepage
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$send_file("home")
 })
 
-app$get("/randomize", function(req, res){
+app$get("/randomize", \(req, res){
 
   df <- list(
     x = 1:100,

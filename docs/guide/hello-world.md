@@ -24,11 +24,11 @@ library(ambiorix)
 
 app <- Ambiorix$new()
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$send("Using {ambiorix}!")
 })
 
-app$get("/about", function(req, res){
+app$get("/about", \(req, res){
   res$text("About")
 })
 

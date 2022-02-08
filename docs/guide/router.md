@@ -11,21 +11,21 @@ library(ambiorix)
 app <- Ambiorix$new()
 
 # homepage
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$send("Home!")
 })
 
 # /users logic
-app$get("/users", function(req, res){
+app$get("/users", \(req, res){
   res$send("List of users")
 })
 
-app$get("/users/:id", function(req, res){
+app$get("/users/:id", \(req, res){
   cat("Return user id:", req$params$id, "\n")
   res$send(req$params$id)
 })
 
-app$get("/users/:id/profile", function(req, res){
+app$get("/users/:id/profile", \(req, res){
   msg <- sprintf("This is the profile of user #%s", req$params$id)
   res$send(msg)
 })
@@ -40,16 +40,16 @@ Ideally the `/users` logic should be separated from the main app, below we use t
 # create router
 router <- Router$new("/users")
 
-router$get("/", function(req, res){
+router$get("/", \(req, res){
   res$send("List of users")
 })
 
-router$get("/:id", function(req, res){
+router$get("/:id", \(req, res){
   cat("Return user id:", req$params$id, "\n")
   res$send(req$params$id)
 })
 
-router$get("/:id/profile", function(req, res){
+router$get("/:id/profile", \(req, res){
   msg <- sprintf("This is the profile of user #%s", req$params$id)
   res$send(msg)
 })
@@ -66,7 +66,7 @@ import("/")
 # core app
 app <- Ambiorix$new()
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$send("Home!")
 })
 

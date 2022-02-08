@@ -18,11 +18,11 @@ library(ambiorix)
 
 app <- Ambiorix$new(log = TRUE)
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$send("hello!")
 })
 
-app$get("/about", function(req, res){
+app$get("/about", \(req, res){
   res$send("Me me me")
 })
 
@@ -58,12 +58,12 @@ app <- Ambiorix$new()
 # create logger
 logger <- new_log()
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   logger$log("Home", "was visited")
   res$send("hello!")
 })
 
-app$get("/about", function(req, res){
+app$get("/about", \(req, res){
   logger$log("About page", "was just viewed")
   res$send("Me me me")
 })
@@ -93,12 +93,12 @@ app <- Ambiorix$new()
 # create logger with the log package
 logger <- log::Logger$new()
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   log$log("Home", "was visited")
   res$send("hello!")
 })
 
-app$get("/about", function(req, res){
+app$get("/about", \(req, res){
   log$log("About page", "was just viewed")
   res$send("Me me me")
 })

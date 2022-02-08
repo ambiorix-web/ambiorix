@@ -11,7 +11,7 @@ Input data can be either `POST`ed (form) or used as is done in shiny, using the 
 Websocket in ambiorix mimic shiny's custom messages, they take a `name` (unique identifier) and the message itself: both in R and JavaScript. 
 
 ```r
-app$receive("hello", function(msg, ws){
+app$receive("hello", \(msg, ws){
   print(msg)
   ws$send("bye", "Goodbye")
 })
@@ -22,7 +22,7 @@ app$receive("hello", function(msg, ws){
 Outputs, or data that travels from the server to the client can also go through the websocket or be served as an HTTP response. Note that some form of that is available in shiny (but only for a unique session) though it appears to be rarely used.
 
 ```r
-app$post("/submit", function(req, res){
+app$post("/submit", \(req, res){
   body <- parse_multipart(req$body)
   res$send(h1("Your name is", body$first_name))
 })

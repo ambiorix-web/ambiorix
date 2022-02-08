@@ -35,7 +35,7 @@ app$post("/shorten/url", shorten)
 app$get("/:id", redirect)
 
 # websocket 
-app$receive("hello", function(msg, ws){
+app$receive("hello", \(msg, ws){
   print(msg)
   ws$send("hello", "Hello back! (sent from R)")
 })
@@ -56,12 +56,12 @@ This is then used in the `redirect` method which fetches the parameter `id` and 
 URLs <- data.frame()
 
 # render homepage
-render_home <- function(req, res){
+render_home <- \(req, res){
   res$send_file("home")
 }
 
 # render redirect
-shorten <- function(req, res){  
+shorten <- \(req, res){  
   body <- parse_multipart(req)
   
   db <- data.frame(
@@ -75,7 +75,7 @@ shorten <- function(req, res){
 }
 
 # render redirect
-redirect <- function(req, res){
+redirect <- \(req, res){
 
   id <- req$params$id
 

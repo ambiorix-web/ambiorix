@@ -15,11 +15,11 @@ forward()
 ```r
 app <- Ambiorix$new()
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   forward()
 })
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$send("NEXT!")
 })
 

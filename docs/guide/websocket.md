@@ -8,7 +8,7 @@ Below a handler listening to the message `hello`, prints the message and uses th
 
 ```r
 # listen to incoming messages
-app$receive("hello", function(msg, ws){
+app$receive("hello", \(msg, ws){
   print(msg)
   ws$send("hello", "Hello back! (sent from R)")
 })
@@ -22,7 +22,7 @@ One can also instantiate the class to add handlers with `receive` method then ru
 
 ```js
 var wss = new Ambiorix();
-wss.receive("hello", function(msg){
+wss.receive("hello", \(msg){
   alert(msg);
 });
 wss.start();
@@ -40,7 +40,7 @@ And `receive`, a method to add listeners, very much like the `receive` method in
 
 ```js
 var wss = new Ambiorix();
-wss.receive("hello", function(msg){
+wss.receive("hello", \(msg){
   alert(msg);
 });
 ```
@@ -66,7 +66,7 @@ Here we put in practice all that was explained in the previous sections. This ex
   <script src="static/ambiorix.js"></script>
   <script>
     var wss = new Ambiorix();
-    wss.receive("hello", function(msg){
+    wss.receive("hello", \(msg){
       alert(msg);
     });
     wss.start();
@@ -88,12 +88,12 @@ library(ambiorix)
 app <- Ambiorix$new()
 
 # homepage
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$send_file("home")
 })
 
 # socket 
-app$receive("hello", function(msg, ws){
+app$receive("hello", \(msg, ws){
   print(msg)
   ws$send("hello", "Hello back! (sent from R)")
 })
@@ -108,8 +108,8 @@ app$start()
 The above made use of ambiorix's convenience, if you wish to bypass it you can specify your own handler function which it must accept the websocket.
 
 ```r
-app$websocket <- function(ws){
-  ws$onMessage(function(binary, message){
+app$websocket <- \(ws){
+  ws$onMessage(\(binary, message){
     cat("Received a message:", message, "\n")
   })
 }

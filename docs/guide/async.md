@@ -14,14 +14,14 @@ plan(multisession)
 
 app <- Ambiorix$new()
 
-app$get("/async", function(req, res){
+app$get("/async", \(req, res){
   future({
     Sys.sleep(10)
     res$send(Sys.time())
   })
 })
 
-app$get("/sync", function(req, res){
+app$get("/sync", \(req, res){
   res$send(Sys.time())
 })
 

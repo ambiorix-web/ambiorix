@@ -14,7 +14,7 @@ PORT <- 3000L
 
 app <- Ambiorix$new(port = PORT)
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
 
   # get list of datasets
   datasets <- as.data.frame(data(package = "datasets")$results)
@@ -26,7 +26,7 @@ app$get("/", function(req, res){
   res$json(datasets[, c("Item", "Title", "Endpoint")])
 })
 
-app$get("/dataset/:set", function(req, res){
+app$get("/dataset/:set", \(req, res){
   res$json(
     get(req$params$set)
   )
@@ -40,7 +40,7 @@ app$start()
 Note that you can change the serialiser with the `serialiser` method: pass it a function that accepts the data and the three-dot construct (`...`), it should return the JSON.
 
 ```r
-app$serialiser(function(data, ...){
+app$serialiser(\(data, ...){
   jsonify::to_json(data, ...)
 })
 ```

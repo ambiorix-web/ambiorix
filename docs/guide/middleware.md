@@ -9,15 +9,15 @@ library(ambiorix)
 
 app <- Ambiorix$new()
 
-app$use(function(req, res){
+app$use(\(req, res){
   print(Sys.time())
 })
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$send("Using {ambiorix}!")
 })
 
-app$get("/about", function(req, res){
+app$get("/about", \(req, res){
   res$text("About")
 })
 
@@ -31,20 +31,20 @@ library(ambiorix)
 
 app <- Ambiorix$new()
 
-app$use(function(req, res){
+app$use(\(req, res){
   req$set(x, 1) # set x to 1
 })
 
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   print(req$get(x)) # retrieve x from the request
   res$send("Using {ambiorix}!")
 })
 
-app$get("/about", function(req, res){
+app$get("/about", \(req, res){
   res$text("About")
 })
 
-app$use(function(req, res){
+app$use(\(req, res){
   req$get(x)
 })
 

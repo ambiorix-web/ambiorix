@@ -19,7 +19,7 @@ library(ambiorix)
 
 app <- Ambiorix$new()
 
-app$get("/books/:category", function(req, res){
+app$get("/books/:category", \(req, res){
   res$send(htmltools::h3("Books of", req$params$category))
 })
 
@@ -49,7 +49,7 @@ library(ambiorix)
 
 app <- Ambiorix$new()
 
-app$get("/hello?firstname&lastname", function(req, res){
+app$get("/hello?firstname&lastname", \(req, res){
   res$send(htmltools::h3("Hi", req$query$firstname, req$query$lastname))
 })
 

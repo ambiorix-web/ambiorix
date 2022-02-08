@@ -61,7 +61,7 @@ One can also pass a callback to run when the server closes, this is ideal to do 
 
 ```r
 # start
-app$on_stop <- function(){
+app$on_stop <- \(){
   cat("Bye!\n")
 }
 ```

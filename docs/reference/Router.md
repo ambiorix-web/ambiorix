@@ -28,7 +28,7 @@ Add routes.
 - `fun`: Callback function that _must_ accept two arguments `req`, and `res`. The former is the request, the latter the response.
 
 ```r
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$send("Welcome!")
 })
 ```
@@ -41,7 +41,7 @@ Receive and respond to websocket messages.
 - `fun`: Callback function to handle the message, must accept the `message` as first argument and can optionally accept the websocket as second argument, useful to respond.
 
 ```r
-app$receive("hello", function(msg, ws){
+app$receive("hello", \(msg, ws){
   print(msg)
   ws$send("bye", "Goodbye")
 })

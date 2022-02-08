@@ -50,12 +50,12 @@ app <- Ambiorix$new()
 app$static("assets", "static")
 
 # homepage
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$send_file("home")
 })
 
 # websocket 
-app$receive("textValue", function(msg, ws){
+app$receive("textValue", \(msg, ws){
   ws$send("setTextValue", msg)
 })
 

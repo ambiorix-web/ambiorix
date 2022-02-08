@@ -33,7 +33,7 @@ Add routes
 - `error`: A handler function to run when the `handler` errors, if none is specified then the global error is used instead (see [errors](/guide/errors)).
 
 ```r
-app$get("/", function(req, res){
+app$get("/", \(req, res){
   res$send("Welcome!")
 })
 ```
@@ -53,7 +53,7 @@ Define view for 404 error.
 - `handler`: Callback function that _must_ accept two arguments `req`, and `res`. The former is the request, the latter the response.
 
 ```r
-app$set_404(function(req, res){
+app$set_404(\(req, res){
   res$send("Not found", status = 404L)
 })
 ```
@@ -78,7 +78,7 @@ Receive and respond to websocket messages.
 - `handler`: Callback function to handle the message, must accept the `message` as first argument and can optionally accept the websocket as second argument, useful to respond.
 
 ```r
-app$receive("hello", function(msg, ws){
+app$receive("hello", \(msg, ws){
   print(msg)
   ws$send("bye", "Goodbye")
 })
@@ -91,7 +91,7 @@ Defines the serialiser to use internally, only use this if you are familiar with
 - `handler`: Function to use to serialise, this function should only accept one argument: the object to serialise.
 
 ```r
-app$serialiser(function(x){
+app$serialiser(\(x){
   jsonlite::toJSON(x, dataframe = "columns", auto_unbox = TRUE)
 })
 ```
@@ -132,7 +132,7 @@ Use a router or middleware.
 Multiple middleware functions are allowed, like method handlers they are evaluate in the order they were specified.
 
 ```r
-app$use(function(req){
+app$use(\(req){
   print(Sys.time())
 })
 ```
