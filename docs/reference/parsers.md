@@ -1,22 +1,31 @@
-# Parsers
+# `parsers`
+
+Parsers
+
 
 ## Description
 
-Parse data from requests.
+Collection of parsers to translate request data.
+
 
 ## Usage
 
 ```r
-parse_multipart(req)
-parse_json(req)
+parse_multipart(req, ...)
+parse_json(req, ...)
 ```
+
 
 ## Arguments
 
-- `req`: The request object.
-- `...`: Additional arguments for the internal parsers.
+Argument      |Description
+------------- |----------------
+`req`     |     The request object.
+`...`     |     Additional arguments passed to the internal parsers.
 
-## Functions
 
-- `parse_multipart`: Parse `multipart/form-data` using `mime::parse_multipart()`.
-- `parse_json`: Parse `multipart/form-data` using `jsonlite::fromJSON()`.
+## Value
+
+Returns the parsed value as a `list` .
+
+

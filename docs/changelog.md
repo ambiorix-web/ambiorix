@@ -1,3 +1,8 @@
+# ambiorix 1.0.2.9000
+
+- Middleware no longer uses environment that may cause side effect
+across sessions.
+
 # ambiorix 1.0.2
 
 - Reaches CRAN

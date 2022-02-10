@@ -427,11 +427,14 @@ Ambiorix <- R6::R6Class(
       if(inherits(use, "Router")){
         private$.routes <- append(private$.routes, use$routes())
         private$.receivers <- append(private$.routes, use$receivers())
-      } else if(is.function(use)) { # pass middleware
+      } 
+
+      # pass middleware
+      if(is.function(use)) { 
         args <- formalArgs(use)
         assert_that(length(args) == 2, msg = "Use function must accept two arguments: the request, and the response")
         private$.middleware <- append(private$.middleware, use)
-      }
+      }      
 
       invisible(self)
     }
@@ -454,9 +457,6 @@ Ambiorix <- R6::R6Class(
     .receivers = list(),
     .middleware = list(),
     .call = function(req){
-
-      # empty requests environment
-      rm(list = ls(envir = .requests), envir = .requests) 
 
       request <- Request$new(req)
 

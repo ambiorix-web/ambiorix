@@ -1,8 +1,12 @@
-# Import Files
+# `import`
+
+Import Files
+
 
 ## Description
 
 Import all R-files in a directory.
+
 
 ## Usage
 
@@ -10,7 +14,23 @@ Import all R-files in a directory.
 import(...)
 ```
 
+
 ## Arguments
 
-- `...`: Directory from which to import `.R` or `.r` files, passed to `here::here()`.
+Argument      |Description
+------------- |----------------
+`...`     |     Directory from which to import `.R` or `.r` files.
+
+
+## Value
+
+Invisibly returns `NULL` .
+
+
+## Examples
+
+```r
+import("views")
+```
+
 

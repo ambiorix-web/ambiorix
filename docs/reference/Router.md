@@ -1,48 +1,48 @@
-# Router
+# `Router`
+
+Router
+
 
 ## Description
 
-Router class.
+Web server.
 
-## Fields
 
-- `error` 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
-
-## Methods
-
-### Constructor
-
-Instantiate a router.
-
-- `path`: Base path to use for router.
+## Examples
 
 ```r
-app$new(path = "/hello")
-```
+# log
+logger <- new_log()
+# router
+# create router
+router <- Router$new("/users")
 
-### Get, post, put, delete, and patch 
-
-Add routes.
-
-- `path`: Path to check, when found runs `fun`.
-- `fun`: Callback function that _must_ accept two arguments `req`, and `res`. The former is the request, the latter the response.
-
-```r
-app$get("/", \(req, res){
-  res$send("Welcome!")
+router$get("/", function(req, res){
+res$send("List of users")
 })
-```
 
-### Websocket
-
-Receive and respond to websocket messages.
-
-- `name`: Name of the message.
-- `fun`: Callback function to handle the message, must accept the `message` as first argument and can optionally accept the websocket as second argument, useful to respond.
-
-```r
-app$receive("hello", \(msg, ws){
-  print(msg)
-  ws$send("bye", "Goodbye")
+router$get("/:id", function(req, res){
+logger$log("Return user id:", req$params$id)
+res$send(req$params$id)
 })
+
+router$get("/:id/profile", function(req, res){
+msg <- sprintf("This is the profile of user #%s", req$params$id)
+res$send(msg)
+})
+
+# core app
+app <- Ambiorix$new()
+
+app$get("/", function(req, res){
+res$send("Home!")
+})
+
+# mount the router
+app$use(router)
+
+if(interactive())
+app$start()
 ```
+
+

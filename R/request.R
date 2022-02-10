@@ -1,5 +1,3 @@
-.requests <- new.env()
-
 #' Preprocess Request
 #' 
 #' @noRd 
@@ -41,6 +39,7 @@ Request <- R6::R6Class(
     body = NULL,
     query = list(),
     params = list(),
+    data = list(),
     initialize = function(req){
       self$HEADERS <- req$HEADERS
       self$HTTP_ACCEPT <- req$HTTP_ACCEPT
@@ -124,13 +123,13 @@ Request <- R6::R6Class(
       assert_that(not_missing(value))
 
       name <- deparse(substitute(name))
-      .requests[[name]] <- value
+      self$data[[name]] <- value
     },
     get = function(name){
       assert_that(not_missing(name))
 
       name <- deparse(substitute(name))
-      .requests[[name]]
+      self$data[[name]]
     }
   ),
   private = list(

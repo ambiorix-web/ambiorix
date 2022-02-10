@@ -2,9 +2,8 @@ library(purrr)
 
 fs::file_copy("NEWS.md", "docs/changelog.md", overwrite = TRUE)
 
-if(fs::dir_exists("./docs/reference"))
-  stop("Reference exists")
-fs::dir_create("./docs/reference")
+if(!fs::dir_exists("./docs/reference"))
+  fs::dir_create("./docs/reference")
 
 # ------------------------------------------- REFERENCE
 # functions

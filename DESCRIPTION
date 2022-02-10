@@ -1,6 +1,6 @@
 Package: ambiorix
 Title: Web Framework Inspired by 'Express.js'
-Version: 1.0.3
+Version: 1.0.2.9000
 Authors@R: 
     person(given = "John",
            family = "Coene",

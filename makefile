@@ -1,8 +1,11 @@
 install: check
 	Rscript -e "devtools::install()"
 
-check: document
+check: docs
 	Rscript -e "devtools::check()"
 
-document:
+docs: document
+	Rscript docs/docify.R
+
+document: 
 	Rscript -e "devtools::document()"
