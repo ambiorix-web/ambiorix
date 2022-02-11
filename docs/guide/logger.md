@@ -1,10 +1,9 @@
 # Logger
 
-Ambiorix comes with a basic logger to record happenings in the server, this is stored in an `ambiorix.log` file placed in the root of the project. The automatic and manual loggers can be used together.
-
-_The `Logger` class has been deprecated in favour of `Logger` from the [log](https://log.opifex.org) package._
-
-__It is fully compatible with the [log](https://log.opifex.org/) package.__
+Ambiorix' logger is built with [log](https://log.opifex.org).
+The original `Logger` class found in early versions of ambiorix 
+has been deprecated in favour of the `Logger` class from 
+the [log](https://log.opifex.org) package.
 
 <!-- panels:start -->
 <!-- div:title-panel -->
@@ -86,12 +85,13 @@ Visiting both routes gives the following log.
 The logger used internally (above) is exported and can be used by developers: this will work regardless of whether the internal logger is on or off. Note that it will automatically prepend every event logged with the time at which it happened.
 
 ```r
+library(log)
 library(ambiorix)
 
 app <- Ambiorix$new()
 
 # create logger with the log package
-logger <- log::Logger$new()
+logger <- Logger$new()
 
 app$get("/", \(req, res){
   log$log("Home", "was visited")
