@@ -42,5 +42,4 @@ new_log <- function(prefix = ">", write = FALSE,
   )$
     date()$
     time()
-  
 }

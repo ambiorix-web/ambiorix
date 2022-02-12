@@ -2,6 +2,10 @@
 
 You can also employ middleware with `use`: these are run first at every request. Note that unlike other methods (e.g.: `get`) those may return a response but do not have to.
 
+> [!NOTE]
+> See [request](guide/request?id=set-amp-get) documentation to see how to add and retrieve data
+> from the request.
+
 Below we add a middleware that simply print the time at which the request is recevied.
 
 ```r

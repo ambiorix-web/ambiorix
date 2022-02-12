@@ -39,7 +39,7 @@ Request <- R6::R6Class(
     body = NULL,
     query = list(),
     params = list(),
-    data = list(),
+    data = new.env(hash = TRUE),
     initialize = function(req){
       self$HEADERS <- req$HEADERS
       self$HTTP_ACCEPT <- req$HTTP_ACCEPT
@@ -118,12 +118,17 @@ Request <- R6::R6Class(
         str(self$query)
       }
     },
-    set = function(name, value){
+    set = function(name, value, lock = FALSE){
       assert_that(not_missing(name))
       assert_that(not_missing(value))
 
       name <- deparse(substitute(name))
       self$data[[name]] <- value
+
+      if(lock)
+        lockBinding(name, self$data)
+
+      invisible(self)
     },
     get = function(name){
       assert_that(not_missing(name))

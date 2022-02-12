@@ -1,7 +1,9 @@
 # ambiorix 1.0.2.9000
 
-- Middleware no longer uses environment that may cause side effect
+- Middleware no longer uses global environment that may cause side effect
 across sessions.
+- `set` and `get` methods on request store in environment to allow
+locking variables when using `set`.
 - Better instructions for deploying as a service.
 - Remove the deprecated `Logger` class, see [log](https://github.com/devOpifex/log) package.
 
