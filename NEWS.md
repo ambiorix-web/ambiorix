@@ -2,6 +2,7 @@
 
 - Middleware no longer uses environment that may cause side effect
 across sessions.
+- Better instructions for deploying as a service.
 
 # ambiorix 1.0.2
 

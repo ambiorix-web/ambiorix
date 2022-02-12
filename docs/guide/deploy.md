@@ -2,13 +2,17 @@
 
 These are just some of the ways in which one can deploy an ambiorix application.
 
-_Remember to open the open the port used by the application on your server._
+> [!ATTENTION]
+> Remember to open the open the port used by the application on your server.
+> Also remember to define a `port` in the app or it will serve
+> on a dynamic port unknown at run time.
 
 ## Service
 
 The application can be deployed as a service on any Linux server. Create a new `.service` in the `/etc/systemd/system/` directory.
 
-**Note** that the name of the file defines the name of the service.
+> [!NOTE]
+> The name of the file defines the name of the service.
 
 ```bash
 vim /etc/systemd/system/ambiorix.service
@@ -21,7 +25,7 @@ In that `.service` file place the following, it creates a service that runs the 
 Description=Ambiorix application
 
 [Service]
-ExecStart=cd path/to/app && /usr/bin/Rscript -e "source('app.R')"
+ExecStart=cd path/to/app && /usr/bin/Rscript --no-save --slave -f app.R
 Restart=on-abnormal
 Type=simple
 

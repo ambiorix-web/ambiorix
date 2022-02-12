@@ -1,5 +1,6 @@
 # Websocket
 
+> [!NOTE]
 > If you are unfamiliar with websockets, this is what [shiny](https://shiny.rstudio.com/) uses for inputs: it allows sending messages from the client to the browser and vice versa.
 
 You can listen to incoming messages with the `receive` method which takes 1) the name of the message to handle and 2) a callback function to run when a message with `name` is received. The callback function must accept the message as first argument and optionally the socket as second argument.
