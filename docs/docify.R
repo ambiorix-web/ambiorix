@@ -1,9 +1,12 @@
 library(purrr)
 
-fs::file_copy("NEWS.md", "docs/changelog.md", overwrite = TRUE)
+news <- readLines("NEWS.md")
+news <- gsub("#", "##", news)
+news <- c("# Changelog", "", news)
+writeLines(news, con = "docs/changelog.md")
 
-if(!fs::dir_exists("./docs/reference"))
-  fs::dir_create("./docs/reference")
+fs::dir_delete("./docs/reference")
+fs::dir_create("./docs/reference")
 
 # ------------------------------------------- REFERENCE
 # functions
@@ -31,3 +34,17 @@ docs <- purrr::map(files, function(x){
 
   list(name = nm, output = output)
 })
+
+md <- c()
+for(i in 1:length(docs)) {
+  md <- c(
+    md,
+    sprintf(
+      "- [%s](%s)", 
+      gsub("\\.md", "", docs[[i]]$name),
+      gsub("\\./docs/", "", docs[[i]]$output)
+    )
+  )
+}
+
+cat(paste0(md, collapse = "\n"), "\n")

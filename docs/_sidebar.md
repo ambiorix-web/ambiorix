@@ -28,18 +28,17 @@
 
 - Reference
 
-  - [Ambiorix](reference/Ambiorix.md)
-  - [Copy Websocket Client](reference/copy_websocket_client.md)
-  - [Dockerfile](reference/docker.md)
-  - [Forward](reference/forward.md)
-  - [Import](reference/import.md)
-  - [Logger](reference/logger.md)
-  - [Parsers](reference/parsers.md)
-  - [R Object](reference/robj.md)
-  - [Response](reference/responses.md)
+  - [create_dockerfile](reference/create_dockerfile.md)
+  - [forward](reference/forward.md)
+  - [import](reference/import.md)
+  - [new_log](reference/new_log.md)
+  - [parsers](reference/parsers.md)
+  - [responses](reference/responses.md)
+  - [robj](reference/robj.md)
   - [Router](reference/Router.md)
-  - [Stop](reference/stop_all.md)
-  - [Templates](reference/templates.md)
+  - [set_params](reference/set_params.md)
+  - [stop_all](reference/stop_all.md)
+  - [websocket_client](reference/websocket_client.md)
 
 - Info
 
