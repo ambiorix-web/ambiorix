@@ -42,14 +42,17 @@ Ambiorix <- R6::R6Class(
 #' @param host A string defining the host.
 #' @param port Integer defining the port, defaults to `ambiorix.port` option: uses a random port if `NULL`.
 #' @param log Whether to generate a log of events.
-    initialize = function(host = getOption("ambiorix.host", "0.0.0.0"), port = getOption("ambiorix.port", NULL),
-      log = getOption("ambiorix.logger", FALSE)){
+    initialize = function(
+      host = getOption("ambiorix.host", "0.0.0.0"), 
+      port = getOption("ambiorix.port", NULL),
+      log = getOption("ambiorix.logger", FALSE)
+    ){
 
       private$.logger <- new_log()
       private$.logger$predicate <- logPredicate(log)
 
       private$.host <- host
-      private$.port <- get_port(port)
+      private$.port <- get_port(host, port)
       self$not_found <- function(req, res){
         response_404()
       }

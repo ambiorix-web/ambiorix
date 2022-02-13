@@ -125,9 +125,9 @@ check_installed <- function(pkg){
 #'
 #' @noRd
 #' @keywords internal
-get_port <- function(port = NULL){
+get_port <- function(host, port = NULL){
   if(!is.null(port))
     return(as.integer(port))
 
-  httpuv::randomPort()
+  httpuv::randomPort(host = host)
 }
