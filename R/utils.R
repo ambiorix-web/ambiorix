@@ -126,6 +126,14 @@ check_installed <- function(pkg){
 #' @noRd
 #' @keywords internal
 get_port <- function(host, port = NULL){
+
+  # we need to override the port if the load balancer
+  # is running. This should NOT be set by a dev
+  # this ensures we can overwrite
+  forced <- getOption("ambiorix.port.force")
+  if(is.null(forced))
+    return(forced)
+
   if(!is.null(port))
     return(as.integer(port))
 
