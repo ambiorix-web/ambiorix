@@ -131,7 +131,7 @@ get_port <- function(host, port = NULL){
   # is running. This should NOT be set by a dev
   # this ensures we can overwrite
   forced <- getOption("ambiorix.port.force")
-  if(is.null(forced))
+  if(!is.null(forced))
     return(forced)
 
   if(!is.null(port))
