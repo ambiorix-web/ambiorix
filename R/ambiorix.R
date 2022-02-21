@@ -315,8 +315,32 @@ Ambiorix <- R6::R6Class(
         return()
       }
 
-      private$.server <- httpuv::startServer(host = private$.host, port = private$.port,
-        app = list(call = private$.call, staticPaths = private$.static, onWSOpen = private$.wss)
+      private$.server <- httpuv::startServer(
+        host = private$.host, 
+        port = private$.port,
+        app = list(
+          call = private$.call, 
+          staticPaths = private$.static, 
+          onWSOpen = private$.wss,
+          staticPathOptions = httpuv::staticPathOptions(
+            html_charset = "utf-8",
+            headers = list(
+              "X-UA-Compatible" = "IE=edge,chrome=1"
+            )
+          ),
+          onHeaders = function(request) {
+            if(!is.null(private$.middleware)){
+              args <- list(request, Response$new())
+              res <- lapply(private$.middleware, do.call, args = args)
+
+              if(inherits(res, "ambiorixResponse"))
+                return(res)
+              
+              return(NULL)
+            }
+            return(NULL)
+          }
+        )
       )
 
       url <- sprintf("http://localhost:%s", private$.port)
@@ -462,14 +486,6 @@ Ambiorix <- R6::R6Class(
     .call = function(req){
 
       request <- Request$new(req)
-
-      if(!is.null(private$.middleware)){
-        args <- list(request, Response$new())
-        res <- lapply(private$.middleware, do.call, args = args)
-
-        if(inherits(res, "ambiorixResponse"))
-          return(res)
-      }
 
       # loop over routes
       for(i in 1:length(private$.routes)){
