@@ -240,6 +240,19 @@ Response <- R6::R6Class(
 
       name <- deparse(substitute(name))
       private$.data[[name]]
+    },
+    render_hook = function(hook) {
+      if(!is.function(hook))
+        stop("`hook` must be a function", call. = FALSE)
+
+      if(length(formalArgs(hook)) != 3)
+        stop(
+          "`hook` must take 3 arguments: `content`, `data`, `ext`",
+          call. = FALSE
+        )
+
+      private$.preHooks <- append(private$.preHooks, hook)
+      invisible(self)
     }
   ),
   private = list(
@@ -248,6 +261,7 @@ Response <- R6::R6Class(
     .status = 200L,
     .headers = list(), 
     .data = list(),
+    .preHooks = list(),
     .get_template_path = function(file){
       file <- remove_extensions(file)
 
@@ -296,20 +310,35 @@ Response <- R6::R6Class(
         data <- lapply(data, function(x){
           to_json(x)
         })
-      } else {
+      } 
+
+      if(ext != "html")
         data <- lapply(data, function(x){
 
-        # If not AsIs can use object
-        if(!inherits(x, "robj"))
-          return(x)
+          # If not AsIs can use object
+          if(!inherits(x, "robj"))
+            return(x)
 
-        paste0(
-          capture.output(
-            dput(x)
-          ),
-          collapse = ""
-        )
+          paste0(
+            capture.output(
+              dput(x)
+            ),
+            collapse = ""
+          )
         })
+
+      # hooks
+      if(length(private$.preHooks) > 0) {
+        for(i in 1:length(private$.preHooks)) {
+          pre_processed <- private$.preHooks[i](file_content, data)
+          if(!inherits(pre_processed, "responsePreHook")){
+            cat("Not a response hook")
+            next
+          }
+
+          file_content <- pre_processed$content
+          data <- pre_processed$data
+        }
       }
 
       file_content <- lapply(file_content, function(x, data){
@@ -375,4 +404,17 @@ print.robj <- function(x, ...){
   cli::cli_alert_info("R object")
   class(x) <- class(x)[class(x) != "robj"]
   print(x)
+}
+
+response_pre_hook <- function(
+  content,
+  data
+) {
+  structure(
+    list(
+      content = content,
+      data = data
+    ),
+    class = c("list", "responsePreHook")
+  )
 }
