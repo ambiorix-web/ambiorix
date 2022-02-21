@@ -473,7 +473,7 @@ Ambiorix <- R6::R6Class(
       request <- Request$new(req)
       res <- Response$new()
 
-      if(!is.null(private$.middleware)){
+      if(length(private$.middleware) > 0){
         for(i in 1:length(private$.middleware)) {
           mid_res <- private$.middleware[[i]](request, res)
 
