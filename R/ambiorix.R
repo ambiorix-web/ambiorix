@@ -108,7 +108,6 @@ Ambiorix <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "GET",
-        res = Response$new(),
         error = error %error% self$error
       )
 
@@ -132,7 +131,6 @@ Ambiorix <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "PUT",
-        res = Response$new(),
         error = error %error% self$error
       )
 
@@ -156,7 +154,6 @@ Ambiorix <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "PATCH",
-        res = Response$new(),
         error = error %error% self$error
       )
 
@@ -180,7 +177,6 @@ Ambiorix <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "DELETE",
-        res = Response$new(),
         error = error %error% self$error
       )
 
@@ -204,7 +200,6 @@ Ambiorix <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "POST",
-        res = Response$new(),
         error = error %error% self$error
       )
 
@@ -228,7 +223,6 @@ Ambiorix <- R6::R6Class(
         path = path,
         fun = handler,
         method = "OPTIONS",
-        res = Response$new(),
         error = error %error% self$error
       )
 
@@ -252,7 +246,6 @@ Ambiorix <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = c("GET", "POST", "PUT", "DELETE", "PATCH"),
-        res = Response$new(),
         error = error %error% self$error
       )
       
@@ -328,16 +321,8 @@ Ambiorix <- R6::R6Class(
               "X-UA-Compatible" = "IE=edge,chrome=1"
             )
           ),
-          onHeaders = function(request) {
-            if(!is.null(private$.middleware)){
-              args <- list(request, Response$new())
-              res <- lapply(private$.middleware, do.call, args = args)
-
-              if(inherits(res, "ambiorixResponse"))
-                return(res)
-              
-              return(NULL)
-            }
+          onHeaders = function(req) {
+            req$x <- 1L
             return(NULL)
           }
         )
@@ -486,6 +471,16 @@ Ambiorix <- R6::R6Class(
     .call = function(req){
 
       request <- Request$new(req)
+      res <- Response$new()
+
+      if(!is.null(private$.middleware)){
+        for(i in 1:length(private$.middleware)) {
+          mid_res <- private$.middleware[[i]](request, res)
+
+          if(inherits(mid_res, "ambiorixResponse"))
+            res <- mid_res
+        }
+      }
 
       # loop over routes
       for(i in 1:length(private$.routes)){
@@ -499,10 +494,10 @@ Ambiorix <- R6::R6Class(
           request$params <- set_params(request$PATH_INFO, private$.routes[[i]]$route)
 
           # get response
-          response <- tryCatch(private$.routes[[i]]$fun(request, private$.routes[[i]]$res),
+          response <- tryCatch(private$.routes[[i]]$fun(request, res),
             error = function(error){
               warning(error)
-              private$.routes[[i]]$error(request, private$.routes[[i]]$res)
+              private$.routes[[i]]$error(request, res)
             }
           )
 
@@ -518,7 +513,7 @@ Ambiorix <- R6::R6Class(
                 onRejected = function(error){
                   message(error)
                   private$.logger$log(req$REQUEST_METHOD, "on", req$PATH_INFO, "-", "Server error")
-                  private$.routes[[i]]$error(request, private$.routes[[i]]$res)
+                  private$.routes[[i]]$error(request, res)
                 }
               )
             )
@@ -539,7 +534,7 @@ Ambiorix <- R6::R6Class(
 
       # return 404
       request$params <- set_params(request$PATH_INFO, Route$new(request$PATH_INFO))
-      return(self$not_found(request, Response$new()))
+      return(self$not_found(request, res))
     },
     .wss = function(ws){
 

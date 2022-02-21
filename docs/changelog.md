@@ -10,7 +10,9 @@ locking variables when using `set`.
 - Remove the deprecated `Logger` class, see [log](https://github.com/devOpifex/log) package.
 - Pass `host` to free port fetch function.
 - Add hidden option to force change port for upcoming related service.
-- Middleware reworked to use `onHeaders` as provided by httpuv.
+- Internals of calls reworked to share response object. 
+This is how it should always have worked, it allows middlewares to 
+updatre request and response to be used/passed to subsequent calls.
 
 ## ambiorix 1.0.2
 

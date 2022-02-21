@@ -225,6 +225,21 @@ Response <- R6::R6Class(
       cli::cli_li("{.code tsv(data, name, ...)}")
       cli::cli_li("{.code rds(data, name, ...)}")
       cli::cli_li("{.code htmlwidget(widget, ...)}")
+    },
+    set = function(name, value){
+      assert_that(not_missing(name))
+      assert_that(not_missing(value))
+
+      name <- deparse(substitute(name))
+      private$.data[[name]] <- value
+
+      invisible(self)
+    },
+    get = function(name){
+      assert_that(not_missing(name))
+
+      name <- deparse(substitute(name))
+      private$.data[[name]]
     }
   ),
   private = list(
@@ -232,6 +247,7 @@ Response <- R6::R6Class(
     .templates = list(),
     .status = 200L,
     .headers = list(), 
+    .data = list(),
     .get_template_path = function(file){
       file <- remove_extensions(file)
 
