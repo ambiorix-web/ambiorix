@@ -75,7 +75,6 @@ Router <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "GET",
-        res = Response$new(),
         error = error %error% self$error
       )
 
@@ -98,7 +97,6 @@ Router <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "PUT",
-        res = Response$new(),
         error = error %error% self$error
       )
 
@@ -121,7 +119,6 @@ Router <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "PATCH",
-        res = Response$new(),
         error = error %error% self$error
       )
 
@@ -144,7 +141,6 @@ Router <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "DELETE",
-        res = Response$new(),
         error = error %error% self$error
       )
 
@@ -167,7 +163,6 @@ Router <- R6::R6Class(
         path = path, 
         fun = handler, 
         method = "POST",
-        res = Response$new(),
         error = error %error% self$error
       )
 
