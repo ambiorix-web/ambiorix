@@ -180,27 +180,23 @@ Request <- R6::R6Class(
   private = list(
     .data = list(),
     .parse_query_string = function(query){
-      if(is.null(query)){
-        self$query <- list()
+      if(is.null(query))
         return()
-      }
 
-      if(query == ""){
-        self$query <- list()
+      if(query == "")
         return()
-      }
       
       q <- gsub("^\\?", "", query)
       params <- strsplit(q, "&")[[1]]
       params_split <- strsplit(params, "=")
 
       lst <- sapply(params_split, function(x){
-        if(length(x) > 1) return(x[2])
+        if(length(x) > 1) return(utils::URLdecode(x[2]))
 
-        x[1]
+        utils::URLdecode(x[1])
       })
       names(lst) <- sapply(params_split, function(x){
-        if(length(x) > 1) return(x[1])
+        if(length(x) > 1) return(utils::URLdecode(x[1]))
         return(NULL)
       })
 
@@ -208,13 +204,11 @@ Request <- R6::R6Class(
       invisible()
     },
     .parse_cookie = function(cookie) {
-      if(is.null(cookie)){
+      if(is.null(cookie))
         return()
-      }
 
-      if(cookie == ""){
+      if(cookie == "")
         return()
-      }
 
       split <- strsplit(cookie, ";")[[1]]
       split <- strsplit(split, "=")

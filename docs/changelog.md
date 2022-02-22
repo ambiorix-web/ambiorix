@@ -27,6 +27,7 @@ middlewares at once.
 - Add `token_create` function.
 - Add `cookie` method to the `Response` class to easily set cookies.
 - Add `cookie` field to `Request` to hold _parsed_ `HTTP_COOKIE`.
+- Properly URL decode query string values.
 
 ## ambiorix 1.0.2
 
