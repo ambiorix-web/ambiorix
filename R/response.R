@@ -269,12 +269,12 @@ Response <- R6::R6Class(
       assert_that(not_missing(hook))
       assert_that(
         is.function(hook),
-        "`hook` must be a function"
+        msg = "`hook` must be a function"
       )
 
       assert_that(
-        length(formalArgs(hook) == 4),
-        "`hook` must take 3 arguments: `self`, `content`, `data`, and `ext`"
+        length(formalArgs(hook)) == 4,
+        msg = "`hook` must take 3 arguments: `self`, `content`, `data`, and `ext`"
       )
 
       private$.preHooks <- append(private$.preHooks, hook)
@@ -309,6 +309,7 @@ Response <- R6::R6Class(
       expires = NULL,
       max_age = NULL,
       domain = NULL,
+      path = NULL,
       secure = TRUE,
       http_only = FALSE,
       same_site = NULL
@@ -325,7 +326,6 @@ Response <- R6::R6Class(
       }
 
       if(!is.null(max_age)) {
-        assert_that(is.numeric(max_age))
         cookie <- sprintf("%s; Max-Age=%s", cookie, max_age)
       }
 

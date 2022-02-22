@@ -451,6 +451,7 @@ Runs before the \code{render} function.
   expires = NULL,
   max_age = NULL,
   domain = NULL,
+  path = NULL,
   secure = TRUE,
   http_only = FALSE,
   same_site = NULL
@@ -477,6 +478,9 @@ If both \code{expires} and \code{max_age} are set, the latter has precedence.}
 If omitted, this attribute defaults to the host of the current document URL,
 not including subdomains.}
 
+\item{\code{path}}{Indicates the path that must exist in the requested URL for the
+browser to send the Cookie header.}
+
 \item{\code{secure}}{Indicates that the cookie is sent to the server only when a
 request is made with the https: scheme (except on localhost), and therefore,
 is more resistant to man-in-the-middle attacks.}
@@ -487,9 +491,6 @@ through the Document.cookie property.}
 \item{\code{same_site}}{Controls whether or not a cookie is sent with cross-origin
 requests, providing some protection against cross-site request forgery
 attacks (CSRF). Accepts \code{Strict}, \code{Lax}, or \code{None}.}
-
-\item{\code{path}}{Indicates the path that must exist in the requested URL for the
-browser to send the Cookie header.}
 }
 \if{html}{\out{</div>}}
 }
