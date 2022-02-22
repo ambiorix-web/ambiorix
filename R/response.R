@@ -394,7 +394,7 @@ Response <- R6::R6Class(
       status
     },
     .get_headers = function(headers = list()){
-      append(private$.headers, headers)
+      modifyList(private$.headers, headers)
     }
   )
 )

@@ -23,6 +23,7 @@ strings as `name`.
 - Allow passing a list of functions to `use` to easily se multiple
 middlewares at once.
 - `render` method correctly sets the `Content-type` header.
+- `headers` method more robust to avoid duplicated headers.
 
 ## ambiorix 1.0.2
 
