@@ -28,7 +28,7 @@ render_html <- function(expr){
 
   htmltools::save_html(tags, file = tmp, background = "none")
 
-  paste0(readLines(tmp), collapse = "")
+  paste0(read_lines(tmp), collapse = "")
 }
 
 #' Browse App
@@ -156,4 +156,16 @@ as_label <- function(x) {
     return(x)
 
   deparse(substitute(x, parent.frame()))
+}
+
+#' Silent readLines
+#' 
+#' Avoids EOF warnings.
+#' 
+#' @noRd
+#' @keywords internal
+read_lines <- function(...) {
+  suppressWarnings(
+    readLines(...)
+  )
 }

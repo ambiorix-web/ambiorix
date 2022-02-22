@@ -1,6 +1,6 @@
 # Changelog
 
-## ambiorix 1.0.2.9000
+## ambiorix 1.1.0.9000
 
 - Middleware no longer uses global environment that may cause side effect
 across sessions.
@@ -28,6 +28,9 @@ middlewares at once.
 - Add `cookie` method to the `Response` class to easily set cookies.
 - Add `cookie` field to `Request` to hold _parsed_ `HTTP_COOKIE`.
 - Properly URL decode query string values.
+- Add `sendf` method to `Response` class to pre-process request
+with `sprintf`.
+- Silently read templates, no more EOF warnings.
 
 ## ambiorix 1.0.2
 

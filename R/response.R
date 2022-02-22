@@ -206,7 +206,7 @@ Response <- R6::R6Class(
       htmlwidgets::saveWidget(widget, tmp, selfcontained = TRUE, ...)
       headers <- private$.get_headers(headers)
 
-      response(body = paste0(readLines(tmp), "\n", collapse = ""), status = private$.get_status(status), headers = headers)
+      response(body = paste0(read_lines(tmp), "\n", collapse = ""), status = private$.get_status(status), headers = headers)
     },
 #' @details Add headers to the response.
 #' @param name,value Name and value of the header.
@@ -391,7 +391,7 @@ Response <- R6::R6Class(
     },
     .render_template = function(file, data){
       # read and replace tags
-      file_content <- readLines(file)
+      file_content <- read_lines(file)
 
       # render
       ext <- tools::file_ext(file)
