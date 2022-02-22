@@ -59,12 +59,14 @@ print.ambiorixResponse <- function(x, ...){
 }
 
 #' Response
+#' 
+#' Response class to generate responses sent from the server.
 #'
-#' @noRd
-#' @keywords internal
+#' @export 
 Response <- R6::R6Class(
   "Response",
   public = list(
+    #' @details Constructor
     initialize = function(){
       template_path <- here::here("templates")
       private$.has_templates <- fs::dir_exists(template_path)
@@ -107,7 +109,7 @@ Response <- R6::R6Class(
     },
 #' @details Send a file.
 #' @param file File to send.
-#' @param headers HTTP headers to set.
+#' @param status Status of the response.
     send_file = function(file, status = NULL){
       assert_that(not_missing(file))
 
@@ -214,6 +216,7 @@ Response <- R6::R6Class(
       private$.headers <- append(private$.headers, header)
       invisible(self)
     },
+#' @details Print
     print = function(){
       cli::cli_li("{.code send(body, headers, status)}")
       cli::cli_li("{.code send_file(file, status)}")
@@ -226,6 +229,10 @@ Response <- R6::R6Class(
       cli::cli_li("{.code rds(data, name, ...)}")
       cli::cli_li("{.code htmlwidget(widget, ...)}")
     },
+#' @details Set Data
+#' @param name Name of the variable.
+#' @param value Value of the variable.
+#' @return Invisible returns self.
     set = function(name, value){
       assert_that(not_missing(name))
       assert_that(not_missing(value))
@@ -235,13 +242,29 @@ Response <- R6::R6Class(
 
       invisible(self)
     },
+#' @details Get data
+#' @param name Name of the variable to get.
     get = function(name){
       assert_that(not_missing(name))
 
       name <- deparse(substitute(name))
       private$.data[[name]]
     },
-    render_hook = function(hook) {
+#' @details Add a pre render hook.
+#' Runs before the `render` function.
+#' 
+#' @param hook A function that accepts 3 arguments:
+#' - `content`: File content a vector of character string,
+#' content of the template.
+#' - `data`: `list` passed from `render` method.
+#' - `ext`: File extension of the template file.
+#' 
+#' This function is used to add pre-render hooks to the `render`
+#' method. The function should return an object of class 
+#' `responsePreHook` as obtained by [pre_hook()].
+#' This is meant to be used by middlewares to, if necessary,
+#' pre-process rendered data.
+    pre_render_hook = function(hook) {
       if(!is.function(hook))
         stop("`hook` must be a function", call. = FALSE)
 
@@ -406,7 +429,13 @@ print.robj <- function(x, ...){
   print(x)
 }
 
-response_pre_hook <- function(
+#' Pre Hook Response
+#' 
+#' @param content File content, a character vector.
+#' @param data A list of data passed to `glue::glue_data`.
+#' 
+#' @export 
+pre_hook <- function(
   content,
   data
 ) {

@@ -13,7 +13,8 @@ locking variables when using `set`.
 - Internals of calls reworked to share response object. 
 This is how it should always have worked, it allows middlewares to 
 updatre request and response to be used/passed to subsequent calls.
-- Middleware check for run has been fixed
+- Middleware check for run has been fixed.
+- Document and export the `Response` class.
 
 ## ambiorix 1.0.2
 
