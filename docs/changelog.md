@@ -15,6 +15,8 @@ This is how it should always have worked, it allows middlewares to
 updatre request and response to be used/passed to subsequent calls.
 - Middleware check for run has been fixed.
 - Document and export the `Response` class.
+- Added pre-hook to response.
+- Document and export `Request` class.
 
 ## ambiorix 1.0.2
 

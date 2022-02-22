@@ -1,7 +1,42 @@
-#' Preprocess Request
+#' Request
 #' 
-#' @noRd 
-#' @keywords internal
+#' A request.
+#' 
+#' @field HEADERS Headers from the request.
+#' @field HTTP_ACCEPT Content types to accept.
+#' @field HTTP_ACCEPT_ENCODING Encoding of the request.
+#' @field HTTP_ACCEPT_LANGUAGE Language of the request.
+#' @field HTTP_CACHE_CONTROL Directorives for the cache (case-insensitive).
+#' @field HTTP_CONNECTION Controls whether the network connection stays open after the current transaction finishes.
+#' @field HTTP_COOKIE Cookie data.
+#' @field HTTP_HOST Host making the request.
+#' @field HTTP_SEC_FETCH_DEST Indicates the request's destination. That is the initiator of the original fetch request, which is where (and how) the fetched data will be used.
+#' @field HTTP_SEC_FETCH_MODE Indicates mode of the request.
+#' @field HTTP_SEC_FETCH_SITE Indicates the relationship between a request initiator's origin and the origin of the requested resource. 
+#' @field HTTP_SEC_FETCH_USER Only sent for requests initiated by user activation, and its value will always be `?1`.
+#' @field HTTP_UPGRADE_INSECURE_REQUESTS Signals that server supports upgrade.
+#' @field HTTP_USER_AGENT User agent.
+#' @field httpuv.version Version of httpuv.
+#' @field PATH_INFO Path of the request.
+#' @field QUERY_STRING Query string of the request.
+#' @field REMOTE_ADDR Remote address.
+#' @field REMOTE_PORT Remote port.
+#' @field REQUEST_METHOD Method of the request, e.g.: `GET`.
+#' @field rook.errors Errors from rook.
+#' @field rook.input Rook inputs.
+#' @field rook.url_scheme Rook url scheme.
+#' @field rook.version Rook version.
+#' @field SCRIPT_NAME The initial portion of the request URL's "path" that corresponds to the application object, so that the application knows its virtual "location".
+#' @field SERVER_NAME Server name.
+#' @field SERVER_PORT Server port
+#' @field CONTENT_LENGTH Size of the message body.
+#' @field CONTENT_TYPE Type of content of the request.
+#' @field HTTP_REFERER Contains an absolute or partial address of the page that makes the request.
+#' @field body Request, an environment.
+#' @field query Parsed `QUERY_STRING`, `list`.
+#' @field params A `list` of parameters.
+#' 
+#' @export 
 Request <- R6::R6Class(
   "Request",
   public = list(
@@ -12,7 +47,6 @@ Request <- R6::R6Class(
     HTTP_CACHE_CONTROL = NULL,
     HTTP_CONNECTION = NULL,
     HTTP_COOKIE = NULL,
-    HTTP_DNT = NULL, 
     HTTP_HOST = NULL,
     HTTP_SEC_FETCH_DEST = NULL,
     HTTP_SEC_FETCH_MODE = NULL,
@@ -39,6 +73,8 @@ Request <- R6::R6Class(
     body = NULL,
     query = list(),
     params = list(),
+    #' @details Constructor
+    #' @param req Original request (environment).
     initialize = function(req){
       self$HEADERS <- req$HEADERS
       self$HTTP_ACCEPT <- req$HTTP_ACCEPT
@@ -47,7 +83,6 @@ Request <- R6::R6Class(
       self$HTTP_CACHE_CONTROL <- req$HTTP_CACHE_CONTROL
       self$HTTP_CONNECTION <- req$HTTP_CONNECTION
       self$HTTP_COOKIE <- req$HTTP_COOKIE
-      self$HTTP_DNT <- req$HTTP_DNT
       self$HTTP_HOST <- req$HTTP_HOST
       self$HTTP_SEC_FETCH_DEST <- req$HTTP_SEC_FETCH_DEST
       self$HTTP_SEC_FETCH_MODE <- req$HTTP_SEC_FETCH_MODE
@@ -76,6 +111,7 @@ Request <- R6::R6Class(
       private$.parse_query_string(req$QUERY_STRING)
 
     },
+    #' @details Print
     print = function(){
       cli::cli_li("HEADERS: {.val {self$HEADERS}}")
       cli::cli_li("HTTP_ACCEPT: {.val {self$HTTP_ACCEPT}}")
@@ -84,7 +120,6 @@ Request <- R6::R6Class(
       cli::cli_li("HTTP_CACHE_CONTROL: {.val {self$HTTP_CACHE_CONTROL}}")
       cli::cli_li("HTTP_CONNECTION: {.val {self$HTTP_CONNECTION}}")
       cli::cli_li("HTTP_COOKIE: {.val {self$HTTP_COOKIE}}")
-      cli::cli_li("HTTP_DNT: {.val {self$HTTP_DNT}}")
       cli::cli_li("HTTP_HOST: {.val {self$HTTP_HOST}}")
       cli::cli_li("HTTP_SEC_FETCH_DEST: {.val {self$HTTP_SEC_FETCH_DEST}}")
       cli::cli_li("HTTP_SEC_FETCH_MODE: {.val {self$HTTP_SEC_FETCH_MODE}}")
@@ -117,6 +152,10 @@ Request <- R6::R6Class(
         str(self$query)
       }
     },
+    #' @details Set Data
+    #' @param name Name of the variable.
+    #' @param value Value of the variable.
+    #' @return Invisible returns self.
     set = function(name, value){
       assert_that(not_missing(name))
       assert_that(not_missing(value))
@@ -126,6 +165,8 @@ Request <- R6::R6Class(
 
       invisible(self)
     },
+    #' @details Get data
+    #' @param name Name of the variable to get.
     get = function(name){
       assert_that(not_missing(name))
 
