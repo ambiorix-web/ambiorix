@@ -23,6 +23,7 @@ middlewares at once.
 - `render` method correctly sets the `Content-type` header.
 - `headers` method more robust to avoid duplicated headers.
 - Add `token_create` function.
+- Add `cookie` method to the `Response` class to easily set cookies.
 
 # ambiorix 1.0.2
 

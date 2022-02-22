@@ -266,16 +266,91 @@ Response <- R6::R6Class(
 #' This is meant to be used by middlewares to, if necessary,
 #' pre-process rendered data.
     pre_render_hook = function(hook) {
-      if(!is.function(hook))
-        stop("`hook` must be a function", call. = FALSE)
+      assert_that(not_missing(hook))
+      assert_that(
+        is.function(hook),
+        "`hook` must be a function"
+      )
 
-      if(length(formalArgs(hook)) != 4)
-        stop(
-          "`hook` must take 3 arguments: `self`, `content`, `data`, and `ext`",
-          call. = FALSE
-        )
+      assert_that(
+        length(formalArgs(hook) == 4),
+        "`hook` must take 3 arguments: `self`, `content`, `data`, and `ext`"
+      )
 
       private$.preHooks <- append(private$.preHooks, hook)
+      invisible(self)
+    },
+#' @details Set a cookie
+#' @param name Name of the cookie.
+#' @param value value of the cookie.
+#' @param expires Expiry, if an integer assumes it's the number of seconds
+#' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
+#' If unspecified, the cookie becomes a session cookie. A session finishes 
+#' when the client shuts down, after which the session cookie is removed. 
+#' @param max_age Indicates the number of seconds until the cookie expires. 
+#' A zero or negative number will expire the cookie immediately. 
+#' If both `expires` and `max_age` are set, the latter has precedence.
+#' @param domain Defines the host to which the cookie will be sent.
+#' If omitted, this attribute defaults to the host of the current document URL,
+#' not including subdomains.
+#' @param path Indicates the path that must exist in the requested URL for the 
+#' browser to send the Cookie header.
+#' @param secure Indicates that the cookie is sent to the server only when a
+#' request is made with the https: scheme (except on localhost), and therefore, 
+#' is more resistant to man-in-the-middle attacks.
+#' @param http_only Forbids JavaScript from accessing the cookie, for example,
+#' through the Document.cookie property.
+#' @param same_site Controls whether or not a cookie is sent with cross-origin
+#' requests, providing some protection against cross-site request forgery
+#' attacks (CSRF). Accepts `Strict`, `Lax`, or `None`.
+    cookie = function(
+      name,
+      value,
+      expires = NULL,
+      max_age = NULL,
+      domain = NULL,
+      secure = TRUE,
+      http_only = FALSE,
+      same_site = NULL
+    ) {
+      assert_that(not_missing(name))
+      assert_that(not_missing(value))
+
+      name <- as_label(name)
+      cookie <- sprintf("%s=%s", name, value)
+
+      if(!is.null(expires)) {
+        expires <- convert_cookie_expires(expires)
+        cookie <- sprintf("%s; Expires=%s", cookie, expires)
+      }
+
+      if(!is.null(max_age)) {
+        assert_that(is.numeric(max_age))
+        cookie <- sprintf("%s; Max-Age=%s", cookie, max_age)
+      }
+
+      if(!is.null(domain)) {
+        cookie <- sprintf("%s; Domain=%s", cookie, domain)
+      }
+
+      if(!is.null(path)) {
+        cookie <- sprintf("%s; Path=%s", cookie, path)
+      }
+
+      if(secure) {
+        cookie <- sprintf("%s; Secure", cookie)
+      }
+
+      if(http_only) {
+        cookie <- sprintf("%s; HttpOnly", cookie)
+      }
+
+      if(!is.null(same_site)) {
+        cookie <- sprintf("%s; SameSite=%s", cookie, same_site)
+      }
+
+      private$.headers[["Set-Cookie"]] <- cookie
+
       invisible(self)
     }
   ),
@@ -447,4 +522,44 @@ pre_hook <- function(
     ),
     class = c("list", "responsePreHook")
   )
+}
+
+#' Convert Cookie Expires
+#' 
+#' Converts the cookie `expires` argument
+#' to the expected
+#' [Date format](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Date).
+#' 
+#' @param expires Expiry, if an integer assumes it's the number of seconds
+#' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
+#' 
+#' @examples 
+#' # expires in an hour
+#' convert_cookie_expires(60 * 60)
+#' 
+#' # expires tomorrow
+#' convert_cookie_expires(Sys.Date() + 1)
+#' 
+#' # expires in 1 minute
+#' convert_cookie_expires(Sys.time() + 60)
+#' 
+#' @noRd 
+#' @keywords internal
+convert_cookie_expires <- function(expires) {
+  if(is.character(expires))
+    return(expires)
+
+  if(is.numeric(expires)) {
+    expires <- as.POSIXct(Sys.time(), tz = "UTC") + expires
+  }
+
+  if(inherits(expires, "Date") || inherits(expires, "POSIXct")) {
+    expires <- as.POSIXct(expires, tz = "UTC")
+    expires <- format(
+      expires,
+      "%a, %d %b %Y %H:%M:%S GMT"
+    )
+  }
+
+  return(expires)
 }

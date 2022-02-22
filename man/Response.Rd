@@ -26,6 +26,7 @@ Response class to generate responses sent from the server.
 \item \href{#method-set}{\code{Response$set()}}
 \item \href{#method-get}{\code{Response$get()}}
 \item \href{#method-pre_render_hook}{\code{Response$pre_render_hook()}}
+\item \href{#method-cookie}{\code{Response$cookie()}}
 \item \href{#method-clone}{\code{Response$clone()}}
 }
 }
@@ -436,6 +437,64 @@ pre-process rendered data.}
 \subsection{Details}{
 Add a pre render hook.
 Runs before the \code{render} function.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cookie"></a>}}
+\if{latex}{\out{\hypertarget{method-cookie}{}}}
+\subsection{Method \code{cookie()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$cookie(
+  name,
+  value,
+  expires = NULL,
+  max_age = NULL,
+  domain = NULL,
+  secure = TRUE,
+  http_only = FALSE,
+  same_site = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Name of the cookie.}
+
+\item{\code{value}}{value of the cookie.}
+
+\item{\code{expires}}{Expiry, if an integer assumes it's the number of seconds
+from now. Otherwise accepts an object of class \code{POSIXct} or \code{Date}.
+If unspecified, the cookie becomes a session cookie. A session finishes
+when the client shuts down, after which the session cookie is removed.}
+
+\item{\code{max_age}}{Indicates the number of seconds until the cookie expires.
+A zero or negative number will expire the cookie immediately.
+If both \code{expires} and \code{max_age} are set, the latter has precedence.}
+
+\item{\code{domain}}{Defines the host to which the cookie will be sent.
+If omitted, this attribute defaults to the host of the current document URL,
+not including subdomains.}
+
+\item{\code{secure}}{Indicates that the cookie is sent to the server only when a
+request is made with the https: scheme (except on localhost), and therefore,
+is more resistant to man-in-the-middle attacks.}
+
+\item{\code{http_only}}{Forbids JavaScript from accessing the cookie, for example,
+through the Document.cookie property.}
+
+\item{\code{same_site}}{Controls whether or not a cookie is sent with cross-origin
+requests, providing some protection against cross-site request forgery
+attacks (CSRF). Accepts \code{Strict}, \code{Lax}, or \code{None}.}
+
+\item{\code{path}}{Indicates the path that must exist in the requested URL for the
+browser to send the Cookie header.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Set a cookie
 }
 
 }
