@@ -35,6 +35,7 @@
 #' @field body Request, an environment.
 #' @field query Parsed `QUERY_STRING`, `list`.
 #' @field params A `list` of parameters.
+#' @field cookie Parsed `HTTP_COOKIE`.
 #' 
 #' @export 
 Request <- R6::R6Class(
@@ -73,6 +74,7 @@ Request <- R6::R6Class(
     body = NULL,
     query = list(),
     params = list(),
+    cookie = list(),
     #' @details Constructor
     #' @param req Original request (environment).
     initialize = function(req){
@@ -109,6 +111,7 @@ Request <- R6::R6Class(
       self$body <- req
 
       private$.parse_query_string(req$QUERY_STRING)
+      private$.parse_cookie(req$HTTP_COOKIE)
 
     },
     #' @details Print
@@ -203,6 +206,26 @@ Request <- R6::R6Class(
 
       self$query <- as.list(lst)
       invisible()
+    },
+    .parse_cookie = function(cookie) {
+      if(is.null(cookie)){
+        return()
+      }
+
+      if(cookie == ""){
+        return()
+      }
+
+      split <- strsplit(cookie, ";")[[1]]
+      split <- strsplit(split, "=")
+      for(i in 1:length(split)) {
+        value <- trimws(split[[i]])
+
+        if(length(value) < 2)
+          next
+
+        self$cookie[[value[1]]] <- value[2]
+      }
     }
   )
 )

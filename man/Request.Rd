@@ -74,6 +74,8 @@ A request.
 \item{\code{query}}{Parsed \code{QUERY_STRING}, \code{list}.}
 
 \item{\code{params}}{A \code{list} of parameters.}
+
+\item{\code{cookie}}{Parsed \code{HTTP_COOKIE}.}
 }
 \if{html}{\out{</div>}}
 }

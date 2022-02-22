@@ -24,6 +24,7 @@ middlewares at once.
 - `headers` method more robust to avoid duplicated headers.
 - Add `token_create` function.
 - Add `cookie` method to the `Response` class to easily set cookies.
+- Add `cookie` field to `Request` to hold _parsed_ `HTTP_COOKIE`.
 
 # ambiorix 1.0.2
 
