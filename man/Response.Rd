@@ -12,7 +12,7 @@ Response class to generate responses sent from the server.
 \item \href{#method-new}{\code{Response$new()}}
 \item \href{#method-status}{\code{Response$status()}}
 \item \href{#method-send}{\code{Response$send()}}
-\item \href{#method-send_sprintf}{\code{Response$send_sprintf()}}
+\item \href{#method-sendf}{\code{Response$sendf()}}
 \item \href{#method-text}{\code{Response$text()}}
 \item \href{#method-send_file}{\code{Response$send_file()}}
 \item \href{#method-redirect}{\code{Response$redirect()}}
@@ -92,11 +92,11 @@ Send a plain HTML response.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-send_sprintf"></a>}}
-\if{latex}{\out{\hypertarget{method-send_sprintf}{}}}
-\subsection{Method \code{send_sprintf()}}{
+\if{html}{\out{<a id="method-sendf"></a>}}
+\if{latex}{\out{\hypertarget{method-sendf}{}}}
+\subsection{Method \code{sendf()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$send_sprintf(
+\if{html}{\out{<div class="r">}}\preformatted{Response$sendf(
   body,
   ...,
   headers = list(`Content-Type` = "text/html"),

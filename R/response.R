@@ -94,7 +94,7 @@ Response <- R6::R6Class(
 #' @param ... Passed to `...` of `sprintf`.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    send_sprintf = function(body, ..., headers = list('Content-Type' = 'text/html'), status = NULL){
+    sendf = function(body, ..., headers = list('Content-Type' = 'text/html'), status = NULL){
       body <- sprintf(body, ...)
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = as.character(body))
