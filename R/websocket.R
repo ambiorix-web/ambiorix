@@ -30,6 +30,7 @@ WebsocketHandler <- R6::R6Class(
       cli::cli_ul("Listening on message:")
       cli::cli_li("name: {.val {private$.name}}")
       cli::cli_li("fun: {.code {foo}}")
+      cli::cli_end()
     }
   ),
   private = list(
@@ -38,12 +39,23 @@ WebsocketHandler <- R6::R6Class(
   )
 )
 
+#' Websocket
+#' 
+#' Handle websocket messages.
+#' 
+#' @export 
 Websocket <- R6::R6Class(
   "Websocket",
   public = list(
+    #' @details Constructor
+    #' @param ws 
     initialize = function(ws){
       private$.ws <- ws
     },
+    #' @details Send a message
+    #' @param name Name, identifier, of the message.
+    #' @param message Content of the message, anything that can be
+    #' serialised to JSON.
     send = function(name, message){
       to_json <- get_serialise()
       message <- list(
@@ -53,6 +65,7 @@ Websocket <- R6::R6Class(
       )
       private$.ws$send(to_json(message))
     },
+    #' @details Print
     print = function(){
       cli::cli_li("send: {.code send(name, message)}")
     }

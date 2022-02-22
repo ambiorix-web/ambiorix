@@ -553,11 +553,10 @@ Ambiorix <- R6::R6Class(
 
       # receive
       ws$onMessage(function(binary, message) {
+        # don't run if no receiver
+        if(length(private$.receivers) == 0) return(NULL)
 
         message <- jsonlite::fromJSON(message)
-
-        # don't run if not
-        if(length(private$.receivers) == 0) return(NULL)
 
         for(i in 1:length(private$.receivers)){
           if(private$.receivers[[i]]$is_handler(message)){
