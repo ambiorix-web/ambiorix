@@ -139,3 +139,21 @@ get_port <- function(host, port = NULL){
 
   httpuv::randomPort(host = host)
 }
+
+#' Make label
+#' 
+#' Cheap replacement for rlang::as_label to avoid dependency.
+#' 
+#' @noRd
+#' @keywords internal
+as_label <- function(x) {
+  name <- tryCatch(
+    is.character(x),
+    error = function(e) e
+  )
+
+  if(!inherits(name, "error"))
+    return(x)
+
+  deparse(substitute(x, parent.frame()))
+}

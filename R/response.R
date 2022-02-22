@@ -112,7 +112,6 @@ Response <- R6::R6Class(
 #' @param status Status of the response.
     send_file = function(file, status = NULL){
       assert_that(not_missing(file))
-
       self$render(file, data = list(), status = private$.get_status(status))
     },
 #' @details Redirect to a path or URL.
@@ -237,7 +236,7 @@ Response <- R6::R6Class(
       assert_that(not_missing(name))
       assert_that(not_missing(value))
 
-      name <- deparse(substitute(name))
+      name <- as_label(name)
       private$.data[[name]] <- value
 
       invisible(self)
@@ -247,13 +246,14 @@ Response <- R6::R6Class(
     get = function(name){
       assert_that(not_missing(name))
 
-      name <- deparse(substitute(name))
+      name <- as_label(name)
       private$.data[[name]]
     },
 #' @details Add a pre render hook.
 #' Runs before the `render` function.
 #' 
 #' @param hook A function that accepts 3 arguments:
+#' - `self`: The `Request` class.
 #' - `content`: File content a vector of character string,
 #' content of the template.
 #' - `data`: `list` passed from `render` method.
@@ -268,9 +268,9 @@ Response <- R6::R6Class(
       if(!is.function(hook))
         stop("`hook` must be a function", call. = FALSE)
 
-      if(length(formalArgs(hook)) != 3)
+      if(length(formalArgs(hook)) != 4)
         stop(
-          "`hook` must take 3 arguments: `content`, `data`, `ext`",
+          "`hook` must take 3 arguments: `self`, `content`, `data`, and `ext`",
           call. = FALSE
         )
 
@@ -353,9 +353,9 @@ Response <- R6::R6Class(
       # hooks
       if(length(private$.preHooks) > 0) {
         for(i in 1:length(private$.preHooks)) {
-          pre_processed <- private$.preHooks[i](file_content, data)
+          pre_processed <- private$.preHooks[[i]](self, file_content, data, ext)
           if(!inherits(pre_processed, "responsePreHook")){
-            cat("Not a response hook")
+            cat("Not a response hook", stdout())
             next
           }
 

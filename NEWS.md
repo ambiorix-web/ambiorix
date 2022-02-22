@@ -15,6 +15,8 @@ updatre request and response to be used/passed to subsequent calls.
 - Document and export the `Response` class.
 - Added pre-hook to response.
 - Document and export `Request` class.
+- `set` and `get` methods on `Request` and `Response` accept character
+strings as `name`. 
 
 # ambiorix 1.0.2
 

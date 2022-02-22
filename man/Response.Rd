@@ -418,6 +418,7 @@ Get data
 \describe{
 \item{\code{hook}}{A function that accepts 3 arguments:
 \itemize{
+\item \code{self}: The \code{Request} class.
 \item \code{content}: File content a vector of character string,
 content of the template.
 \item \code{data}: \code{list} passed from \code{render} method.

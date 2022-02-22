@@ -160,7 +160,7 @@ Request <- R6::R6Class(
       assert_that(not_missing(name))
       assert_that(not_missing(value))
 
-      name <- deparse(substitute(name))
+      name <- as_label(name)
       private$.data[[name]] <- value
 
       invisible(self)
@@ -170,7 +170,7 @@ Request <- R6::R6Class(
     get = function(name){
       assert_that(not_missing(name))
 
-      name <- deparse(substitute(name))
+      name <- as_label(name)
       private$.data[[name]]
     }
   ),
