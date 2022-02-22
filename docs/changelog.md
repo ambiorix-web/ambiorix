@@ -24,6 +24,7 @@ strings as `name`.
 middlewares at once.
 - `render` method correctly sets the `Content-type` header.
 - `headers` method more robust to avoid duplicated headers.
+- Add `token_create` function.
 
 ## ambiorix 1.0.2
 
