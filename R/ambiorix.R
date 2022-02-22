@@ -426,7 +426,8 @@ Ambiorix <- R6::R6Class(
       cli::cli_li("routes: {.val {private$.nRoutes()}}")
     },
 #' @details Use a router or middleware
-#' @param use Either a router as returned by [Router] or a function to use as middleware.
+#' @param use Either a router as returned by [Router], a function to use as middleware,
+#' or a `list` of functions.
 #' If a function is passed, it must accept two arguments (the request, and the response): 
 #' this function will be executed every time the server receives a request.
 #' _Middleware may but does not have to return a response, unlike other methods such as `get`_
@@ -442,11 +443,23 @@ Ambiorix <- R6::R6Class(
       } 
 
       # pass middleware
+      msg <- "Use function must accept two arguments: the request, and the response"
       if(is.function(use)) { 
         args <- formalArgs(use)
-        assert_that(length(args) == 2, msg = "Use function must accept two arguments: the request, and the response")
+        assert_that(length(args) == 2, msg = msg)
         private$.middleware <- append(private$.middleware, use)
-      }      
+      }
+
+      if(is.list(use)) {
+        for(i in 1:length(use)) {
+          args <- formalArgs(use[[i]])
+          if(length(args) != 2) {
+            cat(msg, "\n")
+            next
+          }
+          private$.middleware <- append(private$.middleware, use[[i]])
+        }
+      }
 
       invisible(self)
     }

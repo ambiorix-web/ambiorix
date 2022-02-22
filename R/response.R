@@ -138,6 +138,7 @@ Response <- R6::R6Class(
 
       file_content <- private$.render_template(file_path, data)
       headers <- private$.get_headers()
+      headers[["Content-type"]] <- "text/html"
 
       response(file_content, status = private$.get_status(status), headers = headers)
     },
@@ -211,8 +212,8 @@ Response <- R6::R6Class(
 #' @param name,value Name and value of the header.
 #' @return Invisibly returns self.
     header = function(name, value){
-      header <- list(name = value)
-      private$.headers <- append(private$.headers, header)
+      name <- as_label(name)
+      private$.headers[[name]] <- value
       invisible(self)
     },
 #' @details Print

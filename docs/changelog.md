@@ -19,6 +19,10 @@ updatre request and response to be used/passed to subsequent calls.
 - Document and export `Request` class.
 - `set` and `get` methods on `Request` and `Response` accept character
 strings as `name`. 
+- Use R 4.1.0 + add `Depends`
+- Allow passing a list of functions to `use` to easily se multiple
+middlewares at once.
+- `render` method correctly sets the `Content-type` header.
 
 ## ambiorix 1.0.2
 

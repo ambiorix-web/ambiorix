@@ -654,7 +654,8 @@ Print
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{use}}{Either a router as returned by \link{Router} or a function to use as middleware.
+\item{\code{use}}{Either a router as returned by \link{Router}, a function to use as middleware,
+or a \code{list} of functions.
 If a function is passed, it must accept two arguments (the request, and the response):
 this function will be executed every time the server receives a request.
 \emph{Middleware may but does not have to return a response, unlike other methods such as \code{get}}
