@@ -224,6 +224,9 @@ Request <- R6::R6Class(
         if(length(value) < 2)
           next
 
+        if(value[1] == "")
+          next
+
         self$cookie[[value[1]]] <- value[2]
       }
     }
