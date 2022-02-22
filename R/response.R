@@ -218,16 +218,20 @@ Response <- R6::R6Class(
     },
 #' @details Print
     print = function(){
-      cli::cli_li("{.code send(body, headers, status)}")
-      cli::cli_li("{.code send_file(file, status)}")
-      cli::cli_li("{.code render(file, data, status)}")
-      cli::cli_li("{.code json(body, headers, status)}")
-      cli::cli_li("{.code redirect(path, status)}")
-      cli::cli_li("{.code status(status)}")
-      cli::cli_li("{.code csv(data, name, ...)}")
-      cli::cli_li("{.code tsv(data, name, ...)}")
-      cli::cli_li("{.code rds(data, name, ...)}")
-      cli::cli_li("{.code htmlwidget(widget, ...)}")
+      cli::cli_h3("A Response")
+
+      if(!length(private$.headers))
+        return(invisible())
+      
+      cli::cli_h3("Headers")
+      cli::cli_ul()
+
+      for(i in 1:length(private$.headers)) {
+        cli::cli_li("HEADER {names(private$.headers)[i]}")
+        str(private$.headers[[i]])
+      }
+
+      cli::cli_end()
     },
 #' @details Set Data
 #' @param name Name of the variable.

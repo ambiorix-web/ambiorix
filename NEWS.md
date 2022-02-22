@@ -29,6 +29,7 @@ middlewares at once.
 - Add `sendf` method to `Response` class to pre-process request
 with `sprintf`.
 - Silently read templates, no more EOF warnings.
+- More informative print messages for classes.
 
 # ambiorix 1.0.2
 

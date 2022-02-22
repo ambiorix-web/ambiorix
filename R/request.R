@@ -116,6 +116,8 @@ Request <- R6::R6Class(
     },
     #' @details Print
     print = function(){
+      cli::cli_h3("A Request")
+      cli::cli_ul()
       cli::cli_li("HEADERS: {.val {self$HEADERS}}")
       cli::cli_li("HTTP_ACCEPT: {.val {self$HTTP_ACCEPT}}")
       cli::cli_li("HTTP_ACCEPT_ENCODING: {.val {self$HTTP_ACCEPT_ENCODING}}")
@@ -154,6 +156,8 @@ Request <- R6::R6Class(
         cli::cli_li("query: {.val query}")
         str(self$query)
       }
+
+      cli::cli_end()
     },
     #' @details Set Data
     #' @param name Name of the variable.
