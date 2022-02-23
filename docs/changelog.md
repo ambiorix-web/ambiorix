@@ -34,6 +34,7 @@ with `sprintf`.
 - More informative print messages for classes.
 - Add post render hooks to response.
 - Added `get_headers` method to `Response` to retrieve currently set headers.
+- Unlock objects to allow adding new elements to `Response` and `Request`.
 
 ## ambiorix 1.0.2
 

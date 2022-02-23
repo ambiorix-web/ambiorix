@@ -40,6 +40,7 @@
 #' @export 
 Request <- R6::R6Class(
   "Request",
+  lock_objects = FALSE,
   public = list(
     HEADERS = NULL,
     HTTP_ACCEPT = NULL, 
@@ -168,7 +169,7 @@ Request <- R6::R6Class(
       assert_that(not_missing(value))
 
       name <- as_label(name)
-      private$.data[[name]] <- value
+      self[[name]] <- value
 
       invisible(self)
     },
@@ -178,11 +179,10 @@ Request <- R6::R6Class(
       assert_that(not_missing(name))
 
       name <- as_label(name)
-      private$.data[[name]]
+      self[[name]]
     }
   ),
   private = list(
-    .data = list(),
     .parse_query_string = function(query){
       if(is.null(query))
         return()

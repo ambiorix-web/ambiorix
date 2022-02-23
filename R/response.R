@@ -65,6 +65,7 @@ print.ambiorixResponse <- function(x, ...){
 #' @export 
 Response <- R6::R6Class(
   "Response",
+  lock_objects = FALSE,
   public = list(
     #' @details Constructor
     initialize = function(){
@@ -243,7 +244,7 @@ Response <- R6::R6Class(
       assert_that(not_missing(value))
 
       name <- as_label(name)
-      private$.data[[name]] <- value
+      self[[name]] <- value
 
       invisible(self)
     },
@@ -253,7 +254,7 @@ Response <- R6::R6Class(
       assert_that(not_missing(name))
 
       name <- as_label(name)
-      private$.data[[name]]
+      self[[name]]
     },
 #' @details Get headers
 #' Returns the list of headers currently set.
@@ -402,7 +403,6 @@ Response <- R6::R6Class(
     .templates = list(),
     .status = 200L,
     .headers = list(), 
-    .data = list(),
     .preHooks = list(),
     .postHooks = list(),
     .get_template_path = function(file){
