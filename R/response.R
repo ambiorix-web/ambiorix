@@ -258,8 +258,8 @@ Response <- R6::R6Class(
 #' @details Add a pre render hook.
 #' Runs before the `render` and `send_file` method.
 #' 
-#' @param hook A function that accepts 3 arguments:
-#' - `self`: The `Request` class.
+#' @param hook A function that accepts at least 4 arguments:
+#' - `self`: The `Request` class instance.
 #' - `content`: File content a vector of character string,
 #' content of the template.
 #' - `data`: `list` passed from `render` method.
@@ -270,6 +270,9 @@ Response <- R6::R6Class(
 #' `responsePreHook` as obtained by [pre_hook()].
 #' This is meant to be used by middlewares to, if necessary,
 #' pre-process rendered data.
+#' 
+#' Include `...` in your `hook` to ensure it will handle
+#' potential updates to hooks in the future.
     pre_render_hook = function(hook) {
       assert_that(not_missing(hook))
       assert_that(
@@ -278,13 +281,24 @@ Response <- R6::R6Class(
       )
 
       assert_that(
-        length(formalArgs(hook)) == 4,
-        msg = "`hook` must take 4 arguments: `self`, `content`, `data`, and `ext`"
+        length(formalArgs(hook)) >= 4,
+        msg = "`hook` must take at least 4 arguments: `self`, `content`, `data`, and `ext`"
       )
 
       private$.preHooks <- append(private$.preHooks, hook)
       invisible(self)
     },
+#' @details Post render hook.
+#' 
+#' @param hook A function to run after the rendering of HTML.
+#' It should accept at least 3 arguments:
+#' - `self`: The `Request` class instance.
+#' - `content`: File content a vector of character string,
+#' content of the template.
+#' - `ext`: File extension of the template file.
+#' 
+#' Include `...` in your `hook` to ensure it will handle
+#' potential updates to hooks in the future.
     post_render_hook = function(hook) {
       assert_that(not_missing(hook))
       assert_that(
@@ -293,8 +307,8 @@ Response <- R6::R6Class(
       )
 
       assert_that(
-        length(formalArgs(hook)) == 2,
-        msg = "`hook` must take 2 arguments: `content`, and `ext`"
+        length(formalArgs(hook)) >= 3,
+        msg = "`hook` must take 2 arguments: `self`, `content`, and `ext`"
       )
       
       private$.postHooks <- append(private$.postHooks, hook)
@@ -497,7 +511,7 @@ Response <- R6::R6Class(
       }
 
       for(i in 1:length(private$.postHooks)) {
-        content <- private$.postHooks[[i]](file_content, ext)
+        content <- private$.postHooks[[i]](self, file_content, ext)
 
         if(!is.character(content)){
           cat("Not a character response from post-hook (ignoring)\n", stdout())

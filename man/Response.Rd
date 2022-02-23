@@ -431,9 +431,9 @@ Get data
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{hook}}{A function that accepts 3 arguments:
+\item{\code{hook}}{A function that accepts at least 4 arguments:
 \itemize{
-\item \code{self}: The \code{Request} class.
+\item \code{self}: The \code{Request} class instance.
 \item \code{content}: File content a vector of character string,
 content of the template.
 \item \code{data}: \code{list} passed from \code{render} method.
@@ -444,7 +444,10 @@ This function is used to add pre-render hooks to the \code{render}
 method. The function should return an object of class
 \code{responsePreHook} as obtained by \code{\link[=pre_hook]{pre_hook()}}.
 This is meant to be used by middlewares to, if necessary,
-pre-process rendered data.}
+pre-process rendered data.
+
+Include \code{...} in your \code{hook} to ensure it will handle
+potential updates to hooks in the future.}
 }
 \if{html}{\out{</div>}}
 }
@@ -460,6 +463,27 @@ Runs before the \code{render} and \code{send_file} method.
 \subsection{Method \code{post_render_hook()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$post_render_hook(hook)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{hook}}{A function to run after the rendering of HTML.
+It should accept at least 3 arguments:
+\itemize{
+\item \code{self}: The \code{Request} class instance.
+\item \code{content}: File content a vector of character string,
+content of the template.
+\item \code{ext}: File extension of the template file.
+}
+
+Include \code{...} in your \code{hook} to ensure it will handle
+potential updates to hooks in the future.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Post render hook.
 }
 
 }
