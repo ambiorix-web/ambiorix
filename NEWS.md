@@ -30,6 +30,7 @@ middlewares at once.
 with `sprintf`.
 - Silently read templates, no more EOF warnings.
 - More informative print messages for classes.
+- Add post render hooks to response.
 
 # ambiorix 1.0.2
 

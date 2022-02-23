@@ -109,8 +109,9 @@ Response <- R6::R6Class(
     },
 #' @details Send a file.
 #' @param file File to send.
+#' @param headers HTTP headers to set.
 #' @param status Status of the response.
-    send_file = function(file, status = NULL){
+    send_file = function(file, headers = list('Content-Type' = 'text/html'), status = NULL){
       assert_that(not_missing(file))
       self$render(file, data = list(), status = private$.get_status(status))
     },
@@ -127,8 +128,9 @@ Response <- R6::R6Class(
 #' @details Render a template file.
 #' @param file Template file.
 #' @param data List to fill `[% tags %]`.
+#' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    render = function(file, data = list(), status = NULL){
+    render = function(file, data = list(), headers = list('Content-Type' = 'text/html'), status = NULL){
       assert_that(not_missing(file))
 
       if(!private$.has_templates)
@@ -137,8 +139,7 @@ Response <- R6::R6Class(
       file_path <- private$.get_template_path(file)
 
       file_content <- private$.render_template(file_path, data)
-      headers <- private$.get_headers()
-      headers[["Content-type"]] <- "text/html"
+      headers <- private$.get_headers(headers)
 
       response(file_content, status = private$.get_status(status), headers = headers)
     },
@@ -255,7 +256,7 @@ Response <- R6::R6Class(
       private$.data[[name]]
     },
 #' @details Add a pre render hook.
-#' Runs before the `render` function.
+#' Runs before the `render` and `send_file` method.
 #' 
 #' @param hook A function that accepts 3 arguments:
 #' - `self`: The `Request` class.
@@ -278,10 +279,25 @@ Response <- R6::R6Class(
 
       assert_that(
         length(formalArgs(hook)) == 4,
-        msg = "`hook` must take 3 arguments: `self`, `content`, `data`, and `ext`"
+        msg = "`hook` must take 4 arguments: `self`, `content`, `data`, and `ext`"
       )
 
       private$.preHooks <- append(private$.preHooks, hook)
+      invisible(self)
+    },
+    post_render_hook = function(hook) {
+      assert_that(not_missing(hook))
+      assert_that(
+        is.function(hook),
+        msg = "`hook` must be a function"
+      )
+
+      assert_that(
+        length(formalArgs(hook)) == 2,
+        msg = "`hook` must take 2 arguments: `content`, and `ext`"
+      )
+      
+      private$.postHooks <- append(private$.postHooks, hook)
       invisible(self)
     },
 #' @details Set a cookie
@@ -365,6 +381,7 @@ Response <- R6::R6Class(
     .headers = list(), 
     .data = list(),
     .preHooks = list(),
+    .postHooks = list(),
     .get_template_path = function(file){
       file <- remove_extensions(file)
 
@@ -435,7 +452,7 @@ Response <- R6::R6Class(
         for(i in 1:length(private$.preHooks)) {
           pre_processed <- private$.preHooks[[i]](self, file_content, data, ext)
           if(!inherits(pre_processed, "responsePreHook")){
-            cat("Not a response hook", stdout())
+            cat("Not a valid response from pre-hook (ignoring)\n", stdout())
             next
           }
 
@@ -450,11 +467,10 @@ Response <- R6::R6Class(
 
       # collapse html
       if(ext == "html")
-        return(paste0(file_content, collapse = ""))
+        return(private$.run_post_hooks(paste0(file_content, collapse = ""), ext))
 
       # parse R
-      render_html(file_content)
-
+      private$.run_post_hooks(render_html(file_content), ext)
     },
     .make_template_path = function(file){
       # clean input
@@ -474,6 +490,24 @@ Response <- R6::R6Class(
     },
     .get_headers = function(headers = list()){
       modifyList(private$.headers, headers)
+    },
+    .run_post_hooks = function(file_content, ext) {
+      if(length(private$.postHooks) == 0) {
+        return(file_content)
+      }
+
+      for(i in 1:length(private$.postHooks)) {
+        content <- private$.postHooks[[i]](file_content, ext)
+
+        if(!is.character(content)){
+          cat("Not a character response from post-hook (ignoring)\n", stdout())
+          next
+        }
+
+        file_content <- content
+      }
+
+      return(file_content)
     }
   )
 )

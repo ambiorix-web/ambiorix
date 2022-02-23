@@ -26,6 +26,7 @@ Response class to generate responses sent from the server.
 \item \href{#method-set}{\code{Response$set()}}
 \item \href{#method-get}{\code{Response$get()}}
 \item \href{#method-pre_render_hook}{\code{Response$pre_render_hook()}}
+\item \href{#method-post_render_hook}{\code{Response$post_render_hook()}}
 \item \href{#method-cookie}{\code{Response$cookie()}}
 \item \href{#method-clone}{\code{Response$clone()}}
 }
@@ -155,13 +156,19 @@ Send a plain text response.
 \if{latex}{\out{\hypertarget{method-send_file}{}}}
 \subsection{Method \code{send_file()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$send_file(file, status = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$send_file(
+  file,
+  headers = list(`Content-Type` = "text/html"),
+  status = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{file}}{File to send.}
+
+\item{\code{headers}}{HTTP headers to set.}
 
 \item{\code{status}}{Status of the response.}
 }
@@ -199,7 +206,12 @@ Redirect to a path or URL.
 \if{latex}{\out{\hypertarget{method-render}{}}}
 \subsection{Method \code{render()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$render(file, data = list(), status = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$render(
+  file,
+  data = list(),
+  headers = list(`Content-Type` = "text/html"),
+  status = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -208,6 +220,8 @@ Redirect to a path or URL.
 \item{\code{file}}{Template file.}
 
 \item{\code{data}}{List to fill \verb{[\% tags \%]}.}
+
+\item{\code{headers}}{HTTP headers to set.}
 
 \item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 }
@@ -436,7 +450,16 @@ pre-process rendered data.}
 }
 \subsection{Details}{
 Add a pre render hook.
-Runs before the \code{render} function.
+Runs before the \code{render} and \code{send_file} method.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-post_render_hook"></a>}}
+\if{latex}{\out{\hypertarget{method-post_render_hook}{}}}
+\subsection{Method \code{post_render_hook()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$post_render_hook(hook)}\if{html}{\out{</div>}}
 }
 
 }
