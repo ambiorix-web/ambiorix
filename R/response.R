@@ -255,6 +255,11 @@ Response <- R6::R6Class(
       name <- as_label(name)
       private$.data[[name]]
     },
+#' @details Get headers
+#' Returns the list of headers currently set.
+    get_headers = function() {
+      return(private$.headers)
+    },
 #' @details Add a pre render hook.
 #' Runs before the `render` and `send_file` method.
 #' 
@@ -273,6 +278,8 @@ Response <- R6::R6Class(
 #' 
 #' Include `...` in your `hook` to ensure it will handle
 #' potential updates to hooks in the future.
+#' 
+#' @return Invisible returns self.
     pre_render_hook = function(hook) {
       assert_that(not_missing(hook))
       assert_that(
@@ -299,6 +306,8 @@ Response <- R6::R6Class(
 #' 
 #' Include `...` in your `hook` to ensure it will handle
 #' potential updates to hooks in the future.
+#' 
+#' @return Invisible returns self.
     post_render_hook = function(hook) {
       assert_that(not_missing(hook))
       assert_that(

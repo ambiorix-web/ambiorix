@@ -31,6 +31,7 @@ with `sprintf`.
 - Silently read templates, no more EOF warnings.
 - More informative print messages for classes.
 - Add post render hooks to response.
+- Added `get_headers` method to `Response` to retrieve currently set headers.
 
 # ambiorix 1.0.2
 

@@ -25,6 +25,7 @@ Response class to generate responses sent from the server.
 \item \href{#method-print}{\code{Response$print()}}
 \item \href{#method-set}{\code{Response$set()}}
 \item \href{#method-get}{\code{Response$get()}}
+\item \href{#method-get_headers}{\code{Response$get_headers()}}
 \item \href{#method-pre_render_hook}{\code{Response$pre_render_hook()}}
 \item \href{#method-post_render_hook}{\code{Response$post_render_hook()}}
 \item \href{#method-cookie}{\code{Response$cookie()}}
@@ -421,6 +422,20 @@ Get data
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_headers"></a>}}
+\if{latex}{\out{\hypertarget{method-get_headers}{}}}
+\subsection{Method \code{get_headers()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$get_headers()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Get headers
+Returns the list of headers currently set.
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-pre_render_hook"></a>}}
 \if{latex}{\out{\hypertarget{method-pre_render_hook}{}}}
 \subsection{Method \code{pre_render_hook()}}{
@@ -456,6 +471,9 @@ Add a pre render hook.
 Runs before the \code{render} and \code{send_file} method.
 }
 
+\subsection{Returns}{
+Invisible returns self.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-post_render_hook"></a>}}
@@ -486,6 +504,9 @@ potential updates to hooks in the future.}
 Post render hook.
 }
 
+\subsection{Returns}{
+Invisible returns self.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cookie"></a>}}
