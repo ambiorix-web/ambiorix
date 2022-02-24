@@ -1,5 +1,12 @@
+// default insecure
+let protocol = 'ws://';
+
+// upgrade if secure
+if (window.location.protocol == "https:")
+  protocol = 'wss://';
+
 // get websocket
-let ambiorixSocket = new WebSocket('ws://' + window.location.host);
+let ambiorixSocket = new WebSocket(protocol + window.location.host);
 
 class Ambiorix {
   constructor(){

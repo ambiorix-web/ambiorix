@@ -46,6 +46,7 @@ with `sprintf`.
 - Add post render hooks to response.
 - Added `get_headers` method to `Response` to retrieve currently set headers.
 - Unlock objects to allow adding new elements to `Response` and `Request`.
+- Upgrade websocket protocol if on HTTPS protocol.
 
 # ambiorix 1.0.2
 
