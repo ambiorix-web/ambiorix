@@ -6,11 +6,7 @@
 #' @noRd 
 #' @keywords internal
 logPredicate <- function(log){
-  return(
-    function(){
-      log
-    }
-  )
+  \() log
 }
 
 #' Logger
@@ -42,4 +38,20 @@ new_log <- function(prefix = ">", write = FALSE,
   )$
     date()$
     time()
+}
+
+success <- \() {
+  cli::col_green(cli::symbol$tick)
+}
+
+danger <- \() {
+  cli::col_red(cli::symbol$cross)
+}
+
+info <- \() {
+  cli::col_blue(cli::symbol$info)
+}
+
+warn <- \() {
+  cli::col_yellow(cli::symbol$warning)
 }

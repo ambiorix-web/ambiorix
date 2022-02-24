@@ -18,7 +18,7 @@ RoxygenNote: 7.1.2
 Depends: R (>= 4.1.0)
 Imports:
   fs,
-  log,
+  log (>= 1.1.1.9000),
   cli,
   glue,
   httpuv,
@@ -34,3 +34,5 @@ Suggests:
   htmlwidgets
 URL: https://github.com/JohnCoene/ambiorix, https://ambiorix.john-coene.com
 BugReports: https://github.com/JohnCoene/ambiorix/issues
+Remotes: 
+  devOpifex/log

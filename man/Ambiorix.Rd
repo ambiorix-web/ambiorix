@@ -171,7 +171,7 @@ if(interactive())
 \if{html}{\out{<div class="r">}}\preformatted{Ambiorix$new(
   host = getOption("ambiorix.host", "0.0.0.0"),
   port = getOption("ambiorix.port", NULL),
-  log = getOption("ambiorix.logger", FALSE)
+  log = getOption("ambiorix.logger", TRUE)
 )}\if{html}{\out{</div>}}
 }
 

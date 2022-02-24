@@ -47,6 +47,8 @@ with `sprintf`.
 - Added `get_headers` method to `Response` to retrieve currently set headers.
 - Unlock objects to allow adding new elements to `Response` and `Request`.
 - Upgrade websocket protocol if on HTTPS protocol.
+- Improved the default log.
+- `log` argument of ambiorix constructor now defaults to `TRUE`.
 
 # ambiorix 1.0.2
 
