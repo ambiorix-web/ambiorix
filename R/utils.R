@@ -75,31 +75,44 @@ remove_extensions <- function(files){
 #'
 #' Replaces partials tags `[! partial.html !]` so it can be intrepreted by [glue::glue_data()]
 #'
+#' @param file Parent file in which the partials are found.
 #' @param file_content Content of the template file containing tags, output of [readLines()]:
 #' a character vector.
 #' @param ext Extension of template file.
 #'
 #' @noRd
 #' @keywords internal
-replace_partials <- function(file_content, ext = c("html", "R")){
+replace_partials <- function(file, file_content, ext = c("html", "R")){
   assert_that(not_missing(file_content))
   ext <- match.arg(ext)
+
+  dir <- get_dir(file)
 
   if(ext == "html"){
     # here only need read and collapse
     file_content <- gsub(
       "\\[\\! ?", 
-      "[% paste0(readLines('", 
+      paste0("[% paste0(readLines('", dir), 
       file_content
     )
     file_content <- gsub(" ?\\!\\]", "'), collapse='') %]", file_content)
   } else {
     # here needs read collapse and wrap in `HTML`
-    file_content <- gsub("\\[\\! ?", "[% HTML(paste0(readLines('", file_content)
+    file_content <- gsub(
+      "\\[\\! ?", 
+      paste0("[% HTML(paste0(readLines('", dir), 
+      file_content
+    )
     file_content <- gsub(" ?\\!\\]", "'), collapse='')) %]", file_content)
   }
 
   return(file_content)
+}
+
+get_dir <- function(file) {
+  path <- normalizePath(file)
+  basename <- basename(path)
+  gsub(basename, "", path)
 }
 
 #' Checks if Package is Installed

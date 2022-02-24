@@ -8,9 +8,10 @@ The `render` and `send_file` methods of the `Response` object now
 expect the full path to the template, with the file extension.
 Where one would before `res$render("home")`, now one
 `res$render("templates/home.html")`.
-Similarly, in said templates, use full path __from root__ to
-import partials, e.g.: from `[! header.html !]` to 
-`[! tempaltes/partials/header.html !]`.
+Similarly, in said templates, to import partials, 
+use full path relative to the template in which the partial is used
+e.g.: from `[! header.html !]` to 
+`[! partials/header.html !]`.
 
 __Changes__
 

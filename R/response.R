@@ -420,7 +420,7 @@ Response <- R6::R6Class(
 
       # handle partials
       # replace brackets so glue::glue_data evals
-      file_content <- replace_partials(file_content, ext = ext)
+      file_content <- replace_partials(file, file_content, ext = ext)
 
       if(ext == "html"){
 
