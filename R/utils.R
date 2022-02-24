@@ -109,6 +109,13 @@ replace_partials <- function(file, file_content, ext = c("html", "R")){
   return(file_content)
 }
 
+#' Get Directory
+#' 
+#' Get the base directory of a file.
+#' 
+#' @param file File to get the directory from.
+#' 
+#' @keywords internal
 get_dir <- function(file) {
   path <- normalizePath(file)
   basename <- basename(path)
