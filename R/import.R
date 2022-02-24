@@ -11,7 +11,7 @@
 #' 
 #' @export
 import <- function(...){{
-  files <- fs::dir_ls(here::here(...), regexp = "\\.R$|\\.r$") 
+  files <- fs::dir_ls(..., regexp = "\\.R$|\\.r$") 
   sapply(files, source)
   invisible()
 }}

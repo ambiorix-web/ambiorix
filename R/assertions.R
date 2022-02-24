@@ -34,3 +34,11 @@ is_handler <- function(x){
 assertthat::on_failure(is_handler) <- function(call, env){
   paste("`handler` must be a function that accepts: `req`, and `res`")
 }
+
+file_exists <- function(x) {
+  file.exists(x)
+}
+
+assertthat::on_failure(file_exists) <- function(call, env) {
+  sprintf("File `%s` does not exists", call$x)
+}

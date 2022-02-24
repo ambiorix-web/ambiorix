@@ -67,14 +67,6 @@ Response <- R6::R6Class(
   "Response",
   lock_objects = FALSE,
   public = list(
-    #' @details Constructor
-    initialize = function(){
-      template_path <- here::here("templates")
-      private$.has_templates <- fs::dir_exists(template_path)
-
-      if(!private$.has_templates)
-        return(self)
-    },
 #' @details Set the status of the response.
 #' @param status An integer defining the status.
     status = function(status){
@@ -133,13 +125,9 @@ Response <- R6::R6Class(
 #' @param status Status of the response, if `NULL` uses `self$status`.
     render = function(file, data = list(), headers = list('Content-Type' = 'text/html'), status = NULL){
       assert_that(not_missing(file))
+      assert_that(file_exists(file))
 
-      if(!private$.has_templates)
-        stop("No templates directory found", call. = FALSE)
-
-      file_path <- private$.get_template_path(file)
-
-      file_content <- private$.render_template(file_path, data)
+      file_content <- private$.render_template(file, data)
       headers <- private$.get_headers(headers)
 
       response(file_content, status = private$.get_status(status), headers = headers)
@@ -399,7 +387,6 @@ Response <- R6::R6Class(
     }
   ),
   private = list(
-    .has_templates = FALSE,
     .templates = list(),
     .status = 200L,
     .headers = list(), 
@@ -423,15 +410,6 @@ Response <- R6::R6Class(
       }
 
       return(file_r)
-    },
-    .try_template_path = function(file, ext = c(".html", ".R")){
-      ext <- match.arg(ext)
-      path <- here::here("templates", paste0(file, ext))
-
-      if(fs::file_exists(path))
-        return(path)
-
-      return(NULL)
     },
     .render_template = function(file, data){
       # read and replace tags

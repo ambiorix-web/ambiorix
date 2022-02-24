@@ -1,6 +1,18 @@
 # Changelog
 
-## ambiorix 1.1.0.9000
+## ambiorix 2.0.0.9000
+
+__Breaking change__
+
+The `render` and `send_file` methods of the `Response` object now
+expect the full path to the template, with the file extension.
+Where one would before `res$render("home")`, now one
+`res$render("templates/home.html")`.
+Similarly, in said templates, use full path __from root__ to
+import partials, e.g.: from `[! header.html !]` to 
+`[! tempaltes/partials/header.html !]`.
+
+__Changes__
 
 - Middleware no longer uses global environment that may cause side effect
 across sessions.

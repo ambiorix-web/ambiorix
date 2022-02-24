@@ -41,7 +41,7 @@ An `.html` or `.R` file can also be rendered. The difference with `send_file` is
 # renders templates/home.html
 # replaces [% title %]
 app$get("/:book", \(req, res){
-  res$render("home", data = list(title = req$params$book))
+  res$render("templates/home.html", data = list(title = req$params$book))
 })
 ```
 

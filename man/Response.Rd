@@ -9,7 +9,6 @@ Response class to generate responses sent from the server.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Response$new()}}
 \item \href{#method-status}{\code{Response$status()}}
 \item \href{#method-send}{\code{Response$send()}}
 \item \href{#method-sendf}{\code{Response$sendf()}}
@@ -31,19 +30,6 @@ Response class to generate responses sent from the server.
 \item \href{#method-cookie}{\code{Response$cookie()}}
 \item \href{#method-clone}{\code{Response$clone()}}
 }
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
-\subsection{Method \code{new()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$new()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Constructor
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-status"></a>}}
