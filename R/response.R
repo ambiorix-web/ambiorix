@@ -125,7 +125,7 @@ Response <- R6::R6Class(
 #' @param status Status of the response, if `NULL` uses `self$status`.
     render = function(file, data = list(), headers = list('Content-Type' = 'text/html'), status = NULL){
       assert_that(not_missing(file))
-      assert_that(file_exists(file))
+      assert_that(has_file(file))
 
       file_content <- private$.render_template(file, data)
       headers <- private$.get_headers(headers)
