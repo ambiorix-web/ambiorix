@@ -18,7 +18,7 @@ RoxygenNote: 7.1.2
 Depends: R (>= 4.1.0)
 Imports:
   fs,
-  log (>= 1.1.1.9000),
+  log (>= 1.1.1),
   cli,
   glue,
   httpuv,
@@ -31,6 +31,7 @@ Suggests:
   mime,
   readr,
   htmltools,
+  commonmark,
   htmlwidgets
 URL: https://github.com/JohnCoene/ambiorix, https://ambiorix.john-coene.com
 BugReports: https://github.com/JohnCoene/ambiorix/issues

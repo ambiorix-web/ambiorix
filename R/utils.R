@@ -82,11 +82,29 @@ remove_extensions <- function(files){
 #'
 #' @noRd
 #' @keywords internal
-replace_partials <- function(file, file_content, ext = c("html", "R")){
+replace_partials <- function(file, file_content, ext = c("html", "R", "md")){
   assert_that(not_missing(file_content))
   ext <- match.arg(ext)
 
   dir <- get_dir(file)
+  
+  # commonmark wraps tags in <p> tags
+  # re remove those
+  if(ext == "md") {
+    file_content <- gsub(
+      "<p>\\[\\! ?",
+      "[!",
+      file_content
+    )
+    file_content <- gsub(
+      " ?\\!\\]</p>",
+      "!]",
+      file_content
+    )
+
+    # then switch extension to actually replace partials
+    ext <- "html"
+  }
 
   if(ext == "html"){
     # here only need read and collapse
@@ -96,7 +114,10 @@ replace_partials <- function(file, file_content, ext = c("html", "R")){
       file_content
     )
     file_content <- gsub(" ?\\!\\]", "'), collapse='') %]", file_content)
-  } else {
+    return(file_content)
+  }
+
+  if(tolower(ext) == "r") {
     # here needs read collapse and wrap in `HTML`
     file_content <- gsub(
       "\\[\\! ?", 
@@ -104,9 +125,9 @@ replace_partials <- function(file, file_content, ext = c("html", "R")){
       file_content
     )
     file_content <- gsub(" ?\\!\\]", "'), collapse='')) %]", file_content)
+    return(file_content)
   }
 
-  return(file_content)
 }
 
 #' Get Directory

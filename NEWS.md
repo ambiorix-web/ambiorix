@@ -49,6 +49,7 @@ with `sprintf`.
 - Upgrade websocket protocol if on HTTPS protocol.
 - Improved the default log.
 - `log` argument of ambiorix constructor now defaults to `TRUE`.
+- Added `md` method to `Response` to render `.md` files.
 
 # ambiorix 1.0.2
 

@@ -20,6 +20,7 @@ Response class to generate responses sent from the server.
 \item \href{#method-csv}{\code{Response$csv()}}
 \item \href{#method-tsv}{\code{Response$tsv()}}
 \item \href{#method-htmlwidget}{\code{Response$htmlwidget()}}
+\item \href{#method-md}{\code{Response$md()}}
 \item \href{#method-header}{\code{Response$header()}}
 \item \href{#method-print}{\code{Response$print()}}
 \item \href{#method-set}{\code{Response$set()}}
@@ -323,6 +324,37 @@ Sends a tab separated value file
 }
 \subsection{Details}{
 Sends an htmlwidget.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-md"></a>}}
+\if{latex}{\out{\hypertarget{method-md}{}}}
+\subsection{Method \code{md()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$md(
+  file,
+  data = list(),
+  headers = list(`Content-Type` = "text/html"),
+  status = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{file}}{Template file.}
+
+\item{\code{data}}{List to fill \verb{[\% tags \%]}.}
+
+\item{\code{headers}}{HTTP headers to set.}
+
+\item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Render a markdown file.
 }
 
 }

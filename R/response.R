@@ -198,6 +198,20 @@ Response <- R6::R6Class(
 
       response(body = paste0(read_lines(tmp), "\n", collapse = ""), status = private$.get_status(status), headers = headers)
     },
+#' @details Render a markdown file.
+#' @param file Template file.
+#' @param data List to fill `[% tags %]`.
+#' @param headers HTTP headers to set.
+#' @param status Status of the response, if `NULL` uses `self$status`.
+    md = function(file, data = list(), headers = list('Content-Type' = 'text/html'), status = NULL) {
+      check_installed("commonmark")
+      assert_that(not_missing(file))
+
+      file_content <- private$.render_template(file, data)
+      headers <- private$.get_headers(headers)
+
+      response(file_content, status = private$.get_status(status), headers = headers)
+    },
 #' @details Add headers to the response.
 #' @param name,value Name and value of the header.
 #' @return Invisibly returns self.
@@ -422,6 +436,9 @@ Response <- R6::R6Class(
       # replace brackets so glue::glue_data evals
       file_content <- replace_partials(file, file_content, ext = ext)
 
+      if(ext == "md")
+        file_content <- commonmark::markdown_html(file_content)
+
       if(ext == "html"){
 
         # needs serialisation
@@ -467,7 +484,7 @@ Response <- R6::R6Class(
       }, data = data)
 
       # collapse html
-      if(ext == "html")
+      if(ext == "html" || ext == "md")
         return(private$.run_post_hooks(paste0(file_content, collapse = ""), ext))
 
       # parse R
