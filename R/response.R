@@ -205,12 +205,7 @@ Response <- R6::R6Class(
 #' @param status Status of the response, if `NULL` uses `self$status`.
     md = function(file, data = list(), headers = list('Content-Type' = 'text/html'), status = NULL) {
       check_installed("commonmark")
-      assert_that(not_missing(file))
-
-      file_content <- private$.render_template(file, data)
-      headers <- private$.get_headers(headers)
-
-      response(file_content, status = private$.get_status(status), headers = headers)
+      self$render(file, data, headers, status)
     },
 #' @details Add headers to the response.
 #' @param name,value Name and value of the header.
