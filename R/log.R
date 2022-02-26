@@ -27,8 +27,12 @@ logPredicate <- function(log){
 #' @return An R& of class `log::Logger`.
 #' 
 #' @export 
-new_log <- function(prefix = ">", write = FALSE, 
-  file = "ambiorix.log", sep = ""){
+new_log <- function(
+  prefix = ">", 
+  write = FALSE, 
+  file = "ambiorix.log", 
+  sep = ""
+){
 
   log::Logger$new(
     prefix = prefix,
@@ -44,7 +48,7 @@ success <- \() {
   cli::col_green(cli::symbol$tick)
 }
 
-danger <- \() {
+error <- \() {
   cli::col_red(cli::symbol$cross)
 }
 

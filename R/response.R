@@ -465,7 +465,7 @@ Response <- R6::R6Class(
         for(i in 1:length(private$.preHooks)) {
           pre_processed <- private$.preHooks[[i]](self, file_content, data, ext)
           if(!inherits(pre_processed, "responsePreHook")){
-            cat("Not a valid response from pre-hook (ignoring)\n", stdout())
+            cat(error(), "Not a valid response from pre-hook (ignoring)\n")
             next
           }
 
@@ -513,7 +513,7 @@ Response <- R6::R6Class(
         content <- private$.postHooks[[i]](self, file_content, ext)
 
         if(!is.character(content)){
-          cat("Not a character response from post-hook (ignoring)\n", stdout())
+          cat(error(), "Not a character response from post-hook (ignoring)\n", stdout())
           next
         }
 

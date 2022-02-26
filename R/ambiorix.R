@@ -48,8 +48,13 @@ Ambiorix <- R6::R6Class(
       log = getOption("ambiorix.logger", TRUE)
     ){
 
-      private$.logger <- new_log()
-      private$.logger$predicate <- logPredicate(log)
+      private$.infoLog <- new_log(info())
+      private$.errorLog <- new_log(error())
+      private$.successLog <- new_log(success())
+
+      private$.infoLog$predicate <- logPredicate(log)
+      private$.errorLog$predicate <- logPredicate(log)
+      private$.successLog$predicate <- logPredicate(log)
 
       private$.host <- host
       private$.port <- get_port(host, port)
@@ -329,11 +334,7 @@ Ambiorix <- R6::R6Class(
 
       url <- sprintf("http://localhost:%s", private$.port)
       
-      # msg
-      if(!private$.logger$predicate())
-        cli::cli_alert_success("Listening on {url}")
-
-      private$.logger$log("Listening on", url, prefix = success)
+      private$.successLog$log("Listening on", url)
 
       # runs
       self$is_running <- TRUE
@@ -405,7 +406,7 @@ Ambiorix <- R6::R6Class(
     stop = function(){
 
       if(!self$is_running){
-        private$.logger$log("Server not running", prefix = danger)
+        private$.errorLog$log("Server not running")
         return(invisible())
       }
 
@@ -414,10 +415,7 @@ Ambiorix <- R6::R6Class(
         self$on_stop()
 
       private$.server$stop()
-      private$.logger$log("Server stopped", prefix = danger)
-
-      if(!private$.logger$predicate())
-        cli::cli_alert_danger("Server Stopped")
+      private$.errorLog$log("Server stopped")
 
       self$is_running <- FALSE
 
@@ -457,7 +455,7 @@ Ambiorix <- R6::R6Class(
         for(i in 1:length(use)) {
           args <- formalArgs(use[[i]])
           if(length(args) != 2) {
-            cat(msg, "\n")
+            private$.errorLog(msg)
             next
           }
           private$.middleware <- append(private$.middleware, use[[i]])
@@ -473,7 +471,9 @@ Ambiorix <- R6::R6Class(
     }
   ),
   private = list(
-    .logger = FALSE,
+    .infoLog = NULL,
+    .errorLog = NULL,
+    .successLog = NULL,
     .host = "0.0.0.0",
     .port = 3000,
     .app = list(),
@@ -503,7 +503,7 @@ Ambiorix <- R6::R6Class(
         # if path matches pattern and method
         if(grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) && req$REQUEST_METHOD %in% private$.routes[[i]]$method){
           
-          private$.logger$log(req$REQUEST_METHOD, "on", req$PATH_INFO, prefix = info)
+          private$.infoLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO)
 
           # parse request
           request$params <- set_params(request$PATH_INFO, private$.routes[[i]]$route)
@@ -527,7 +527,7 @@ Ambiorix <- R6::R6Class(
                 },
                 onRejected = function(error){
                   message(error)
-                  private$.logger$log(req$REQUEST_METHOD, "on", req$PATH_INFO, "-", "Server error", prefix = danger)
+                  private$.errorLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO, "-", "Server error")
                   private$.routes[[i]]$error(request, res)
                 }
               )
@@ -544,7 +544,7 @@ Ambiorix <- R6::R6Class(
         }
       }
 
-      private$.logger$log(request$REQUEST_METHOD, "on", request$PATH_INFO, "- Not found", prefix = warn)
+      private$.errorLog$log(request$REQUEST_METHOD, "on", request$PATH_INFO, "- Not found")
 
       # return 404
       request$params <- set_params(request$PATH_INFO, Route$new(request$PATH_INFO))
@@ -561,7 +561,7 @@ Ambiorix <- R6::R6Class(
 
         for(i in 1:length(private$.receivers)){
           if(private$.receivers[[i]]$is_handler(message)){
-            private$.logger$log("Received message from websocket:", message$name, prefix = info)
+            private$.infoLog$log("Received message from websocket:", message$name)
             return(private$.receivers[[i]]$receive(message, ws))
           }
         }
