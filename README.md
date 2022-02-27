@@ -5,11 +5,11 @@
 <img src="man/figures/ambiorix.png" height = "200px"/>
 
 <!-- badges: start -->
-[![R build status](https://github.com/JohnCoene/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/JohnCoene/ambiorix/actions)
-[![R-CMD-check](https://github.com/JohnCoene/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/JohnCoene/ambiorix/actions)
+[![R build status](https://github.com/devOpifex/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/devOpifex/ambiorix/actions)
+[![R-CMD-check](https://github.com/devOpifex/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/devOpifex/ambiorix/actions)
 <!-- badges: end -->
 
-[Website](https://ambiorix.john-coene.com) | [CLI](https://github.com/JohnCoene/ambiorix-cli) | [Generator](https://github.com/JohnCoene/ambiorix.generator) | [Docker](https://hub.docker.com/r/jcoenep/ambiorix) | [Load Balancer](github.com/devOpifex/belgic)
+[Website](https://ambiorix.john-coene.com) | [CLI](https://github.com/devOpifex/ambiorix-cli) | [Generator](https://github.com/devOpifex/ambiorix.generator) | [Docker](https://hub.docker.com/r/jcoenep/ambiorix) | [Load Balancer](github.com/devOpifex/belgic)
 
 Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and inspired by [express.js](https://github.com/expressjs/express).
 
@@ -45,8 +45,8 @@ app$start()
 
 - [belgic](https://github.com/devOpifex/belgic) Load balancer
 - [packer](https://github.com/JohnCoene/packer) JavaScript
-- [CLI](https://github.com/JohnCoene/ambiorix-cli) CLI for generator
-- [Generator](https://github.com/JohnCoene/ambiorix.generator) Project generator
+- [CLI](https://github.com/devOpifex/ambiorix-cli) CLI for generator
+- [Generator](https://github.com/devOpifex/ambiorix.generator) Project generator
 - [Docker](https://hub.docker.com/r/jcoenep/ambiorix) Docker image
 
 ## Install
@@ -61,7 +61,7 @@ You can also install the development version from Github:
 
 ```r
 # install.packages("ambiorix")
-remotes::install_github("JohnCoene/ambiorix")
+remotes::install_github("devOpifex/ambiorix")
 ```
 
 ## Contributing
