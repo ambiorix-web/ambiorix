@@ -34,3 +34,14 @@ is_handler <- function(x){
 assertthat::on_failure(is_handler) <- function(call, env){
   paste("`handler` must be a function that accepts: `req`, and `res`")
 }
+
+is_logger <- function(x){
+  inherits(x, "Logger")
+}
+
+assertthat::on_failure(is_logger) <- function(call, env){
+  sprintf(
+    "%s must be an object of class `Logger` from the `log` package",
+    deparse(call$x)
+  )
+}

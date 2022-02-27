@@ -50,6 +50,7 @@ with `sprintf`.
 - Improved the default log.
 - `log` argument of ambiorix constructor now defaults to `TRUE`.
 - Added `md` method to `Response` to render `.md` files.
+- Added `set_log*` functions to allow using custom logs.
 
 # ambiorix 1.0.2
 

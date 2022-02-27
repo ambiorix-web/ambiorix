@@ -48,22 +48,21 @@ Ambiorix <- R6::R6Class(
       log = getOption("ambiorix.logger", TRUE)
     ){
 
-      private$.infoLog <- new_log(info())
-      private$.errorLog <- new_log(error())
-      private$.successLog <- new_log(success())
-
-      private$.infoLog$predicate <- logPredicate(log)
-      private$.errorLog$predicate <- logPredicate(log)
-      private$.successLog$predicate <- logPredicate(log)
+      .globals$infoLog$predicate <- logPredicate(log)
+      .globals$errorLog$predicate <- logPredicate(log)
+      .globals$successLog$predicate <- logPredicate(log)
 
       private$.host <- host
       private$.port <- get_port(host, port)
+
       self$not_found <- function(req, res){
         response_404()
       }
+
       self$error <- function(req, res){
         response_500()
       }
+
       invisible(self)
     },
 #' @details Specifies the port to listen on.
@@ -334,7 +333,7 @@ Ambiorix <- R6::R6Class(
 
       url <- sprintf("http://localhost:%s", private$.port)
       
-      private$.successLog$log("Listening on", url)
+      .globals$successLog$log("Listening on", url)
 
       # runs
       self$is_running <- TRUE
@@ -406,7 +405,7 @@ Ambiorix <- R6::R6Class(
     stop = function(){
 
       if(!self$is_running){
-        private$.errorLog$log("Server not running")
+        .globals$errorLog$log("Server not running")
         return(invisible())
       }
 
@@ -415,7 +414,7 @@ Ambiorix <- R6::R6Class(
         self$on_stop()
 
       private$.server$stop()
-      private$.errorLog$log("Server stopped")
+      .globals$errorLog$log("Server stopped")
 
       self$is_running <- FALSE
 
@@ -444,10 +443,8 @@ Ambiorix <- R6::R6Class(
       } 
 
       # pass middleware
-      msg <- "Use function must accept two arguments: the request, and the response"
       if(is.function(use)) { 
-        args <- formalArgs(use)
-        assert_that(length(args) == 2, msg = msg)
+        assert_that(is_handler(use))
         private$.middleware <- append(private$.middleware, use)
       }
 
@@ -455,7 +452,7 @@ Ambiorix <- R6::R6Class(
         for(i in 1:length(use)) {
           args <- formalArgs(use[[i]])
           if(length(args) != 2) {
-            private$.errorLog(msg)
+            .globals$errorLog(msg)
             next
           }
           private$.middleware <- append(private$.middleware, use[[i]])
@@ -471,9 +468,6 @@ Ambiorix <- R6::R6Class(
     }
   ),
   private = list(
-    .infoLog = NULL,
-    .errorLog = NULL,
-    .successLog = NULL,
     .host = "0.0.0.0",
     .port = 3000,
     .app = list(),
@@ -503,7 +497,7 @@ Ambiorix <- R6::R6Class(
         # if path matches pattern and method
         if(grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) && req$REQUEST_METHOD %in% private$.routes[[i]]$method){
           
-          private$.infoLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO)
+          .globals$infoLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO)
 
           # parse request
           request$params <- set_params(request$PATH_INFO, private$.routes[[i]]$route)
@@ -527,7 +521,7 @@ Ambiorix <- R6::R6Class(
                 },
                 onRejected = function(error){
                   message(error)
-                  private$.errorLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO, "-", "Server error")
+                  .globals$errorLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO, "-", "Server error")
                   private$.routes[[i]]$error(request, res)
                 }
               )
@@ -544,7 +538,7 @@ Ambiorix <- R6::R6Class(
         }
       }
 
-      private$.errorLog$log(request$REQUEST_METHOD, "on", request$PATH_INFO, "- Not found")
+      .globals$errorLog$log(request$REQUEST_METHOD, "on", request$PATH_INFO, "- Not found")
 
       # return 404
       request$params <- set_params(request$PATH_INFO, Route$new(request$PATH_INFO))
@@ -561,7 +555,7 @@ Ambiorix <- R6::R6Class(
 
         for(i in 1:length(private$.receivers)){
           if(private$.receivers[[i]]$is_handler(message)){
-            private$.infoLog$log("Received message from websocket:", message$name)
+            .globals$infoLog$log("Received message from websocket:", message$name)
             return(private$.receivers[[i]]$receive(message, ws))
           }
         }

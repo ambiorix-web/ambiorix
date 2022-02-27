@@ -44,6 +44,41 @@ new_log <- function(
     time()
 }
 
+#' Customise logs
+#' 
+#' Customise the internal logs used by Ambiorix.
+#' 
+#' @param log An object of class `Logger`, see
+#' [log::Logger].
+#' 
+#' @name set_log
+#' 
+#' @export
+set_log_info <- function(log) {
+  assert_that(not_missing(log))
+  assert_that(is_logger(log))
+
+  .globals$infoLog <- log
+}
+
+#' @rdname set_log
+#' @export
+set_log_success <- function(log) {
+  assert_that(not_missing(log))
+  assert_that(is_logger(log))
+
+  .globals$successLog <- log
+}
+
+#' @rdname set_log
+#' @export
+set_log_error <- function(log) {
+  assert_that(not_missing(log))
+  assert_that(is_logger(log))
+
+  .globals$errorLog <- log
+}
+
 #' CLI symbols
 #' 
 #' CLI Symbols for log
