@@ -9,7 +9,7 @@
 [![R-CMD-check](https://github.com/JohnCoene/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/JohnCoene/ambiorix/actions)
 <!-- badges: end -->
 
-[Website](https://ambiorix.john-coene.com) | [CLI](https://github.com/JohnCoene/ambiorix-cli) | [Generator](https://github.com/JohnCoene/ambiorix.generator) | [Docker](https://hub.docker.com/r/jcoenep/ambiorix)
+[Website](https://ambiorix.john-coene.com) | [CLI](https://github.com/JohnCoene/ambiorix-cli) | [Generator](https://github.com/JohnCoene/ambiorix.generator) | [Docker](https://hub.docker.com/r/jcoenep/ambiorix) | [Load Balancer](github.com/devOpifex/belgic)
 
 Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and inspired by [express.js](https://github.com/expressjs/express).
 
@@ -33,6 +33,15 @@ app$get("/about", function(req, res){
 
 app$start()
 ```
+
+## Middlewares
+
+List of currently available middlewares:
+
+- [druid](https://github.com/devOpifex/druid) Logger
+- [alesia](https://github.com/devOpifex/alesia) Minifier
+- [eburones](https://github.com/devOpifex/eburones) Sessions
+- [agris](https://github.com/devOpifex/druid) Security
 
 ## Install
 

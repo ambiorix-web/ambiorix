@@ -33,7 +33,6 @@ new_log <- function(
   file = "ambiorix.log", 
   sep = ""
 ){
-
   log::Logger$new(
     prefix = prefix,
     write = write,
