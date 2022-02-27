@@ -44,18 +44,26 @@ new_log <- function(
     time()
 }
 
+#' CLI symbols
+#' 
+#' CLI Symbols for log
+#' 
+#' @keywords internal
 success <- \() {
   cli::col_green(cli::symbol$tick)
 }
 
+#' @keywords internal
 error <- \() {
   cli::col_red(cli::symbol$cross)
 }
 
+#' @keywords internal
 info <- \() {
   cli::col_blue(cli::symbol$info)
 }
 
+#' @keywords internal
 warn <- \() {
   cli::col_yellow(cli::symbol$warning)
 }
