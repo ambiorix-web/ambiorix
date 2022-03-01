@@ -434,17 +434,6 @@ Response <- R6::R6Class(
       if(ext == "md")
         file_content <- commonmark::markdown_html(file_content)
 
-      if(ext == "html"){
-
-        # needs serialisation
-        to_json <- get_serialise()
-
-        # serialise to each object individually
-        data <- lapply(data, function(x){
-          to_json(x)
-        })
-      } 
-
       if(ext != "html")
         data <- lapply(data, function(x){
 
@@ -474,8 +463,9 @@ Response <- R6::R6Class(
         }
       }
 
-      file_content <- lapply(file_content, function(x, data){
-        glue::glue_data(data, x, .open = "[%", .close = "%]")
+      file_content <- lapply(file_content, function(content, data){
+        glue::glue_data(data, content, .open = "[%", .close = "%]") |> 
+          paste0(collapse = "")
       }, data = data)
 
       # collapse html

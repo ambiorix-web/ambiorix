@@ -1,5 +1,9 @@
 # ambiorix 2.0.0.9000
 
+- Improve rendering of templates with `glue`
+
+# ambiorix 2.0.0
+
 __Breaking change__
 
 The `render` and `send_file` methods of the `Response` object now
