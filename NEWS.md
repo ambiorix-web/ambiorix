@@ -1,6 +1,7 @@
 # ambiorix 2.0.0.9000
 
-- Improve rendering of templates with `glue`
+- Improve rendering of templates with `glue`.
+No longer forder render data as JSON if using an HTML template.
 
 # ambiorix 2.0.0
 

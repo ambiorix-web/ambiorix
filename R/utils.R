@@ -110,7 +110,7 @@ replace_partials <- function(file, file_content, ext = c("html", "R", "md")){
     # here only need read and collapse
     file_content <- gsub(
       "\\[\\! ?", 
-      paste0("[% paste0(readLines('", dir), 
+      paste0("[% paste0(ambiorix:::read_lines('", dir), 
       file_content
     )
     file_content <- gsub(" ?\\!\\]", "'), collapse='') %]", file_content)
@@ -121,7 +121,7 @@ replace_partials <- function(file, file_content, ext = c("html", "R", "md")){
     # here needs read collapse and wrap in `HTML`
     file_content <- gsub(
       "\\[\\! ?", 
-      paste0("[% HTML(paste0(readLines('", dir), 
+      paste0("[% HTML(paste0(ambiorix:::read_lines('", dir), 
       file_content
     )
     file_content <- gsub(" ?\\!\\]", "'), collapse='')) %]", file_content)
