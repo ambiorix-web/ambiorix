@@ -2,6 +2,8 @@
 
 - Improve rendering of templates with `glue`.
 No longer forder render data as JSON if using an HTML template.
+- Recursively go through partials so partials can include other
+partials. Imperfect solution.
 
 # ambiorix 2.0.0
 

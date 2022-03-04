@@ -89,7 +89,7 @@ replace_partials <- function(file, file_content, ext = c("html", "R", "md")){
   dir <- get_dir(file)
   
   # commonmark wraps tags in <p> tags
-  # re remove those
+  # remove those
   if(ext == "md") {
     file_content <- gsub(
       "<p>\\[\\! ?",
@@ -110,24 +110,33 @@ replace_partials <- function(file, file_content, ext = c("html", "R", "md")){
     # here only need read and collapse
     file_content <- gsub(
       "\\[\\! ?", 
-      paste0("[% paste0(ambiorix:::read_lines('", dir), 
+      paste0("[! paste0(ambiorix:::read_lines('", dir), 
       file_content
     )
-    file_content <- gsub(" ?\\!\\]", "'), collapse='') %]", file_content)
+    file_content <- gsub(" ?\\!\\]", "'), collapse='') !]", file_content)
+    file_content <- sapply(file_content, \(x) {
+      glue::glue(x, .open = "[!", .close = "!]")
+    })
+    if(any(grepl("\\[! .* !\\]", file_content)))
+      file_content <- replace_partials(file, file_content, ext)
     return(file_content)
   }
 
-  if(tolower(ext) == "r") {
-    # here needs read collapse and wrap in `HTML`
-    file_content <- gsub(
-      "\\[\\! ?", 
-      paste0("[% HTML(paste0(ambiorix:::read_lines('", dir), 
-      file_content
-    )
-    file_content <- gsub(" ?\\!\\]", "'), collapse='')) %]", file_content)
-    return(file_content)
-  }
+  # here needs read collapse and wrap in `HTML`
+  file_content <- gsub(
+    "\\[\\! ?", 
+    paste0("[! HTML(paste0(ambiorix:::read_lines('", dir), 
+    file_content
+  )
+  file_content <- gsub(" ?\\!\\]", "'), collapse='')) !]", file_content)
 
+  file_content <- sapply(file_content, \(x) {
+    glue::glue(x, .open = "[!", .close = "!]")
+  })
+  if(any(grepl("\\[! .* !\\]", file_content)))
+    file_content <- replace_partials(file, file_content, ext)
+
+  return(file_content)
 }
 
 #' Get Directory
@@ -186,6 +195,7 @@ get_port <- function(host, port = NULL){
 #' Make label
 #' 
 #' Cheap replacement for rlang::as_label to avoid dependency.
+#' Must fix.
 #' 
 #' @noRd
 #' @keywords internal
