@@ -51,6 +51,13 @@ replace_partial <- \(line, dir) {
   gsub("\\[! ", pat, lines)
 }
 
+#' Get Directory
+#' 
+#' Retrieve directory from a file.
+#' 
+#' @param file File to retrieve directory from.
+#' 
+#' @keywords internal
 get_dir <- \(file) {
   normalizePath(file) |> 
     dirname()
