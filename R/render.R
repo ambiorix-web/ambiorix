@@ -75,3 +75,74 @@ apply_replace_partial <- \(content, dir) {
     unname() |> 
     unlist()
 }
+
+#' R Object
+#'
+#' Treats a data element rendered in a response (`res$render`) as
+#' a data object and ultimately uses [dput()].
+#'
+#' For instance in a template, `x <- [% var %]` will not work with
+#' `res$render(data=list(var = "hello"))` because this will be replace
+#' like `x <- hello` (missing quote): breaking the template. Using `robj` one would
+#' obtain `x <- "hello"`.
+#'
+#' @param obj R object to treat.
+#'
+#' @export
+robj <- function(obj){
+  assert_that(not_missing(obj))
+
+  # Supress warnings otherwise
+  # NULL, NA, and the likes
+  # raise messages
+  suppressWarnings(
+    structure(obj, class = c("robj", class(obj)))
+  )
+}
+
+#' @export
+print.robj <- function(x, ...){
+  cli::cli_alert_info("R object")
+  x |> 
+    dput(x) |> 
+    print()
+}
+
+#' JSON Object
+#' 
+#' Serialises an object to JSON in `res$render`.
+#' 
+#' @param obj Object to serialise.
+#' 
+#' @export 
+jobj <- function(obj) {
+  suppressWarnings(
+    structure(obj, class = c("jobj", class(obj)))
+  )
+}
+
+#' @export
+print.jobj <- function(x, ...){
+  cli::cli_alert_info("JSON object")
+  get_serialise(...)(x) |> 
+    print()
+}
+
+#' Pre Hook Response
+#' 
+#' @param content File content, a character vector.
+#' @param data A list of data passed to `glue::glue_data`.
+#' 
+#' @export 
+pre_hook <- function(
+  content,
+  data
+) {
+  structure(
+    list(
+      content = content,
+      data = data
+    ),
+    class = c("list", "responsePreHook")
+  )
+}

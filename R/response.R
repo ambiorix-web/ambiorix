@@ -417,19 +417,35 @@ Response <- R6::R6Class(
       if(ext == "md")
         file_content <- commonmark::markdown_html(file_content)
 
-      if(ext != "html")
-        data <- lapply(data, function(x){
-
-          # If not AsIs can use object
-          if(!inherits(x, "robj"))
+      if(ext == "html") {
+        data <- lapply(data, \(x) {
+          if(!inherits(x, "jobj"))
             return(x)
 
-          paste0(
-            capture.output(
-              dput(x)
-            ),
-            collapse = ""
-          )
+          get_serialise()(x)
+        })
+      }
+
+      if(ext == "R")
+        data <- lapply(data, \(x){
+
+          # If not AsIs can use object
+          if(inherits(x, "robj"))
+            return(
+              paste0(
+                capture.output(
+                  dput(x)
+                ),
+                collapse = ""
+              )
+            )
+          
+          if(inherits(x, "jobj"))
+            return(
+              get_serialise()(x)
+            )
+
+          return(x)
         })
 
       # hooks
@@ -497,56 +513,6 @@ Response <- R6::R6Class(
     }
   )
 )
-
-#' Data Object
-#'
-#' Treats a data element rendered in a response (`res$render`) as
-#' a data object and ultimately uses [dput()].
-#'
-#' For instance in a template, `x <- [% var %]` will not work with
-#' `res$render(data=list(var = "hello"))` because this will be replace
-#' like `x <- hello` (missing quote): breaking the template. Using `robj` one would
-#' obtain `x <- "hello"`.
-#'
-#' @param obj R object to treat.
-#'
-#' @export
-robj <- function(obj){
-  assert_that(not_missing(obj))
-
-  # Supress warnings otherwise
-  # NULL, NA, and the likes
-  # raise messages
-  suppressWarnings(
-    structure(obj, class = c("robj", class(obj)))
-  )
-}
-
-#' @export
-print.robj <- function(x, ...){
-  cli::cli_alert_info("R object")
-  class(x) <- class(x)[class(x) != "robj"]
-  print(x)
-}
-
-#' Pre Hook Response
-#' 
-#' @param content File content, a character vector.
-#' @param data A list of data passed to `glue::glue_data`.
-#' 
-#' @export 
-pre_hook <- function(
-  content,
-  data
-) {
-  structure(
-    list(
-      content = content,
-      data = data
-    ),
-    class = c("list", "responsePreHook")
-  )
-}
 
 #' Convert Cookie Expires
 #' 
