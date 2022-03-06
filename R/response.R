@@ -401,26 +401,9 @@ Response <- R6::R6Class(
     .headers = list(), 
     .preHooks = list(),
     .postHooks = list(),
-    .get_template_path = function(file){
-      file <- remove_extensions(file)
-
-      # should be recursive?
-      # try HTML first
-      file_html <- private$.try_template_path(file, ".html")
-
-      if(!is.null(file_html)) return(file_html)
-
-      # try R
-      file_r <- private$.try_template_path(file, ".R")
-
-      if(is.null(file_r)){
-        msg <- sprintf("Cannot find %s.html nor %s.R in templates", file, file)
-        stop(msg)
-      }
-
-      return(file_r)
-    },
     .render_template = function(file, data){
+      file <- normalizePath(file)
+
       # read and replace tags
       file_content <- read_lines(file)
 
@@ -429,7 +412,7 @@ Response <- R6::R6Class(
 
       # handle partials
       # replace brackets so glue::glue_data evals
-      file_content <- replace_partials(file, file_content, ext = ext)
+      file_content <- replace_partials(file_content, get_dir(file))
 
       if(ext == "md")
         file_content <- commonmark::markdown_html(file_content)
@@ -454,7 +437,7 @@ Response <- R6::R6Class(
         for(i in 1:length(private$.preHooks)) {
           pre_processed <- private$.preHooks[[i]](self, file_content, data, ext)
           if(!inherits(pre_processed, "responsePreHook")){
-            cat(error(), "Not a valid response from pre-hook (ignoring)\n")
+            cat(error(), "Not a valid return value from pre-hook (ignoring)\n")
             next
           }
 
@@ -503,7 +486,7 @@ Response <- R6::R6Class(
         content <- private$.postHooks[[i]](self, file_content, ext)
 
         if(!is.character(content)){
-          cat(error(), "Not a character response from post-hook (ignoring)\n", stdout())
+          cat(error(), "Not a character vector returned from post-hook (ignoring)\n", stdout())
           next
         }
 

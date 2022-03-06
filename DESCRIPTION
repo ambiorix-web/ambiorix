@@ -15,7 +15,7 @@ Description: A web framework inspired by 'express.js' to build
   application programming interfaces.
 License: GPL-3
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Depends: R (>= 4.1.0)

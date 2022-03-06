@@ -1,9 +1,8 @@
 # ambiorix 2.0.0.9000
 
-- Improve rendering of templates with `glue`.
-No longer forder render data as JSON if using an HTML template.
-- Recursively go through partials so partials can include other
-partials. Imperfect solution.
+- Improve rendering of templates.
+No longer force render data as JSON if using an HTML template.
+- Allow nested partials, their path must be relative.
 
 # ambiorix 2.0.0
 
