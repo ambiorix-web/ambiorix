@@ -291,9 +291,10 @@ Ambiorix <- R6::R6Class(
       private$.static <- append(private$.static, lst)
       invisible(self)
     },
-#' @details Start 
+#' @details Start
 #' Start the webserver.
-#' @param auto_stop Whether to automatically stop the server when the functon exits.
+#' @param host A string defining the host.
+#' @param port Integer defining the port, defaults to `ambiorix.port` option: uses a random port if `NULL`.
 #' @param open Whether to open the app the browser.
 #' 
 #' @examples 
@@ -304,16 +305,23 @@ Ambiorix <- R6::R6Class(
 #' })
 #' 
 #' if(interactive())
-#'  app$start()
-    start = function(auto_stop = TRUE, open = interactive()){
+#'  app$list(posrt = 3000L)
+    start = function(
+      port = NULL, host = NULL, open = interactive()) {
       if(self$is_running){
         cli::cli_alert_warning("Server is already running")
         return()
       }
 
+      if(is.null(port))
+        port <- private$.port
+
+      if(is.null(host))
+        host <- private$.host
+
       private$.server <- httpuv::startServer(
-        host = private$.host, 
-        port = private$.port,
+        host = host, 
+        port = port,
         app = list(
           call = private$.call, 
           staticPaths = private$.static, 
@@ -341,12 +349,9 @@ Ambiorix <- R6::R6Class(
       # open
       browse_ambiorix(open, url)
 
-      # stop the server
-      if(auto_stop){
-        on.exit({
-          self$stop()
-        })
-      }
+      on.exit({
+        self$stop()
+      })
 
       # keep R "alive"
       while (TRUE) {

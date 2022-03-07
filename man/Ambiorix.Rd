@@ -81,7 +81,7 @@ app$get("/", function(req, res){
 })
 
 if(interactive())
- app$start()
+ app$list(posrt = 3000L)
 
 ## ------------------------------------------------
 ## Method `Ambiorix$receive`
@@ -499,13 +499,15 @@ Static directories
 \if{latex}{\out{\hypertarget{method-start}{}}}
 \subsection{Method \code{start()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$start(auto_stop = TRUE, open = interactive())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$start(port = NULL, host = NULL, open = interactive())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{auto_stop}}{Whether to automatically stop the server when the functon exits.}
+\item{\code{port}}{Integer defining the port, defaults to \code{ambiorix.port} option: uses a random port if \code{NULL}.}
+
+\item{\code{host}}{A string defining the host.}
 
 \item{\code{open}}{Whether to open the app the browser.}
 }
@@ -525,7 +527,7 @@ app$get("/", function(req, res){
 })
 
 if(interactive())
- app$start()
+ app$list(posrt = 3000L)
 }
 \if{html}{\out{</div>}}
 

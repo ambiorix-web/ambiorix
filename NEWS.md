@@ -4,6 +4,7 @@
 No longer force render data as JSON if using an HTML template.
 - Allow nested partials, their path must be relative.
 - Added `jobj` function to serialise objects to JSON in `render`.
+- Allow passing `host` and `port` to `start()` method.
 
 # ambiorix 2.0.0
 
