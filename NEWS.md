@@ -5,6 +5,7 @@ No longer force render data as JSON if using an HTML template.
 - Allow nested partials, their path must be relative.
 - Added `jobj` function to serialise objects to JSON in `render`.
 - Allow passing `host` and `port` to `start()` method.
+- Added `host` and `port` active bindings.
 
 # ambiorix 2.0.0
 
@@ -16,8 +17,7 @@ Where one would before `res$render("home")`, now one
 `res$render("templates/home.html")`.
 Similarly, in said templates, to import partials, 
 use full path relative to the template in which the partial is used
-e.g.: from `[! header.html !]` to 
-`[! partials/header.html !]`.
+e.g.: from `[! header.html !]` to `[! partials/header.html !]`.
 
 __Changes__
 

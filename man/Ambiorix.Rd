@@ -137,6 +137,10 @@ if(interactive())
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{websocket}}{A handler function that accepts a websocket which overrides ambiorix internal websocket handling.}
+
+\item{\code{port}}{Port to run the application.}
+
+\item{\code{host}}{Host to run the application.}
 }
 \if{html}{\out{</div>}}
 }

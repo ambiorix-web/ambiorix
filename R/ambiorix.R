@@ -7,6 +7,8 @@
 #' @field error 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
 #' @field websocket A handler function that accepts a websocket which overrides ambiorix internal websocket handling.
 #' @field on_stop Callback function to run when the app stops, takes no argument.
+#' @field port Port to run the application.
+#' @field host Host to run the application.
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom utils browseURL
@@ -469,7 +471,22 @@ Ambiorix <- R6::R6Class(
   ),
   active = list(
     websocket = function(value){
+      if(missing(value))
+        stop("This is a setter only")
+
       private$.wss <- value
+    },
+    port = function(value) {
+      if(missing(value))
+        return(value)
+
+      private$.port <- value
+    },
+    host = function(value) {
+      if(missing(value))
+        return(value)
+
+      private$.host <- value
     }
   ),
   private = list(
