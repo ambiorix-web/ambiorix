@@ -1,5 +1,12 @@
 # ambiorix 2.0.0.9000
 
+__Breaking__
+
+- `Response` method `status` renamed to `set_status`
+(this is to allow having `status` as a field).
+
+__Changes__
+
 - Improve rendering of templates.
 No longer force render data as JSON if using an HTML template.
 - Allow nested partials, their path must be relative.
@@ -7,6 +14,8 @@ No longer force render data as JSON if using an HTML template.
 - Allow passing `host` and `port` to `start()` method.
 - Added `host` and `port` active bindings.
 - Move internal `is_running` field to private.
+- Added `status` active binding on `Response`.
+- Added `get_header`, `set_header`, and `set_headers` to `Response`.
 
 # ambiorix 2.0.0
 

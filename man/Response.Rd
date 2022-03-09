@@ -9,7 +9,7 @@ Response class to generate responses sent from the server.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-status}{\code{Response$status()}}
+\item \href{#method-set_status}{\code{Response$set_status()}}
 \item \href{#method-send}{\code{Response$send()}}
 \item \href{#method-sendf}{\code{Response$sendf()}}
 \item \href{#method-text}{\code{Response$text()}}
@@ -26,6 +26,9 @@ Response class to generate responses sent from the server.
 \item \href{#method-set}{\code{Response$set()}}
 \item \href{#method-get}{\code{Response$get()}}
 \item \href{#method-get_headers}{\code{Response$get_headers()}}
+\item \href{#method-get_header}{\code{Response$get_header()}}
+\item \href{#method-set_headers}{\code{Response$set_headers()}}
+\item \href{#method-set_header}{\code{Response$set_header()}}
 \item \href{#method-pre_render_hook}{\code{Response$pre_render_hook()}}
 \item \href{#method-post_render_hook}{\code{Response$post_render_hook()}}
 \item \href{#method-cookie}{\code{Response$cookie()}}
@@ -33,11 +36,11 @@ Response class to generate responses sent from the server.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-status"></a>}}
-\if{latex}{\out{\hypertarget{method-status}{}}}
-\subsection{Method \code{status()}}{
+\if{html}{\out{<a id="method-set_status"></a>}}
+\if{latex}{\out{\hypertarget{method-set_status}{}}}
+\subsection{Method \code{set_status()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$status(status)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$set_status(status)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -452,6 +455,72 @@ Get headers
 Returns the list of headers currently set.
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_header"></a>}}
+\if{latex}{\out{\hypertarget{method-get_header}{}}}
+\subsection{Method \code{get_header()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$get_header(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Name of the header to return.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Get a header
+Returns a single header currently, \code{NULL} if not set.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_headers"></a>}}
+\if{latex}{\out{\hypertarget{method-set_headers}{}}}
+\subsection{Method \code{set_headers()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$set_headers(headers)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{headers}}{A named list of headers to set.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Set headers
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_header"></a>}}
+\if{latex}{\out{\hypertarget{method-set_header}{}}}
+\subsection{Method \code{set_header()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$set_header(name, value)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Name of the header.}
+
+\item{\code{value}}{Value to set.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Set a Header
+}
+
+\subsection{Returns}{
+Invisible returns self.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-pre_render_hook"></a>}}

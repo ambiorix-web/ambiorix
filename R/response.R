@@ -69,7 +69,7 @@ Response <- R6::R6Class(
   public = list(
 #' @details Set the status of the response.
 #' @param status An integer defining the status.
-    status = function(status){
+    set_status = function(status){
       assert_that(not_missing(status))
       private$.status <- status
       invisible(self)
@@ -258,6 +258,36 @@ Response <- R6::R6Class(
     get_headers = function() {
       return(private$.headers)
     },
+#' @details Get a header
+#' Returns a single header currently, `NULL` if not set.
+#' @param name Name of the header to return.
+    get_header = function(name) {
+      assert_that(not_missing(name))
+      return(private$.headers[[name]])
+    },
+#' @details Set headers
+#' @param headers A named list of headers to set.
+    set_headers = function(headers) {
+      if(missing(headers))
+        stop("Missing `headers`")
+
+      if(!is.list(headers))
+        stop("`headers` must be a named list")
+
+      private$.headers <- list()
+      invisible(self)
+    },
+    #' @details Set a Header
+    #' @param name Name of the header.
+    #' @param value Value to set.
+    #' @return Invisible returns self.
+    set_header = function(name, value) {
+      assert_that(not_missing(name))
+      assert_that(not_missing(value))
+
+      private$.headers[[name]] <- value
+      invisible(self)
+    },
 #' @details Add a pre render hook.
 #' Runs before the `render` and `send_file` method.
 #' 
@@ -395,8 +425,24 @@ Response <- R6::R6Class(
       invisible(self)
     }
   ),
+  active = list(
+    status = function(value) {
+      if(missing(value))
+        return(private$.status)
+
+      private$.status <- value
+    },
+    headers = function(value) {
+      if(missing(value))
+        return(private$.headers)
+
+      if(!is.list(value))
+        stop("Must be a `list`")
+
+      private$.headers <- value
+    }
+  ),
   private = list(
-    .templates = list(),
     .status = 200L,
     .headers = list(), 
     .preHooks = list(),
@@ -473,16 +519,6 @@ Response <- R6::R6Class(
 
       # parse R
       private$.run_post_hooks(render_html(file_content), ext)
-    },
-    .make_template_path = function(file){
-      # clean input
-      file <- remove_extensions(file)
-
-      # list possible files
-      files <- remove_extensions(private$.templates)
-
-      template <- sprintf("./templates/%s.html", template)
-      normalizePath(template)
     },
     .get_status = function(status){
       if(is.null(status))
