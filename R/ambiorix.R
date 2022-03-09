@@ -3,7 +3,6 @@
 #' Web server.
 #' 
 #' @field not_found 404 Response, must be a handler function that accepts the request and the response, by default uses [response_404()].
-#' @field is_running Boolean indicating whether the server is running.
 #' @field error 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
 #' @field websocket A handler function that accepts a websocket which overrides ambiorix internal websocket handling.
 #' @field on_stop Callback function to run when the app stops, takes no argument.
@@ -36,7 +35,6 @@ Ambiorix <- R6::R6Class(
   "Ambiorix",
   public = list(
     not_found = NULL,
-    is_running = FALSE,
     error = NULL,
     on_stop = NULL,
 #' @details Define the webserver.
@@ -310,7 +308,7 @@ Ambiorix <- R6::R6Class(
 #'  app$list(posrt = 3000L)
     start = function(
       port = NULL, host = NULL, open = interactive()) {
-      if(self$is_running){
+      if(private$.is_running){
         cli::cli_alert_warning("Server is already running")
         return()
       }
@@ -346,7 +344,7 @@ Ambiorix <- R6::R6Class(
       .globals$successLog$log("Listening on", url)
 
       # runs
-      self$is_running <- TRUE
+      private$.is_running <- TRUE
 
       # open
       browse_ambiorix(open, url)
@@ -411,7 +409,7 @@ Ambiorix <- R6::R6Class(
 #' Stop the webserver.
     stop = function(){
 
-      if(!self$is_running){
+      if(!private$.is_running){
         .globals$errorLog$log("Server not running")
         return(invisible())
       }
@@ -423,7 +421,7 @@ Ambiorix <- R6::R6Class(
       private$.server$stop()
       .globals$errorLog$log("Server stopped")
 
-      self$is_running <- FALSE
+      private$.is_running <- FALSE
 
       invisible(self)
     },
@@ -500,6 +498,7 @@ Ambiorix <- R6::R6Class(
     .static = list(),
     .receivers = list(),
     .middleware = list(),
+    .is_running = FALSE,
     .call = function(req){
 
       request <- Request$new(req)

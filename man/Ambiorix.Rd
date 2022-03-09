@@ -125,8 +125,6 @@ if(interactive())
 \describe{
 \item{\code{not_found}}{404 Response, must be a handler function that accepts the request and the response, by default uses \code{\link[=response_404]{response_404()}}.}
 
-\item{\code{is_running}}{Boolean indicating whether the server is running.}
-
 \item{\code{error}}{500 response when the route errors, must a handler function that accepts the request and the response, by default uses \code{\link[=response_500]{response_500()}}.}
 
 \item{\code{on_stop}}{Callback function to run when the app stops, takes no argument.}
