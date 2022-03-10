@@ -16,6 +16,7 @@ No longer force render data as JSON if using an HTML template.
 - Move internal `is_running` field to private.
 - Added `status` active binding on `Response`.
 - Added `get_header`, `set_header`, and `set_headers` to `Response`.
+- Allow adding multiple cookies to the request.
 
 # ambiorix 2.0.0
 

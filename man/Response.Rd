@@ -6,6 +6,15 @@
 \description{
 Response class to generate responses sent from the server.
 }
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{status}}{Status of the response, defaults to \code{200L}.}
+
+\item{\code{headers}}{Named list of headers.}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{

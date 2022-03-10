@@ -61,6 +61,9 @@ print.ambiorixResponse <- function(x, ...){
 #' Response
 #' 
 #' Response class to generate responses sent from the server.
+#' 
+#' @field status Status of the response, defaults to `200L`.
+#' @field headers Named list of headers.
 #'
 #' @export 
 Response <- R6::R6Class(
@@ -420,7 +423,12 @@ Response <- R6::R6Class(
         cookie <- sprintf("%s; SameSite=%s", cookie, same_site)
       }
 
-      private$.headers[["Set-Cookie"]] <- cookie
+      names(cookie) <- "Set-Cookie"
+
+      private$.headers <- append(
+        private$.headers,
+        as.list(cookie)
+      )
 
       invisible(self)
     }
