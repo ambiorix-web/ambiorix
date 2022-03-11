@@ -45,3 +45,14 @@ assertthat::on_failure(is_logger) <- function(call, env){
     deparse(call$x)
   )
 }
+
+is_function <- function(x){
+  is.function(x)
+}
+
+assertthat::on_failure(is_function) <- function(call, env){
+  sprintf(
+    "`%s` is not a function",
+    deparse(call$x)
+  )
+}

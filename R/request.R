@@ -112,7 +112,7 @@ Request <- R6::R6Class(
       self$body <- req
 
       private$.parse_query_string(req$QUERY_STRING)
-      private$.parse_cookie(req$HTTP_COOKIE)
+      self$cookie <- .globals$cookieParser(req)
 
     },
     #' @details Print
@@ -206,27 +206,6 @@ Request <- R6::R6Class(
 
       self$query <- as.list(lst)
       invisible()
-    },
-    .parse_cookie = function(cookie) {
-      if(is.null(cookie))
-        return()
-
-      if(cookie == "")
-        return()
-
-      split <- strsplit(cookie, ";")[[1]]
-      split <- strsplit(split, "=")
-      for(i in 1:length(split)) {
-        value <- trimws(split[[i]])
-
-        if(length(value) < 2)
-          next
-
-        if(value[1] == "")
-          next
-
-        self$cookie[[value[1]]] <- value[2]
-      }
     }
   )
 )

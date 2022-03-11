@@ -399,29 +399,23 @@ Response <- R6::R6Class(
         cookie <- sprintf("%s; Expires=%s", cookie, expires)
       }
 
-      if(!is.null(max_age)) {
+      if(!is.null(max_age))
         cookie <- sprintf("%s; Max-Age=%s", cookie, max_age)
-      }
 
-      if(!is.null(domain)) {
+      if(!is.null(domain))
         cookie <- sprintf("%s; Domain=%s", cookie, domain)
-      }
 
-      if(!is.null(path)) {
+      if(!is.null(path))
         cookie <- sprintf("%s; Path=%s", cookie, path)
-      }
 
-      if(secure) {
+      if(secure)
         cookie <- sprintf("%s; Secure", cookie)
-      }
 
-      if(http_only) {
+      if(http_only)
         cookie <- sprintf("%s; HttpOnly", cookie)
-      }
 
-      if(!is.null(same_site)) {
+      if(!is.null(same_site)) 
         cookie <- sprintf("%s; SameSite=%s", cookie, same_site)
-      }
 
       names(cookie) <- "Set-Cookie"
 

@@ -446,6 +446,11 @@ Ambiorix <- R6::R6Class(
         private$.routes <- append(private$.routes, use$routes())
         private$.receivers <- append(private$.routes, use$receivers())
       } 
+      
+      if(inherits(use, "cookieParser")) {
+        .globals$cookieParser <- use
+        return(invisible(self))
+      }
 
       # pass middleware
       if(is.function(use)) { 
