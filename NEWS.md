@@ -17,6 +17,7 @@ No longer force render data as JSON if using an HTML template.
 - Added `status` active binding on `Response`.
 - Added `get_header`, `set_header`, and `set_headers` to `Response`.
 - Allow adding multiple cookies to the request.
+- Add `parseCookie` JavaScript helper function to JavaScript file.
 
 # ambiorix 2.0.0
 
