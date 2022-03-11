@@ -47,7 +47,7 @@ const parseCookie = str => {
   if(str == "")
     return {};
 
-  str
+  return str
     .split(';')
     .map(v => v.split('='))
     .reduce(
