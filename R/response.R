@@ -431,13 +431,11 @@ Response <- R6::R6Class(
 #' @param name Name of the cookie to clear.
 #' @return Invisibly returns self.
     clear_cookie = function(name) {
-      if(is.null(private$.cookies[[name]]))
-        return(invisible(self))
-
+      # cookies with date in the past are removed from the browser
       self$cookie(
         name,
         "",
-        expires = "0" 
+        expires = Sys.Date() - 5L
       )
 
       invisible(self)
