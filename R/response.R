@@ -373,20 +373,20 @@ Response <- R6::R6Class(
 #' request is made with the https: scheme (except on localhost), and therefore, 
 #' is more resistant to man-in-the-middle attacks.
 #' @param http_only Forbids JavaScript from accessing the cookie, for example,
-#' through the Document.cookie property.
+#' through the document.cookie property.
 #' @param same_site Controls whether or not a cookie is sent with cross-origin
 #' requests, providing some protection against cross-site request forgery
 #' attacks (CSRF). Accepts `Strict`, `Lax`, or `None`.
     cookie = function(
       name,
       value,
-      expires = NULL,
-      max_age = NULL,
-      domain = NULL,
-      path = NULL,
-      secure = TRUE,
-      http_only = FALSE,
-      same_site = NULL
+      expires = getOption("ambiorix.cookie.expire"),
+      max_age = getOption("ambiorix.cookie.maxage"),
+      domain = getOption("ambiorix.cookie.domain"),
+      path = getOption("ambiorix.cookie.path"),
+      secure = getOption("ambiorix.cookie.secure", TRUE),
+      http_only = getOption("ambiorix.cookie.httponly", TRUE),
+      same_site = getOption("ambiorix.cookie.savesite")
     ) {
       assert_that(not_missing(name))
       assert_that(not_missing(value))

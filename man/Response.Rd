@@ -612,13 +612,13 @@ Invisible returns self.
 \if{html}{\out{<div class="r">}}\preformatted{Response$cookie(
   name,
   value,
-  expires = NULL,
-  max_age = NULL,
-  domain = NULL,
-  path = NULL,
-  secure = TRUE,
-  http_only = FALSE,
-  same_site = NULL
+  expires = getOption("ambiorix.cookie.expire"),
+  max_age = getOption("ambiorix.cookie.maxage"),
+  domain = getOption("ambiorix.cookie.domain"),
+  path = getOption("ambiorix.cookie.path"),
+  secure = getOption("ambiorix.cookie.secure", TRUE),
+  http_only = getOption("ambiorix.cookie.httponly", TRUE),
+  same_site = getOption("ambiorix.cookie.savesite")
 )}\if{html}{\out{</div>}}
 }
 
@@ -650,7 +650,7 @@ request is made with the https: scheme (except on localhost), and therefore,
 is more resistant to man-in-the-middle attacks.}
 
 \item{\code{http_only}}{Forbids JavaScript from accessing the cookie, for example,
-through the Document.cookie property.}
+through the document.cookie property.}
 
 \item{\code{same_site}}{Controls whether or not a cookie is sent with cross-origin
 requests, providing some protection against cross-site request forgery
