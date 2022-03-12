@@ -434,8 +434,11 @@ Response <- R6::R6Class(
       if(is.null(private$.cookies[[name]]))
         return(invisible(self))
 
-      private$.cookies[[name]]$value <- ""
-      private$.cookies[[name]]$expires <- as.Date("1970-01-01")
+      self$cookie(
+        name,
+        "",
+        expires = "0" 
+      )
 
       invisible(self)
     }
