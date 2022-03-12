@@ -109,7 +109,7 @@ Response <- R6::R6Class(
 #' @param status Status of the response.
     send_file = function(file, headers = list('Content-Type' = 'text/html'), status = NULL){
       assert_that(not_missing(file))
-      self$render(file, data = list(), status = private$.get_status(status))
+      self$render(file, data = list(), status = private$.get_status(status), headers = headers)
     },
 #' @details Redirect to a path or URL.
 #' @param path Path or URL to redirect to.
@@ -119,7 +119,8 @@ Response <- R6::R6Class(
       if(!grepl("^3", status))
         status <- 302L
 
-      response(status = status, headers = list(Location = path), body = "")
+      headers <- private$.get_headers(list(Location = path))
+      response(status = status, headers = headers, body = "")
     },
 #' @details Render a template file.
 #' @param file Template file.
@@ -355,10 +356,12 @@ Response <- R6::R6Class(
       invisible(self)
     },
 #' @details Set a cookie
+#' Overwrites existing cookie of the same `name`.
 #' @param name Name of the cookie.
 #' @param value value of the cookie.
 #' @param expires Expiry, if an integer assumes it's the number of seconds
 #' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
+#' If a `character` string then it is set as-is and not pre-processed.
 #' If unspecified, the cookie becomes a session cookie. A session finishes 
 #' when the client shuts down, after which the session cookie is removed. 
 #' @param max_age Indicates the number of seconds until the cookie expires. 
@@ -377,6 +380,7 @@ Response <- R6::R6Class(
 #' @param same_site Controls whether or not a cookie is sent with cross-origin
 #' requests, providing some protection against cross-site request forgery
 #' attacks (CSRF). Accepts `Strict`, `Lax`, or `None`.
+#' @return Invisibly returns self.
     cookie = function(
       name,
       value,
@@ -408,36 +412,16 @@ Response <- R6::R6Class(
       }
 
       name <- as_label(name)
-      cookie <- sprintf("%s=%s", name, value)
-
-      if(!is.null(expires)) {
-        expires <- convert_cookie_expires(expires)
-        cookie <- sprintf("%s; Expires=%s", cookie, expires)
-      }
-
-      if(!is.null(max_age))
-        cookie <- sprintf("%s; Max-Age=%s", cookie, max_age)
-
-      if(!is.null(domain))
-        cookie <- sprintf("%s; Domain=%s", cookie, domain)
-
-      if(!is.null(path))
-        cookie <- sprintf("%s; Path=%s", cookie, path)
-
-      if(secure)
-        cookie <- sprintf("%s; Secure", cookie)
-
-      if(http_only)
-        cookie <- sprintf("%s; HttpOnly", cookie)
-
-      if(!is.null(same_site)) 
-        cookie <- sprintf("%s; SameSite=%s", cookie, same_site)
-
-      names(cookie) <- "Set-Cookie"
-
-      private$.headers <- append(
-        private$.headers,
-        as.list(cookie)
+      private$.cookies[[name]] <- cookie(
+        name,
+        value,
+        expires,
+        max_age,
+        domain,
+        path,
+        secure,
+        http_only,
+        same_site
       )
 
       invisible(self)
@@ -445,25 +429,15 @@ Response <- R6::R6Class(
 #' @details Clear a cookie
 #' Clears the value of a cookie.
 #' @param name Name of the cookie to clear.
+#' @return Invisibly returns self.
     clear_cookie = function(name) {
-      for(i in 1:length(private$.headers)) {
-        header <- names(private$.headers)[i]
+      if(is.null(private$.cookies[[name]]))
+        return(invisible(self))
 
-        if(header != "Set-Cookie")
-          next
+      private$.cookies[[name]]$value <- ""
+      private$.cookies[[name]]$expires <- as.Date("1970-01-01")
 
-        pat <- sprintf("^%s", name)
-        if(grepl(pat, private$.headers[[i]])) {
-          private$.headers[[i]] <- sprintf(
-            "%s=%s; Expires=%s",
-            name, 
-            "",
-            convert_cookie_expires(
-              Sys.Date() - 9999
-            )
-          )
-        }
-      }
+      invisible(self)
     }
   ),
   active = list(
@@ -485,6 +459,7 @@ Response <- R6::R6Class(
   ),
   private = list(
     .status = 200L,
+    .cookies = list(),
     .headers = list(), 
     .preHooks = list(),
     .postHooks = list(),
@@ -568,6 +543,7 @@ Response <- R6::R6Class(
       status
     },
     .get_headers = function(headers = list()){
+      private$.render_cookies()
       modifyList(private$.headers, headers)
     },
     .run_post_hooks = function(file_content, ext) {
@@ -587,6 +563,44 @@ Response <- R6::R6Class(
       }
 
       return(file_content)
+    },
+    .render_cookies = function() {
+      if(length(private$.cookies) == 0L)
+        return()
+
+      for(opts in private$.cookies) {
+        cookie <- sprintf("%s=%s", opts$name, opts$value)
+
+        if(!is.null(opts$expires)) {
+          expires <- convert_cookie_expires(opts$expires)
+          cookie <- sprintf("%s; Expires=%s", cookie, opts$expires)
+        }
+
+        if(!is.null(opts$max_age))
+          cookie <- sprintf("%s; Max-Age=%s", cookie, opts$max_age)
+
+        if(!is.null(opts$domain))
+          cookie <- sprintf("%s; Domain=%s", cookie, opts$domain)
+
+        if(!is.null(opts$path))
+          cookie <- sprintf("%s; Path=%s", cookie, opts$path)
+
+        if(opts$secure)
+          cookie <- sprintf("%s; Secure", cookie)
+
+        if(opts$http_only)
+          cookie <- sprintf("%s; HttpOnly", cookie)
+
+        if(!is.null(opts$same_site)) 
+          cookie <- sprintf("%s; SameSite=%s", cookie, opts$same_site)
+
+        names(cookie) <- "Set-Cookie"
+
+        private$.headers <- append(
+          private$.headers,
+          as.list(cookie)
+        )
+      }
     }
   )
 )

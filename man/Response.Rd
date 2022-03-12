@@ -632,6 +632,7 @@ Invisible returns self.
 
 \item{\code{expires}}{Expiry, if an integer assumes it's the number of seconds
 from now. Otherwise accepts an object of class \code{POSIXct} or \code{Date}.
+If a \code{character} string then it is set as-is and not pre-processed.
 If unspecified, the cookie becomes a session cookie. A session finishes
 when the client shuts down, after which the session cookie is removed.}
 
@@ -661,8 +662,12 @@ attacks (CSRF). Accepts \code{Strict}, \code{Lax}, or \code{None}.}
 }
 \subsection{Details}{
 Set a cookie
+Overwrites existing cookie of the same \code{name}.
 }
 
+\subsection{Returns}{
+Invisibly returns self.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clear_cookie"></a>}}
@@ -684,6 +689,9 @@ Clear a cookie
 Clears the value of a cookie.
 }
 
+\subsection{Returns}{
+Invisibly returns self.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

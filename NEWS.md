@@ -22,6 +22,7 @@ No longer force render data as JSON if using an HTML template.
 - Allow adding cookie value preprocessors with `as_cookie_preprocessor`.
 - Arguments to `cookie` method on `Response` take options.
 - Added `clear_cookie` method to `Response`
+- Cookies of the same name overwrite rather than duplicate.
 
 # ambiorix 2.0.0
 

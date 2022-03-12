@@ -104,3 +104,24 @@ as_cookie_preprocessor <- function(fn) {
 
   invisible(fn)
 }
+
+cookie <- function(
+  name,
+  value,
+  expires = NULL,
+  max_age = NULL,
+  domain = NULL,
+  path = NULL,
+  secure = TRUE,
+  http_only = TRUE,
+  same_site = NULL
+) {
+  opts <- as.list(environment())
+  structure(
+    opts,
+    class = c(
+      "cookie",
+      class(opts)
+    )
+  )
+}
