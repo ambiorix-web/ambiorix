@@ -105,6 +105,35 @@ as_cookie_preprocessor <- function(fn) {
   invisible(fn)
 }
 
+#' Cookie
+#' 
+#' Create a cookie object.
+#' 
+#' @param name Name of the cookie.
+#' @param value value of the cookie.
+#' @param expires Expiry, if an integer assumes it's the number of seconds
+#' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
+#' If a `character` string then it is set as-is and not pre-processed.
+#' If unspecified, the cookie becomes a session cookie. A session finishes 
+#' when the client shuts down, after which the session cookie is removed. 
+#' @param max_age Indicates the number of seconds until the cookie expires. 
+#' A zero or negative number will expire the cookie immediately. 
+#' If both `expires` and `max_age` are set, the latter has precedence.
+#' @param domain Defines the host to which the cookie will be sent.
+#' If omitted, this attribute defaults to the host of the current document URL,
+#' not including subdomains.
+#' @param path Indicates the path that must exist in the requested URL for the 
+#' browser to send the Cookie header.
+#' @param secure Indicates that the cookie is sent to the server only when a
+#' request is made with the https: scheme (except on localhost), and therefore, 
+#' is more resistant to man-in-the-middle attacks.
+#' @param http_only Forbids JavaScript from accessing the cookie, for example,
+#' through the document.cookie property.
+#' @param same_site Controls whether or not a cookie is sent with cross-origin
+#' requests, providing some protection against cross-site request forgery
+#' attacks (CSRF). Accepts `Strict`, `Lax`, or `None`.
+#' 
+#' @keywords internal
 cookie <- function(
   name,
   value,
