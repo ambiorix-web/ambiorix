@@ -441,6 +441,29 @@ Response <- R6::R6Class(
       )
 
       invisible(self)
+    },
+#' @details Clear a cookie
+#' Clears the value of a cookie.
+#' @param name Name of the cookie to clear.
+    clear_cookie = function(name) {
+      for(i in 1:length(private$.headers)) {
+        header <- names(private$.headers)[i]
+
+        if(header != "Set-Cookie")
+          next
+
+        pat <- sprintf("^%s", name)
+        if(grepl(pat, private$.headers[[i]])) {
+          private$.headers[[i]] <- sprintf(
+            "%s=%s; Expires=%s",
+            name, 
+            "",
+            convert_cookie_expires(
+              Sys.Date() - 9999
+            )
+          )
+        }
+      }
     }
   ),
   active = list(

@@ -41,6 +41,7 @@ Response class to generate responses sent from the server.
 \item \href{#method-pre_render_hook}{\code{Response$pre_render_hook()}}
 \item \href{#method-post_render_hook}{\code{Response$post_render_hook()}}
 \item \href{#method-cookie}{\code{Response$cookie()}}
+\item \href{#method-clear_cookie}{\code{Response$clear_cookie()}}
 \item \href{#method-clone}{\code{Response$clone()}}
 }
 }
@@ -660,6 +661,27 @@ attacks (CSRF). Accepts \code{Strict}, \code{Lax}, or \code{None}.}
 }
 \subsection{Details}{
 Set a cookie
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clear_cookie"></a>}}
+\if{latex}{\out{\hypertarget{method-clear_cookie}{}}}
+\subsection{Method \code{clear_cookie()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$clear_cookie(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Name of the cookie to clear.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Clear a cookie
+Clears the value of a cookie.
 }
 
 }
