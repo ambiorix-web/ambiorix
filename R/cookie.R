@@ -59,11 +59,45 @@ as_cookie_parser <- function(fn) {
   assert_that(not_missing(fn))
   assert_that(is_function(fn))
 
-
   fn <- structure(
     fn,
     class = c(
       "cookieParser",
+      class(fn)
+    )
+  )
+
+  invisible(fn)
+}
+
+#' Define a Cookie Preprocessor
+#' 
+#' Identifies a function as a cookie preprocessor.
+#' 
+#' @param fn A function that accepts the same arguments
+#' as the `cookie` method of the [Response] class
+#' (name, value, ...), and returns a modified 
+#' `value`.
+#' 
+#' @examples 
+#' func <- \(name, value, ...) {
+#'  sprintf("prefix.%s", value)
+#' }
+#' 
+#' prep <- as_cookie_preprocessor(func)
+#' 
+#' app <- Ambiorix$new()
+#' app$use(prep)
+#' 
+#' @export 
+as_cookie_preprocessor <- function(fn) {
+  assert_that(not_missing(fn))
+  assert_that(is_function(fn))
+
+  fn <- structure(
+    fn,
+    class = c(
+      "cookiePreprocessor",
       class(fn)
     )
   )

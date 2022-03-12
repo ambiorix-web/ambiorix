@@ -19,6 +19,7 @@ No longer force render data as JSON if using an HTML template.
 - Allow adding multiple cookies to the request.
 - Add `parseCookie` JavaScript helper function to JavaScript file.
 - Allow customising the cookie parser with `as_cookie_parser`.
+- Allow adding cookie value preprocessors with `as_cookie_preprocessor`.
 - Arguments to `cookie` method on `Response` take options.
 
 # ambiorix 2.0.0

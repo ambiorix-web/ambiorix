@@ -438,8 +438,14 @@ Ambiorix <- R6::R6Class(
 #' _Middleware may but does not have to return a response, unlike other methods such as `get`_
 #' Note that multiple routers and middlewares can be used.
     use = function(use){
-
       assert_that(not_missing(use))
+      
+      # recurse through items
+      if(is.list(use)) {
+        for(i in 1:length(use)) {
+          self$use(use[[i]])
+        }
+      }
       
       # mount router
       if(inherits(use, "Router")){
@@ -452,21 +458,19 @@ Ambiorix <- R6::R6Class(
         return(invisible(self))
       }
 
+      if(inherits(use, "cookiePreprocessor")) {
+        .globals$cookiePreprocessors <- append(
+          .globals$cookiePreprocessors,
+          use
+        )
+        return(invisible(self))
+      }
+
       # pass middleware
       if(is.function(use)) { 
         assert_that(is_handler(use))
         private$.middleware <- append(private$.middleware, use)
-      }
-
-      if(is.list(use)) {
-        for(i in 1:length(use)) {
-          args <- formalArgs(use[[i]])
-          if(length(args) != 2) {
-            .globals$errorLog(msg)
-            next
-          }
-          private$.middleware <- append(private$.middleware, use[[i]])
-        }
+        return(invisible(self))
       }
 
       invisible(self)
