@@ -25,7 +25,7 @@
 #' @name responses
 #'
 #' @export
-response <- function(body, headers = list('Content-Type' = 'text/html'), status = 200L){
+response <- function(body, headers = content_html(), status = 200L){
   assert_that(not_missing(body))
   res <- list(status = as.integer(status), headers = headers, body = as.character(body))
   construct_response(res)
@@ -33,14 +33,14 @@ response <- function(body, headers = list('Content-Type' = 'text/html'), status 
 
 #' @rdname responses
 #' @export
-response_404 <- function(body = "404: Not found", headers = list('Content-Type' = 'text/html'), status = 404L){
+response_404 <- function(body = "404: Not found", headers = content_html(), status = 404L){
   res <- list(status = as.integer(status), headers = headers, body = as.character(body))
   construct_response(res)
 }
 
 #' @rdname responses
 #' @export
-response_500 <- function(body = "500: Server Error", headers = list('Content-Type' = 'text/html'), status = 500L){
+response_500 <- function(body = "500: Server Error", headers = content_html(), status = 500L){
   res <- list(status = as.integer(status), headers = headers, body = as.character(body))
   construct_response(res)
 }
@@ -81,7 +81,7 @@ Response <- R6::R6Class(
 #' @param body Body of the response.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    send = function(body, headers = list('Content-Type' = 'text/html'), status = NULL){
+    send = function(body, headers = content_html(), status = NULL){
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = as.character(body))
     },
@@ -90,7 +90,7 @@ Response <- R6::R6Class(
 #' @param ... Passed to `...` of `sprintf`.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    sendf = function(body, ..., headers = list('Content-Type' = 'text/html'), status = NULL){
+    sendf = function(body, ..., headers = content_html(), status = NULL){
       body <- sprintf(body, ...)
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = as.character(body))
@@ -99,7 +99,7 @@ Response <- R6::R6Class(
 #' @param body Body of the response.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    text = function(body, headers = list('Content-Type' = 'text/plain'), status = NULL){
+    text = function(body, headers = content_plain(), status = NULL){
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = as.character(body))
     },
@@ -107,7 +107,7 @@ Response <- R6::R6Class(
 #' @param file File to send.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response.
-    send_file = function(file, headers = list('Content-Type' = 'text/html'), status = NULL){
+    send_file = function(file, headers = content_html(), status = NULL){
       assert_that(not_missing(file))
       self$render(file, data = list(), status = private$.get_status(status), headers = headers)
     },
@@ -127,7 +127,7 @@ Response <- R6::R6Class(
 #' @param data List to fill `[% tags %]`.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    render = function(file, data = list(), headers = list('Content-Type' = 'text/html'), status = NULL){
+    render = function(file, data = list(), headers = content_html(), status = NULL){
       assert_that(not_missing(file))
       assert_that(has_file(file))
 
@@ -141,7 +141,7 @@ Response <- R6::R6Class(
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
 #' @param ... Additional arguments passed to the serialiser.
-    json = function(body, headers = list("Content-Type" = "application/json"), status = NULL, ...){
+    json = function(body, headers = content_json(), status = NULL, ...){
       to_json <- get_serialise(...)
       headers <- private$.get_headers(headers)
       response(to_json(body), headers = headers, status = private$.get_status(status))
@@ -207,7 +207,7 @@ Response <- R6::R6Class(
 #' @param data List to fill `[% tags %]`.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    md = function(file, data = list(), headers = list('Content-Type' = 'text/html'), status = NULL) {
+    md = function(file, data = list(), headers = content_html(), status = NULL) {
       check_installed("commonmark")
       self$render(file, data, headers, status)
     },

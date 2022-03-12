@@ -70,11 +70,7 @@ Set the status of the response.
 \if{latex}{\out{\hypertarget{method-send}{}}}
 \subsection{Method \code{send()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$send(
-  body,
-  headers = list(`Content-Type` = "text/html"),
-  status = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$send(body, headers = content_html(), status = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -98,12 +94,7 @@ Send a plain HTML response.
 \if{latex}{\out{\hypertarget{method-sendf}{}}}
 \subsection{Method \code{sendf()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$sendf(
-  body,
-  ...,
-  headers = list(`Content-Type` = "text/html"),
-  status = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$sendf(body, ..., headers = content_html(), status = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -129,11 +120,7 @@ Send a plain HTML response, pre-processed with sprintf.
 \if{latex}{\out{\hypertarget{method-text}{}}}
 \subsection{Method \code{text()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$text(
-  body,
-  headers = list(`Content-Type` = "text/plain"),
-  status = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$text(body, headers = content_plain(), status = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -157,11 +144,7 @@ Send a plain text response.
 \if{latex}{\out{\hypertarget{method-send_file}{}}}
 \subsection{Method \code{send_file()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$send_file(
-  file,
-  headers = list(`Content-Type` = "text/html"),
-  status = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$send_file(file, headers = content_html(), status = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -207,12 +190,7 @@ Redirect to a path or URL.
 \if{latex}{\out{\hypertarget{method-render}{}}}
 \subsection{Method \code{render()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$render(
-  file,
-  data = list(),
-  headers = list(`Content-Type` = "text/html"),
-  status = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$render(file, data = list(), headers = content_html(), status = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -238,12 +216,7 @@ Render a template file.
 \if{latex}{\out{\hypertarget{method-json}{}}}
 \subsection{Method \code{json()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$json(
-  body,
-  headers = list(`Content-Type` = "application/json"),
-  status = NULL,
-  ...
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$json(body, headers = content_json(), status = NULL, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -345,12 +318,7 @@ Sends an htmlwidget.
 \if{latex}{\out{\hypertarget{method-md}{}}}
 \subsection{Method \code{md()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$md(
-  file,
-  data = list(),
-  headers = list(`Content-Type` = "text/html"),
-  status = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$md(file, data = list(), headers = content_html(), status = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

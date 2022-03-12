@@ -23,6 +23,7 @@ No longer force render data as JSON if using an HTML template.
 - Arguments to `cookie` method on `Response` take options.
 - Added `clear_cookie` method to `Response`
 - Cookies of the same name overwrite rather than duplicate.
+- Added `content_*` family of convenience function to set content type headers.
 
 # ambiorix 2.0.0
 
