@@ -40,6 +40,7 @@ app$start()
 - [alesia](https://github.com/devOpifex/alesia) Minifier
 - [eburones](https://github.com/devOpifex/eburones) Sessions
 - [agris](https://github.com/devOpifex/druid) Security
+- [scilis](https://github.com/devOpifex/scilis) Cookies
 - [titan](https://github.com/devOpifex/titan) Prometheus middleware
 
 ## Tools & Extensions
