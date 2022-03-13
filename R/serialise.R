@@ -5,8 +5,7 @@
 #' @param data Data to serialise.
 #' @param ... Options to pass to [jsonlite::toJSON()].
 #' 
-#' @noRd 
-#' @keywords internal
+#' @export
 serialise <- function(data, ...){
   
   # don't serialise scalar
