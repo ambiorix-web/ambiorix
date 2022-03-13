@@ -70,6 +70,11 @@ as_cookie_parser <- function(fn) {
   invisible(fn)
 }
 
+#' @export 
+print.cookieParser <- function(x, ...) {
+  cli::cli_alert_info("A cookie parser")
+}
+
 #' Define a Cookie Preprocessor
 #' 
 #' Identifies a function as a cookie preprocessor.
@@ -103,6 +108,11 @@ as_cookie_preprocessor <- function(fn) {
   )
 
   invisible(fn)
+}
+
+#' @export 
+print.cookiePreprocessor <- function(x, ...) {
+  cli::cli_alert_info("A cookie pre-processor")
 }
 
 #' Cookie
@@ -153,4 +163,9 @@ cookie <- function(
       class(opts)
     )
   )
+}
+
+#' @export 
+print.cookie <- function(x, ...) {
+  cli::cli_alert_info("A cookie: {.field {x$name}} = {.val  {x$value}}")
 }
