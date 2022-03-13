@@ -453,12 +453,12 @@ Ambiorix <- R6::R6Class(
         private$.receivers <- append(private$.routes, use$receivers())
       } 
       
-      if(inherits(use, "cookieParser")) {
+      if(is_cookie_parser(use)) {
         .globals$cookieParser <- use
         return(invisible(self))
       }
 
-      if(inherits(use, "cookiePreprocessor")) {
+      if(is_cookie_preprocessor(use)) {
         .globals$cookiePreprocessors <- append(
           .globals$cookiePreprocessors,
           use
@@ -517,7 +517,7 @@ Ambiorix <- R6::R6Class(
         for(i in 1:length(private$.middleware)) {
           mid_res <- private$.middleware[[i]](request, res)
 
-          if(inherits(mid_res, "ambiorixResponse"))
+          if(is_response(mid_res))
             res <- mid_res
         }
       }
@@ -558,7 +558,7 @@ Ambiorix <- R6::R6Class(
             )
           }
 
-          if(inherits(response, "forward"))
+          if(is_forward(response))
             next
 
           # if not a response return something that is

@@ -1,6 +1,10 @@
 valid_path <- function(x) {
-  if(missing(x)) return(FALSE)
-  if(!inherits(x, "character")) return(FALSE)
+  if(missing(x)) 
+    return(FALSE)
+
+  if(!inherits(x, "character")) 
+    return(FALSE)
+
   return(TRUE)
 }
 

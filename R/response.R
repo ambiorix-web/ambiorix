@@ -58,6 +58,11 @@ print.ambiorixResponse <- function(x, ...){
   cat("An ambiorix response")
 }
 
+#' @keywords internal
+is_response <- function(obj) {
+  inherits(obj, "ambiorixResponse")
+}
+
 #' Response
 #' 
 #' Response class to generate responses sent from the server.
@@ -489,33 +494,11 @@ Response <- R6::R6Class(
         })
       }
 
-      if(ext == "R")
-        data <- lapply(data, \(x){
-
-          # If not AsIs can use object
-          if(inherits(x, "robj"))
-            return(
-              paste0(
-                capture.output(
-                  dput(x)
-                ),
-                collapse = ""
-              )
-            )
-          
-          if(inherits(x, "jobj"))
-            return(
-              get_serialise()(x)
-            )
-
-          return(x)
-        })
-
       # hooks
       if(length(private$.preHooks) > 0) {
         for(i in 1:length(private$.preHooks)) {
           pre_processed <- private$.preHooks[[i]](self, file_content, data, ext)
-          if(!inherits(pre_processed, "responsePreHook")){
+          if(!is_pre_hook(pre_processed)){
             cat(error(), "Not a valid return value from pre-hook (ignoring)\n")
             next
           }

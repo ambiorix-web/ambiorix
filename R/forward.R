@@ -27,3 +27,8 @@ forward <- function(){
 print.forward <- function(x, ...){
   cat("Using next method")
 }
+
+#' @keywords internal
+is_forward <- function(x) {
+  inherits(x, "forward")
+}

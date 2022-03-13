@@ -159,3 +159,13 @@ pre_hook <- function(
     class = c("list", "responsePreHook")
   )
 }
+
+#' @keywords internal
+is_pre_hook <- function(obj) {
+  inherits(obj, "responsePreHook")
+}
+
+#' @export 
+print.responsePreHook <- function(x, ...) {
+  cli::cli_alert_info("A response pre hook")
+}

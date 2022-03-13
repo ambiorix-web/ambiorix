@@ -75,6 +75,11 @@ print.cookieParser <- function(x, ...) {
   cli::cli_alert_info("A cookie parser")
 }
 
+#' @keywords internal
+is_cookie_parser <- function(obj) {
+  inherits(obj, "cookieParser")
+}
+
 #' Define a Cookie Preprocessor
 #' 
 #' Identifies a function as a cookie preprocessor.
@@ -113,6 +118,11 @@ as_cookie_preprocessor <- function(fn) {
 #' @export 
 print.cookiePreprocessor <- function(x, ...) {
   cli::cli_alert_info("A cookie pre-processor")
+}
+
+#' @keywords internal
+is_cookie_preprocessor <- function(obj) {
+  inherits(obj, "cookiePreprocessor")
 }
 
 #' Cookie
