@@ -31,6 +31,19 @@ replace_partial <- \(line, dir) {
 
   if(!grepl("\\[! .* !\\]", line))
     return(line)
+  
+  # every line is enclosed in <p> tag coming from markdown
+  # we remove this, it's safe to assume that is not wanted.
+  line <- gsub(
+    "<p>\\[\\! ?",
+    "[!",
+    line
+  )
+  line <- gsub(
+    " ?\\!\\]</p>",
+    "!]",
+    line
+  ) 
 
   path <- gsub("\\[!|!\\]", "", line) |> 
     trimws()

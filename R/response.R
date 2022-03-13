@@ -435,7 +435,7 @@ Response <- R6::R6Class(
       self$cookie(
         name,
         "",
-        expires = Sys.Date() - 5L
+        expires = Sys.Date() - 365L
       )
 
       invisible(self)
