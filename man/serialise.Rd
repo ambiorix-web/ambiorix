@@ -2,15 +2,21 @@
 % Please edit documentation in R/serialise.R
 \name{serialise}
 \alias{serialise}
-\title{Serialise}
+\title{Serialise to JSON}
 \usage{
 serialise(data, ...)
 }
 \arguments{
 \item{data}{Data to serialise.}
 
-\item{...}{Options to pass to \code{\link[jsonlite:fromJSON]{jsonlite::toJSON()}}.}
+\item{...}{Passed to serialiser.}
 }
 \description{
-Serialise data to JSON.
+Serialise an object to JSON.
+Default serialiser can be change by setting the
+\code{AMBIORIX_SERIALISER} option to the desired function.
+}
+\examples{
+\dontrun{serialise(cars)}
+
 }

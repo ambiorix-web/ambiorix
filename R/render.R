@@ -137,7 +137,7 @@ jobj <- function(obj) {
 #' @export
 print.jobj <- function(x, ...){
   cli::cli_alert_info("JSON object")
-  get_serialise(...)(x) |> 
+  serialise(x, ...) |> 
     print()
 }
 

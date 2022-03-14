@@ -57,13 +57,12 @@ Websocket <- R6::R6Class(
     #' @param message Content of the message, anything that can be
     #' serialised to JSON.
     send = function(name, message){
-      to_json <- get_serialise()
       message <- list(
         name = name,
         message = message,
         isAmbiorix = TRUE
       )
-      private$.ws$send(to_json(message))
+      private$.ws$send(serialise(message))
     },
     #' @details Print
     print = function(){

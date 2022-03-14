@@ -147,9 +147,8 @@ Response <- R6::R6Class(
 #' @param status Status of the response, if `NULL` uses `self$status`.
 #' @param ... Additional arguments passed to the serialiser.
     json = function(body, headers = content_json(), status = NULL, ...){
-      to_json <- get_serialise(...)
       headers <- private$.get_headers(headers)
-      response(to_json(body), headers = headers, status = private$.get_status(status))
+      response(serialise(body), headers = headers, status = private$.get_status(status))
     },
 #' @details Sends a comma separated value file
 #' @param data Data to convert to CSV.
@@ -490,7 +489,7 @@ Response <- R6::R6Class(
           if(!inherits(x, "jobj"))
             return(x)
 
-          get_serialise()(x)
+          serialise(x)
         })
       }
 
