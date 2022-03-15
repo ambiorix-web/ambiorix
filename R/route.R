@@ -59,6 +59,10 @@ Route <- R6::R6Class(
 
       self$components <- comp
       invisible(self)
+    },
+    print = function(){
+      cli::cli_rule("Ambiorix", right = "route")
+      cat("Only used internally\n")
     }
   )
 )

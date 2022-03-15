@@ -88,7 +88,7 @@ if(interactive())
  app$start()
 }
 \section{Super class}{
-\code{\link[ambiorix:Web]{ambiorix::Web}} -> \code{Ambiorix}
+\code{\link[ambiorix:Routing]{ambiorix::Routing}} -> \code{Ambiorix}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -129,17 +129,17 @@ if(interactive())
 \if{html}{
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="all">}\href{../../ambiorix/html/Web.html#method-all}{\code{ambiorix::Web$all()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="delete">}\href{../../ambiorix/html/Web.html#method-delete}{\code{ambiorix::Web$delete()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="get">}\href{../../ambiorix/html/Web.html#method-get}{\code{ambiorix::Web$get()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="get_receivers">}\href{../../ambiorix/html/Web.html#method-get_receivers}{\code{ambiorix::Web$get_receivers()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="get_routes">}\href{../../ambiorix/html/Web.html#method-get_routes}{\code{ambiorix::Web$get_routes()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="options">}\href{../../ambiorix/html/Web.html#method-options}{\code{ambiorix::Web$options()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="patch">}\href{../../ambiorix/html/Web.html#method-patch}{\code{ambiorix::Web$patch()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="post">}\href{../../ambiorix/html/Web.html#method-post}{\code{ambiorix::Web$post()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="put">}\href{../../ambiorix/html/Web.html#method-put}{\code{ambiorix::Web$put()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="receive">}\href{../../ambiorix/html/Web.html#method-receive}{\code{ambiorix::Web$receive()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="use">}\href{../../ambiorix/html/Web.html#method-use}{\code{ambiorix::Web$use()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="all">}\href{../../ambiorix/html/Routing.html#method-all}{\code{ambiorix::Routing$all()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="delete">}\href{../../ambiorix/html/Routing.html#method-delete}{\code{ambiorix::Routing$delete()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get">}\href{../../ambiorix/html/Routing.html#method-get}{\code{ambiorix::Routing$get()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers">}\href{../../ambiorix/html/Routing.html#method-get_receivers}{\code{ambiorix::Routing$get_receivers()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_routes">}\href{../../ambiorix/html/Routing.html#method-get_routes}{\code{ambiorix::Routing$get_routes()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="options">}\href{../../ambiorix/html/Routing.html#method-options}{\code{ambiorix::Routing$options()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="patch">}\href{../../ambiorix/html/Routing.html#method-patch}{\code{ambiorix::Routing$patch()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="post">}\href{../../ambiorix/html/Routing.html#method-post}{\code{ambiorix::Routing$post()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="put">}\href{../../ambiorix/html/Routing.html#method-put}{\code{ambiorix::Routing$put()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive">}\href{../../ambiorix/html/Routing.html#method-receive}{\code{ambiorix::Routing$receive()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use">}\href{../../ambiorix/html/Routing.html#method-use}{\code{ambiorix::Routing$use()}}\out{</span>}
 }
 \out{</details>}
 }

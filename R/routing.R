@@ -1,11 +1,13 @@
-#' Core Class
+#' Core Routing Class
 #' 
-#' Core web class
+#' Core routing class.
+#' Do not use directly, see [Ambiorix], and [Router].
+#' 
 #' @field error Error handler.
 #' 
-#' @keywords internal
-Web <- R6::R6Class(
-  "Web",
+#' @keywords export
+Routing <- R6::R6Class(
+  "Routing",
   public = list(
     error = NULL,
 #' @details Initialise
@@ -15,6 +17,7 @@ Web <- R6::R6Class(
         response_500()
       }
       private$.basepath <- path
+      private$.is_router <- path != ""
     },
 #' @details GET Method
 #' 
@@ -239,8 +242,22 @@ Web <- R6::R6Class(
         private$.receivers <- append(private$.receivers, use$get_receivers())
       } 
       
+      if(is_cookie_parser(use) && private$.is_router){
+        .globals$errorLog$log(
+          "Cannot pass cookie parser to `Router`, only to `Ambiorix`"
+        )
+        return(invisible(self))
+      }
+
       if(is_cookie_parser(use)) {
         .globals$cookieParser <- use
+        return(invisible(self))
+      }
+
+      if(is_cookie_preprocessor(use) && private$.is_router){
+        .globals$errorLog$log(
+          "Cannot pass cookie preprocessor to `Router`, only to `Ambiorix`"
+        )
         return(invisible(self))
       }
 
@@ -272,6 +289,7 @@ Web <- R6::R6Class(
   ),
   private = list(
     .basepath = "",
+    .is_router = FALSE,
     .routes = list(),
     .static = list(),
     .receivers = list(),

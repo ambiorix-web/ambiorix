@@ -44,7 +44,7 @@
 #' @export
 Router <- R6::R6Class(
   "Router",
-  inherit = Web,
+  inherit = Routing,
   public = list(
     error = NULL,
 #' @details Define the base route.

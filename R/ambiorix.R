@@ -33,7 +33,7 @@
 #' @export 
 Ambiorix <- R6::R6Class(
   "Ambiorix",
-  inherit = Web,
+  inherit = Routing,
   public = list(
     not_found = NULL,
     error = NULL,
