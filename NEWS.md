@@ -27,6 +27,7 @@ No longer force render data as JSON if using an HTML template.
 - Cookies of the same name overwrite rather than duplicate.
 - Added `content_*` family of convenience function to set content type headers.
 - Export `serialise`
+- Fixed issue where wrong path pattern was matched.
 
 # ambiorix 2.0.0
 

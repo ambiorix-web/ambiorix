@@ -41,19 +41,6 @@ if(interactive())
  app$start()
 
 ## ------------------------------------------------
-## Method `Ambiorix$get`
-## ------------------------------------------------
-
-app <- Ambiorix$new()
-
-app$get("/", function(req, res){
- res$send("Using {ambiorix}!")
-})
-
-if(interactive())
- app$start()
-
-## ------------------------------------------------
 ## Method `Ambiorix$set_404`
 ## ------------------------------------------------
 
@@ -84,26 +71,6 @@ if(interactive())
  app$list(posrt = 3000L)
 
 ## ------------------------------------------------
-## Method `Ambiorix$receive`
-## ------------------------------------------------
-
-app <- Ambiorix$new()
-
-app$get("/", function(req, res){
- res$send("Using {ambiorix}!")
-})
-
-app$receive("hello", function(msg, ws){
- print(msg) # print msg received
- 
- # send a message back
- ws$send("hello", "Hello back! (sent from R)")
-})
-
-if(interactive())
- app$start()
-
-## ------------------------------------------------
 ## Method `Ambiorix$serialiser`
 ## ------------------------------------------------
 
@@ -119,6 +86,9 @@ app$get("/", function(req, res){
 
 if(interactive())
  app$start()
+}
+\section{Super class}{
+\code{\link[ambiorix:Web]{ambiorix::Web}} -> \code{Ambiorix}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -147,23 +117,31 @@ if(interactive())
 \itemize{
 \item \href{#method-new}{\code{Ambiorix$new()}}
 \item \href{#method-listen}{\code{Ambiorix$listen()}}
-\item \href{#method-get}{\code{Ambiorix$get()}}
-\item \href{#method-put}{\code{Ambiorix$put()}}
-\item \href{#method-patch}{\code{Ambiorix$patch()}}
-\item \href{#method-delete}{\code{Ambiorix$delete()}}
-\item \href{#method-post}{\code{Ambiorix$post()}}
-\item \href{#method-options}{\code{Ambiorix$options()}}
-\item \href{#method-all}{\code{Ambiorix$all()}}
 \item \href{#method-set_404}{\code{Ambiorix$set_404()}}
 \item \href{#method-static}{\code{Ambiorix$static()}}
 \item \href{#method-start}{\code{Ambiorix$start()}}
-\item \href{#method-receive}{\code{Ambiorix$receive()}}
 \item \href{#method-serialiser}{\code{Ambiorix$serialiser()}}
 \item \href{#method-stop}{\code{Ambiorix$stop()}}
 \item \href{#method-print}{\code{Ambiorix$print()}}
-\item \href{#method-use}{\code{Ambiorix$use()}}
 \item \href{#method-clone}{\code{Ambiorix$clone()}}
 }
+}
+\if{html}{
+\out{<details ><summary>Inherited methods</summary>}
+\itemize{
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="all">}\href{../../ambiorix/html/Web.html#method-all}{\code{ambiorix::Web$all()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="delete">}\href{../../ambiorix/html/Web.html#method-delete}{\code{ambiorix::Web$delete()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="get">}\href{../../ambiorix/html/Web.html#method-get}{\code{ambiorix::Web$get()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="get_receivers">}\href{../../ambiorix/html/Web.html#method-get_receivers}{\code{ambiorix::Web$get_receivers()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="get_routes">}\href{../../ambiorix/html/Web.html#method-get_routes}{\code{ambiorix::Web$get_routes()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="options">}\href{../../ambiorix/html/Web.html#method-options}{\code{ambiorix::Web$options()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="patch">}\href{../../ambiorix/html/Web.html#method-patch}{\code{ambiorix::Web$patch()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="post">}\href{../../ambiorix/html/Web.html#method-post}{\code{ambiorix::Web$post()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="put">}\href{../../ambiorix/html/Web.html#method-put}{\code{ambiorix::Web$put()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="receive">}\href{../../ambiorix/html/Web.html#method-receive}{\code{ambiorix::Web$receive()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="use">}\href{../../ambiorix/html/Web.html#method-use}{\code{ambiorix::Web$use()}}\out{</span>}
+}
+\out{</details>}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
@@ -227,210 +205,6 @@ if(interactive())
 }
 \if{html}{\out{</div>}}
 
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get"></a>}}
-\if{latex}{\out{\hypertarget{method-get}{}}}
-\subsection{Method \code{get()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$get(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-GET Method
-
-Add routes to listen to.
-}
-
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{app <- Ambiorix$new()
-
-app$get("/", function(req, res){
- res$send("Using {ambiorix}!")
-})
-
-if(interactive())
- app$start()
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-put"></a>}}
-\if{latex}{\out{\hypertarget{method-put}{}}}
-\subsection{Method \code{put()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$put(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-PUT Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-patch"></a>}}
-\if{latex}{\out{\hypertarget{method-patch}{}}}
-\subsection{Method \code{patch()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$patch(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-PATCH Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-delete"></a>}}
-\if{latex}{\out{\hypertarget{method-delete}{}}}
-\subsection{Method \code{delete()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$delete(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-DELETE Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-post"></a>}}
-\if{latex}{\out{\hypertarget{method-post}{}}}
-\subsection{Method \code{post()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$post(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-POST Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-options"></a>}}
-\if{latex}{\out{\hypertarget{method-options}{}}}
-\subsection{Method \code{options()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$options(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-OPTIONS Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-all"></a>}}
-\if{latex}{\out{\hypertarget{method-all}{}}}
-\subsection{Method \code{all()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$all(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-All Methods
-
-Add routes to listen to for all methods \code{GET}, \code{POST}, \code{PUT}, \code{DELETE}, and \code{PATCH}.
 }
 
 }
@@ -537,50 +311,6 @@ if(interactive())
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-receive"></a>}}
-\if{latex}{\out{\hypertarget{method-receive}{}}}
-\subsection{Method \code{receive()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$receive(name, handler)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Name of message.}
-
-\item{\code{handler}}{Function to run when message is received.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Receive Websocket Message
-}
-
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{app <- Ambiorix$new()
-
-app$get("/", function(req, res){
- res$send("Using {ambiorix}!")
-})
-
-app$receive("hello", function(msg, ws){
- print(msg) # print msg received
- 
- # send a message back
- ws$send("hello", "Hello back! (sent from R)")
-})
-
-if(interactive())
- app$start()
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-serialiser"></a>}}
 \if{latex}{\out{\hypertarget{method-serialiser}{}}}
 \subsection{Method \code{serialiser()}}{
@@ -644,31 +374,6 @@ Stop the webserver.
 
 \subsection{Details}{
 Print
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-use"></a>}}
-\if{latex}{\out{\hypertarget{method-use}{}}}
-\subsection{Method \code{use()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$use(use)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{use}}{Either a router as returned by \link{Router}, a function to use as middleware,
-or a \code{list} of functions.
-If a function is passed, it must accept two arguments (the request, and the response):
-this function will be executed every time the server receives a request.
-\emph{Middleware may but does not have to return a response, unlike other methods such as \code{get}}
-Note that multiple routers and middlewares can be used.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Use a router or middleware
 }
 
 }

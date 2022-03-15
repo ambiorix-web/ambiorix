@@ -41,6 +41,9 @@ if(interactive())
  app$start()
 
 }
+\section{Super class}{
+\code{\link[ambiorix:Web]{ambiorix::Web}} -> \code{Router}
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
@@ -52,17 +55,26 @@ if(interactive())
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Router$new()}}
-\item \href{#method-get}{\code{Router$get()}}
-\item \href{#method-put}{\code{Router$put()}}
-\item \href{#method-patch}{\code{Router$patch()}}
-\item \href{#method-delete}{\code{Router$delete()}}
-\item \href{#method-post}{\code{Router$post()}}
-\item \href{#method-receive}{\code{Router$receive()}}
 \item \href{#method-print}{\code{Router$print()}}
-\item \href{#method-routes}{\code{Router$routes()}}
-\item \href{#method-receivers}{\code{Router$receivers()}}
 \item \href{#method-clone}{\code{Router$clone()}}
 }
+}
+\if{html}{
+\out{<details ><summary>Inherited methods</summary>}
+\itemize{
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="all">}\href{../../ambiorix/html/Web.html#method-all}{\code{ambiorix::Web$all()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="delete">}\href{../../ambiorix/html/Web.html#method-delete}{\code{ambiorix::Web$delete()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="get">}\href{../../ambiorix/html/Web.html#method-get}{\code{ambiorix::Web$get()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="get_receivers">}\href{../../ambiorix/html/Web.html#method-get_receivers}{\code{ambiorix::Web$get_receivers()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="get_routes">}\href{../../ambiorix/html/Web.html#method-get_routes}{\code{ambiorix::Web$get_routes()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="options">}\href{../../ambiorix/html/Web.html#method-options}{\code{ambiorix::Web$options()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="patch">}\href{../../ambiorix/html/Web.html#method-patch}{\code{ambiorix::Web$patch()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="post">}\href{../../ambiorix/html/Web.html#method-post}{\code{ambiorix::Web$post()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="put">}\href{../../ambiorix/html/Web.html#method-put}{\code{ambiorix::Web$put()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="receive">}\href{../../ambiorix/html/Web.html#method-receive}{\code{ambiorix::Web$receive()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Web" data-id="use">}\href{../../ambiorix/html/Web.html#method-use}{\code{ambiorix::Web$use()}}\out{</span>}
+}
+\out{</details>}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
@@ -85,163 +97,6 @@ Define the base route.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get"></a>}}
-\if{latex}{\out{\hypertarget{method-get}{}}}
-\subsection{Method \code{get()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Router$get(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-GET Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-put"></a>}}
-\if{latex}{\out{\hypertarget{method-put}{}}}
-\subsection{Method \code{put()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Router$put(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-PUT Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-patch"></a>}}
-\if{latex}{\out{\hypertarget{method-patch}{}}}
-\subsection{Method \code{patch()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Router$patch(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-PATCH Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-delete"></a>}}
-\if{latex}{\out{\hypertarget{method-delete}{}}}
-\subsection{Method \code{delete()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Router$delete(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-DELETE Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-post"></a>}}
-\if{latex}{\out{\hypertarget{method-post}{}}}
-\subsection{Method \code{post()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Router$post(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-POST Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-receive"></a>}}
-\if{latex}{\out{\hypertarget{method-receive}{}}}
-\subsection{Method \code{receive()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Router$receive(name, handler)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Name of message.}
-
-\item{\code{handler}}{Function to run when message is received.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Receive Websocket Message
-}
-
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-print"></a>}}
 \if{latex}{\out{\hypertarget{method-print}{}}}
 \subsection{Method \code{print()}}{
@@ -251,32 +106,6 @@ Receive Websocket Message
 
 \subsection{Details}{
 Print
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-routes"></a>}}
-\if{latex}{\out{\hypertarget{method-routes}{}}}
-\subsection{Method \code{routes()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Router$routes()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Get the routes
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-receivers"></a>}}
-\if{latex}{\out{\hypertarget{method-receivers}{}}}
-\subsection{Method \code{receivers()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Router$receivers()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Get the receivers
 }
 
 }

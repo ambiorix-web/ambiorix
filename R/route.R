@@ -34,7 +34,7 @@ Route <- R6::R6Class(
       if(length(components) == 0){
         self$components <- list(
           list(
-            index = 1, 
+            index = 1L, 
             dynamic = FALSE,
             name = ""
           )
