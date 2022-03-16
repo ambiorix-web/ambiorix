@@ -139,6 +139,9 @@ Ambiorix <- R6::R6Class(
         return()
       }
 
+      if(private$n_routes() == 0L)
+        stop("No routes specified")
+
       if(is.null(port))
         port <- private$.port
 
