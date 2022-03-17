@@ -7,15 +7,11 @@
 \alias{response_500}
 \title{Plain Responses}
 \usage{
-response(body, headers = content_html(), status = 200L)
+response(body, headers = NULL, status = 200L)
 
-response_404(body = "404: Not found", headers = content_html(), status = 404L)
+response_404(body = "404: Not found", headers = NULL, status = 404L)
 
-response_500(
-  body = "500: Server Error",
-  headers = content_html(),
-  status = 500L
-)
+response_500(body = "500: Server Error", headers = NULL, status = 500L)
 }
 \arguments{
 \item{body}{Body of response.}

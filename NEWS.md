@@ -30,6 +30,7 @@ No longer force render data as JSON if using an HTML template.
 - Fixed issue where wrong path pattern was matched.
 - Catch error if no route is specified.
 - Do not force body to character fixes [#44](https://github.com/devOpifex/ambiorix/issues/44)
+- Do no force content type on response fixes [#45](https://github.com/devOpifex/ambiorix/issues/45)
 
 # ambiorix 2.0.0
 
