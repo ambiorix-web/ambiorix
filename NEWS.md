@@ -29,6 +29,7 @@ No longer force render data as JSON if using an HTML template.
 - Export `serialise`
 - Fixed issue where wrong path pattern was matched.
 - Catch error if no route is specified.
+- Do not force body to character fixes [#44](https://github.com/devOpifex/ambiorix/issues/44)
 
 # ambiorix 2.0.0
 

@@ -27,22 +27,35 @@
 #' @export
 response <- function(body, headers = content_html(), status = 200L){
   assert_that(not_missing(body))
-  res <- list(status = as.integer(status), headers = headers, body = as.character(body))
+  res <- list(status = as.integer(status), headers = headers, body = convert_body(body))
   construct_response(res)
 }
 
 #' @rdname responses
 #' @export
 response_404 <- function(body = "404: Not found", headers = content_html(), status = 404L){
-  res <- list(status = as.integer(status), headers = headers, body = as.character(body))
+  res <- list(status = as.integer(status), headers = headers, body = convert_body(body))
   construct_response(res)
 }
 
 #' @rdname responses
 #' @export
 response_500 <- function(body = "500: Server Error", headers = content_html(), status = 500L){
-  res <- list(status = as.integer(status), headers = headers, body = as.character(body))
+  res <- list(status = as.integer(status), headers = headers, body = convert_body(body))
   construct_response(res)
+}
+
+convert_body <- function(body) {
+  if(inherits(body, "AsIs"))
+    return(body)
+
+  if(is.character(body))
+    return(body)
+
+  if(is.factor(body) || inherits(body, "shiny.tag"))
+    return(as.character(body))
+
+  return(body)
 }
 
 #' Construct Response

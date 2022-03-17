@@ -32,3 +32,9 @@ content_csv <- function() {
 content_tsv <- function() {
   list("Content-Type" = "tab-separated-values")
 }
+
+#' @rdname content
+#' @export 
+content_protobuf <- function() {
+  list("Content-Type" = "application/x-protobuf")
+}

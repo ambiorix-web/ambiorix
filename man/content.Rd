@@ -7,6 +7,7 @@
 \alias{content_json}
 \alias{content_csv}
 \alias{content_tsv}
+\alias{content_protobuf}
 \title{Content Headers}
 \usage{
 content_html()
@@ -18,6 +19,8 @@ content_json()
 content_csv()
 
 content_tsv()
+
+content_protobuf()
 }
 \description{
 Convenient functions for more readable content type headers.

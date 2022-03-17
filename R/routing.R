@@ -330,7 +330,7 @@ Routing <- R6::R6Class(
           mid_res <- private$.middleware[[i]](request, res)
 
           if(is_response(mid_res))
-            res <- mid_res
+            return(mid_res)
         }
       }
       
