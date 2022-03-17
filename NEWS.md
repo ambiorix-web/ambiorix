@@ -35,6 +35,8 @@ No longer force render data as JSON if using an HTML template.
 `header` method.
 - Deprecate `set_header` in favour of `header` method.
 - Added family of `header_content*` methods to easily set `Content-Type`.
+- Request `HEADERS` is always a `list`.
+- Deprecate `set` and `get` on Response and Request.
 
 # ambiorix 2.0.0
 

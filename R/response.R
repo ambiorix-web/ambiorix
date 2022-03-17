@@ -272,6 +272,11 @@ Response <- R6::R6Class(
     set = function(name, value){
       assert_that(not_missing(name))
       assert_that(not_missing(value))
+      .Deprecated(
+        "",
+        package = "ambiorix",
+        "The environment is no longer locked, you may simply `res$name <- value`"
+      )
 
       name <- as_label(name)
       self[[name]] <- value
@@ -282,6 +287,11 @@ Response <- R6::R6Class(
 #' @param name Name of the variable to get.
     get = function(name){
       assert_that(not_missing(name))
+      .Deprecated(
+        "",
+        package = "ambiorix",
+        "The environment is no longer locked, you may simply `req$value"
+      )
 
       name <- as_label(name)
       self[[name]]

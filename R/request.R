@@ -79,7 +79,7 @@ Request <- R6::R6Class(
     #' @details Constructor
     #' @param req Original request (environment).
     initialize = function(req){
-      self$HEADERS <- req$HEADERS
+      self$HEADERS <- as.list(req$HEADERS)
       self$HTTP_ACCEPT <- req$HTTP_ACCEPT
       self$HTTP_ACCEPT_ENCODING <- req$HTTP_ACCEPT_ENCODING
       self$HTTP_ACCEPT_LANGUAGE <- req$HTTP_ACCEPT_LANGUAGE
@@ -167,6 +167,11 @@ Request <- R6::R6Class(
     set = function(name, value){
       assert_that(not_missing(name))
       assert_that(not_missing(value))
+      .Deprecated(
+        "",
+        package = "ambiorix",
+        "The environment is no longer locked, you may simply `res$name <- value`"
+      )
 
       name <- as_label(name)
       self[[name]] <- value
@@ -177,6 +182,11 @@ Request <- R6::R6Class(
     #' @param name Name of the variable to get.
     get = function(name){
       assert_that(not_missing(name))
+      .Deprecated(
+        "",
+        package = "ambiorix",
+        "The environment is no longer locked, you may simply `res$value"
+      )
 
       name <- as_label(name)
       self[[name]]
