@@ -30,10 +30,15 @@ Response class to generate responses sent from the server.
 \item \href{#method-tsv}{\code{Response$tsv()}}
 \item \href{#method-htmlwidget}{\code{Response$htmlwidget()}}
 \item \href{#method-md}{\code{Response$md()}}
-\item \href{#method-header}{\code{Response$header()}}
 \item \href{#method-print}{\code{Response$print()}}
 \item \href{#method-set}{\code{Response$set()}}
 \item \href{#method-get}{\code{Response$get()}}
+\item \href{#method-header}{\code{Response$header()}}
+\item \href{#method-header_content_json}{\code{Response$header_content_json()}}
+\item \href{#method-header_content_html}{\code{Response$header_content_html()}}
+\item \href{#method-header_content_plain}{\code{Response$header_content_plain()}}
+\item \href{#method-header_content_csv}{\code{Response$header_content_csv()}}
+\item \href{#method-header_content_tsv}{\code{Response$header_content_tsv()}}
 \item \href{#method-get_headers}{\code{Response$get_headers()}}
 \item \href{#method-get_header}{\code{Response$get_header()}}
 \item \href{#method-set_headers}{\code{Response$set_headers()}}
@@ -216,7 +221,7 @@ Render a template file.
 \if{latex}{\out{\hypertarget{method-json}{}}}
 \subsection{Method \code{json()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$json(body, headers = content_json(), status = NULL, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$json(body, headers = NULL, status = NULL, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -340,29 +345,6 @@ Render a markdown file.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-header"></a>}}
-\if{latex}{\out{\hypertarget{method-header}{}}}
-\subsection{Method \code{header()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$header(name, value)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name, value}}{Name and value of the header.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Add headers to the response.
-}
-
-\subsection{Returns}{
-Invisibly returns self.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-print"></a>}}
 \if{latex}{\out{\hypertarget{method-print}{}}}
 \subsection{Method \code{print()}}{
@@ -419,6 +401,109 @@ Invisible returns self.
 Get data
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-header"></a>}}
+\if{latex}{\out{\hypertarget{method-header}{}}}
+\subsection{Method \code{header()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$header(name, value)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name, value}}{Name and value of the header.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Add headers to the response.
+}
+
+\subsection{Returns}{
+Invisibly returns self.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-header_content_json"></a>}}
+\if{latex}{\out{\hypertarget{method-header_content_json}{}}}
+\subsection{Method \code{header_content_json()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$header_content_json()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Set Content Type to JSON
+}
+
+\subsection{Returns}{
+Invisibly returns self.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-header_content_html"></a>}}
+\if{latex}{\out{\hypertarget{method-header_content_html}{}}}
+\subsection{Method \code{header_content_html()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$header_content_html()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Set Content Type to HTML
+}
+
+\subsection{Returns}{
+Invisibly returns self.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-header_content_plain"></a>}}
+\if{latex}{\out{\hypertarget{method-header_content_plain}{}}}
+\subsection{Method \code{header_content_plain()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$header_content_plain()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Set Content Type to Plain Text
+}
+
+\subsection{Returns}{
+Invisibly returns self.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-header_content_csv"></a>}}
+\if{latex}{\out{\hypertarget{method-header_content_csv}{}}}
+\subsection{Method \code{header_content_csv()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$header_content_csv()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Set Content Type to CSV
+}
+
+\subsection{Returns}{
+Invisibly returns self.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-header_content_tsv"></a>}}
+\if{latex}{\out{\hypertarget{method-header_content_tsv}{}}}
+\subsection{Method \code{header_content_tsv()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$header_content_tsv()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Set Content Type to TSV
+}
+
+\subsection{Returns}{
+Invisibly returns self.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_headers"></a>}}

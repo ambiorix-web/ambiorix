@@ -31,6 +31,10 @@ No longer force render data as JSON if using an HTML template.
 - Catch error if no route is specified.
 - Do not force body to character fixes [#44](https://github.com/devOpifex/ambiorix/issues/44)
 - Do no force content type on response fixes [#45](https://github.com/devOpifex/ambiorix/issues/45)
+- Deprecate passing headers to `response` or `send`-like functions, use
+`header` method.
+- Deprecate `set_header` in favour of `header` method.
+- Added family of `header_content*` methods to easily set `Content-Type`.
 
 # ambiorix 2.0.0
 

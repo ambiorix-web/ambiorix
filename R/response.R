@@ -25,7 +25,7 @@
 #' @name responses
 #'
 #' @export
-response <- function(body, headers = NULL, status = 200L){
+response <- function(body, headers = list(), status = 200L){
   assert_that(not_missing(body))
   res <- list(status = as.integer(status), headers = headers, body = convert_body(body))
   construct_response(res)
@@ -33,14 +33,14 @@ response <- function(body, headers = NULL, status = 200L){
 
 #' @rdname responses
 #' @export
-response_404 <- function(body = "404: Not found", headers = NULL, status = 404L){
+response_404 <- function(body = "404: Not found", headers = list("Content-Type" = content_html()), status = 404L){
   res <- list(status = as.integer(status), headers = headers, body = convert_body(body))
   construct_response(res)
 }
 
 #' @rdname responses
 #' @export
-response_500 <- function(body = "500: Server Error", headers = NULL, status = 500L){
+response_500 <- function(body = "500: Server Error", headers = list("Content-Type" = content_html()), status = 500L){
   res <- list(status = as.integer(status), headers = headers, body = convert_body(body))
   construct_response(res)
 }
@@ -101,6 +101,7 @@ Response <- R6::R6Class(
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
     send = function(body, headers = NULL, status = NULL){
+      deprecated_headers(headers)
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = as.character(body))
     },
@@ -110,6 +111,7 @@ Response <- R6::R6Class(
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
     sendf = function(body, ..., headers = NULL, status = NULL){
+      deprecated_headers(headers)
       body <- sprintf(body, ...)
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = as.character(body))
@@ -119,6 +121,7 @@ Response <- R6::R6Class(
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
     text = function(body, headers = NULL, status = NULL){
+      deprecated_headers(headers)
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = as.character(body))
     },
@@ -127,6 +130,7 @@ Response <- R6::R6Class(
 #' @param headers HTTP headers to set.
 #' @param status Status of the response.
     send_file = function(file, headers = NULL, status = NULL){
+      deprecated_headers(headers)
       assert_that(not_missing(file))
       self$render(file, data = list(), status = private$.get_status(status), headers = headers)
     },
@@ -150,6 +154,7 @@ Response <- R6::R6Class(
       assert_that(not_missing(file))
       assert_that(has_file(file))
 
+      deprecated_headers(headers)
       file_content <- private$.render_template(file, data)
       headers <- private$.get_headers(headers)
 
@@ -160,7 +165,9 @@ Response <- R6::R6Class(
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
 #' @param ... Additional arguments passed to the serialiser.
-    json = function(body, headers = content_json(), status = NULL, ...){
+    json = function(body, headers = NULL, status = NULL, ...){
+      self$header_content_json()
+      deprecated_headers(headers)
       headers <- private$.get_headers(headers)
       response(serialise(body), headers = headers, status = private$.get_status(status))
     },
@@ -176,9 +183,9 @@ Response <- R6::R6Class(
       name <- sprintf("attachment;charset=UTF-8;filename=%s.csv", name)
 
       headers <- list(
-        "Content-Type" = "text/csv",
         "Content-Disposition" = name
       )
+      self$header_content_csv()
       headers <- private$.get_headers(headers)
 
       data <- readr::format_csv(data, ...)
@@ -196,9 +203,9 @@ Response <- R6::R6Class(
       name <- sprintf("attachment;charset=UTF-8;filename=%s.tsv", name)
 
       headers <- list(
-        "Content-Type" = "tab-separated-values",
         "Content-Disposition" = name
       )
+      self$header_content_tsv()
       headers <- private$.get_headers(headers)
 
       data <- readr::format_tsv(data, ...)
@@ -227,15 +234,8 @@ Response <- R6::R6Class(
 #' @param status Status of the response, if `NULL` uses `self$status`.
     md = function(file, data = list(), headers = NULL, status = NULL) {
       check_installed("commonmark")
+      deprecated_headers(headers)
       self$render(file, data, headers, status)
-    },
-#' @details Add headers to the response.
-#' @param name,value Name and value of the header.
-#' @return Invisibly returns self.
-    header = function(name, value){
-      name <- as_label(name)
-      private$.headers[[name]] <- value
-      invisible(self)
     },
 #' @details Print
     print = function(){
@@ -275,6 +275,44 @@ Response <- R6::R6Class(
       name <- as_label(name)
       self[[name]]
     },
+#' @details Add headers to the response.
+#' @param name,value Name and value of the header.
+#' @return Invisibly returns self.
+    header = function(name, value){
+      name <- as_label(name)
+      private$.headers[[name]] <- value
+      invisible(self)
+    },
+#' @details Set Content Type to JSON
+#' @return Invisibly returns self.
+    header_content_json = function(){
+      self$header("Content-Type", content_json())
+      invisible(self)
+    },
+  #' @details Set Content Type to HTML
+  #' @return Invisibly returns self.
+    header_content_html = function(){
+      self$header("Content-Type", content_html())
+      invisible(self)
+    },
+  #' @details Set Content Type to Plain Text
+  #' @return Invisibly returns self.
+    header_content_plain = function(){
+      self$header("Content-Type", content_plain())
+      invisible(self)
+    },
+  #' @details Set Content Type to CSV
+  #' @return Invisibly returns self.
+    header_content_csv = function(){
+      self$header("Content-Type", content_csv())
+      invisible(self)
+    },
+  #' @details Set Content Type to TSV
+  #' @return Invisibly returns self.
+    header_content_tsv = function(){
+      self$header("Content-Type", content_tsv())
+      invisible(self)
+    },
 #' @details Get headers
 #' Returns the list of headers currently set.
     get_headers = function() {
@@ -306,6 +344,12 @@ Response <- R6::R6Class(
     set_header = function(name, value) {
       assert_that(not_missing(name))
       assert_that(not_missing(value))
+
+      .Deprecated(
+        "header",
+        package = "ambiorix",
+        "This is deprecated, use the `header()` method."
+      )
 
       private$.headers[[name]] <- value
       invisible(self)
@@ -541,14 +585,13 @@ Response <- R6::R6Class(
     },
     .get_headers = function(headers = NULL){
       private$.render_cookies()
-      print(headers)
       heads <- private$.headers
 
       if(!is.null(headers))
         heads <- modifyList(heads, headers)
 
       if(is.null(heads[["Content-Type"]]))
-        heads <- modifyList(heads, content_html())
+        heads <- modifyList(heads, list("Content-Type" = content_html()))
 
       return(heads)
     },
@@ -649,4 +692,15 @@ convert_cookie_expires <- function(expires) {
   }
 
   return(expires)
+}
+
+deprecated_headers <- function(headers = NULL) {
+  if(is.null(headers))
+    return()
+
+  .Deprecated(
+    "header",
+    package = "ambiorix",
+    msg = "This is deprecated, pass headers with the `header()` method"
+  )
 }

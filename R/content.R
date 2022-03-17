@@ -2,39 +2,45 @@
 #' 
 #' Convenient functions for more readable content type headers.
 #' 
+#' @examples 
+#' list(
+#'  "Content-Type",
+#'  content_json()
+#' )
+#' 
 #' @name content
 #' 
 #' @export 
 content_html <- function() {
-  list('Content-Type' = 'text/html')
+  "text/html"
 }
 
 #' @rdname content
 #' @export 
 content_plain <- function() {
-  list('Content-Type' = 'text/plain')
+  "text/plain"
 }
 
 #' @rdname content
 #' @export 
 content_json <- function() {
-  list("Content-Type" = "application/json")
+  "application/json"
 }
 
 #' @rdname content
 #' @export 
 content_csv <- function() {
-  list("Content-Type" = "text/csv")
+  "text/csv"
 }
 
 #' @rdname content
 #' @export 
 content_tsv <- function() {
-  list("Content-Type" = "tab-separated-values")
+  "tab-separated-values"
 }
 
 #' @rdname content
 #' @export 
 content_protobuf <- function() {
-  list("Content-Type" = "application/x-protobuf")
+  "application/x-protobuf"
 }

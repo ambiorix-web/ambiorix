@@ -25,3 +25,10 @@ content_protobuf()
 \description{
 Convenient functions for more readable content type headers.
 }
+\examples{
+list(
+ "Content-Type",
+ content_json()
+)
+
+}
