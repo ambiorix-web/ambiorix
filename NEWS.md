@@ -37,6 +37,7 @@ No longer force render data as JSON if using an HTML template.
 - Added family of `header_content*` methods to easily set `Content-Type`.
 - Request `HEADERS` is always a `list`.
 - Deprecate `set` and `get` on Response and Request.
+- Deprecate `status` argument of responses, the active binding should be used instead.
 
 # ambiorix 2.0.0
 

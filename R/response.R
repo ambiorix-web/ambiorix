@@ -602,6 +602,12 @@ Response <- R6::R6Class(
       if(is.null(status))
         return(private$.status)
 
+      .Deprecated(
+        "status",
+        package = "ambiorix",
+        "Set the `status` of a response with the `status` active binding, e.g.: `res$status <- 400`"
+      )
+
       status
     },
     .get_headers = function(headers = NULL){
