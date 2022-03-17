@@ -45,6 +45,13 @@ response_500 <- function(body = "500: Server Error", headers = list("Content-Typ
   construct_response(res)
 }
 
+#' Convert Body
+#' 
+#' Body may only be a character vector of length 1.
+#' 
+#' @param body Body of response.
+#' 
+#' @keywords internal
 convert_body <- function(body) {
   if(inherits(body, "AsIs"))
     return(body)
@@ -55,8 +62,12 @@ convert_body <- function(body) {
   if(is.factor(body) || inherits(body, "shiny.tag"))
     return(as.character(body))
 
-  as.character(body) |> 
-    paste0(collapse = "")
+  body <- as.character(body)
+
+  if(length(body) == 1)
+    return(body)
+
+  paste0(body, collapse = "")
 }
 
 #' Construct Response
