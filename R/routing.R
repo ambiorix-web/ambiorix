@@ -301,6 +301,7 @@ Routing <- R6::R6Class(
     # howerver we also want to try to match extact paths
     # BEFORE dynamic once
     # e.g. /hello should be matched before /:id
+    # TODO https://github.com/devOpifex/ambiorix/issues/47
     reorder_routes = function() {
       if(length(private$.routes) < 3L)
         return()
