@@ -39,6 +39,8 @@ No longer force render data as JSON if using an HTML template.
 - Deprecate `set` and `get` on Response and Request.
 - Deprecate `status` argument of responses, the active binding should be used instead.
 - Partially improved route matching
+- Allow customising the path to pattern converter.
+- Added `get_header` method to the retrieve a specific method.
 
 # ambiorix 2.0.0
 

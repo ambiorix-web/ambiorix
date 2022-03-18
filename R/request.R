@@ -190,6 +190,12 @@ Request <- R6::R6Class(
 
       name <- as_label(name)
       self[[name]]
+    },
+    #' @details Get Header
+    #' @param name Name of the header
+    get_header = function(name){
+      assert_that(not_missing(name))
+      req$HEADERS[[name]]
     }
   ),
   private = list(

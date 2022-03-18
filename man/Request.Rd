@@ -86,6 +86,7 @@ A request.
 \item \href{#method-print}{\code{Request$print()}}
 \item \href{#method-set}{\code{Request$set()}}
 \item \href{#method-get}{\code{Request$get()}}
+\item \href{#method-get_header}{\code{Request$get_header()}}
 \item \href{#method-clone}{\code{Request$clone()}}
 }
 }
@@ -164,6 +165,26 @@ Invisible returns self.
 }
 \subsection{Details}{
 Get data
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_header"></a>}}
+\if{latex}{\out{\hypertarget{method-get_header}{}}}
+\subsection{Method \code{get_header()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Request$get_header(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Name of the header}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Get Header
 }
 
 }
