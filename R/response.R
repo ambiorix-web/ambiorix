@@ -62,12 +62,7 @@ convert_body <- function(body) {
   if(is.factor(body) || inherits(body, "shiny.tag"))
     return(as.character(body))
 
-  body <- as.character(body)
-
-  if(length(body) == 1)
-    return(body)
-
-  paste0(body, collapse = "")
+  return(body)
 }
 
 #' Construct Response
