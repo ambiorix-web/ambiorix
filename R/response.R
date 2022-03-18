@@ -56,6 +56,9 @@ convert_body <- function(body) {
   if(inherits(body, "AsIs"))
     return(body)
 
+  if(is.raw(body))
+    return(body)
+
   if(is.character(body) && length(body) == 1L)
     return(body)
 
@@ -229,7 +232,10 @@ Response <- R6::R6Class(
       # save and read
       tmp <- tempfile(fileext = ".html")
       htmlwidgets::saveWidget(widget, tmp, selfcontained = TRUE, ...)
-      headers <- private$.get_headers(headers)
+      on.exit({
+        unlink(tmp)
+      })
+      headers <- private$.get_headers()
 
       response(body = paste0(read_lines(tmp), "\n", collapse = ""), status = private$.get_status(status), headers = headers)
     },

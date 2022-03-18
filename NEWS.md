@@ -41,6 +41,7 @@ No longer force render data as JSON if using an HTML template.
 - Partially improved route matching
 - Allow customising the path to pattern converter.
 - Added `get_header` method to the retrieve a specific method.
+- Fix htmlwidget response.
 
 # ambiorix 2.0.0
 
