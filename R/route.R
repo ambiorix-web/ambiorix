@@ -39,7 +39,6 @@ Route <- R6::R6Class(
             name = ""
           )
         )
-
         return()
       }
 

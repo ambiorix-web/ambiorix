@@ -38,6 +38,7 @@ No longer force render data as JSON if using an HTML template.
 - Request `HEADERS` is always a `list`.
 - Deprecate `set` and `get` on Response and Request.
 - Deprecate `status` argument of responses, the active binding should be used instead.
+- Partially improved route matching
 
 # ambiorix 2.0.0
 

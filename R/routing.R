@@ -298,24 +298,28 @@ Routing <- R6::R6Class(
     # we reorder the routes before launching the app
     # we make sure the longest patterns are checked first
     # this makes sure /:id/x matches BEFORE /:id does
+    # howerver we also want to try to match extact paths
+    # BEFORE dynamic once
+    # e.g. /hello should be matched before /:id
     reorder_routes = function() {
       if(length(private$.routes) < 3L)
         return()
 
       indices <- 1:length(private$.routes)
-      pats <- sapply(private$.routes, \(route) {
-        route$route$pattern
+      pats <- lapply(private$.routes, \(route) {
+        data.frame(
+          pattern = route$route$pattern,
+          dynamic = route$route$dynamic
+        )
       })
-        
-      pats <- nchar(pats)
-
-      names(pats) <- indices
-      pats <- sort(pats, decreasing = TRUE)
-      order <- as.integer(names(pats))
+      df <- do.call(rbind, pats)
+      df$order <- 1:nrow(df)
+      df$nchar <- nchar(df$pattern)
+      df <- df[order(df$dynamic, -df$nchar), ]
       
-      new_routes <- as.list(c(1:length(order)))
-      for(i in 1:length(order)) {
-        new_routes[[i]] <- private$.routes[[order[i]]]
+      new_routes <- as.list(c(1:length(df)))
+      for(i in 1:length(df)) {
+        new_routes[[i]] <- private$.routes[[df$order[i]]]
       }
 
       private$.routes <- new_routes
@@ -325,7 +329,7 @@ Routing <- R6::R6Class(
       request <- Request$new(req)
       res <- Response$new()
 
-      if(length(private$.middleware) > 0){
+      if(length(private$.middleware) > 0L){
         for(i in 1:length(private$.middleware)) {
           mid_res <- private$.middleware[[i]](request, res)
 
