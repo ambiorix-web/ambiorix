@@ -249,8 +249,20 @@ Routing <- R6::R6Class(
         return(invisible(self))
       }
 
+      if(is_path_to_pattern(use) && private$.is_router){
+        .globals$errorLog$log(
+          "Cannot pass path to pattern converter to `Router`, only to `Ambiorix`"
+        )
+        return(invisible(self))
+      }
+
       if(is_cookie_parser(use)) {
         .globals$cookieParser <- use
+        return(invisible(self))
+      }
+
+      if(is_path_to_pattern(use)) {
+        .globals$pathToPattern <- use
         return(invisible(self))
       }
 
