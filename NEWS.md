@@ -44,6 +44,8 @@ No longer force render data as JSON if using an HTML template.
 - Fix htmlwidget response.
 - Added `image`, `png` and `jpeg` methods to `Response` to serve images.
 - Added `ggplot2` method to `Response`.
+- Allow `use` method on `Router` these will only be applied to paths
+of said router.
 
 # ambiorix 2.0.0
 

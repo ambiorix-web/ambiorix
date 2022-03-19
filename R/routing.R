@@ -240,6 +240,7 @@ Routing <- R6::R6Class(
       if(inherits(use, "Router")){
         private$.routes <- append(private$.routes, use$get_routes())
         private$.receivers <- append(private$.receivers, use$get_receivers())
+        private$.middleware <- append(private$.middleware, use$get_middleware())
       } 
       
       if(is_cookie_parser(use) && private$.is_router){
@@ -284,6 +285,7 @@ Routing <- R6::R6Class(
       # pass middleware
       if(is.function(use)) { 
         assert_that(is_handler(use))
+        attr(use, "basepath") <- sprintf("^%s", private$.basepath)
         private$.middleware <- append(private$.middleware, use)
         return(invisible(self))
       }
@@ -297,10 +299,14 @@ Routing <- R6::R6Class(
 #' @details Get the receivers
     get_receivers = function(){
       return(private$.receivers)
+    },
+#' @details Get the middleware
+    get_middleware = function(){
+      return(private$.middleware)
     }
   ),
   private = list(
-    .basepath = "",
+    .basepath = "/",
     .is_router = FALSE,
     .routes = list(),
     .static = list(),
@@ -344,7 +350,11 @@ Routing <- R6::R6Class(
 
       if(length(private$.middleware) > 0L){
         for(i in 1:length(private$.middleware)) {
-          mid_res <- private$.middleware[[i]](request, res)
+          mid_basepath <- attr(private$.middleware[[i]], "basepath")
+
+          mid_res <- NULL
+          if(grepl(mid_basepath, req$PATH_INFO))
+            mid_res <- private$.middleware[[i]](request, res)
 
           if(is_response(mid_res))
             return(mid_res)

@@ -66,6 +66,7 @@ if(interactive())
 \item \href{#method-use}{\code{Routing$use()}}
 \item \href{#method-get_routes}{\code{Routing$get_routes()}}
 \item \href{#method-get_receivers}{\code{Routing$get_receivers()}}
+\item \href{#method-get_middleware}{\code{Routing$get_middleware()}}
 \item \href{#method-clone}{\code{Routing$clone()}}
 }
 }
@@ -398,6 +399,19 @@ Get the routes
 
 \subsection{Details}{
 Get the receivers
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_middleware"></a>}}
+\if{latex}{\out{\hypertarget{method-get_middleware}{}}}
+\subsection{Method \code{get_middleware()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Routing$get_middleware()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Get the middleware
 }
 
 }

@@ -65,6 +65,7 @@ if(interactive())
 \item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="all">}\href{../../ambiorix/html/Routing.html#method-all}{\code{ambiorix::Routing$all()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="delete">}\href{../../ambiorix/html/Routing.html#method-delete}{\code{ambiorix::Routing$delete()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get">}\href{../../ambiorix/html/Routing.html#method-get}{\code{ambiorix::Routing$get()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_middleware">}\href{../../ambiorix/html/Routing.html#method-get_middleware}{\code{ambiorix::Routing$get_middleware()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers">}\href{../../ambiorix/html/Routing.html#method-get_receivers}{\code{ambiorix::Routing$get_receivers()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_routes">}\href{../../ambiorix/html/Routing.html#method-get_routes}{\code{ambiorix::Routing$get_routes()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="options">}\href{../../ambiorix/html/Routing.html#method-options}{\code{ambiorix::Routing$options()}}\out{</span>}
