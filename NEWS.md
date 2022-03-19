@@ -43,7 +43,7 @@ No longer force render data as JSON if using an HTML template.
 - Added `get_header` method to the retrieve a specific method.
 - Fix htmlwidget response.
 - Added `png` and `jpeg` methods to `Response` to serve images.
-- Added `plot_png` and `plot_jpeg` methods to `Response` to serve plots.
+- Added `ggplot2` method to `Response`.
 
 # ambiorix 2.0.0
 

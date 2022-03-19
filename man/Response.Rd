@@ -32,8 +32,7 @@ Response class to generate responses sent from the server.
 \item \href{#method-md}{\code{Response$md()}}
 \item \href{#method-png}{\code{Response$png()}}
 \item \href{#method-jpeg}{\code{Response$jpeg()}}
-\item \href{#method-plot_png}{\code{Response$plot_png()}}
-\item \href{#method-plot_jpeg}{\code{Response$plot_jpeg()}}
+\item \href{#method-ggplot2}{\code{Response$ggplot2()}}
 \item \href{#method-print}{\code{Response$print()}}
 \item \href{#method-set}{\code{Response$set()}}
 \item \href{#method-get}{\code{Response$get()}}
@@ -389,46 +388,26 @@ Send a jpeg file
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_png"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_png}{}}}
-\subsection{Method \code{plot_png()}}{
+\if{html}{\out{<a id="method-ggplot2"></a>}}
+\if{latex}{\out{\hypertarget{method-ggplot2}{}}}
+\subsection{Method \code{ggplot2()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$plot_png(plot, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$ggplot2(plot, ..., type = c("png", "jpeg"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{plot}}{Plot object.}
+\item{\code{plot}}{Ggplot2 plot object.}
 
-\item{\code{...}}{Passed to \code{\link[grDevices:png]{grDevices::png()}}}
+\item{\code{...}}{Passed to \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}}
+
+\item{\code{type}}{Type of image to save.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-Plot as png
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_jpeg"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_jpeg}{}}}
-\subsection{Method \code{plot_jpeg()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$plot_jpeg(plot, ...)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{plot}}{Plot object.}
-
-\item{\code{...}}{Passed to \code{\link[grDevices:png]{grDevices::jpeg()}}}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Plot as jpeg
+Ggplot2
 }
 
 }

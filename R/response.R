@@ -259,31 +259,23 @@ Response <- R6::R6Class(
     jpeg = function(file) {
       private$.send_image(file, "jpeg")
     },
-#' @details Plot as png
-#' @param plot Plot object.
-#' @param ... Passed to [grDevices::png()]
-    plot_png = function(plot, ...) {
-      check_installed("grDevices")
-      temp <- tempfile(fileext = ".png")
-      grDevices::png(temp, ...)
-      dev.off()
-      on.exit({
-        unlink(temp)
-      }, add = TRUE)
-      private$.send_image(temp, "png")
-    },
-#' @details Plot as jpeg
-#' @param plot Plot object.
-#' @param ... Passed to [grDevices::jpeg()]
-    plot_jpeg = function(plot, ...) {
-      check_installed("grDevices")
-      temp <- tempfile(fileext = ".jpeg")
-      grDevices::jpeg(temp, ...)
-      dev.off()
-      on.exit({
-        unlink(temp)
-      }, add = TRUE)
-      private$.send_image(temp, "jpeg")
+#' @details Ggplot2
+#' @param plot Ggplot2 plot object.
+#' @param type Type of image to save.
+#' @param ... Passed to [ggplot2::ggsave()]
+    ggplot2 = function(plot, ..., type = c("png", "jpeg")) {
+      assert_that(not_missing(plot))
+      check_installed("ggplot2")
+
+      type <- match.arg(type)
+      ext <- sprintf(".%s", type)
+      temp <- tempfile(fileext = ext)
+      ggplot2::ggsave(
+        temp,
+        plot, 
+        ...
+      ) 
+      private$.send_image(temp, type, clean = TRUE)
     },
 #' @details Print
     print = function(){
@@ -715,11 +707,17 @@ Response <- R6::R6Class(
         )
       }
     },
-    .send_image = function(file, type = c("png", "jpeg")) {
+    .send_image = function(file, type = c("png", "jpeg"), clean = FALSE) {
       assert_that(not_missing(file))
 
       if(grepl("http", file))
         stop("Must be a local file", call. = FALSE)
+
+      if(clean) {
+        on.exit({
+          unlink(file)
+        })
+      }
 
       type <- match.arg(type)
       type <- sprintf("image/%s", type)
