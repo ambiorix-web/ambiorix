@@ -169,7 +169,7 @@ Ambiorix <- R6::R6Class(
         )
       )
 
-      url <- sprintf("http://localhost:%s", private$.port)
+      url <- sprintf("http://localhost:%s", port)
       
       .globals$successLog$log("Listening on", url)
 
