@@ -87,6 +87,8 @@ A request.
 \item \href{#method-set}{\code{Request$set()}}
 \item \href{#method-get}{\code{Request$get()}}
 \item \href{#method-get_header}{\code{Request$get_header()}}
+\item \href{#method-parse_multipart}{\code{Request$parse_multipart()}}
+\item \href{#method-parse_json}{\code{Request$parse_json()}}
 \item \href{#method-clone}{\code{Request$clone()}}
 }
 }
@@ -185,6 +187,32 @@ Get data
 }
 \subsection{Details}{
 Get Header
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-parse_multipart"></a>}}
+\if{latex}{\out{\hypertarget{method-parse_multipart}{}}}
+\subsection{Method \code{parse_multipart()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Request$parse_multipart()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Parse Multipart encoded data
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-parse_json"></a>}}
+\if{latex}{\out{\hypertarget{method-parse_json}{}}}
+\subsection{Method \code{parse_json()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Request$parse_json()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Parse JSON encoded data
 }
 
 }

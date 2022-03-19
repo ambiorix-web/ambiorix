@@ -42,13 +42,14 @@ Routing <- R6::R6Class(
       assert_that(not_missing(handler))
       assert_that(is_handler(handler))
 
-      private$.routes[[uuid()]] <- list(
+      r <- list(
         route = Route$new(private$.make_path(path)), 
         path = path, 
         fun = handler, 
         method = "GET",
         error = error %error% self$error
       )
+      private$.routes <- append(private$.routes, list(r))
 
       invisible(self)
     },
@@ -65,13 +66,14 @@ Routing <- R6::R6Class(
       assert_that(not_missing(handler))
       assert_that(is_handler(handler))
 
-      private$.routes[[uuid()]] <- list(
+      r <- list(
         route = Route$new(private$.make_path(path)), 
         path = path, 
         fun = handler, 
         method = "PUT",
         error = error %error% self$error
       )
+      private$.routes <- append(private$.routes, list(r))
 
       invisible(self)
     },
@@ -88,13 +90,14 @@ Routing <- R6::R6Class(
       assert_that(not_missing(handler))
       assert_that(is_handler(handler))
 
-      private$.routes[[uuid()]] <- list(
+      r <- list(
         route = Route$new(private$.make_path(path)), 
         path = path, 
         fun = handler, 
         method = "PATCH",
         error = error %error% self$error
       )
+      private$.routes <- append(private$.routes, list(r))
 
       invisible(self)
     },
@@ -111,13 +114,14 @@ Routing <- R6::R6Class(
       assert_that(not_missing(handler))
       assert_that(is_handler(handler))
 
-      private$.routes[[uuid()]] <- list(
+      r <- list(
         route = Route$new(private$.make_path(path)), 
         path = path, 
         fun = handler, 
         method = "DELETE",
         error = error %error% self$error
       )
+      private$.routes <- append(private$.routes, list(r))
 
       invisible(self)
     },
@@ -134,13 +138,14 @@ Routing <- R6::R6Class(
       assert_that(not_missing(handler))
       assert_that(is_handler(handler))
 
-      private$.routes[[uuid()]] <- list(
+      r <- list(
         route = Route$new(private$.make_path(path)), 
         path = path, 
         fun = handler, 
         method = "POST",
         error = error %error% self$error
       )
+      private$.routes <- append(private$.routes, list(r))
 
       invisible(self)
     },
@@ -157,13 +162,14 @@ Routing <- R6::R6Class(
       assert_that(not_missing(handler))
       assert_that(is_handler(handler))
 
-      private$.routes[[uuid()]] <- list(
+      r <- list(
         route = Route$new(private$.make_path(path)), 
         path = path,
         fun = handler,
         method = "OPTIONS",
         error = error %error% self$error
       )
+      private$.routes <- append(private$.routes, list(r))
 
       invisible(self)
     },
@@ -180,13 +186,14 @@ Routing <- R6::R6Class(
       assert_that(not_missing(handler))
       assert_that(is_handler(handler))
 
-      private$.routes[[uuid()]] <- list(
+      r <- list(
         route = Route$new(private$.make_path(path)), 
         path = path, 
         fun = handler, 
         method = c("GET", "POST", "PUT", "DELETE", "PATCH"),
         error = error %error% self$error
       )
+      private$.routes <- append(private$.routes, list(r))
       
       invisible(self)
     },
@@ -211,7 +218,11 @@ Routing <- R6::R6Class(
 #' if(interactive())
 #'  app$start()
     receive = function(name, handler){
-      private$.receivers[[uuid()]] <- WebsocketHandler$new(name, handler)
+      private$.receivers <- append(
+        private$.receivers,
+        list(WebsocketHandler$new(name, handler))
+      )
+
       invisible(self)
     },
 #' @details Print
@@ -336,8 +347,8 @@ Routing <- R6::R6Class(
       df$nchar <- nchar(df$pattern)
       df <- df[order(df$dynamic, -df$nchar), ]
       
-      new_routes <- as.list(c(1:length(df)))
-      for(i in 1:length(df)) {
+      new_routes <- as.list(c(1:nrow(df)))
+      for(i in 1:nrow(df)) {
         new_routes[[i]] <- private$.routes[[df$order[i]]]
       }
 

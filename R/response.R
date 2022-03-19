@@ -314,7 +314,7 @@ Response <- R6::R6Class(
       .Deprecated(
         "",
         package = "ambiorix",
-        "The environment is no longer locked, you may simply `res$name <- value`"
+        "Deprecated. The environment is no longer locked, you may simply `res$name <- value`"
       )
 
       name <- as_label(name)
@@ -329,7 +329,7 @@ Response <- R6::R6Class(
       .Deprecated(
         "",
         package = "ambiorix",
-        "The environment is no longer locked, you may simply `req$value"
+        "Deprecated. The environment is no longer locked, you may simply `req$value"
       )
 
       name <- as_label(name)
@@ -408,7 +408,7 @@ Response <- R6::R6Class(
       .Deprecated(
         "header",
         package = "ambiorix",
-        "This is deprecated, use the `header()` method."
+        "Deprecated. This is deprecated, use the `header()` method."
       )
 
       private$.headers[[name]] <- value
@@ -641,12 +641,6 @@ Response <- R6::R6Class(
       if(is.null(status))
         return(private$.status)
 
-      .Deprecated(
-        "status",
-        package = "ambiorix",
-        "Set the `status` of a response with the `status` active binding, e.g.: `res$status <- 400`"
-      )
-
       status
     },
     .get_headers = function(headers = NULL){
@@ -794,6 +788,6 @@ deprecated_headers <- function(headers = NULL) {
   .Deprecated(
     "header",
     package = "ambiorix",
-    msg = "This is deprecated, pass headers with the `header()` method"
+    msg = "Deprecated. Pass headers with the `header()` method."
   )
 }

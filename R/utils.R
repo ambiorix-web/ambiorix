@@ -1,13 +1,3 @@
-alphanum <- c(1:9, letters)
-
-#' Generate Random UUID
-#' @noRd
-#' @keywords internal
-uuid <- function(){
-  x <- sample(alphanum, 20)
-  paste0(x, collapse = "")
-}
-
 #' Render HTML
 #'
 #' Evaluates a string to collect [htmltools::tags], evaluates,

@@ -170,7 +170,7 @@ Request <- R6::R6Class(
       .Deprecated(
         "",
         package = "ambiorix",
-        "The environment is no longer locked, you may simply `res$name <- value`"
+        "Deprecated. The environment is no longer locked, you may simply `res$name <- value`"
       )
 
       name <- as_label(name)
@@ -185,7 +185,7 @@ Request <- R6::R6Class(
       .Deprecated(
         "",
         package = "ambiorix",
-        "The environment is no longer locked, you may simply `res$value"
+        "Deprecated. The environment is no longer locked, you may simply `res$value"
       )
 
       name <- as_label(name)
@@ -196,6 +196,14 @@ Request <- R6::R6Class(
     get_header = function(name){
       assert_that(not_missing(name))
       req$HEADERS[[name]]
+    },
+    #' @details Parse Multipart encoded data
+    parse_multipart = function() {
+      parse_multipart(self)
+    },
+    #' @details Parse JSON encoded data
+    parse_json = function() {
+      parse_json(self)
     }
   ),
   private = list(

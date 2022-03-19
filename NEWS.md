@@ -46,6 +46,7 @@ No longer force render data as JSON if using an HTML template.
 - Added `ggplot2` method to `Response`.
 - Allow `use` method on `Router` these will only be applied to paths
 of said router.
+- Added `parse_*` methods to the `Request`.
 
 # ambiorix 2.0.0
 
