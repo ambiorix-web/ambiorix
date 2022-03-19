@@ -252,12 +252,36 @@ Response <- R6::R6Class(
 #' @details Send a png file
 #' @param file Path to local file.
     png = function(file){
-      send_image(self, file, "png")
+      private$.send_image(file, "png")
     },
 #' @details Send a jpeg file
 #' @param file Path to local file.
     jpeg = function(file) {
-      send_image(self, file, "jpeg")
+      private$.send_image(file, "jpeg")
+    },
+#' @details Plot as png
+#' @param plot Plot object.
+    plot_png = function(plot) {
+      check_installed("grDevices")
+      temp <- tempfile(fileext = ".png")
+      grDevices::png(temp)
+      dev.off()
+      on.exit({
+        unlink(temp)
+      }, add = TRUE)
+      private$.send_image(temp, "png")
+    },
+#' @details Plot as jpeg
+#' @param plot Plot object.
+    plot_jpeg = function(plot) {
+      check_installed("grDevices")
+      temp <- tempfile(fileext = ".jpeg")
+      grDevices::jpeg(temp)
+      dev.off()
+      on.exit({
+        unlink(temp)
+      }, add = TRUE)
+      private$.send_image(temp, "jpeg")
     },
 #' @details Print
     print = function(){
@@ -688,6 +712,27 @@ Response <- R6::R6Class(
           as.list(cookie)
         )
       }
+    },
+    .send_image = function(file, type = c("png", "jpeg")) {
+      assert_that(not_missing(file))
+
+      if(grepl("http", file))
+        stop("Must be a local file", call. = FALSE)
+
+      type <- match.arg(type)
+      type <- sprintf("image/%s", type)
+
+      size <- file.info(file)$size
+      con <- file(file, "rb")
+      on.exit({
+        close(con)
+      }, add = TRUE)
+
+      raw <- readBin(con, raw(), size)
+
+      self$header("Content-Length", size)
+      self$header("Content-Type", type)
+      self$send(raw)
     }
   )
 )

@@ -32,6 +32,8 @@ Response class to generate responses sent from the server.
 \item \href{#method-md}{\code{Response$md()}}
 \item \href{#method-png}{\code{Response$png()}}
 \item \href{#method-jpeg}{\code{Response$jpeg()}}
+\item \href{#method-plot_png}{\code{Response$plot_png()}}
+\item \href{#method-plot_jpeg}{\code{Response$plot_jpeg()}}
 \item \href{#method-print}{\code{Response$print()}}
 \item \href{#method-set}{\code{Response$set()}}
 \item \href{#method-get}{\code{Response$get()}}
@@ -383,6 +385,46 @@ Send a png file
 }
 \subsection{Details}{
 Send a jpeg file
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-plot_png"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_png}{}}}
+\subsection{Method \code{plot_png()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$plot_png(plot)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{plot}}{Plot object.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Plot as png
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-plot_jpeg"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_jpeg}{}}}
+\subsection{Method \code{plot_jpeg()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$plot_jpeg(plot)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{plot}}{Plot object.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Plot as jpeg
 }
 
 }

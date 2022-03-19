@@ -33,6 +33,7 @@ Imports:
 Suggests:
   mime,
   readr,
+  grDevices,
   htmltools,
   commonmark,
   htmlwidgets
