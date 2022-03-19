@@ -393,13 +393,15 @@ Send a jpeg file
 \if{latex}{\out{\hypertarget{method-plot_png}{}}}
 \subsection{Method \code{plot_png()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$plot_png(plot)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$plot_png(plot, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{plot}}{Plot object.}
+
+\item{\code{...}}{Passed to \code{\link[grDevices:png]{grDevices::png()}}}
 }
 \if{html}{\out{</div>}}
 }
@@ -413,13 +415,15 @@ Plot as png
 \if{latex}{\out{\hypertarget{method-plot_jpeg}{}}}
 \subsection{Method \code{plot_jpeg()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$plot_jpeg(plot)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$plot_jpeg(plot, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{plot}}{Plot object.}
+
+\item{\code{...}}{Passed to \code{\link[grDevices:png]{grDevices::jpeg()}}}
 }
 \if{html}{\out{</div>}}
 }

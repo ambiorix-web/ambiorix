@@ -261,10 +261,11 @@ Response <- R6::R6Class(
     },
 #' @details Plot as png
 #' @param plot Plot object.
-    plot_png = function(plot) {
+#' @param ... Passed to [grDevices::png()]
+    plot_png = function(plot, ...) {
       check_installed("grDevices")
       temp <- tempfile(fileext = ".png")
-      grDevices::png(temp)
+      grDevices::png(temp, ...)
       dev.off()
       on.exit({
         unlink(temp)
@@ -273,10 +274,11 @@ Response <- R6::R6Class(
     },
 #' @details Plot as jpeg
 #' @param plot Plot object.
-    plot_jpeg = function(plot) {
+#' @param ... Passed to [grDevices::jpeg()]
+    plot_jpeg = function(plot, ...) {
       check_installed("grDevices")
       temp <- tempfile(fileext = ".jpeg")
-      grDevices::jpeg(temp)
+      grDevices::jpeg(temp, ...)
       dev.off()
       on.exit({
         unlink(temp)
