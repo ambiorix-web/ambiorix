@@ -32,6 +32,7 @@ Response class to generate responses sent from the server.
 \item \href{#method-md}{\code{Response$md()}}
 \item \href{#method-png}{\code{Response$png()}}
 \item \href{#method-jpeg}{\code{Response$jpeg()}}
+\item \href{#method-image}{\code{Response$image()}}
 \item \href{#method-ggplot2}{\code{Response$ggplot2()}}
 \item \href{#method-print}{\code{Response$print()}}
 \item \href{#method-set}{\code{Response$set()}}
@@ -384,6 +385,28 @@ Send a png file
 }
 \subsection{Details}{
 Send a jpeg file
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-image"></a>}}
+\if{latex}{\out{\hypertarget{method-image}{}}}
+\subsection{Method \code{image()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$image(file)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{file}}{Path to local file.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Send an image
+Similar to \code{png} and \code{jpeg} methods but guesses correct method
+based on file extension.
 }
 
 }

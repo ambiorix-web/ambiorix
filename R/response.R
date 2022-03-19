@@ -259,6 +259,16 @@ Response <- R6::R6Class(
     jpeg = function(file) {
       private$.send_image(file, "jpeg")
     },
+#' @details Send an image
+#' Similar to `png` and `jpeg` methods but guesses correct method 
+#' based on file extension.
+#' @param file Path to local file.
+    image = function(file) {
+      type <- tools::file_ext(file)
+      if(!type %in% c("png", "jpeg"))
+        stop("Only accepts .png and .jpeg files")
+      private$.send_image(file, type)
+    },
 #' @details Ggplot2
 #' @param plot Ggplot2 plot object.
 #' @param type Type of image to save.
