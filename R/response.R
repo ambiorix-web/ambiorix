@@ -112,7 +112,7 @@ Response <- R6::R6Class(
     send = function(body, headers = NULL, status = NULL){
       deprecated_headers(headers)
       headers <- private$.get_headers(headers)
-      response(status = private$.get_status(status), headers = headers, body = as.character(body))
+      response(status = private$.get_status(status), headers = headers, body = convert_body(body))
     },
 #' @details Send a plain HTML response, pre-processed with sprintf.
 #' @param body Body of the response.
@@ -123,7 +123,7 @@ Response <- R6::R6Class(
       deprecated_headers(headers)
       body <- sprintf(body, ...)
       headers <- private$.get_headers(headers)
-      response(status = private$.get_status(status), headers = headers, body = as.character(body))
+      response(status = private$.get_status(status), headers = headers, body = convert_body(body))
     },
 #' @details Send a plain text response.
 #' @param body Body of the response.
@@ -132,7 +132,7 @@ Response <- R6::R6Class(
     text = function(body, headers = NULL, status = NULL){
       deprecated_headers(headers)
       headers <- private$.get_headers(headers)
-      response(status = private$.get_status(status), headers = headers, body = as.character(body))
+      response(status = private$.get_status(status), headers = headers, body = convert_body(body))
     },
 #' @details Send a file.
 #' @param file File to send.
@@ -248,6 +248,16 @@ Response <- R6::R6Class(
       check_installed("commonmark")
       deprecated_headers(headers)
       self$render(file, data, headers, status)
+    },
+#' @details Send a png file
+#' @param file Path to local file.
+    png = function(file){
+      send_image(self, file, "png")
+    },
+#' @details Send a jpeg file
+#' @param file Path to local file.
+    jpeg = function(file) {
+      send_image(self, file, "jpeg")
     },
 #' @details Print
     print = function(){

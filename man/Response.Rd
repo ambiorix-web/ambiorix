@@ -30,6 +30,8 @@ Response class to generate responses sent from the server.
 \item \href{#method-tsv}{\code{Response$tsv()}}
 \item \href{#method-htmlwidget}{\code{Response$htmlwidget()}}
 \item \href{#method-md}{\code{Response$md()}}
+\item \href{#method-png}{\code{Response$png()}}
+\item \href{#method-jpeg}{\code{Response$jpeg()}}
 \item \href{#method-print}{\code{Response$print()}}
 \item \href{#method-set}{\code{Response$set()}}
 \item \href{#method-get}{\code{Response$get()}}
@@ -341,6 +343,46 @@ Sends an htmlwidget.
 }
 \subsection{Details}{
 Render a markdown file.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-png"></a>}}
+\if{latex}{\out{\hypertarget{method-png}{}}}
+\subsection{Method \code{png()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$png(file)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{file}}{Path to local file.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Send a png file
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-jpeg"></a>}}
+\if{latex}{\out{\hypertarget{method-jpeg}{}}}
+\subsection{Method \code{jpeg()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Response$jpeg(file)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{file}}{Path to local file.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Send a jpeg file
 }
 
 }

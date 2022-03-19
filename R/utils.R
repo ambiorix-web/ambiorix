@@ -141,3 +141,35 @@ read_lines <- function(...) {
     readLines(...)
   )
 }
+
+#' Send an image
+#' 
+#' Sends an image as response
+#' 
+#' @param self A [Response]
+#' @param file path to a local file.
+#' @param type Image type
+#' 
+#' @keywords internal
+send_image <- function(self, file, type = c("png", "jpeg")) {
+  assert_that(not_missing(self))
+  assert_that(not_missing(file))
+
+  if(grepl("http", file))
+    stop("Must be a local file", call. = FALSE)
+
+  type <- match.arg(type)
+  type <- sprintf("image/%s", type)
+
+  size <- file.info(file)$size
+  con <- file(file, "rb")
+  on.exit({
+    close(con)
+  }, add = TRUE)
+
+  raw <- readBin(con, raw(), size)
+
+  self$header("Content-Length", size)
+  self$header("Content-Type", type)
+  self$send(raw)
+}
