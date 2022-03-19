@@ -42,7 +42,7 @@ No longer force render data as JSON if using an HTML template.
 - Allow customising the path to pattern converter.
 - Added `get_header` method to the retrieve a specific method.
 - Fix htmlwidget response.
-- Added `png` and `jpeg` methods to `Response` to serve images.
+- Added `image`, `png` and `jpeg` methods to `Response` to serve images.
 - Added `ggplot2` method to `Response`.
 
 # ambiorix 2.0.0
