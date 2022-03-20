@@ -111,6 +111,7 @@ Response <- R6::R6Class(
 #' @param status Status of the response, if `NULL` uses `self$status`.
     send = function(body, headers = NULL, status = NULL){
       deprecated_headers(headers)
+      deprecated_status(status)
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = convert_body(body))
     },
@@ -121,6 +122,7 @@ Response <- R6::R6Class(
 #' @param status Status of the response, if `NULL` uses `self$status`.
     sendf = function(body, ..., headers = NULL, status = NULL){
       deprecated_headers(headers)
+      deprecated_status(status)
       body <- sprintf(body, ...)
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = convert_body(body))
@@ -131,6 +133,7 @@ Response <- R6::R6Class(
 #' @param status Status of the response, if `NULL` uses `self$status`.
     text = function(body, headers = NULL, status = NULL){
       deprecated_headers(headers)
+      deprecated_status(status)
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = convert_body(body))
     },
@@ -140,6 +143,7 @@ Response <- R6::R6Class(
 #' @param status Status of the response.
     send_file = function(file, headers = NULL, status = NULL){
       deprecated_headers(headers)
+      deprecated_status(status)
       assert_that(not_missing(file))
       self$render(file, data = list(), status = private$.get_status(status), headers = headers)
     },
@@ -147,9 +151,14 @@ Response <- R6::R6Class(
 #' @param path Path or URL to redirect to.
 #' @param status Status of the response, if `NULL` uses `self$status`.
     redirect = function(path, status = NULL){
+      deprecated_status(status)
       status <- private$.get_status(status)
-      if(!grepl("^3", status))
+      if(!grepl("^3", status)) {
         status <- 302L
+        .globals$errorLog$log(
+          "Redirect should start with `3`, e.g.: `res$status <- 302`"
+        )
+      }
 
       headers <- private$.get_headers(list(Location = path))
       response(status = status, headers = headers, body = "")
@@ -162,7 +171,9 @@ Response <- R6::R6Class(
     render = function(file, data = list(), headers = NULL, status = NULL){
       assert_that(not_missing(file))
       assert_that(has_file(file))
+      status <- private$.get_status(status)
 
+      deprecated_status(status)
       deprecated_headers(headers)
       file_content <- private$.render_template(file, data)
       headers <- private$.get_headers(headers)
@@ -177,6 +188,7 @@ Response <- R6::R6Class(
     json = function(body, headers = NULL, status = NULL, ...){
       self$header_content_json()
       deprecated_headers(headers)
+      deprecated_status(status)
       headers <- private$.get_headers(headers)
       response(serialise(body), headers = headers, status = private$.get_status(status))
     },
@@ -188,6 +200,7 @@ Response <- R6::R6Class(
     csv = function(data, name = "data", status = NULL, ...){
       assert_that(not_missing(data))
       check_installed("readr")
+      deprecated_status(status)
 
       name <- sprintf("attachment;charset=UTF-8;filename=%s.csv", name)
 
@@ -208,6 +221,7 @@ Response <- R6::R6Class(
     tsv = function(data, name = "data", status = NULL, ...){
       assert_that(not_missing(data))
       check_installed("readr")
+      deprecated_status(status)
 
       name <- sprintf("attachment;charset=UTF-8;filename=%s.tsv", name)
 
@@ -228,6 +242,7 @@ Response <- R6::R6Class(
       check_installed("htmlwidgets")
       if(!inherits(widget, "htmlwidget"))
         stop("This is not an htmlwidget", call. = FALSE)
+      deprecated_status(status)
 
       # save and read
       tmp <- tempfile(fileext = ".html")
@@ -247,6 +262,7 @@ Response <- R6::R6Class(
     md = function(file, data = list(), headers = NULL, status = NULL) {
       check_installed("commonmark")
       deprecated_headers(headers)
+      deprecated_status(status)
       self$render(file, data, headers, status)
     },
 #' @details Send a png file
@@ -568,7 +584,7 @@ Response <- R6::R6Class(
       if(missing(value))
         return(private$.status)
 
-      private$.status <- value
+      private$.status <- as.integer(value)
     },
     headers = function(value) {
       if(missing(value))
@@ -789,5 +805,16 @@ deprecated_headers <- function(headers = NULL) {
     "header",
     package = "ambiorix",
     msg = "Deprecated. Pass headers with the `header()` method."
+  )
+}
+
+deprecated_status <- function(status = NULL) {
+  if(is.null(status))
+    return()
+
+  .Deprecated(
+    "status",
+    package = "ambiorix",
+    msg = "Deprecated. Pass status to the `status` binding, e.g.: `res$status <- 404L`."
   )
 }

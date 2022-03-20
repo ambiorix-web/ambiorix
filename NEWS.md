@@ -36,9 +36,11 @@ No longer force render data as JSON if using an HTML template.
 - Deprecate `set_header` in favour of `header` method.
 - Added family of `header_content*` methods to easily set `Content-Type`.
 - Request `HEADERS` is always a `list`.
-- Deprecate `set` and `get` on Response and Request.
-- Deprecate `status` argument of responses, the active binding should be used instead.
-- Partially improved route matching
+- Deprecate `set` and `get` on Response and Request, this is no longer 
+needed the environments are no longer locked; `res$myVar <- 2L`.
+- Deprecate `status` argument of responses, the active binding should 
+be used instead; `res$status <- 404L`.
+- Partially improved route matching.
 - Allow customising the path to pattern converter.
 - Added `get_header` method to the retrieve a specific method.
 - Fix htmlwidget response.
