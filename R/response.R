@@ -171,10 +171,11 @@ Response <- R6::R6Class(
     render = function(file, data = list(), headers = NULL, status = NULL){
       assert_that(not_missing(file))
       assert_that(has_file(file))
-      status <- private$.get_status(status)
-
       deprecated_status(status)
       deprecated_headers(headers)
+
+      status <- private$.get_status(status)
+
       file_content <- private$.render_template(file, data)
       headers <- private$.get_headers(headers)
 
