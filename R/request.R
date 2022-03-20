@@ -202,8 +202,9 @@ Request <- R6::R6Class(
       parse_multipart(self)
     },
     #' @details Parse JSON encoded data
+    #' @param ... Arguments passed to [jsonlite::fromJSON()].
     parse_json = function() {
-      parse_json(self)
+      parse_json(self, ...)
     }
   ),
   private = list(

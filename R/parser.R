@@ -13,10 +13,9 @@
 #' 
 #' @name parsers
 #' @export 
-parse_multipart <- function(req, ...){
+parse_multipart <- function(req){
   check_installed("mime")  
-
-  mime::parse_multipart(req$body, ...)
+  mime::parse_multipart(req$body)
 }
 
 #' @export 

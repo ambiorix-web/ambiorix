@@ -6,7 +6,7 @@
 \alias{parse_json}
 \title{Parsers}
 \usage{
-parse_multipart(req, ...)
+parse_multipart(req)
 
 parse_json(req, ...)
 }

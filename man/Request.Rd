@@ -211,6 +211,13 @@ Parse Multipart encoded data
 \if{html}{\out{<div class="r">}}\preformatted{Request$parse_json()}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Arguments passed to \code{\link[jsonlite:fromJSON]{jsonlite::fromJSON()}}.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Details}{
 Parse JSON encoded data
 }
