@@ -145,7 +145,7 @@ Response <- R6::R6Class(
       deprecated_headers(headers)
       deprecated_status(status)
       assert_that(not_missing(file))
-      self$render(file, data = list(), status = private$.get_status(status), headers = headers)
+      self$render(file, data = list(), status = status, headers = headers)
     },
 #' @details Redirect to a path or URL.
 #' @param path Path or URL to redirect to.
