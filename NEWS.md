@@ -50,6 +50,7 @@ be used instead; `res$status <- 404L`.
 of said router.
 - Added `parse_*` methods to the `Request`.
 - Cookie `path` defaults to `/`.
+- Fix default serialiser
 
 # ambiorix 2.0.0
 

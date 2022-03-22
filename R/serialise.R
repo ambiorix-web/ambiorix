@@ -8,10 +8,6 @@
 #' @noRd 
 #' @keywords internal
 default_serialiser <- function(data, ...){
-  
-  # don't serialise scalar
-  if(length(data) == 1) return(data)
-  
   jsonlite::toJSON(data, auto_unbox = TRUE, dataframe = "rows", ...)
 }
 
