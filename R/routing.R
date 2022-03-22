@@ -346,7 +346,7 @@ Routing <- R6::R6Class(
       df$order <- 1:nrow(df)
       df$nchar <- nchar(df$pattern)
       df <- df[order(df$dynamic, -df$nchar), ]
-      
+
       new_routes <- as.list(c(1:nrow(df)))
       for(i in 1:nrow(df)) {
         new_routes[[i]] <- private$.routes[[df$order[i]]]

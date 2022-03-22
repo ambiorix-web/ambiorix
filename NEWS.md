@@ -49,6 +49,7 @@ be used instead; `res$status <- 404L`.
 - Allow `use` method on `Router` these will only be applied to paths
 of said router.
 - Added `parse_*` methods to the `Request`.
+- Cookie `path` defaults to `/`.
 
 # ambiorix 2.0.0
 

@@ -526,7 +526,7 @@ Response <- R6::R6Class(
       expires = getOption("ambiorix.cookie.expire"),
       max_age = getOption("ambiorix.cookie.maxage"),
       domain = getOption("ambiorix.cookie.domain"),
-      path = getOption("ambiorix.cookie.path"),
+      path = getOption("ambiorix.cookie.path", "/"),
       secure = getOption("ambiorix.cookie.secure", TRUE),
       http_only = getOption("ambiorix.cookie.httponly", TRUE),
       same_site = getOption("ambiorix.cookie.savesite")
