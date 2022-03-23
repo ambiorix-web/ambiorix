@@ -208,7 +208,7 @@ Parse Multipart encoded data
 \if{latex}{\out{\hypertarget{method-parse_json}{}}}
 \subsection{Method \code{parse_json()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Request$parse_json()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Request$parse_json(...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

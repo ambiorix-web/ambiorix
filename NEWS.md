@@ -51,6 +51,7 @@ of said router.
 - Added `parse_*` methods to the `Request`.
 - Cookie `path` defaults to `/`.
 - Fix default serialiser
+- More robust `parser_*` methods and fuctions.
 
 # ambiorix 2.0.0
 
