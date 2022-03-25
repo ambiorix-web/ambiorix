@@ -14,7 +14,7 @@ default_cookie_parser <- function(req) {
     return(cookie_new)
 
   if(req$HTTP_COOKIE == "")
-    return(cookie_new)
+    return(list())
 
   split <- strsplit(req$HTTP_COOKIE, ";")[[1]]
   split <- strsplit(split, "=")
