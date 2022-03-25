@@ -131,3 +131,45 @@ read_lines <- function(...) {
     readLines(...)
   )
 }
+
+render_tags <- \(lines, data){
+  new_lines <- c()
+  n <- 0L
+  str <- ""
+
+  for(i in 1:length(lines)) {
+    line <- lines[i]
+    if(!grepl("\\[%|%\\]", line) && n == 0L) {
+      new_lines <- c(new_lines, line)
+      next()
+    }
+    
+    if(!grepl("\\[%|%\\]", line) && n > 0L) {
+      str <- paste(str, line)
+      next()
+    }
+
+    opened <- lengths(regmatches(line, gregexpr("\\[%", line)))
+    closed <- lengths(regmatches(line, gregexpr("%\\]", line)))
+
+    n <- n + opened - closed
+    cat("Opened:", opened, "closed:", closed, "n:", n, "\n")
+
+    str <- paste(str, line)
+
+    # all in one line we render and continue
+    if(n == 0L) {
+      new_line <- glue::glue_data(data, str, .open = "[%", .close = "%]")
+      new_lines <- c(new_lines, new_line)
+      str <- ""
+      next
+    }
+
+  }
+
+  if(str != "")
+    cat("error")
+
+  new_lines |> 
+    paste0(collapse = "")
+}

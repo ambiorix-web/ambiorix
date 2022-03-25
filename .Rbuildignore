@@ -17,3 +17,4 @@ docker/
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
 ^makefile$
+^test\.html$

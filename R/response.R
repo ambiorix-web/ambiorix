@@ -642,10 +642,7 @@ Response <- R6::R6Class(
         }
       }
 
-      file_content <- lapply(file_content, function(content, data){
-        glue::glue_data(data, content, .open = "[%", .close = "%]") |> 
-          paste0(collapse = "")
-      }, data = data)
+      file_content <- render_tags(file_content, data)
 
       # collapse html
       if(ext == "html" || ext == "md")
