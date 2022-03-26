@@ -43,6 +43,7 @@ app$start()
 - [scilis](https://github.com/devOpifex/scilis) Cookies
 - [titan](https://github.com/devOpifex/titan) Prometheus middleware
 - [surf](https://github.com/devOpifex/surf) CSRF protection
+- [signaculum](https://github.com/devOpifex/signaculum) favicon
 
 ## Tools & Extensions
 
