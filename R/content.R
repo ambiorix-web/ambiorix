@@ -8,6 +8,12 @@
 #'  content_json()
 #' )
 #' 
+#' if(FALSE)
+#'  req$header(
+#'   "Content-Type",
+#'   content_json()
+#'  )
+#' 
 #' @name content
 #' 
 #' @export 
