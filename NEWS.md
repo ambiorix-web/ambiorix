@@ -54,6 +54,7 @@ of said router.
 - More robust `parser_*` methods and fuctions.
 - Empty cookie is empty list instead of empty string.
 - Added `mockRequest` to for testing purposes.
+- Fixed `port`, `host`, and `websocket` active bindings.
 
 # ambiorix 2.0.0
 

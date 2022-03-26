@@ -246,13 +246,13 @@ Ambiorix <- R6::R6Class(
     },
     port = function(value) {
       if(missing(value))
-        return(value)
+        return(private$.port)
 
-      private$.port <- value
+      private$.port <- as.integer(value)
     },
     host = function(value) {
       if(missing(value))
-        return(value)
+        return(private$.host)
 
       private$.host <- value
     }
