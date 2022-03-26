@@ -52,7 +52,8 @@ of said router.
 - Cookie `path` defaults to `/`.
 - Fix default serialiser
 - More robust `parser_*` methods and fuctions.
-- Empty cookie is empty list instead of empty string
+- Empty cookie is empty list instead of empty string.
+- Added `mockRequest` to for testing purposes.
 
 # ambiorix 2.0.0
 

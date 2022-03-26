@@ -153,13 +153,6 @@ Response <- R6::R6Class(
     redirect = function(path, status = NULL){
       deprecated_status(status)
       status <- private$.get_status(status)
-      if(!grepl("^3", status)) {
-        status <- 302L
-        .globals$errorLog$log(
-          "Redirect should start with `3`, e.g.: `res$status <- 302`"
-        )
-      }
-
       headers <- private$.get_headers(list(Location = path))
       response(status = status, headers = headers, body = "")
     },
