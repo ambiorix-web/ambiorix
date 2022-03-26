@@ -271,11 +271,15 @@ set_params <- function(path, route = NULL){
 #' 
 #' Mock a request, used for tests.
 #' 
+#' @param cookie Cookie string.
+#' 
 #' @examples 
 #' mockRequest()
 #' 
 #' @export 
-mockRequest <- function(){
+mockRequest <- function(
+  cookie = ""
+){
   req <- list(
     HEADERS = list(
       accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", 
@@ -293,6 +297,7 @@ mockRequest <- function(){
       `upgrade-insecure-requests` = "1", 
       `user-agent` = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36"
     ), 
+    HTTP_COOKIE = cookie, 
     HTTP_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", 
     HTTP_ACCEPT_ENCODING = "gzip, deflate, br", 
     HTTP_ACCEPT_LANGUAGE = "en-US,en;q=0.9", 
