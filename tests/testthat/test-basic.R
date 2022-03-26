@@ -26,4 +26,10 @@ test_that("Ambiorix", {
   expect_s3_class(app$set_404(\(req, res) {
     res$send("Errr")
   }), "Ambiorix")
+
+  expect_error(app$serialiser("error"))
+  expect_s3_class(app$serialiser(\(data) {
+    return("data")
+  }), "Ambiorix")
+
 })

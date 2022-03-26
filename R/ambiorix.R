@@ -208,6 +208,7 @@ Ambiorix <- R6::R6Class(
 #' if(interactive())
 #'  app$start()
     serialiser = function(handler){
+      assert_that(is_function(handler))
       options(AMBIORIX_SERIALISER = handler)
       invisible(self)
     },
@@ -238,12 +239,6 @@ Ambiorix <- R6::R6Class(
     }
   ),
   active = list(
-    websocket = function(value){
-      if(missing(value))
-        stop("This is a setter only")
-
-      private$.wss <- value
-    },
     port = function(value) {
       if(missing(value))
         return(private$.port)
