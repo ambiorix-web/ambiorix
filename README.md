@@ -42,12 +42,13 @@ app$start()
 - [agris](https://github.com/devOpifex/druid) Security
 - [scilis](https://github.com/devOpifex/scilis) Cookies
 - [titan](https://github.com/devOpifex/titan) Prometheus middleware
+- [surf](https://github.com/devOpifex/surf) CSRF protection
 
 ## Tools & Extensions
 
 - [belgic](https://github.com/devOpifex/belgic) Load balancer
 - [packer](https://github.com/JohnCoene/packer) JavaScript
-- [CLI](https://github.com/devOpifex/ambiorix-cli) CLI for generator
+- [CLI](https://github.com/devOpifex/ambiorix-cli) for generator
 - [Generator](https://github.com/devOpifex/ambiorix.generator) Project generator
 - [Docker](https://hub.docker.com/r/jcoenep/ambiorix) Docker image
 
