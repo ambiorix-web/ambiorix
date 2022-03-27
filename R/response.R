@@ -135,6 +135,7 @@ Response <- R6::R6Class(
       deprecated_headers(headers)
       deprecated_status(status)
       headers <- private$.get_headers(headers)
+      headers[["Content-Type"]] <- content_plain()
       response(status = private$.get_status(status), headers = headers, body = convert_body(body))
     },
 #' @details Send a file.
