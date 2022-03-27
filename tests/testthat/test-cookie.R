@@ -45,4 +45,29 @@ test_that("Request cookie", {
   )
   expect_type(req$cookie, "character")
   expect_equal(req$cookie, "yummy_cookie=choco;")
+
+  # res
+  res <- Response$new()
+  res$cookie("hello", "world")
+  resp <- res$send("hello")
+  expect_equal(
+    res$headers[["Set-Cookie"]],
+    "hello=world; Path=/; Secure; HttpOnly"
+  )
+
+  # preprocessor
+  .fn <- \(name, value, ...){
+    sprintf("prefix.%s", value)
+  }
+  prep <- as_cookie_preprocessor(.fn)
+
+  app <- Ambiorix$new()
+  app$use(prep)
+  res <- Response$new()
+  res$cookie("hello", "world")
+  resp <- res$send("hello")
+  expect_equal(
+    res$headers[["Set-Cookie"]],
+    "hello=prefix.world; Path=/; Secure; HttpOnly"
+  )
 })

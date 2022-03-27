@@ -209,4 +209,8 @@ test_that("Response", {
   # headers
   headers <- res$get_headers()
   expect_type(headers, "list")
+  expect_snapshot(res)
+
+  expect_error(res$headers("error"))
+  expect_type(res$headers, "list")
 })
