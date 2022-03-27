@@ -33,7 +33,7 @@ test_that("Request cookie", {
   )
 
   # parser
-  fn <- function(req) {
+  fn <- \(req) {
     return(req$HTTP_COOKIE)
   }
   parser <- as_cookie_parser(fn)
