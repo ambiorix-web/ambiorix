@@ -4,7 +4,6 @@
 #' 
 #' @field not_found 404 Response, must be a handler function that accepts the request and the response, by default uses [response_404()].
 #' @field error 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
-#' @field websocket A handler function that accepts a websocket which overrides ambiorix internal websocket handling.
 #' @field on_stop Callback function to run when the app stops, takes no argument.
 #' @field port Port to run the application.
 #' @field host Host to run the application.

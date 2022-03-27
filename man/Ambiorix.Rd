@@ -97,8 +97,6 @@ if(interactive())
 
 \item{\code{error}}{500 response when the route errors, must a handler function that accepts the request and the response, by default uses \code{\link[=response_500]{response_500()}}.}
 
-\item{\code{websocket}}{A handler function that accepts a websocket which overrides ambiorix internal websocket handling.}
-
 \item{\code{on_stop}}{Callback function to run when the app stops, takes no argument.}
 }
 \if{html}{\out{</div>}}
@@ -106,8 +104,6 @@ if(interactive())
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{websocket}}{A handler function that accepts a websocket which overrides ambiorix internal websocket handling.}
-
 \item{\code{port}}{Port to run the application.}
 
 \item{\code{host}}{Host to run the application.}
