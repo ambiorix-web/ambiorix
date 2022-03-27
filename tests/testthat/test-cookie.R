@@ -48,11 +48,11 @@ test_that("Request cookie", {
 
   # res
   res <- Response$new()
-  res$cookie("hello", "world")
+  res$cookie("hello", "world", expires = as.Date("2022-01-01"))
   resp <- res$send("hello")
   expect_equal(
     res$headers[["Set-Cookie"]],
-    "hello=world; Path=/; Secure; HttpOnly"
+    "hello=world; Expires=2022-01-01; Path=/; Secure; HttpOnly"
   )
 
   # preprocessor
