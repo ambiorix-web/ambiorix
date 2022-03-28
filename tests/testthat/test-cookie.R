@@ -52,4 +52,29 @@ test_that("Request cookie", {
   cook <- cookie("hello", "world")
   expect_snapshot(cook)
   expect_s3_class(cook, "cookie")
+
+  # res
+  res <- Response$new()
+  res$cookie("hello", "world", expires = as.Date("2022-01-01"))
+  resp <- res$send("hello")
+  expect_equal(
+    res$headers[["Set-Cookie"]],
+    "hello=world; Expires=2022-01-01; Path=/; Secure; HttpOnly"
+  )
+
+  # preprocessor
+  .fn <- \(name, value, ...){
+    sprintf("prefix.%s", value)
+  }
+  prep <- as_cookie_preprocessor(.fn)
+
+  app <- Ambiorix$new()
+  app$use(prep)
+  res <- Response$new()
+  res$cookie("hello", "world")
+  resp <- res$send("hello")
+  expect_equal(
+    res$headers[["Set-Cookie"]],
+    "hello=prefix.world; Path=/; Secure; HttpOnly"
+  )
 })

@@ -350,6 +350,8 @@ Response <- R6::R6Class(
 #' @param name,value Name and value of the header.
 #' @return Invisibly returns self.
     header = function(name, value){
+      assert_that(not_missing(name))
+      assert_that(not_missing(value))
       name <- as_label(name)
       private$.headers[[name]] <- value
       invisible(self)
@@ -399,13 +401,11 @@ Response <- R6::R6Class(
 #' @details Set headers
 #' @param headers A named list of headers to set.
     set_headers = function(headers) {
-      if(missing(headers))
-        stop("Missing `headers`")
-
+      assert_that(not_missing(headers))
       if(!is.list(headers))
         stop("`headers` must be a named list")
 
-      private$.headers <- list()
+      private$.headers <- headers
       invisible(self)
     },
     #' @details Set a Header
