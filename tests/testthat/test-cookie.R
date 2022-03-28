@@ -36,7 +36,9 @@ test_that("Request cookie", {
   fn <- \(req) {
     return(req$HTTP_COOKIE)
   }
+  expect_false(is_cookie_parser(fn))
   parser <- as_cookie_parser(fn)
+  expect_true(is_cookie_parser(parser))
   expect_snapshot(parser)
   app <- Ambiorix$new()
   app$use(parser)
@@ -45,4 +47,9 @@ test_that("Request cookie", {
   )
   expect_type(req$cookie, "character")
   expect_equal(req$cookie, "yummy_cookie=choco;")
+
+  # object
+  cook <- cookie("hello", "world")
+  expect_snapshot(cook)
+  expect_s3_class(cook, "cookie")
 })
