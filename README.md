@@ -7,6 +7,7 @@
 <!-- badges: start -->
 [![R build status](https://github.com/devOpifex/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/devOpifex/ambiorix/actions)
 [![R-CMD-check](https://github.com/devOpifex/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/devOpifex/ambiorix/actions)
+[![Codecov test coverage](https://codecov.io/gh/devOpifex/ambiorix/branch/master/graph/badge.svg)](https://app.codecov.io/gh/devOpifex/ambiorix?branch=master)
 <!-- badges: end -->
 
 [Website](https://ambiorix.dev) | [CLI](https://github.com/devOpifex/ambiorix-cli) | [Generator](https://github.com/devOpifex/ambiorix.generator) | [Docker](https://hub.docker.com/r/jcoenep/ambiorix) | [Load Balancer](https://github.com/devOpifex/belgic)
