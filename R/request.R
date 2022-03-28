@@ -272,13 +272,17 @@ set_params <- function(path, route = NULL){
 #' Mock a request, used for tests.
 #' 
 #' @param cookie Cookie string.
+#' @param query Query string.
+#' @param path Path string.
 #' 
 #' @examples 
 #' mockRequest()
 #' 
 #' @export 
 mockRequest <- function(
-  cookie = ""
+  cookie = "",
+  query = "",
+  path = "/"
 ){
   req <- list(
     HEADERS = list(
@@ -313,8 +317,8 @@ mockRequest <- function(
       list(c(1L, 6L, 5L)), 
       class = c("package_version", "numeric_version")
     ), 
-    PATH_INFO = "/", 
-    QUERY_STRING = "", 
+    PATH_INFO = path, 
+    QUERY_STRING = query, 
     REMOTE_ADDR = "127.0.0.1", 
     REMOTE_PORT = "44328", 
     REQUEST_METHOD = "GET", 
