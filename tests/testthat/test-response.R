@@ -128,8 +128,7 @@ test_that("Response", {
   )
 
   # png
-  img <- system.file("logo.png", package = "ambiorix")
-  resp <- res$png(img)
+  resp <- res$png("logo.png")
   response <- resp$body |> 
     head() |> 
     as.character() |> 

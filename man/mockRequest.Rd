@@ -4,10 +4,14 @@
 \alias{mockRequest}
 \title{Mock Request}
 \usage{
-mockRequest(cookie = "")
+mockRequest(cookie = "", query = "", path = "/")
 }
 \arguments{
 \item{cookie}{Cookie string.}
+
+\item{query}{Query string.}
+
+\item{path}{Path string.}
 }
 \description{
 Mock a request, used for tests.
