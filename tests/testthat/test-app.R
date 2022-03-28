@@ -1,4 +1,6 @@
 test_that("application", {
+  library(ambiorix)
+
   app <- Ambiorix$new()
 
   app$get("/", \(req, res) {
@@ -29,7 +31,18 @@ test_that("application", {
     res$send("home")
   })
 
+  # dynamic
+  app$get("/.path", \(req, res) {
+    res$send("home")
+  })
+
+  app$receive("message", \(...) {
+    print("received")
+  })
+
   expect_type(app$get_routes(), "list")
-  expect_length(app$get_routes(), 7L)
+  expect_length(app$get_routes(), 8L)
   expect_snapshot(app)
+
+  stop_all()
 })
