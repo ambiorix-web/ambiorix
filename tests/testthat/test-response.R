@@ -128,7 +128,8 @@ test_that("Response", {
   )
 
   # png
-  resp <- res$png("logo.png")
+  img <- "logo.png"
+  resp <- res$png(img)
   response <- resp$body |> 
     head() |> 
     as.character() |> 
