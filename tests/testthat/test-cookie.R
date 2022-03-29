@@ -77,4 +77,13 @@ test_that("Request cookie", {
     res$headers[["Set-Cookie"]],
     "hello=prefix.world; Path=/; Secure; HttpOnly"
   )
+
+  # clear
+  res$cookie("world", "hello")
+  res$clear_cookie("world")
+  resp <- res$send("hello")
+  expect_equal(
+    res$headers[["Set-Cookie"]],
+    "hello=prefix.world; Path=/; Secure; HttpOnly"
+  )
 })

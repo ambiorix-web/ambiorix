@@ -618,7 +618,8 @@ Response <- R6::R6Class(
           if(!inherits(x, "jobj"))
             return(x)
 
-          serialise(x)
+          serialise(x) |> 
+            as.character()
         })
       }
 

@@ -149,6 +149,8 @@ test_that("Response", {
     response,
     "89504e470d0a"
   )
+  expect_error(res$image())
+  expect_error(res$image("file.wrongExtension"))
 
   # ggplot2
   plot <- ggplot2::ggplot(cars)
@@ -206,7 +208,7 @@ test_that("Response", {
     content_tsv()
   )
 
-  # headers
+  # get headers
   headers <- res$get_headers()
   expect_type(headers, "list")
   expect_snapshot(res)
@@ -214,9 +216,21 @@ test_that("Response", {
   expect_error(res$headers("error"))
   expect_type(res$headers, "list")
 
+  # deprecated
   expect_error(res$set())
   expect_error(res$set("hello"))
   expect_warning(res$set("hello", "world"))
   expect_error(res$get())
   expect_warning(res$get("hello"))
+
+  # set headers
+  expect_error(res$set_headers())
+  expect_error(res$set_headers("error"))
+  res$set_headers(list(x = 1))
+  headers <- res$get_headers()
+  expect_equal(
+    headers$x, 1L
+  )
+
+  expect_error(res$headers <- "error")
 })
