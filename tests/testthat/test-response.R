@@ -213,4 +213,10 @@ test_that("Response", {
 
   expect_error(res$headers("error"))
   expect_type(res$headers, "list")
+
+  expect_error(res$set())
+  expect_error(res$set("hello"))
+  expect_warning(res$set("hello", "world"))
+  expect_error(res$get())
+  expect_warning(res$get("hello"))
 })
