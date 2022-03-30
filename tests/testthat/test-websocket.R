@@ -5,4 +5,8 @@ test_that("Websocket", {
   })
   msg <- ws$receive(list(message = "world"))
   expect_equal(msg, "world")
+  expect_snapshot(ws)
+
+  ws <- Websocket$new(list())
+  expect_snapshot(ws)
 })

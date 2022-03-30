@@ -29,7 +29,6 @@ WebsocketHandler <- R6::R6Class(
       cli::cli_alert_info("receive: {.code receive(message, ws)}")
       cli::cli_ul("Listening on message:")
       cli::cli_li("name: {.val {private$.name}}")
-      cli::cli_li("fun: {.code {foo}}")
       cli::cli_end()
     }
   ),

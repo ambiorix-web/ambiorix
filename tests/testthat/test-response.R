@@ -97,7 +97,9 @@ test_that("Response", {
     "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><style>body{background-color:none;}</style></head><html>  <title>1</title>  <body>    <p>hello</p>  </body></html></html>"
   )
   expect_error(robj())
+  expect_error(jobj())
   expect_snapshot(print(robj(list(x = 1L))))
+  expect_snapshot(print(jobj(list(x = 1L))))
 
   # json
   resp <- res$json(list(1, 2))
