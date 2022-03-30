@@ -25,10 +25,29 @@ jobs:
         with:
           extra-packages: rcmdcheck
 
+      - name: Enable Repo on Coveralls
+        id: enable_coveralls
+        run: |
+          curl -s -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token $COVERALLS_TOKEN" \
+            -d '{"repo": {"service": "github","name": "'$GITHUB_REPOSITORY'"}}' \
+            -X POST https://coveralls.io/api/repos
+     
+      - name: Get Coveralls Repo Token
+        id: get_coverall_repo_token
+        run: |
+          echo "COVERALLS_REPO_TOKEN=$(\
+            curl -s -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token $COVERALLS_TOKEN" \
+            https://coveralls.io/api/repos/github/$GITHUB_REPOSITORY \
+            | jq '.token')" >> $GITHUB_ENV
+
       - uses: r-lib/actions/check-r-package@v1
       - name: Test coverage
         run: | 
           install.packages('covr')
           covr::codecov(token='${{ secrets.CODECOV_TOKEN }}')
-          covr::coveralls(token='${{secrets.COVERALLS_TOKEN}}')
+          covr::coveralls(repo_token='${{secrets.COVERALLS_TOKEN}}', service_name="drone")
         shell: Rscript {0}
