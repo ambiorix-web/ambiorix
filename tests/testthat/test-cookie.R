@@ -59,7 +59,7 @@ test_that("Request cookie", {
   resp <- res$send("hello")
   expect_equal(
     res$headers[["Set-Cookie"]],
-    "hello=world; Expires=Sat, 01 Jan 2022 01:00:00 GMT; Path=/; Secure; HttpOnly"
+    "hello=world; Expires=Sat, 01 Jan 2022 00:00:00 GMT; Path=/; Secure; HttpOnly"
   )
 
   # expires character
