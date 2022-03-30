@@ -53,9 +53,18 @@ test_that("Request cookie", {
   expect_snapshot(cook)
   expect_s3_class(cook, "cookie")
 
-  # res
+  # expires date
   res <- Response$new()
   res$cookie("hello", "world", expires = as.Date("2022-01-01"))
+  resp <- res$send("hello")
+  expect_equal(
+    res$headers[["Set-Cookie"]],
+    "hello=world; Expires=Sat, 01 Jan 2022 01:00:00 GMT; Path=/; Secure; HttpOnly"
+  )
+
+  # expires character
+  res <- Response$new()
+  res$cookie("hello", "world", expires = "2022-01-01")
   resp <- res$send("hello")
   expect_equal(
     res$headers[["Set-Cookie"]],

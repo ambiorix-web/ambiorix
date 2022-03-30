@@ -86,6 +86,18 @@ test_that("Response", {
     resp$body,
     "<script>console.log('tests');</script>\n<h1>hello</h1>"
   )
+  resp <- res$render("render.R", list(title = "hello"))
+  expect_equal(
+    resp$body,
+    "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><style>body{background-color:none;}</style></head><html>  <title>hello</title>  <body>    <p>hello</p>  </body></html></html>"
+  )
+  resp <- res$render("render.R", list(title = robj(list(x = 1))))
+  expect_equal(
+    resp$body,
+    "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><style>body{background-color:none;}</style></head><html>  <title>1</title>  <body>    <p>hello</p>  </body></html></html>"
+  )
+  expect_error(robj())
+  expect_snapshot(print(robj(list(x = 1L))))
 
   # json
   resp <- res$json(list(1, 2))
@@ -222,6 +234,9 @@ test_that("Response", {
   expect_warning(res$set("hello", "world"))
   expect_error(res$get())
   expect_warning(res$get("hello"))
+  expect_error(res$set_header())
+  expect_error(res$set_header("error"))
+  expect_warning(res$set_header("error", "xxx"))
 
   # set headers
   expect_error(res$set_headers())

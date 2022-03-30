@@ -691,7 +691,7 @@ Response <- R6::R6Class(
 
         if(!is.null(opts$expires)) {
           expires <- convert_cookie_expires(opts$expires)
-          cookie <- sprintf("%s; Expires=%s", cookie, opts$expires)
+          cookie <- sprintf("%s; Expires=%s", cookie, expires)
         }
 
         if(!is.null(opts$max_age))

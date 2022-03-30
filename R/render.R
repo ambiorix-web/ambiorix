@@ -116,8 +116,9 @@ robj <- function(obj){
 #' @export
 print.robj <- function(x, ...){
   cli::cli_alert_info("R object")
+  class(x) <- class(x)[!class(x) %in% "robj"]
   x |> 
-    dput(x) |> 
+    dput() |> 
     print()
 }
 
