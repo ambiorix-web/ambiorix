@@ -81,11 +81,6 @@ test_that("Response", {
     resp$body,
     "<html><script>console.log('tests');</script>  <body>     <h1>hello</h1>  </body></html>"
   )
-  resp <- res$render("render.md", list(title = "hello"))
-  expect_equal(
-    resp$body,
-    "<script>console.log('tests');</script>\n<h1>hello</h1>"
-  )
   resp <- res$render("render.R", list(title = "hello"))
   expect_equal(
     resp$body,
@@ -138,7 +133,7 @@ test_that("Response", {
   resp <- res$md("render.md", list(title = "hello"))
   expect_equal(
     resp$body,
-    "<script>console.log('tests');</script>\n<h1>hello</h1>"
+    "<script>console.log('tests');</script>\n<h1>hello</h1>\n"
   )
 
   # png
