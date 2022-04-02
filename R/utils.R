@@ -170,6 +170,5 @@ render_tags <- \(lines, data){
   if(str != "")
     cat("error")
 
-  new_lines |> 
-    paste0(collapse = "")
+  new_lines
 }

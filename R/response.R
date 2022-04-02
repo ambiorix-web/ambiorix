@@ -610,9 +610,6 @@ Response <- R6::R6Class(
       # replace brackets so glue::glue_data evals
       file_content <- replace_partials(file_content, get_dir(file))
 
-      if(ext == "md")
-        file_content <- commonmark::markdown_html(file_content)
-
       if(ext == "html") {
         data <- lapply(data, \(x) {
           if(!inherits(x, "jobj"))
@@ -638,6 +635,9 @@ Response <- R6::R6Class(
       }
 
       file_content <- render_tags(file_content, data)
+      
+      if(ext == "md")
+        file_content <- commonmark::markdown_html(file_content)
 
       # collapse html
       if(ext == "html" || ext == "md")
