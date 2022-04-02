@@ -5,7 +5,6 @@
 <img src="man/figures/ambiorix.png" height = "200px"/>
 
 <!-- badges: start -->
-[![R build status](https://github.com/devOpifex/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/devOpifex/ambiorix/actions)
 [![R-CMD-check](https://github.com/devOpifex/ambiorix/workflows/R-CMD-check/badge.svg)](https://github.com/devOpifex/ambiorix/actions)
 [![Codecov test coverage](https://codecov.io/gh/devOpifex/ambiorix/branch/master/graph/badge.svg)](https://app.codecov.io/gh/devOpifex/ambiorix?branch=master)
 <!-- badges: end -->
