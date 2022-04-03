@@ -153,7 +153,6 @@ render_tags <- \(lines, data){
     closed <- lengths(regmatches(line, gregexpr("%\\]", line)))
 
     n <- n + opened - closed
-    cat("Opened:", opened, "closed:", closed, "n:", n, "\n")
 
     str <- paste(str, line)
 
