@@ -1,26 +1,3 @@
-#' Render HTML
-#'
-#' Evaluates a string to collect [htmltools::tags], evaluates,
-#' and returns the render HTML as a collapsed string.
-#'
-#' @param expr Expression to evaluate.
-#'
-#' @noRd
-#' @keywords internal
-render_html <- function(expr){
-
-  tags <- eval(parse(text = expr))
-
-  tmp <- tempfile(fileext = ".html")
-  on.exit({
-    fs::file_delete(tmp)
-  })
-
-  htmltools::save_html(tags, file = tmp, background = "none")
-
-  paste0(read_lines(tmp), collapse = "")
-}
-
 #' Browse App
 #'
 #' Browses the application, if RStudio available uses pane.
@@ -124,50 +101,9 @@ as_label <- function(x) {
 #' 
 #' Avoids EOF warnings.
 #' 
-#' @noRd
 #' @keywords internal
 read_lines <- function(...) {
   suppressWarnings(
     readLines(...)
   )
-}
-
-render_tags <- \(lines, data){
-  new_lines <- c()
-  n <- 0L
-  str <- ""
-
-  for(i in 1:length(lines)) {
-    line <- lines[i]
-    if(!grepl("\\[%|%\\]", line) && n == 0L) {
-      new_lines <- c(new_lines, line)
-      next()
-    }
-    
-    if(!grepl("\\[%|%\\]", line) && n > 0L) {
-      str <- paste(str, line)
-      next()
-    }
-
-    opened <- lengths(regmatches(line, gregexpr("\\[%", line)))
-    closed <- lengths(regmatches(line, gregexpr("%\\]", line)))
-
-    n <- n + opened - closed
-
-    str <- paste(str, line)
-
-    # all in one line we render and continue
-    if(n == 0L) {
-      new_line <- glue::glue_data(data, str, .open = "[%", .close = "%]")
-      new_lines <- c(new_lines, new_line)
-      str <- ""
-      next
-    }
-
-  }
-
-  if(str != "")
-    cat("error")
-
-  new_lines
 }

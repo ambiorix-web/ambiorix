@@ -7,4 +7,5 @@
   .globals$cookieParser <- default_cookie_parser
   .globals$pathToPattern <- NULL
   .globals$cookiePreprocessors <- list()
+  .globals$renderer <- NULL
 }

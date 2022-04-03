@@ -254,6 +254,18 @@ Routing <- R6::R6Class(
         private$.middleware <- append(private$.middleware, use$get_middleware())
       } 
       
+      if(is_renderer(use) && private$.is_router){
+        .globals$errorLog$log(
+          "Cannot pass cookie preprocessor to `Router`, only to `Ambiorix`"
+        )
+        return(invisible(self))
+      }
+
+      if(is_renderer(use)) {
+        .globals$renderer <- use
+        return(invisible(self))
+      }
+      
       if(is_cookie_parser(use) && private$.is_router){
         .globals$errorLog$log(
           "Cannot pass cookie parser to `Router`, only to `Ambiorix`"
