@@ -600,6 +600,9 @@ Response <- R6::R6Class(
     .render_template = function(file, data){
       file <- normalizePath(file)
 
+      if(!is.null(.globals$renderer))
+        return(.globals$renderer(file, data))
+
       # read and replace tags
       file_content <- read_lines(file)
 

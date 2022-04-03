@@ -60,3 +60,14 @@ assertthat::on_failure(is_function) <- function(call, env){
     deparse(call$x)
   )
 }
+
+is_renderer <- function(x){
+  length(formalArgs) == 2L
+}
+
+assertthat::on_failure(is_renderer) <- function(call, env){
+  sprintf(
+    "`%s` must accept two arguments: `file` and `data`",
+    deparse(call$x)
+  )
+}
