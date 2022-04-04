@@ -55,7 +55,9 @@ of said router.
 - Empty cookie is empty list instead of empty string.
 - Added `mockRequest` to for testing purposes.
 - Fixed `port`, `host`, and `websocket` active bindings.
-- Add ability to create custom renderer.
+- Add ability to create custom renderer, see 
+[jader](https://github.com/devOpifex/jader), and 
+[pugger](https://github.com/devOpifex/pugger).
 
 # ambiorix 2.0.0
 
