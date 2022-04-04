@@ -44,6 +44,8 @@ app$start()
 - [titan](https://github.com/devOpifex/titan) Prometheus middleware
 - [surf](https://github.com/devOpifex/surf) CSRF protection
 - [signaculum](https://github.com/devOpifex/signaculum) favicon
+- [pugger](https://github.com/devOpifex/pugger) Pug engine
+- [jader](https://github.com/devOpifex/jader) Jade engine
 
 ## Tools & Extensions
 
