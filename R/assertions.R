@@ -62,7 +62,7 @@ assertthat::on_failure(is_function) <- function(call, env){
 }
 
 is_renderer <- function(x){
-  length(formalArgs) == 2L
+  length(formalArgs) != 2L
 }
 
 assertthat::on_failure(is_renderer) <- function(call, env){

@@ -267,6 +267,6 @@ print.renderer <- function(x, ...) {
   cli::cli_alert_info("A renderer")
 }
 
-is_renderer <- function(obj) {
+is_renderer_obj <- function(obj) {
   inherits(obj, "renderer")
 }

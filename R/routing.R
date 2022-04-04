@@ -254,14 +254,14 @@ Routing <- R6::R6Class(
         private$.middleware <- append(private$.middleware, use$get_middleware())
       } 
       
-      if(is_renderer(use) && private$.is_router){
+      if(is_renderer_obj(use) && private$.is_router){
         .globals$errorLog$log(
           "Cannot pass cookie preprocessor to `Router`, only to `Ambiorix`"
         )
         return(invisible(self))
       }
 
-      if(is_renderer(use)) {
+      if(is_renderer_obj(use)) {
         .globals$renderer <- use
         return(invisible(self))
       }
