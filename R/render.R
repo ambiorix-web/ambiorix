@@ -267,6 +267,13 @@ print.renderer <- function(x, ...) {
   cli::cli_alert_info("A renderer")
 }
 
+#' Is Renderer
+#' 
+#' Check whether an object is a renderer.
+#' 
+#' @param obj Object to check.
+#' 
+#' @return Boolean
 is_renderer_obj <- function(obj) {
   inherits(obj, "renderer")
 }
