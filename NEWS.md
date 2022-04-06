@@ -4,8 +4,6 @@ __Breaking__
 
 - `Response` method `status` renamed to `set_status`
 (this is to allow having `status` as a field).
-- Dumped support for `.R` templates. These were processed
-with bare evals and were thus very insecure.
 
 __Changes__
 
