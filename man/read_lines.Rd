@@ -6,6 +6,9 @@
 \usage{
 read_lines(...)
 }
+\arguments{
+\item{...}{Passed to \code{\link[=readLines]{readLines()}}:}
+}
 \description{
 Avoids EOF warnings.
 }

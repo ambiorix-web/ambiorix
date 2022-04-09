@@ -114,6 +114,7 @@ if(interactive())
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Ambiorix$new()}}
+\item \href{#method-cache_templates}{\code{Ambiorix$cache_templates()}}
 \item \href{#method-listen}{\code{Ambiorix$listen()}}
 \item \href{#method-set_404}{\code{Ambiorix$set_404()}}
 \item \href{#method-static}{\code{Ambiorix$static()}}
@@ -167,6 +168,20 @@ if(interactive())
 }
 \subsection{Details}{
 Define the webserver.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cache_templates"></a>}}
+\if{latex}{\out{\hypertarget{method-cache_templates}{}}}
+\subsection{Method \code{cache_templates()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$cache_templates()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Cache templates in memory instead of reading
+them from disk.
 }
 
 }

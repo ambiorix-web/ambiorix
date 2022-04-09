@@ -1,4 +1,9 @@
-# ambiorix 2.0.0.9000
+# ambiorix 2.1.0.9000
+
+- Add `cache_templates` method to cache templates
+in memory.
+
+# ambiorix 2.1.0
 
 __Breaking__
 

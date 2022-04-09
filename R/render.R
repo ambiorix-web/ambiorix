@@ -57,7 +57,7 @@ replace_partial <- \(line, dir) {
   path <- file.path(new_dir, path)
 
   # read lines
-  lines <- read_lines(path)
+  lines <- read_lines_cached(path)
 
   # add new directory
   pat <- sprintf("[! %s/", new_dir)

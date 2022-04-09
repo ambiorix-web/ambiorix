@@ -101,9 +101,28 @@ as_label <- function(x) {
 #' 
 #' Avoids EOF warnings.
 #' 
+#' @param ... Passed to [readLines()]:
+#' 
 #' @keywords internal
 read_lines <- function(...) {
   suppressWarnings(
     readLines(...)
   )
+}
+
+#' Read file from disk or cache
+#' 
+#' @param path Path to file.
+#' 
+#' @keywords internal
+read_lines_cached <- function(path) {
+  if(!.globals$cache_tmpls)
+    return(read_lines(path))
+
+  if(length(.cache_tmpls[[path]]) > 0L)
+    return(.cache_tmpls[[path]])
+
+  content <- read_lines(path)
+  .cache_tmpls[[path]] <- content
+  return(content)
 }
