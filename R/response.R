@@ -600,8 +600,12 @@ Response <- R6::R6Class(
     .render_template = function(file, data){
       file <- normalizePath(file)
 
-      if(!is.null(.globals$renderer))
-        return(.globals$renderer(file, data))
+      if(!is.null(.globals$renderer)) {
+        response <- .globals$renderer(file, data)
+        # if the response is NULL we keep going
+        if(isTRUE(!is.null(response)))
+          return()
+      }
 
       # read and replace tags
       file_content <- read_lines_cached(file)

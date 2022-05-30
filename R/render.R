@@ -179,6 +179,9 @@ print.responsePreHook <- function(x, ...) {
 #' @export 
 use_html_template <- function() {
   as_renderer(function(file, data) {
+    if(tools::file_ext(file) != "html")
+      return()
+
     data$filename <- file
     do.call(
       htmltools::htmlTemplate,
