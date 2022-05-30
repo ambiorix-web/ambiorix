@@ -183,10 +183,11 @@ use_html_template <- function() {
       return()
 
     data$filename <- file
-    do.call(
+    x <- do.call(
       htmltools::htmlTemplate,
       data
     )
+    as.character(x)
   })
 }
 

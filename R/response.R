@@ -604,7 +604,7 @@ Response <- R6::R6Class(
         response <- .globals$renderer(file, data)
         # if the response is NULL we keep going
         if(isTRUE(!is.null(response)))
-          return()
+          return(response)
       }
 
       # read and replace tags
