@@ -171,6 +171,22 @@ print.responsePreHook <- function(x, ...) {
   cli::cli_alert_info("A response pre hook")
 }
 
+#' HTML Template
+#' 
+#' Use [htmltools::htmlTemplate()] as renderer.
+#' Passe to `use` method.
+#' 
+#' @export 
+use_html_template <- function() {
+  as_renderer(function(file, data) {
+    data$filename <- file
+    do.call(
+      htmltools::htmlTemplate,
+      data
+    )
+  })
+}
+
 #' Render Tags
 #' 
 #' @param lines Output of [read_lines()]

@@ -113,38 +113,38 @@ if(interactive())
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Ambiorix$new()}}
-\item \href{#method-listen}{\code{Ambiorix$listen()}}
-\item \href{#method-set_404}{\code{Ambiorix$set_404()}}
-\item \href{#method-static}{\code{Ambiorix$static()}}
-\item \href{#method-start}{\code{Ambiorix$start()}}
-\item \href{#method-serialiser}{\code{Ambiorix$serialiser()}}
-\item \href{#method-stop}{\code{Ambiorix$stop()}}
-\item \href{#method-print}{\code{Ambiorix$print()}}
-\item \href{#method-clone}{\code{Ambiorix$clone()}}
+\item \href{#method-Ambiorix-new}{\code{Ambiorix$new()}}
+\item \href{#method-Ambiorix-listen}{\code{Ambiorix$listen()}}
+\item \href{#method-Ambiorix-set_404}{\code{Ambiorix$set_404()}}
+\item \href{#method-Ambiorix-static}{\code{Ambiorix$static()}}
+\item \href{#method-Ambiorix-start}{\code{Ambiorix$start()}}
+\item \href{#method-Ambiorix-serialiser}{\code{Ambiorix$serialiser()}}
+\item \href{#method-Ambiorix-stop}{\code{Ambiorix$stop()}}
+\item \href{#method-Ambiorix-print}{\code{Ambiorix$print()}}
+\item \href{#method-Ambiorix-clone}{\code{Ambiorix$clone()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="all">}\href{../../ambiorix/html/Routing.html#method-all}{\code{ambiorix::Routing$all()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="delete">}\href{../../ambiorix/html/Routing.html#method-delete}{\code{ambiorix::Routing$delete()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get">}\href{../../ambiorix/html/Routing.html#method-get}{\code{ambiorix::Routing$get()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_middleware">}\href{../../ambiorix/html/Routing.html#method-get_middleware}{\code{ambiorix::Routing$get_middleware()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers">}\href{../../ambiorix/html/Routing.html#method-get_receivers}{\code{ambiorix::Routing$get_receivers()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_routes">}\href{../../ambiorix/html/Routing.html#method-get_routes}{\code{ambiorix::Routing$get_routes()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="options">}\href{../../ambiorix/html/Routing.html#method-options}{\code{ambiorix::Routing$options()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="patch">}\href{../../ambiorix/html/Routing.html#method-patch}{\code{ambiorix::Routing$patch()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="post">}\href{../../ambiorix/html/Routing.html#method-post}{\code{ambiorix::Routing$post()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="put">}\href{../../ambiorix/html/Routing.html#method-put}{\code{ambiorix::Routing$put()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive">}\href{../../ambiorix/html/Routing.html#method-receive}{\code{ambiorix::Routing$receive()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use">}\href{../../ambiorix/html/Routing.html#method-use}{\code{ambiorix::Routing$use()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="all"><a href='../../ambiorix/html/Routing.html#method-Routing-all'><code>ambiorix::Routing$all()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="delete"><a href='../../ambiorix/html/Routing.html#method-Routing-delete'><code>ambiorix::Routing$delete()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get"><a href='../../ambiorix/html/Routing.html#method-Routing-get'><code>ambiorix::Routing$get()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_middleware"><a href='../../ambiorix/html/Routing.html#method-Routing-get_middleware'><code>ambiorix::Routing$get_middleware()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers"><a href='../../ambiorix/html/Routing.html#method-Routing-get_receivers'><code>ambiorix::Routing$get_receivers()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_routes"><a href='../../ambiorix/html/Routing.html#method-Routing-get_routes'><code>ambiorix::Routing$get_routes()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="options"><a href='../../ambiorix/html/Routing.html#method-Routing-options'><code>ambiorix::Routing$options()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="patch"><a href='../../ambiorix/html/Routing.html#method-Routing-patch'><code>ambiorix::Routing$patch()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="post"><a href='../../ambiorix/html/Routing.html#method-Routing-post'><code>ambiorix::Routing$post()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="put"><a href='../../ambiorix/html/Routing.html#method-Routing-put'><code>ambiorix::Routing$put()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive"><a href='../../ambiorix/html/Routing.html#method-Routing-receive'><code>ambiorix::Routing$receive()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use"><a href='../../ambiorix/html/Routing.html#method-Routing-use'><code>ambiorix::Routing$use()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Ambiorix-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ambiorix$new(
@@ -171,8 +171,8 @@ Define the webserver.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-listen"></a>}}
-\if{latex}{\out{\hypertarget{method-listen}{}}}
+\if{html}{\out{<a id="method-Ambiorix-listen"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-listen}{}}}
 \subsection{Method \code{listen()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ambiorix$listen(port)}\if{html}{\out{</div>}}
@@ -208,8 +208,8 @@ if(interactive())
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_404"></a>}}
-\if{latex}{\out{\hypertarget{method-set_404}{}}}
+\if{html}{\out{<a id="method-Ambiorix-set_404"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-set_404}{}}}
 \subsection{Method \code{set_404()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ambiorix$set_404(handler)}\if{html}{\out{</div>}}
@@ -248,8 +248,8 @@ if(interactive())
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-static"></a>}}
-\if{latex}{\out{\hypertarget{method-static}{}}}
+\if{html}{\out{<a id="method-Ambiorix-static"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-static}{}}}
 \subsection{Method \code{static()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ambiorix$static(path, uri = "www")}\if{html}{\out{</div>}}
@@ -270,8 +270,8 @@ Static directories
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-start"></a>}}
-\if{latex}{\out{\hypertarget{method-start}{}}}
+\if{html}{\out{<a id="method-Ambiorix-start"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-start}{}}}
 \subsection{Method \code{start()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ambiorix$start(port = NULL, host = NULL, open = interactive())}\if{html}{\out{</div>}}
@@ -310,8 +310,8 @@ if(interactive())
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-serialiser"></a>}}
-\if{latex}{\out{\hypertarget{method-serialiser}{}}}
+\if{html}{\out{<a id="method-Ambiorix-serialiser"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-serialiser}{}}}
 \subsection{Method \code{serialiser()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ambiorix$serialiser(handler)}\if{html}{\out{</div>}}
@@ -350,8 +350,8 @@ if(interactive())
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-stop"></a>}}
-\if{latex}{\out{\hypertarget{method-stop}{}}}
+\if{html}{\out{<a id="method-Ambiorix-stop"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-stop}{}}}
 \subsection{Method \code{stop()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ambiorix$stop()}\if{html}{\out{</div>}}
@@ -364,8 +364,8 @@ Stop the webserver.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-print"></a>}}
-\if{latex}{\out{\hypertarget{method-print}{}}}
+\if{html}{\out{<a id="method-Ambiorix-print"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-print}{}}}
 \subsection{Method \code{print()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ambiorix$print()}\if{html}{\out{</div>}}
@@ -377,8 +377,8 @@ Print
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Ambiorix-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

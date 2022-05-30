@@ -18,45 +18,45 @@ Response class to generate responses sent from the server.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-set_status}{\code{Response$set_status()}}
-\item \href{#method-send}{\code{Response$send()}}
-\item \href{#method-sendf}{\code{Response$sendf()}}
-\item \href{#method-text}{\code{Response$text()}}
-\item \href{#method-send_file}{\code{Response$send_file()}}
-\item \href{#method-redirect}{\code{Response$redirect()}}
-\item \href{#method-render}{\code{Response$render()}}
-\item \href{#method-json}{\code{Response$json()}}
-\item \href{#method-csv}{\code{Response$csv()}}
-\item \href{#method-tsv}{\code{Response$tsv()}}
-\item \href{#method-htmlwidget}{\code{Response$htmlwidget()}}
-\item \href{#method-md}{\code{Response$md()}}
-\item \href{#method-png}{\code{Response$png()}}
-\item \href{#method-jpeg}{\code{Response$jpeg()}}
-\item \href{#method-image}{\code{Response$image()}}
-\item \href{#method-ggplot2}{\code{Response$ggplot2()}}
-\item \href{#method-print}{\code{Response$print()}}
-\item \href{#method-set}{\code{Response$set()}}
-\item \href{#method-get}{\code{Response$get()}}
-\item \href{#method-header}{\code{Response$header()}}
-\item \href{#method-header_content_json}{\code{Response$header_content_json()}}
-\item \href{#method-header_content_html}{\code{Response$header_content_html()}}
-\item \href{#method-header_content_plain}{\code{Response$header_content_plain()}}
-\item \href{#method-header_content_csv}{\code{Response$header_content_csv()}}
-\item \href{#method-header_content_tsv}{\code{Response$header_content_tsv()}}
-\item \href{#method-get_headers}{\code{Response$get_headers()}}
-\item \href{#method-get_header}{\code{Response$get_header()}}
-\item \href{#method-set_headers}{\code{Response$set_headers()}}
-\item \href{#method-set_header}{\code{Response$set_header()}}
-\item \href{#method-pre_render_hook}{\code{Response$pre_render_hook()}}
-\item \href{#method-post_render_hook}{\code{Response$post_render_hook()}}
-\item \href{#method-cookie}{\code{Response$cookie()}}
-\item \href{#method-clear_cookie}{\code{Response$clear_cookie()}}
-\item \href{#method-clone}{\code{Response$clone()}}
+\item \href{#method-Response-set_status}{\code{Response$set_status()}}
+\item \href{#method-Response-send}{\code{Response$send()}}
+\item \href{#method-Response-sendf}{\code{Response$sendf()}}
+\item \href{#method-Response-text}{\code{Response$text()}}
+\item \href{#method-Response-send_file}{\code{Response$send_file()}}
+\item \href{#method-Response-redirect}{\code{Response$redirect()}}
+\item \href{#method-Response-render}{\code{Response$render()}}
+\item \href{#method-Response-json}{\code{Response$json()}}
+\item \href{#method-Response-csv}{\code{Response$csv()}}
+\item \href{#method-Response-tsv}{\code{Response$tsv()}}
+\item \href{#method-Response-htmlwidget}{\code{Response$htmlwidget()}}
+\item \href{#method-Response-md}{\code{Response$md()}}
+\item \href{#method-Response-png}{\code{Response$png()}}
+\item \href{#method-Response-jpeg}{\code{Response$jpeg()}}
+\item \href{#method-Response-image}{\code{Response$image()}}
+\item \href{#method-Response-ggplot2}{\code{Response$ggplot2()}}
+\item \href{#method-Response-print}{\code{Response$print()}}
+\item \href{#method-Response-set}{\code{Response$set()}}
+\item \href{#method-Response-get}{\code{Response$get()}}
+\item \href{#method-Response-header}{\code{Response$header()}}
+\item \href{#method-Response-header_content_json}{\code{Response$header_content_json()}}
+\item \href{#method-Response-header_content_html}{\code{Response$header_content_html()}}
+\item \href{#method-Response-header_content_plain}{\code{Response$header_content_plain()}}
+\item \href{#method-Response-header_content_csv}{\code{Response$header_content_csv()}}
+\item \href{#method-Response-header_content_tsv}{\code{Response$header_content_tsv()}}
+\item \href{#method-Response-get_headers}{\code{Response$get_headers()}}
+\item \href{#method-Response-get_header}{\code{Response$get_header()}}
+\item \href{#method-Response-set_headers}{\code{Response$set_headers()}}
+\item \href{#method-Response-set_header}{\code{Response$set_header()}}
+\item \href{#method-Response-pre_render_hook}{\code{Response$pre_render_hook()}}
+\item \href{#method-Response-post_render_hook}{\code{Response$post_render_hook()}}
+\item \href{#method-Response-cookie}{\code{Response$cookie()}}
+\item \href{#method-Response-clear_cookie}{\code{Response$clear_cookie()}}
+\item \href{#method-Response-clone}{\code{Response$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_status"></a>}}
-\if{latex}{\out{\hypertarget{method-set_status}{}}}
+\if{html}{\out{<a id="method-Response-set_status"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-set_status}{}}}
 \subsection{Method \code{set_status()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$set_status(status)}\if{html}{\out{</div>}}
@@ -75,8 +75,8 @@ Set the status of the response.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-send"></a>}}
-\if{latex}{\out{\hypertarget{method-send}{}}}
+\if{html}{\out{<a id="method-Response-send"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-send}{}}}
 \subsection{Method \code{send()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$send(body, headers = NULL, status = NULL)}\if{html}{\out{</div>}}
@@ -99,8 +99,8 @@ Send a plain HTML response.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-sendf"></a>}}
-\if{latex}{\out{\hypertarget{method-sendf}{}}}
+\if{html}{\out{<a id="method-Response-sendf"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-sendf}{}}}
 \subsection{Method \code{sendf()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$sendf(body, ..., headers = NULL, status = NULL)}\if{html}{\out{</div>}}
@@ -125,8 +125,8 @@ Send a plain HTML response, pre-processed with sprintf.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-text"></a>}}
-\if{latex}{\out{\hypertarget{method-text}{}}}
+\if{html}{\out{<a id="method-Response-text"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-text}{}}}
 \subsection{Method \code{text()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$text(body, headers = NULL, status = NULL)}\if{html}{\out{</div>}}
@@ -149,8 +149,8 @@ Send a plain text response.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-send_file"></a>}}
-\if{latex}{\out{\hypertarget{method-send_file}{}}}
+\if{html}{\out{<a id="method-Response-send_file"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-send_file}{}}}
 \subsection{Method \code{send_file()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$send_file(file, headers = NULL, status = NULL)}\if{html}{\out{</div>}}
@@ -173,8 +173,8 @@ Send a file.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-redirect"></a>}}
-\if{latex}{\out{\hypertarget{method-redirect}{}}}
+\if{html}{\out{<a id="method-Response-redirect"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-redirect}{}}}
 \subsection{Method \code{redirect()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$redirect(path, status = NULL)}\if{html}{\out{</div>}}
@@ -195,8 +195,8 @@ Redirect to a path or URL.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-render"></a>}}
-\if{latex}{\out{\hypertarget{method-render}{}}}
+\if{html}{\out{<a id="method-Response-render"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-render}{}}}
 \subsection{Method \code{render()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$render(file, data = list(), headers = NULL, status = NULL)}\if{html}{\out{</div>}}
@@ -221,8 +221,8 @@ Render a template file.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-json"></a>}}
-\if{latex}{\out{\hypertarget{method-json}{}}}
+\if{html}{\out{<a id="method-Response-json"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-json}{}}}
 \subsection{Method \code{json()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$json(body, headers = NULL, status = NULL, ...)}\if{html}{\out{</div>}}
@@ -247,8 +247,8 @@ Render an object as JSON.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-csv"></a>}}
-\if{latex}{\out{\hypertarget{method-csv}{}}}
+\if{html}{\out{<a id="method-Response-csv"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-csv}{}}}
 \subsection{Method \code{csv()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$csv(data, name = "data", status = NULL, ...)}\if{html}{\out{</div>}}
@@ -273,8 +273,8 @@ Sends a comma separated value file
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-tsv"></a>}}
-\if{latex}{\out{\hypertarget{method-tsv}{}}}
+\if{html}{\out{<a id="method-Response-tsv"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-tsv}{}}}
 \subsection{Method \code{tsv()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$tsv(data, name = "data", status = NULL, ...)}\if{html}{\out{</div>}}
@@ -299,8 +299,8 @@ Sends a tab separated value file
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-htmlwidget"></a>}}
-\if{latex}{\out{\hypertarget{method-htmlwidget}{}}}
+\if{html}{\out{<a id="method-Response-htmlwidget"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-htmlwidget}{}}}
 \subsection{Method \code{htmlwidget()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$htmlwidget(widget, status = NULL, ...)}\if{html}{\out{</div>}}
@@ -323,8 +323,8 @@ Sends an htmlwidget.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-md"></a>}}
-\if{latex}{\out{\hypertarget{method-md}{}}}
+\if{html}{\out{<a id="method-Response-md"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-md}{}}}
 \subsection{Method \code{md()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$md(file, data = list(), headers = NULL, status = NULL)}\if{html}{\out{</div>}}
@@ -349,8 +349,8 @@ Render a markdown file.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-png"></a>}}
-\if{latex}{\out{\hypertarget{method-png}{}}}
+\if{html}{\out{<a id="method-Response-png"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-png}{}}}
 \subsection{Method \code{png()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$png(file)}\if{html}{\out{</div>}}
@@ -369,8 +369,8 @@ Send a png file
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-jpeg"></a>}}
-\if{latex}{\out{\hypertarget{method-jpeg}{}}}
+\if{html}{\out{<a id="method-Response-jpeg"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-jpeg}{}}}
 \subsection{Method \code{jpeg()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$jpeg(file)}\if{html}{\out{</div>}}
@@ -389,8 +389,8 @@ Send a jpeg file
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-image"></a>}}
-\if{latex}{\out{\hypertarget{method-image}{}}}
+\if{html}{\out{<a id="method-Response-image"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-image}{}}}
 \subsection{Method \code{image()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$image(file)}\if{html}{\out{</div>}}
@@ -411,8 +411,8 @@ based on file extension.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-ggplot2"></a>}}
-\if{latex}{\out{\hypertarget{method-ggplot2}{}}}
+\if{html}{\out{<a id="method-Response-ggplot2"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-ggplot2}{}}}
 \subsection{Method \code{ggplot2()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$ggplot2(plot, ..., type = c("png", "jpeg"))}\if{html}{\out{</div>}}
@@ -435,8 +435,8 @@ Ggplot2
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-print"></a>}}
-\if{latex}{\out{\hypertarget{method-print}{}}}
+\if{html}{\out{<a id="method-Response-print"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-print}{}}}
 \subsection{Method \code{print()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$print()}\if{html}{\out{</div>}}
@@ -448,8 +448,8 @@ Print
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set"></a>}}
-\if{latex}{\out{\hypertarget{method-set}{}}}
+\if{html}{\out{<a id="method-Response-set"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-set}{}}}
 \subsection{Method \code{set()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$set(name, value)}\if{html}{\out{</div>}}
@@ -473,8 +473,8 @@ Invisible returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get"></a>}}
-\if{latex}{\out{\hypertarget{method-get}{}}}
+\if{html}{\out{<a id="method-Response-get"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-get}{}}}
 \subsection{Method \code{get()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$get(name)}\if{html}{\out{</div>}}
@@ -493,8 +493,8 @@ Get data
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-header"></a>}}
-\if{latex}{\out{\hypertarget{method-header}{}}}
+\if{html}{\out{<a id="method-Response-header"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-header}{}}}
 \subsection{Method \code{header()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$header(name, value)}\if{html}{\out{</div>}}
@@ -516,8 +516,8 @@ Invisibly returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-header_content_json"></a>}}
-\if{latex}{\out{\hypertarget{method-header_content_json}{}}}
+\if{html}{\out{<a id="method-Response-header_content_json"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-header_content_json}{}}}
 \subsection{Method \code{header_content_json()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$header_content_json()}\if{html}{\out{</div>}}
@@ -532,8 +532,8 @@ Invisibly returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-header_content_html"></a>}}
-\if{latex}{\out{\hypertarget{method-header_content_html}{}}}
+\if{html}{\out{<a id="method-Response-header_content_html"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-header_content_html}{}}}
 \subsection{Method \code{header_content_html()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$header_content_html()}\if{html}{\out{</div>}}
@@ -548,8 +548,8 @@ Invisibly returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-header_content_plain"></a>}}
-\if{latex}{\out{\hypertarget{method-header_content_plain}{}}}
+\if{html}{\out{<a id="method-Response-header_content_plain"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-header_content_plain}{}}}
 \subsection{Method \code{header_content_plain()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$header_content_plain()}\if{html}{\out{</div>}}
@@ -564,8 +564,8 @@ Invisibly returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-header_content_csv"></a>}}
-\if{latex}{\out{\hypertarget{method-header_content_csv}{}}}
+\if{html}{\out{<a id="method-Response-header_content_csv"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-header_content_csv}{}}}
 \subsection{Method \code{header_content_csv()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$header_content_csv()}\if{html}{\out{</div>}}
@@ -580,8 +580,8 @@ Invisibly returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-header_content_tsv"></a>}}
-\if{latex}{\out{\hypertarget{method-header_content_tsv}{}}}
+\if{html}{\out{<a id="method-Response-header_content_tsv"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-header_content_tsv}{}}}
 \subsection{Method \code{header_content_tsv()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$header_content_tsv()}\if{html}{\out{</div>}}
@@ -596,8 +596,8 @@ Invisibly returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_headers"></a>}}
-\if{latex}{\out{\hypertarget{method-get_headers}{}}}
+\if{html}{\out{<a id="method-Response-get_headers"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-get_headers}{}}}
 \subsection{Method \code{get_headers()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$get_headers()}\if{html}{\out{</div>}}
@@ -610,8 +610,8 @@ Returns the list of headers currently set.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_header"></a>}}
-\if{latex}{\out{\hypertarget{method-get_header}{}}}
+\if{html}{\out{<a id="method-Response-get_header"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-get_header}{}}}
 \subsection{Method \code{get_header()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$get_header(name)}\if{html}{\out{</div>}}
@@ -631,8 +631,8 @@ Returns a single header currently, \code{NULL} if not set.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_headers"></a>}}
-\if{latex}{\out{\hypertarget{method-set_headers}{}}}
+\if{html}{\out{<a id="method-Response-set_headers"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-set_headers}{}}}
 \subsection{Method \code{set_headers()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$set_headers(headers)}\if{html}{\out{</div>}}
@@ -651,8 +651,8 @@ Set headers
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_header"></a>}}
-\if{latex}{\out{\hypertarget{method-set_header}{}}}
+\if{html}{\out{<a id="method-Response-set_header"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-set_header}{}}}
 \subsection{Method \code{set_header()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$set_header(name, value)}\if{html}{\out{</div>}}
@@ -676,8 +676,8 @@ Invisible returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-pre_render_hook"></a>}}
-\if{latex}{\out{\hypertarget{method-pre_render_hook}{}}}
+\if{html}{\out{<a id="method-Response-pre_render_hook"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-pre_render_hook}{}}}
 \subsection{Method \code{pre_render_hook()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$pre_render_hook(hook)}\if{html}{\out{</div>}}
@@ -716,8 +716,8 @@ Invisible returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-post_render_hook"></a>}}
-\if{latex}{\out{\hypertarget{method-post_render_hook}{}}}
+\if{html}{\out{<a id="method-Response-post_render_hook"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-post_render_hook}{}}}
 \subsection{Method \code{post_render_hook()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$post_render_hook(hook)}\if{html}{\out{</div>}}
@@ -749,8 +749,8 @@ Invisible returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cookie"></a>}}
-\if{latex}{\out{\hypertarget{method-cookie}{}}}
+\if{html}{\out{<a id="method-Response-cookie"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-cookie}{}}}
 \subsection{Method \code{cookie()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$cookie(
@@ -813,8 +813,8 @@ Invisibly returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clear_cookie"></a>}}
-\if{latex}{\out{\hypertarget{method-clear_cookie}{}}}
+\if{html}{\out{<a id="method-Response-clear_cookie"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-clear_cookie}{}}}
 \subsection{Method \code{clear_cookie()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Response$clear_cookie(name)}\if{html}{\out{</div>}}
@@ -837,8 +837,8 @@ Invisibly returns self.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Response-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Response-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

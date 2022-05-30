@@ -53,26 +53,26 @@ if(interactive())
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Routing$new()}}
-\item \href{#method-get}{\code{Routing$get()}}
-\item \href{#method-put}{\code{Routing$put()}}
-\item \href{#method-patch}{\code{Routing$patch()}}
-\item \href{#method-delete}{\code{Routing$delete()}}
-\item \href{#method-post}{\code{Routing$post()}}
-\item \href{#method-options}{\code{Routing$options()}}
-\item \href{#method-all}{\code{Routing$all()}}
-\item \href{#method-receive}{\code{Routing$receive()}}
-\item \href{#method-print}{\code{Routing$print()}}
-\item \href{#method-use}{\code{Routing$use()}}
-\item \href{#method-get_routes}{\code{Routing$get_routes()}}
-\item \href{#method-get_receivers}{\code{Routing$get_receivers()}}
-\item \href{#method-get_middleware}{\code{Routing$get_middleware()}}
-\item \href{#method-clone}{\code{Routing$clone()}}
+\item \href{#method-Routing-new}{\code{Routing$new()}}
+\item \href{#method-Routing-get}{\code{Routing$get()}}
+\item \href{#method-Routing-put}{\code{Routing$put()}}
+\item \href{#method-Routing-patch}{\code{Routing$patch()}}
+\item \href{#method-Routing-delete}{\code{Routing$delete()}}
+\item \href{#method-Routing-post}{\code{Routing$post()}}
+\item \href{#method-Routing-options}{\code{Routing$options()}}
+\item \href{#method-Routing-all}{\code{Routing$all()}}
+\item \href{#method-Routing-receive}{\code{Routing$receive()}}
+\item \href{#method-Routing-print}{\code{Routing$print()}}
+\item \href{#method-Routing-use}{\code{Routing$use()}}
+\item \href{#method-Routing-get_routes}{\code{Routing$get_routes()}}
+\item \href{#method-Routing-get_receivers}{\code{Routing$get_receivers()}}
+\item \href{#method-Routing-get_middleware}{\code{Routing$get_middleware()}}
+\item \href{#method-Routing-clone}{\code{Routing$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Routing-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$new(path = "")}\if{html}{\out{</div>}}
@@ -91,8 +91,8 @@ Initialise
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get"></a>}}
-\if{latex}{\out{\hypertarget{method-get}{}}}
+\if{html}{\out{<a id="method-Routing-get"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-get}{}}}
 \subsection{Method \code{get()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$get(path, handler, error = NULL)}\if{html}{\out{</div>}}
@@ -133,8 +133,8 @@ if(interactive())
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-put"></a>}}
-\if{latex}{\out{\hypertarget{method-put}{}}}
+\if{html}{\out{<a id="method-Routing-put"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-put}{}}}
 \subsection{Method \code{put()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$put(path, handler, error = NULL)}\if{html}{\out{</div>}}
@@ -160,8 +160,8 @@ Add routes to listen to.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-patch"></a>}}
-\if{latex}{\out{\hypertarget{method-patch}{}}}
+\if{html}{\out{<a id="method-Routing-patch"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-patch}{}}}
 \subsection{Method \code{patch()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$patch(path, handler, error = NULL)}\if{html}{\out{</div>}}
@@ -187,8 +187,8 @@ Add routes to listen to.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-delete"></a>}}
-\if{latex}{\out{\hypertarget{method-delete}{}}}
+\if{html}{\out{<a id="method-Routing-delete"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-delete}{}}}
 \subsection{Method \code{delete()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$delete(path, handler, error = NULL)}\if{html}{\out{</div>}}
@@ -214,8 +214,8 @@ Add routes to listen to.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-post"></a>}}
-\if{latex}{\out{\hypertarget{method-post}{}}}
+\if{html}{\out{<a id="method-Routing-post"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-post}{}}}
 \subsection{Method \code{post()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$post(path, handler, error = NULL)}\if{html}{\out{</div>}}
@@ -241,8 +241,8 @@ Add routes to listen to.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-options"></a>}}
-\if{latex}{\out{\hypertarget{method-options}{}}}
+\if{html}{\out{<a id="method-Routing-options"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-options}{}}}
 \subsection{Method \code{options()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$options(path, handler, error = NULL)}\if{html}{\out{</div>}}
@@ -268,8 +268,8 @@ Add routes to listen to.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-all"></a>}}
-\if{latex}{\out{\hypertarget{method-all}{}}}
+\if{html}{\out{<a id="method-Routing-all"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-all}{}}}
 \subsection{Method \code{all()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$all(path, handler, error = NULL)}\if{html}{\out{</div>}}
@@ -295,8 +295,8 @@ Add routes to listen to for all methods \code{GET}, \code{POST}, \code{PUT}, \co
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-receive"></a>}}
-\if{latex}{\out{\hypertarget{method-receive}{}}}
+\if{html}{\out{<a id="method-Routing-receive"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-receive}{}}}
 \subsection{Method \code{receive()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$receive(name, handler)}\if{html}{\out{</div>}}
@@ -339,8 +339,8 @@ if(interactive())
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-print"></a>}}
-\if{latex}{\out{\hypertarget{method-print}{}}}
+\if{html}{\out{<a id="method-Routing-print"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-print}{}}}
 \subsection{Method \code{print()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$print()}\if{html}{\out{</div>}}
@@ -352,8 +352,8 @@ Print
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-use"></a>}}
-\if{latex}{\out{\hypertarget{method-use}{}}}
+\if{html}{\out{<a id="method-Routing-use"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-use}{}}}
 \subsection{Method \code{use()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$use(use)}\if{html}{\out{</div>}}
@@ -377,8 +377,8 @@ Use a router or middleware
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_routes"></a>}}
-\if{latex}{\out{\hypertarget{method-get_routes}{}}}
+\if{html}{\out{<a id="method-Routing-get_routes"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-get_routes}{}}}
 \subsection{Method \code{get_routes()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$get_routes()}\if{html}{\out{</div>}}
@@ -390,8 +390,8 @@ Get the routes
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_receivers"></a>}}
-\if{latex}{\out{\hypertarget{method-get_receivers}{}}}
+\if{html}{\out{<a id="method-Routing-get_receivers"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-get_receivers}{}}}
 \subsection{Method \code{get_receivers()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$get_receivers()}\if{html}{\out{</div>}}
@@ -403,8 +403,8 @@ Get the receivers
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_middleware"></a>}}
-\if{latex}{\out{\hypertarget{method-get_middleware}{}}}
+\if{html}{\out{<a id="method-Routing-get_middleware"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-get_middleware}{}}}
 \subsection{Method \code{get_middleware()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Routing$get_middleware()}\if{html}{\out{</div>}}
@@ -416,8 +416,8 @@ Get the middleware
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Routing-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

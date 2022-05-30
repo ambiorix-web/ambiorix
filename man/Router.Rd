@@ -54,32 +54,32 @@ if(interactive())
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Router$new()}}
-\item \href{#method-print}{\code{Router$print()}}
-\item \href{#method-clone}{\code{Router$clone()}}
+\item \href{#method-Router-new}{\code{Router$new()}}
+\item \href{#method-Router-print}{\code{Router$print()}}
+\item \href{#method-Router-clone}{\code{Router$clone()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="all">}\href{../../ambiorix/html/Routing.html#method-all}{\code{ambiorix::Routing$all()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="delete">}\href{../../ambiorix/html/Routing.html#method-delete}{\code{ambiorix::Routing$delete()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get">}\href{../../ambiorix/html/Routing.html#method-get}{\code{ambiorix::Routing$get()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_middleware">}\href{../../ambiorix/html/Routing.html#method-get_middleware}{\code{ambiorix::Routing$get_middleware()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers">}\href{../../ambiorix/html/Routing.html#method-get_receivers}{\code{ambiorix::Routing$get_receivers()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_routes">}\href{../../ambiorix/html/Routing.html#method-get_routes}{\code{ambiorix::Routing$get_routes()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="options">}\href{../../ambiorix/html/Routing.html#method-options}{\code{ambiorix::Routing$options()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="patch">}\href{../../ambiorix/html/Routing.html#method-patch}{\code{ambiorix::Routing$patch()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="post">}\href{../../ambiorix/html/Routing.html#method-post}{\code{ambiorix::Routing$post()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="put">}\href{../../ambiorix/html/Routing.html#method-put}{\code{ambiorix::Routing$put()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive">}\href{../../ambiorix/html/Routing.html#method-receive}{\code{ambiorix::Routing$receive()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use">}\href{../../ambiorix/html/Routing.html#method-use}{\code{ambiorix::Routing$use()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="all"><a href='../../ambiorix/html/Routing.html#method-Routing-all'><code>ambiorix::Routing$all()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="delete"><a href='../../ambiorix/html/Routing.html#method-Routing-delete'><code>ambiorix::Routing$delete()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get"><a href='../../ambiorix/html/Routing.html#method-Routing-get'><code>ambiorix::Routing$get()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_middleware"><a href='../../ambiorix/html/Routing.html#method-Routing-get_middleware'><code>ambiorix::Routing$get_middleware()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers"><a href='../../ambiorix/html/Routing.html#method-Routing-get_receivers'><code>ambiorix::Routing$get_receivers()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_routes"><a href='../../ambiorix/html/Routing.html#method-Routing-get_routes'><code>ambiorix::Routing$get_routes()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="options"><a href='../../ambiorix/html/Routing.html#method-Routing-options'><code>ambiorix::Routing$options()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="patch"><a href='../../ambiorix/html/Routing.html#method-Routing-patch'><code>ambiorix::Routing$patch()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="post"><a href='../../ambiorix/html/Routing.html#method-Routing-post'><code>ambiorix::Routing$post()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="put"><a href='../../ambiorix/html/Routing.html#method-Routing-put'><code>ambiorix::Routing$put()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive"><a href='../../ambiorix/html/Routing.html#method-Routing-receive'><code>ambiorix::Routing$receive()</code></a></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use"><a href='../../ambiorix/html/Routing.html#method-Routing-use'><code>ambiorix::Routing$use()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Router-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Router-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Router$new(path)}\if{html}{\out{</div>}}
@@ -98,8 +98,8 @@ Define the base route.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-print"></a>}}
-\if{latex}{\out{\hypertarget{method-print}{}}}
+\if{html}{\out{<a id="method-Router-print"></a>}}
+\if{latex}{\out{\hypertarget{method-Router-print}{}}}
 \subsection{Method \code{print()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Router$print()}\if{html}{\out{</div>}}
@@ -111,8 +111,8 @@ Print
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Router-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Router-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
