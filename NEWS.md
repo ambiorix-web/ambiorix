@@ -1,5 +1,12 @@
 # ambiorix 2.1.0.9000
 
+- Added `cache_templates` method to cache templates
+in memory.
+- Added `use_html_template` to use `htmltools::htmlTemplate` as
+rendering.
+
+# ambiorix 2.1.0
+
 __Breaking__
 
 - `Response` method `status` renamed to `set_status`

@@ -604,7 +604,7 @@ Response <- R6::R6Class(
         return(.globals$renderer(file, data))
 
       # read and replace tags
-      file_content <- read_lines(file)
+      file_content <- read_lines_cached(file)
 
       # render
       ext <- tools::file_ext(file)
