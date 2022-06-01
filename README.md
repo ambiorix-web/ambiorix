@@ -41,7 +41,7 @@ app$start()
 - [eburones](https://github.com/devOpifex/eburones) Sessions
 - [agris](https://github.com/devOpifex/druid) Security
 - [scilis](https://github.com/devOpifex/scilis) Cookies
-- [titan](https://github.com/devOpifex/titan) Prometheus middleware
+- [titan](https://github.com/devOpifex/titan) Prometheus metrics
 - [surf](https://github.com/devOpifex/surf) CSRF protection
 - [signaculum](https://github.com/devOpifex/signaculum) favicon
 - [pugger](https://github.com/devOpifex/pugger) Pug engine
