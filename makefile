@@ -9,3 +9,6 @@ document:
 
 test:
 	Rscript -e "devtools::test()"
+
+dev:
+	Rscript test.R

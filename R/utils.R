@@ -12,7 +12,13 @@ browse_ambiorix <- function(open, url){
 
   viewer <- getOption("viewer", browseURL)
 
-  viewer(url)
+  x <- tryCatch(
+    viewer(url),
+    error = function(e) e
+  )
+
+  if(inerits(x, "error"))
+    cat("Unable to open browser, please open manually.\n")
 
   invisible()
 }
