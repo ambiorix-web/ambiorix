@@ -13,9 +13,6 @@ Routing <- R6::R6Class(
 #' @details Initialise
 #' @param path Prefix path.
     initialize = function(path = "") {
-      self$error <- \(req, res) {
-        response_500()
-      }
       private$.basepath <- path
       private$.is_router <- path != ""
     },
@@ -395,12 +392,20 @@ Routing <- R6::R6Class(
           request$params <- set_params(request$PATH_INFO, private$.routes[[i]]$route)
 
           # get response
-          response <- tryCatch(private$.routes[[i]]$fun(request, res),
+          response <- tryCatch(
+            private$.routes[[i]]$fun(request, res),
             error = function(error){
-              warning(error)
-              private$.routes[[i]]$error(request, res)
+              error
             }
           )
+
+          if(inherits(response, "error") && !is.null(private$.routes[[i]]$error)){
+            return(private$.routes[[i]]$error(request, res))
+          }
+
+          if(inherits(response, "error") && !is.null(self$error)){
+            return(self$error(request, res))
+          }
 
           if(promises::is.promising(response)){
             return(
