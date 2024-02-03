@@ -68,7 +68,7 @@ app$get("/", function(req, res){
 })
 
 if(interactive())
- app$list(posrt = 3000L)
+ app$start(port = 3000L)
 
 ## ------------------------------------------------
 ## Method `Ambiorix$serialiser`
@@ -317,7 +317,7 @@ app$get("/", function(req, res){
 })
 
 if(interactive())
- app$list(posrt = 3000L)
+ app$start(port = 3000L)
 }
 \if{html}{\out{</div>}}
 
