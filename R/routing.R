@@ -10,30 +10,30 @@ Routing <- R6::R6Class(
   "Routing",
   public = list(
     error = NULL,
-#' @details Initialise
-#' @param path Prefix path.
+    #' @details Initialise
+    #' @param path Prefix path.
     initialize = function(path = "") {
       private$.basepath <- path
       private$.is_router <- path != ""
     },
-#' @details GET Method
-#' 
-#' Add routes to listen to.
-#' 
-#' @param path Route to listen to, `:` defines a parameter.
-#' @param handler Function that accepts the request and returns an object 
-#' describing an httpuv response, e.g.: [response()].
-#' @param error Handler function to run on error.
-#' 
-#' @examples 
-#' app <- Ambiorix$new()
-#' 
-#' app$get("/", function(req, res){
-#'  res$send("Using {ambiorix}!")
-#' })
-#' 
-#' if(interactive())
-#'  app$start()
+    #' @details GET Method
+    #' 
+    #' Add routes to listen to.
+    #' 
+    #' @param path Route to listen to, `:` defines a parameter.
+    #' @param handler Function that accepts the request and returns an object 
+    #' describing an httpuv response, e.g.: [response()].
+    #' @param error Handler function to run on error.
+    #' 
+    #' @examples 
+    #' app <- Ambiorix$new()
+    #' 
+    #' app$get("/", function(req, res){
+    #'  res$send("Using {ambiorix}!")
+    #' })
+    #' 
+    #' if(interactive())
+    #'  app$start()
     get = function(path, handler, error = NULL){
       assert_that(valid_path(path))
       assert_that(not_missing(handler))
@@ -400,11 +400,11 @@ Routing <- R6::R6Class(
           )
 
           if(inherits(response, "error") && !is.null(private$.routes[[i]]$error)){
-            return(private$.routes[[i]]$error(request, res))
+            return(private$.routes[[i]]$error(request, res, response))
           }
 
           if(inherits(response, "error") && !is.null(self$error)){
-            return(self$error(request, res))
+            return(self$error(request, res, response))
           }
 
           if(promises::is.promising(response)){
@@ -419,7 +419,7 @@ Routing <- R6::R6Class(
                 onRejected = function(error){
                   message(error)
                   .globals$errorLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO, "-", "Server error")
-                  private$.routes[[i]]$error(request, res)
+                  private$.routes[[i]]$error(request, res, error)
                 }
               )
             )
