@@ -136,7 +136,7 @@ Ambiorix <- R6::R6Class(
 #' })
 #' 
 #' if(interactive())
-#'  app$list(posrt = 3000L)
+#'  app$start(port = 3000L)
     start = function(
       port = NULL, host = NULL, open = interactive()) {
       if(private$.is_running){
