@@ -39,6 +39,14 @@ assertthat::on_failure(is_handler) <- function(call, env){
   paste("`handler` must be a function that accepts: `req`, and `res`")
 }
 
+is_error_handler <- function(x) {
+  is.function(x) && length(formalArgs(x)) == 3
+}
+
+assertthat::on_failure(is_error_handler) <- function(call, env) {
+  "`handler` must be a function that accepts: `req`, `res` and `error`"
+}
+
 is_logger <- function(x){
   inherits(x, "Logger")
 }
