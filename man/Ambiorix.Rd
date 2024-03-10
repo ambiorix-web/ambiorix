@@ -58,7 +58,7 @@ if(interactive())
  app$start()
 
 ## ------------------------------------------------
-## Method `Ambiorix$set_error_handler`
+## Method `Ambiorix$set_error`
 ## ------------------------------------------------
 
 # my custom error handler:
@@ -84,7 +84,7 @@ whoami <- \(req, res) {
 
 app <- Ambiorix$
   new()$
-  set_error_handler(error_handler)$
+  set_error(error_handler)$
   get("/whoami", whoami)
 
 if (interactive()) {
@@ -151,7 +151,7 @@ if(interactive())
 \item \href{#method-Ambiorix-cache_templates}{\code{Ambiorix$cache_templates()}}
 \item \href{#method-Ambiorix-listen}{\code{Ambiorix$listen()}}
 \item \href{#method-Ambiorix-set_404}{\code{Ambiorix$set_404()}}
-\item \href{#method-Ambiorix-set_error_handler}{\code{Ambiorix$set_error_handler()}}
+\item \href{#method-Ambiorix-set_error}{\code{Ambiorix$set_error()}}
 \item \href{#method-Ambiorix-static}{\code{Ambiorix$static()}}
 \item \href{#method-Ambiorix-start}{\code{Ambiorix$start()}}
 \item \href{#method-Ambiorix-serialiser}{\code{Ambiorix$serialiser()}}
@@ -298,11 +298,11 @@ if(interactive())
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Ambiorix-set_error_handler"></a>}}
-\if{latex}{\out{\hypertarget{method-Ambiorix-set_error_handler}{}}}
-\subsection{Method \code{set_error_handler()}}{
+\if{html}{\out{<a id="method-Ambiorix-set_error"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-set_error}{}}}
+\subsection{Method \code{set_error()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$set_error_handler(handler)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$set_error(handler)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -341,7 +341,7 @@ whoami <- \(req, res) {
 
 app <- Ambiorix$
   new()$
-  set_error_handler(error_handler)$
+  set_error(error_handler)$
   get("/whoami", whoami)
 
 if (interactive()) {
