@@ -40,7 +40,10 @@ assertthat::on_failure(is_handler) <- function(call, env){
 }
 
 is_error_handler <- function(x) {
-  is.function(x) && length(formalArgs(x)) == 3
+  is_fun <- is.function(x)
+  has_args <- length(formalArgs(x)) == 3
+
+  all(is_fun, has_args)
 }
 
 assertthat::on_failure(is_error_handler) <- function(call, env) {
