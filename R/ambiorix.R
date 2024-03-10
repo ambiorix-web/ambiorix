@@ -136,14 +136,15 @@ Ambiorix <- R6::R6Class(
 #'
 #' app <- Ambiorix$
 #'   new()$
-#'   set_error_handler(error_handler)$
+#'   set_error(error_handler)$
 #'   get("/whoami", whoami)
 #'
 #' if (interactive()) {
 #'   app$start(open = FALSE)
 #' }
-    set_error_handler = function(handler) {
+    set_error = function(handler) {
       assert_that(not_missing(handler))
+      assert_that(is_error_handler(handler))
       self$error <- handler
       invisible(self)
     },
