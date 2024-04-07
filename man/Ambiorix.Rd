@@ -141,6 +141,8 @@ if(interactive())
 \item{\code{port}}{Port to run the application.}
 
 \item{\code{host}}{Host to run the application.}
+
+\item{\code{limit}}{Max body size, defaults to \code{5 * 1024 * 1024}.}
 }
 \if{html}{\out{</div>}}
 }
