@@ -107,62 +107,62 @@ Response <- R6::R6Class(
     },
 #' @details Send a plain HTML response.
 #' @param body Body of the response.
-#' @param headers HTTP headers to set.
-#' @param status Status of the response, if `NULL` uses `self$status`.
-    send = function(body, headers = NULL, status = NULL){
-      deprecated_headers(headers)
-      deprecated_status(status)
-      headers <- private$.get_headers(headers)
-      response(status = private$.get_status(status), headers = headers, body = convert_body(body))
+    send = function(body, env = parent.frame()){
+      headers <- private$.get_headers()
+      resp <- response(status = private$.get_status(), headers = headers, body = convert_body(body))
+      do.call(return, list(resp), envir = env)
     },
 #' @details Send a plain HTML response, pre-processed with sprintf.
 #' @param body Body of the response.
 #' @param ... Passed to `...` of `sprintf`.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    sendf = function(body, ..., headers = NULL, status = NULL){
+    sendf = function(body, ..., headers = NULL, status = NULL, env = parent.frame()){
       deprecated_headers(headers)
       deprecated_status(status)
       body <- sprintf(body, ...)
       headers <- private$.get_headers(headers)
-      response(status = private$.get_status(status), headers = headers, body = convert_body(body))
+      resp <- response(status = private$.get_status(status), headers = headers, body = convert_body(body))
+      do.call(return, list(resp), envir = env)
     },
 #' @details Send a plain text response.
 #' @param body Body of the response.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    text = function(body, headers = NULL, status = NULL){
+    text = function(body, headers = NULL, status = NULL, env = parent.frame()){
       deprecated_headers(headers)
       deprecated_status(status)
       headers <- private$.get_headers(headers)
       headers[["Content-Type"]] <- content_plain()
-      response(status = private$.get_status(status), headers = headers, body = convert_body(body))
+      resp <- response(status = private$.get_status(status), headers = headers, body = convert_body(body))
+      do.call(return, list(resp), envir = env)
     },
 #' @details Send a file.
 #' @param file File to send.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response.
-    send_file = function(file, headers = NULL, status = NULL){
+    send_file = function(file, headers = NULL, status = NULL, env = parent.frame()){
       deprecated_headers(headers)
       deprecated_status(status)
       assert_that(not_missing(file))
-      self$render(file, data = list(), status = status, headers = headers)
+      self$render(file, data = list(), status = status, headers = headers, env = env)
     },
 #' @details Redirect to a path or URL.
 #' @param path Path or URL to redirect to.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    redirect = function(path, status = NULL){
+    redirect = function(path, status = NULL, env = parent.frame()){
       deprecated_status(status)
       status <- private$.get_status(status)
       headers <- private$.get_headers(list(Location = path))
-      response(status = status, headers = headers, body = "")
+      resp <- response(status = status, headers = headers, body = "")
+      do.call(return, list(resp), envir = env)
     },
 #' @details Render a template file.
 #' @param file Template file.
 #' @param data List to fill `[% tags %]`.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    render = function(file, data = list(), headers = NULL, status = NULL){
+    render = function(file, data = list(), headers = NULL, status = NULL, env = parent.frame()){
       assert_that(not_missing(file))
       assert_that(has_file(file))
       deprecated_status(status)
@@ -173,26 +173,28 @@ Response <- R6::R6Class(
       file_content <- private$.render_template(file, data)
       headers <- private$.get_headers(headers)
 
-      response(file_content, status = private$.get_status(status), headers = headers)
+      resp <- response(file_content, status = private$.get_status(status), headers = headers)
+      do.call(return, list(resp), envir = env)
     },
 #' @details Render an object as JSON.
 #' @param body Body of the response.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
 #' @param ... Additional arguments passed to the serialiser.
-    json = function(body, headers = NULL, status = NULL, ...){
+    json = function(body, headers = NULL, status = NULL, ..., env = parent.frame()){
       self$header_content_json()
       deprecated_headers(headers)
       deprecated_status(status)
       headers <- private$.get_headers(headers)
-      response(serialise(body), headers = headers, status = private$.get_status(status))
+      resp <- response(serialise(body), headers = headers, status = private$.get_status(status))
+      do.call(return, list(resp), envir = env)
     },
 #' @details Sends a comma separated value file
 #' @param data Data to convert to CSV.
 #' @param name Name of the file.
 #' @param status Status of the response, if `NULL` uses `self$status`.
 #' @param ... Additional arguments passed to [readr::format_csv()].
-    csv = function(data, name = "data", status = NULL, ...){
+    csv = function(data, name = "data", status = NULL, ..., env = parent.frame()){
       assert_that(not_missing(data))
       check_installed("readr")
       deprecated_status(status)
@@ -206,14 +208,15 @@ Response <- R6::R6Class(
       headers <- private$.get_headers(headers)
 
       data <- readr::format_csv(data, ...)
-      response(data, header = headers, status = private$.get_status(status))
+      resp <- response(data, header = headers, status = private$.get_status(status))
+      do.call(return, list(resp), envir = env)
     },
 #' @details Sends a tab separated value file
 #' @param data Data to convert to CSV.
 #' @param name Name of the file.
 #' @param status Status of the response, if `NULL` uses `self$status`.
 #' @param ... Additional arguments passed to [readr::format_tsv()].
-    tsv = function(data, name = "data", status = NULL, ...){
+    tsv = function(data, name = "data", status = NULL, ..., env = parent.frame()){
       assert_that(not_missing(data))
       check_installed("readr")
       deprecated_status(status)
@@ -227,13 +230,14 @@ Response <- R6::R6Class(
       headers <- private$.get_headers(headers)
 
       data <- readr::format_tsv(data, ...)
-      response(data, header = headers, status = private$.get_status(status))
+      resp <- response(data, header = headers, status = private$.get_status(status))
+      do.call(return, list(resp), envir = env)
     },
 #' @details Sends an htmlwidget.
 #' @param widget The widget to use.
 #' @param status Status of the response, if `NULL` uses `self$status`.
 #' @param ... Additional arguments passed to [htmlwidgets::saveWidget()].
-    htmlwidget = function(widget, status = NULL, ...){
+    htmlwidget = function(widget, status = NULL, ..., env = parent.frame()){
       check_installed("htmlwidgets")
       if(!inherits(widget, "htmlwidget"))
         stop("This is not an htmlwidget", call. = FALSE)
@@ -247,28 +251,29 @@ Response <- R6::R6Class(
       })
       headers <- private$.get_headers()
 
-      response(body = paste0(read_lines(tmp), "\n", collapse = ""), status = private$.get_status(status), headers = headers)
+      resp <- response(body = paste0(read_lines(tmp), "\n", collapse = ""), status = private$.get_status(status), headers = headers)
+      do.call(return, list(resp), envir = env)
     },
 #' @details Render a markdown file.
 #' @param file Template file.
 #' @param data List to fill `[% tags %]`.
 #' @param headers HTTP headers to set.
 #' @param status Status of the response, if `NULL` uses `self$status`.
-    md = function(file, data = list(), headers = NULL, status = NULL) {
+    md = function(file, data = list(), headers = NULL, status = NULL, env = parent.frame()) {
       check_installed("commonmark")
       deprecated_headers(headers)
       deprecated_status(status)
-      self$render(file, data, headers, status)
+      self$render(file, data, headers, status, env = env)
     },
 #' @details Send a png file
 #' @param file Path to local file.
-    png = function(file){
-      private$.send_image(file, "png")
+    png = function(file, env = parent.frame()){
+      private$.send_image(file, "png", env = env)
     },
 #' @details Send a jpeg file
 #' @param file Path to local file.
-    jpeg = function(file) {
-      private$.send_image(file, "jpeg")
+    jpeg = function(file, env = parent.frame()) {
+      private$.send_image(file, "jpeg", env = env)
     },
 #' @details Send an image
 #' Similar to `png` and `jpeg` methods but guesses correct method 
@@ -284,7 +289,7 @@ Response <- R6::R6Class(
 #' @param plot Ggplot2 plot object.
 #' @param type Type of image to save.
 #' @param ... Passed to [ggplot2::ggsave()]
-    ggplot2 = function(plot, ..., type = c("png", "jpeg")) {
+    ggplot2 = function(plot, ..., type = c("png", "jpeg"), env = parent.frame()) {
       assert_that(not_missing(plot))
       check_installed("ggplot2")
 
@@ -296,7 +301,7 @@ Response <- R6::R6Class(
         plot, 
         ...
       ) 
-      private$.send_image(temp, type, clean = TRUE)
+      private$.send_image(temp, type, clean = TRUE, env = env)
     },
 #' @details Print
     print = function(){
@@ -308,7 +313,7 @@ Response <- R6::R6Class(
       cli::cli_h3("Headers")
       cli::cli_ul()
 
-      for(i in 1:length(private$.headers)) {
+      for(i in seq_along(private$.headers)) {
         cli::cli_li("HEADER {names(private$.headers)[i]}")
         str(private$.headers[[i]])
       }
@@ -653,7 +658,7 @@ Response <- R6::R6Class(
       # parse R
       private$.run_post_hooks(render_html(file_content), ext)
     },
-    .get_status = function(status){
+    .get_status = function(status = NULL){
       if(is.null(status))
         return(private$.status)
 
@@ -727,7 +732,7 @@ Response <- R6::R6Class(
         )
       }
     },
-    .send_image = function(file, type = c("png", "jpeg"), clean = FALSE) {
+    .send_image = function(file, type = c("png", "jpeg"), clean = FALSE, env = parent.frame()) {
       assert_that(not_missing(file))
 
       if(grepl("http", file))
@@ -752,7 +757,7 @@ Response <- R6::R6Class(
 
       self$header("Content-Length", size)
       self$header("Content-Type", type)
-      self$send(raw)
+      self$send(raw, env = env)
     }
   )
 )

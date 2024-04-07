@@ -425,6 +425,7 @@ Routing <- R6::R6Class(
               promises::then(
                 response, 
                 onFulfilled = function(response){
+                  .globals$errorLog$log("must return a response")
                   return(
                     response %response% response("Must return a response", status = 206L)
                   )
@@ -442,6 +443,7 @@ Routing <- R6::R6Class(
             next
 
           # if not a response return something that is
+          .globals$errorLog$log("must return a response")
           return(
             response %response% response("Must return a response", status = 206L)
           )
