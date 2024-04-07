@@ -239,7 +239,7 @@ Routing <- R6::R6Class(
       
       # recurse through items
       if(is.list(use)) {
-        for(i in 1:length(use)) {
+        for(i in seq_along(use)) {
           self$use(use[[i]])
         }
       }
@@ -325,6 +325,18 @@ Routing <- R6::R6Class(
       return(private$.middleware)
     }
   ),
+  active = list(
+    websocket = function(ws){
+      if(missing(ws) && !is.null(private$.wss_custom))
+        return(private$.wss_custom)
+
+      if(missing(ws) && is.null(private$.wss_custom))
+        return(private$.wss)
+
+      private$.wss_custom <- ws
+      invisible(self)
+    }
+  ),
   private = list(
     .basepath = "/",
     .is_router = FALSE,
@@ -333,6 +345,7 @@ Routing <- R6::R6Class(
     .receivers = list(),
     .middleware = list(),
     .is_running = FALSE,
+    .wss_custom = NULL,
     # we reorder the routes before launching the app
     # we make sure the longest patterns are checked first
     # this makes sure /:id/x matches BEFORE /:id does
@@ -344,7 +357,7 @@ Routing <- R6::R6Class(
       if(length(private$.routes) < 3L)
         return()
 
-      indices <- 1:length(private$.routes)
+      indices <- seq_along(private$.routes)
       pats <- lapply(private$.routes, \(route) {
         data.frame(
           pattern = route$route$pattern,
@@ -369,7 +382,7 @@ Routing <- R6::R6Class(
       res <- Response$new()
 
       if(length(private$.middleware) > 0L){
-        for(i in 1:length(private$.middleware)) {
+        for(i in seq_along(private$.middleware)) {
           mid_basepath <- attr(private$.middleware[[i]], "basepath")
 
           mid_res <- NULL
@@ -382,7 +395,7 @@ Routing <- R6::R6Class(
       }
       
       # loop over routes
-      for(i in 1:length(private$.routes)){
+      for(i in seq_along(private$.routes)){
         # if path matches pattern and method
         if(grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) && req$REQUEST_METHOD %in% private$.routes[[i]]$method){
           
@@ -450,7 +463,7 @@ Routing <- R6::R6Class(
 
         message <- jsonlite::fromJSON(message)
 
-        for(i in 1:length(private$.receivers)){
+        for(i in seq_along(private$.receivers)){
           if(private$.receivers[[i]]$is_handler(message)){
             .globals$infoLog$log("Received message from websocket:", message$name)
             return(private$.receivers[[i]]$receive(message, ws))
@@ -467,4 +480,3 @@ Routing <- R6::R6Class(
     }
   )
 )
-

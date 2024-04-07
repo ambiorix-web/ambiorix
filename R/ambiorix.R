@@ -200,7 +200,7 @@ Ambiorix <- R6::R6Class(
         app = list(
           call = super$.call, 
           staticPaths = private$.static, 
-          onWSOpen = super$.wss,
+          onWSOpen = super$websocket,
           staticPathOptions = httpuv::staticPathOptions(
             html_charset = "utf-8",
             headers = list(
