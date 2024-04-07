@@ -63,6 +63,7 @@ if(interactive())
 \item \href{#method-Routing-all}{\code{Routing$all()}}
 \item \href{#method-Routing-receive}{\code{Routing$receive()}}
 \item \href{#method-Routing-print}{\code{Routing$print()}}
+\item \href{#method-Routing-engine}{\code{Routing$engine()}}
 \item \href{#method-Routing-use}{\code{Routing$use()}}
 \item \href{#method-Routing-get_routes}{\code{Routing$get_routes()}}
 \item \href{#method-Routing-get_receivers}{\code{Routing$get_receivers()}}
@@ -348,6 +349,19 @@ if(interactive())
 
 \subsection{Details}{
 Print
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Routing-engine"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-engine}{}}}
+\subsection{Method \code{engine()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Routing$engine(engine)}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Engine to use for rendering templates.
 }
 
 }
