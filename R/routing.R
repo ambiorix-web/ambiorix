@@ -227,6 +227,14 @@ Routing <- R6::R6Class(
       cli::cli_rule("Ambiorix", right = "web server")
       cli::cli_li("routes: {.val {private$n_routes()}}")
     },
+    #' @details Engine to use for rendering templates.
+    engine = function(engine){
+      if(!is_renderer_obj(engine))
+        engine <- as_renderer(engine)
+
+      self$use(engine)
+      invisible(self)
+    },
 #' @details Use a router or middleware
 #' @param use Either a router as returned by [Router], a function to use as middleware,
 #' or a `list` of functions.
@@ -259,6 +267,11 @@ Routing <- R6::R6Class(
       }
 
       if(is_renderer_obj(use)) {
+        .Deprecated(
+          "engine",
+          package = "ambiorix",
+          msg = "Use `engine` instead of `use` for custom renderers."
+        )
         .globals$renderer <- use
         return(invisible(self))
       }
