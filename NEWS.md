@@ -1,4 +1,4 @@
-# ambiorix 2.1.0.9000
+# ambiorix 2.1.0
 
 - Added `cache_templates` method to cache templates
 in memory.
