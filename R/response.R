@@ -629,7 +629,7 @@ Response <- R6::R6Class(
 
       # hooks
       if(length(private$.preHooks) > 0) {
-        for(i in 1:length(private$.preHooks)) {
+        for(i in seq_along(private$.preHooks)) {
           pre_processed <- private$.preHooks[[i]](self, file_content, data, ext)
           if(!is_pre_hook(pre_processed)){
             cat(error(), "Not a valid return value from pre-hook (ignoring)\n")

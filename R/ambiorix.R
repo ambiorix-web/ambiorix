@@ -7,6 +7,7 @@
 #' @field on_stop Callback function to run when the app stops, takes no argument.
 #' @field port Port to run the application.
 #' @field host Host to run the application.
+#' @field limit Max body size, defaults to `5 * 1024 * 1024`.
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom utils browseURL
@@ -177,7 +178,10 @@ Ambiorix <- R6::R6Class(
 #' if(interactive())
 #'  app$start(port = 3000L)
     start = function(
-      port = NULL, host = NULL, open = interactive()) {
+      port = NULL, 
+      host = NULL, 
+      open = interactive()
+    ) {
       if(private$.is_running){
         cli::cli_alert_warning("Server is already running")
         return()
@@ -208,6 +212,27 @@ Ambiorix <- R6::R6Class(
             )
           ),
           onHeaders = function(req) {
+            size <- 0L
+            if (private$.limit <= 0)
+              return(NULL)
+
+            if (length(req$CONTENT_LENGTH) > 0)
+              size <- as.numeric(req$CONTENT_LENGTH)
+            else if (length(req$HTTP_TRANSFER_ENCODING) > 0)
+              size <- Inf
+
+            if (size > private$.limit){
+              .globals$errorLog$log("Request size exceeded, see app$limit")
+
+              return(
+                response(
+                  "Maximum upload size exceeded",
+                  status = 413L,
+                  headers = list("Content-Type" = "text/plain")
+                )
+              )
+            }
+
             return(NULL)
           }
         )
@@ -294,6 +319,12 @@ Ambiorix <- R6::R6Class(
         return(private$.host)
 
       private$.host <- value
+    },
+    limit = function(value){
+      if(missing(value))
+        return(private$.limit)
+
+      private$.limit <- as.integer(limit)
     }
   ),
   private = list(
@@ -302,6 +333,7 @@ Ambiorix <- R6::R6Class(
     .server = NULL,
     .static = list(),
     .is_running = FALSE,
+    .limit = 5 * 1024 * 1024,
     n_routes = function(){
       length(private$.routes)
     },

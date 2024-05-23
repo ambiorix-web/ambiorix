@@ -141,6 +141,8 @@ if(interactive())
 \item{\code{port}}{Port to run the application.}
 
 \item{\code{host}}{Host to run the application.}
+
+\item{\code{limit}}{Max body size, defaults to \code{5 * 1024 * 1024}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -165,6 +167,7 @@ if(interactive())
 <ul>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="all"><a href='../../ambiorix/html/Routing.html#method-Routing-all'><code>ambiorix::Routing$all()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="delete"><a href='../../ambiorix/html/Routing.html#method-Routing-delete'><code>ambiorix::Routing$delete()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="engine"><a href='../../ambiorix/html/Routing.html#method-Routing-engine'><code>ambiorix::Routing$engine()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get"><a href='../../ambiorix/html/Routing.html#method-Routing-get'><code>ambiorix::Routing$get()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_middleware"><a href='../../ambiorix/html/Routing.html#method-Routing-get_middleware'><code>ambiorix::Routing$get_middleware()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers"><a href='../../ambiorix/html/Routing.html#method-Routing-get_receivers'><code>ambiorix::Routing$get_receivers()</code></a></span></li>
