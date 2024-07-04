@@ -7,6 +7,7 @@
 #' @field on_stop Callback function to run when the app stops, takes no argument.
 #' @field port Port to run the application.
 #' @field host Host to run the application.
+#' @field limit Max body size, defaults to `5 * 1024 * 1024`.
 #' 
 #' @importFrom assertthat assert_that
 #' @importFrom utils browseURL
@@ -109,6 +110,45 @@ Ambiorix <- R6::R6Class(
       self$not_found <- handler
       invisible(self)
     },
+#' @details Sets the error handler.
+#' @param handler Function that accepts a request, response and an error object.
+#' 
+#' @examples 
+#' # my custom error handler:
+#' error_handler <- \(req, res, error) {
+#'   if (!is.null(error)) {
+#'     error_msg <- conditionMessage(error)
+#'     cli::cli_alert_danger("Error: {error_msg}")
+#'   }
+#'   response <- list(
+#'     code = 500L,
+#'     msg = "Uhhmmm... Looks like there's an error from our side :("
+#'   )
+#'   res$
+#'     set_status(500L)$
+#'     json(response)
+#' }
+#'
+#' # handler for GET at /whoami:
+#' whoami <- \(req, res) {
+#'   # simulate error (object 'Pikachu' is not defined)
+#'   print(Pikachu)
+#' }
+#'
+#' app <- Ambiorix$
+#'   new()$
+#'   set_error(error_handler)$
+#'   get("/whoami", whoami)
+#'
+#' if (interactive()) {
+#'   app$start(open = FALSE)
+#' }
+    set_error = function(handler) {
+      assert_that(not_missing(handler))
+      assert_that(is_error_handler(handler))
+      self$error <- handler
+      invisible(self)
+    },
 #' @details Static directories
 #' 
 #' @param path Local path to directory of assets.
@@ -136,9 +176,12 @@ Ambiorix <- R6::R6Class(
 #' })
 #' 
 #' if(interactive())
-#'  app$list(posrt = 3000L)
+#'  app$start(port = 3000L)
     start = function(
-      port = NULL, host = NULL, open = interactive()) {
+      port = NULL, 
+      host = NULL, 
+      open = interactive()
+    ) {
       if(private$.is_running){
         cli::cli_alert_warning("Server is already running")
         return()
@@ -161,7 +204,7 @@ Ambiorix <- R6::R6Class(
         app = list(
           call = super$.call, 
           staticPaths = private$.static, 
-          onWSOpen = super$.wss,
+          onWSOpen = super$websocket,
           staticPathOptions = httpuv::staticPathOptions(
             html_charset = "utf-8",
             headers = list(
@@ -169,6 +212,27 @@ Ambiorix <- R6::R6Class(
             )
           ),
           onHeaders = function(req) {
+            size <- 0L
+            if (private$.limit <= 0)
+              return(NULL)
+
+            if (length(req$CONTENT_LENGTH) > 0)
+              size <- as.numeric(req$CONTENT_LENGTH)
+            else if (length(req$HTTP_TRANSFER_ENCODING) > 0)
+              size <- Inf
+
+            if (size > private$.limit){
+              .globals$errorLog$log("Request size exceeded, see app$limit")
+
+              return(
+                response(
+                  "Maximum upload size exceeded",
+                  status = 413L,
+                  headers = list("Content-Type" = "text/plain")
+                )
+              )
+            }
+
             return(NULL)
           }
         )
@@ -255,6 +319,12 @@ Ambiorix <- R6::R6Class(
         return(private$.host)
 
       private$.host <- value
+    },
+    limit = function(value){
+      if(missing(value))
+        return(private$.limit)
+
+      private$.limit <- as.integer(limit)
     }
   ),
   private = list(
@@ -263,6 +333,7 @@ Ambiorix <- R6::R6Class(
     .server = NULL,
     .static = list(),
     .is_running = FALSE,
+    .limit = 5 * 1024 * 1024,
     n_routes = function(){
       length(private$.routes)
     },

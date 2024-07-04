@@ -1,6 +1,6 @@
 Package: ambiorix
 Title: Web Framework Inspired by 'Express.js'
-Version: 2.1.0.9000
+Version: 2.1.0
 Authors@R: 
   c(
     person(given = "John",
@@ -17,7 +17,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Depends: R (>= 4.1.0)
 Imports:
   fs,

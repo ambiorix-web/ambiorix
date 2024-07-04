@@ -1,10 +1,13 @@
-# ambiorix 2.1.0.9000
+# ambiorix 2.1.0
 
 - Added `cache_templates` method to cache templates
 in memory.
 - Added `use_html_template` to use `htmltools::htmlTemplate` as
 rendering.
 - Custom renderers (`as_renderer`) are now more robust.
+- Add `limit` field to protect against large uploads.
+- Fix issue with setting custom websocket handler [#62](https://github.com/devOpifex/ambiorix/issues/62).
+- Add `engine` method on router to set custom renderers (`use` deprecated for custom renderers).
 
 # ambiorix 2.1.0
 
