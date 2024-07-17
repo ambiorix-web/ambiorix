@@ -324,7 +324,7 @@ Ambiorix <- R6::R6Class(
       if(missing(value))
         return(private$.limit)
 
-      private$.limit <- as.integer(limit)
+      private$.limit <- as.integer(value)
     }
   ),
   private = list(
