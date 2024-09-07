@@ -1,6 +1,6 @@
 Package: ambiorix
 Title: Web Framework Inspired by 'Express.js'
-Version: 2.1.0
+Version: 2.1.1
 Authors@R: 
   c(
     person(given = "John",
@@ -13,7 +13,7 @@ Authors@R:
 Description: A web framework inspired by 'express.js' to build
   any web service from multi-page websites to 'RESTful' 
   application programming interfaces.
-License: GPL-3
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: false
 Roxygen: list(markdown = TRUE)
