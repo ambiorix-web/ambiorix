@@ -26,8 +26,7 @@
 #' @field rook.input Rook inputs.
 #' @field rook.url_scheme Rook url scheme.
 #' @field rook.version Rook version.
-#' @field SCRIPT_NAME The initial portion of the request URL's "path" that corresponds to the application object, so that the application knows its virtual "location".
-#' @field SERVER_NAME Server name.
+#' @field SCRIPT_NAME The initial portion of the request URL's "path" that corresponds to the application object, so that the application knows its virtual "location".  #' @field SERVER_NAME Server name.
 #' @field SERVER_PORT Server port
 #' @field CONTENT_LENGTH Size of the message body.
 #' @field CONTENT_TYPE Type of content of the request.
