@@ -316,7 +316,6 @@ Routing <- R6::R6Class(
       # pass middleware
       if(is.function(use)) { 
         assert_that(is_handler(use))
-        attr(use, "basepath") <- sprintf("^%s", private$.basepath)
         private$.middleware <- append(private$.middleware, use)
         return(invisible(self))
       }
@@ -348,7 +347,7 @@ Routing <- R6::R6Class(
     get_receivers = function(receivers = list()){
       receivers <- append(receivers, private$.receivers)
 
-      if(!length(private$.receivers)) return(receivers)
+      if(!length(private$.routers)) return(receivers)
 
       for(router in private$.routers) {
         receivers <- router$get_receivers(receivers)
@@ -357,13 +356,21 @@ Routing <- R6::R6Class(
       return(receivers)
     },
     #' @details Get the middleware
-    get_middleware = function(middlewares = list()){
-      middlewares <- append(middlewares, private$.middlewares)
+    get_middleware = function(middlewares = list(), parent = ""){
+      middlewares <- append(
+        middlewares,
+        private$.middleware |>
+          lapply(\(fn) {
+            attr(fn, "basepath") <- parent
+            return(fn)
+          })
+      )
 
-      if(!length(private$.middleware)) return(middlewares)
+      if(!length(private$.routers)) return(middlewares)
+      parent <- paste0(parent, private$.basepath)
 
       for(router in private$.routers) {
-        middlewares <- router$get_middleware(middlewares)
+        middlewares <- router$get_middleware(middlewares, parent)
       }
 
       return(middlewares)
@@ -466,7 +473,6 @@ Routing <- R6::R6Class(
       # loop over routes
       for(i in seq_along(private$.routes)){
         # if path matches pattern and method
-        print(private$.routes[[i]]$route$pattern)
         if(grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) &&
             req$REQUEST_METHOD %in% private$.routes[[i]]$method){
           
