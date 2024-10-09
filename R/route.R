@@ -10,11 +10,10 @@ Route <- R6::R6Class(
       self$path <- gsub("\\?.*$", "", path) # remove query
       self$dynamic <- grepl(":", path)
       self$decompose()
-      self$as_pattern()
     },
-    as_pattern = function(){
+    as_pattern = function(parent = ""){
       if(!is.null(.globals$pathToPattern)) {
-        self$pattern <-.globals$pathToPattern(self$path)
+        self$pattern <- .globals$pathToPattern(self$path)
         return(
           invisible(self)
         )
@@ -28,7 +27,7 @@ Route <- R6::R6Class(
       })
 
       pattern <- paste0(pattern, collapse = "/")
-      self$pattern <- paste0("^/", pattern, "$")
+      self$pattern <- paste0("^", parent, "/", pattern, "$")
       invisible(self)
     },
     decompose = function(){
