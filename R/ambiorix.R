@@ -196,7 +196,10 @@ Ambiorix <- R6::R6Class(
       if(is.null(host))
         host <- private$.host
 
-      super$reorder_routes()
+      super$prepare()
+      private$.routes <- super$get_routes()
+      private$.receivers <- super$get_receivers()
+      private$.middleware <- super$get_middleware()
 
       private$.server <- httpuv::startServer(
         host = host, 
