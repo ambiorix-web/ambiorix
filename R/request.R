@@ -16,6 +16,7 @@
 #' @field HTTP_SEC_FETCH_USER Only sent for requests initiated by user activation, and its value will always be `?1`.
 #' @field HTTP_UPGRADE_INSECURE_REQUESTS Signals that server supports upgrade.
 #' @field HTTP_USER_AGENT User agent.
+#' @field SERVER_NAME Name of the server.
 #' @field httpuv.version Version of httpuv.
 #' @field PATH_INFO Path of the request.
 #' @field QUERY_STRING Query string of the request.
@@ -159,37 +160,6 @@ Request <- R6::R6Class(
 
       cli::cli_end()
     },
-    #' @details Set Data
-    #' @param name Name of the variable.
-    #' @param value Value of the variable.
-    #' @return Invisible returns self.
-    set = function(name, value){
-      assert_that(not_missing(name))
-      assert_that(not_missing(value))
-      .Deprecated(
-        "",
-        package = "ambiorix",
-        "Deprecated. The environment is no longer locked, you may simply `res$name <- value`"
-      )
-
-      name <- as_label(name)
-      self[[name]] <- value
-
-      invisible(self)
-    },
-    #' @details Get data
-    #' @param name Name of the variable to get.
-    get = function(name){
-      assert_that(not_missing(name))
-      .Deprecated(
-        "",
-        package = "ambiorix",
-        "Deprecated. The environment is no longer locked, you may simply `res$value"
-      )
-
-      name <- as_label(name)
-      self[[name]]
-    },
     #' @details Get Header
     #' @param name Name of the header
     get_header = function(name){
@@ -255,7 +225,7 @@ set_params <- function(path, route = NULL){
 
   nms <- c()
   pms <- list()
-  for(i in 1:length(path_split)){
+  for(i in seq_along(path_split)){
     if(route$components[[i]]$dynamic){
       nms <- c(nms, route$components[[i]]$name)
       pms <- append(pms, utils::URLdecode(path_split[i]))

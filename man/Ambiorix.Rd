@@ -165,7 +165,6 @@ if(interactive())
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="add_basepath"><a href='../../ambiorix/html/Routing.html#method-Routing-add_basepath'><code>ambiorix::Routing$add_basepath()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="all"><a href='../../ambiorix/html/Routing.html#method-Routing-all'><code>ambiorix::Routing$all()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="delete"><a href='../../ambiorix/html/Routing.html#method-Routing-delete'><code>ambiorix::Routing$delete()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="engine"><a href='../../ambiorix/html/Routing.html#method-Routing-engine'><code>ambiorix::Routing$engine()</code></a></span></li>

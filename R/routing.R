@@ -4,6 +4,8 @@
 #' Do not use directly, see [Ambiorix], and [Router].
 #' 
 #' @field error Error handler.
+#' @field basepath Basepath, read-only.
+#' @field websocket Websocket handler.
 #' 
 #' @keywords export
 Routing <- R6::R6Class(
@@ -228,6 +230,7 @@ Routing <- R6::R6Class(
       cli::cli_li("routes: {.val {private$n_routes()}}")
     },
     #' @details Engine to use for rendering templates.
+    #' @param engine Engine function.
     engine = function(engine){
       if(!is_renderer_obj(engine))
         engine <- as_renderer(engine)
@@ -323,12 +326,15 @@ Routing <- R6::R6Class(
       invisible(self)
     },
     #' @details Get the routes
+    #' @param routes Existing list of routes.
+    #' @param parent Parent path.
     get_routes = function(routes = list(), parent = ""){
       routes <- append(
         routes, 
         private$.routes |>
           lapply(\(route) {
             route$route$as_pattern(parent)
+            route$route$decompose(parent)
             route
           })
       )
@@ -343,7 +349,8 @@ Routing <- R6::R6Class(
 
       return(routes)
     },
-    #' @details Get the receivers
+    #' @details Get the websocket receivers
+    #' @param receivers Existing list of receivers
     get_receivers = function(receivers = list()){
       receivers <- append(receivers, private$.receivers)
 
@@ -356,6 +363,8 @@ Routing <- R6::R6Class(
       return(receivers)
     },
     #' @details Get the middleware
+    #' @param middlewares Existing list of middleswares
+    #' @param parent Parent path
     get_middleware = function(middlewares = list(), parent = ""){
       middlewares <- append(
         middlewares,
@@ -376,16 +385,11 @@ Routing <- R6::R6Class(
 
       return(middlewares)
     },
-    add_basepath = function(parent) {
-      if(missing(parent))
-        stop("missing parent")
-
-      private$.basepath <- paste0(parent, private$.basepath)
-      invisible(self)
-    },
+    #' @details Prepare routes and decomposes paths
     prepare = function() {
       for(route in private$.routes) {
         route$route$as_pattern()
+        route$route$decompose()
       }
 
       private$reorder_routes()
