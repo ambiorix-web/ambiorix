@@ -39,8 +39,8 @@ new_log <- function(
     file = file,
     sep = sep
   )$
-    date()$
-    time()
+  date()$
+  time()
 }
 
 #' Customise logs

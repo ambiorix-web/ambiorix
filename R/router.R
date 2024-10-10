@@ -47,13 +47,13 @@ Router <- R6::R6Class(
   inherit = Routing,
   public = list(
     error = NULL,
-#' @details Define the base route.
-#' @param path The base path of the router.
+    #' @details Define the base route.
+    #' @param path The base path of the router.
     initialize = function(path){
       assert_that(not_missing(path))
       super$initialize(path)
     },
-#' @details Print
+    #' @details Print
     print = function(){
       cli::cli_rule("Ambiorix", right = "router")
       cli::cli_li("routes: {.val {super$n_routes()}}")

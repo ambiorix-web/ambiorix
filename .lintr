@@ -1,0 +1,16 @@
+linters: linters_with_defaults(
+    line_length_linter(120),
+    trailing_whitespace_linter = NULL,
+    commented_code_linter = NULL,
+    function_left_parentheses_linter = NULL,
+    spaces_left_parentheses_linter = NULL,
+    paren_body_linter = NULL,
+    brace_linter = NULL,
+    indentation_linter(
+      indent = 2L,
+      hanging_indent_style = "never"
+    ),
+    object_usage_linter = NULL, # this uses eval()
+    object_name_linter = NULL
+  )
+encoding: "UTF-8"

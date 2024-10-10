@@ -9,12 +9,10 @@ Route <- R6::R6Class(
       assert_that(not_missing(path))
       self$path <- gsub("\\?.*$", "", path) # remove query
       self$dynamic <- grepl(":", path)
-      self$decompose()
-      self$as_pattern()
     },
-    as_pattern = function(){
+    as_pattern = function(parent = ""){
       if(!is.null(.globals$pathToPattern)) {
-        self$pattern <-.globals$pathToPattern(self$path)
+        self$pattern <- .globals$pathToPattern(self$path)
         return(
           invisible(self)
         )
@@ -28,12 +26,13 @@ Route <- R6::R6Class(
       })
 
       pattern <- paste0(pattern, collapse = "/")
-      self$pattern <- paste0("^/", pattern, "$")
+      self$pattern <- paste0("^", parent, "/", pattern, "$")
       invisible(self)
     },
-    decompose = function(){
+    decompose = function(parent = ""){
+      path <- paste0(parent, self$path)
       # split
-      components <- strsplit(self$path, "(?<=.)(?=[:/])", perl = TRUE)[[1]]
+      components <- strsplit(path, "(?<=.)(?=[:/])", perl = TRUE)[[1]]
 
       # remove lonely /
       components <- components[components != "/"]
@@ -54,7 +53,7 @@ Route <- R6::R6Class(
 
       components <- as.list(components)
       comp <- list()
-      for(i in 1:length(components)){
+      for(i in seq_along(components)){
         c <- list(
           index = i, 
           dynamic = grepl(":", components[[i]]),
