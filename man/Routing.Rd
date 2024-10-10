@@ -68,6 +68,8 @@ if(interactive())
 \item \href{#method-Routing-get_routes}{\code{Routing$get_routes()}}
 \item \href{#method-Routing-get_receivers}{\code{Routing$get_receivers()}}
 \item \href{#method-Routing-get_middleware}{\code{Routing$get_middleware()}}
+\item \href{#method-Routing-add_basepath}{\code{Routing$add_basepath()}}
+\item \href{#method-Routing-prepare}{\code{Routing$prepare()}}
 \item \href{#method-Routing-clone}{\code{Routing$clone()}}
 }
 }
@@ -395,7 +397,7 @@ Use a router or middleware
 \if{latex}{\out{\hypertarget{method-Routing-get_routes}{}}}
 \subsection{Method \code{get_routes()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$get_routes()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Routing$get_routes(routes = list(), parent = "")}\if{html}{\out{</div>}}
 }
 
 \subsection{Details}{
@@ -408,7 +410,7 @@ Get the routes
 \if{latex}{\out{\hypertarget{method-Routing-get_receivers}{}}}
 \subsection{Method \code{get_receivers()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$get_receivers()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Routing$get_receivers(receivers = list())}\if{html}{\out{</div>}}
 }
 
 \subsection{Details}{
@@ -421,11 +423,29 @@ Get the receivers
 \if{latex}{\out{\hypertarget{method-Routing-get_middleware}{}}}
 \subsection{Method \code{get_middleware()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$get_middleware()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Routing$get_middleware(middlewares = list(), parent = "")}\if{html}{\out{</div>}}
 }
 
 \subsection{Details}{
 Get the middleware
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Routing-add_basepath"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-add_basepath}{}}}
+\subsection{Method \code{add_basepath()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Routing$add_basepath(parent)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Routing-prepare"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-prepare}{}}}
+\subsection{Method \code{prepare()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Routing$prepare()}\if{html}{\out{</div>}}
 }
 
 }

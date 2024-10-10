@@ -57,9 +57,7 @@ A request.
 
 \item{\code{rook.version}}{Rook version.}
 
-\item{\code{SCRIPT_NAME}}{The initial portion of the request URL's "path" that corresponds to the application object, so that the application knows its virtual "location".}
-
-\item{\code{SERVER_NAME}}{Server name.}
+\item{\code{SCRIPT_NAME}}{The initial portion of the request URL's "path" that corresponds to the application object, so that the application knows its virtual "location".  #' @field SERVER_NAME Server name.}
 
 \item{\code{SERVER_PORT}}{Server port}
 

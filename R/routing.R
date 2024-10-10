@@ -361,12 +361,13 @@ Routing <- R6::R6Class(
         middlewares,
         private$.middleware |>
           lapply(\(fn) {
-            attr(fn, "basepath") <- parent
+            attr(fn, "basepath") <- paste0(parent, private$.basepath) 
             return(fn)
           })
       )
 
       if(!length(private$.routers)) return(middlewares)
+
       parent <- paste0(parent, private$.basepath)
 
       for(router in private$.routers) {
@@ -460,7 +461,6 @@ Routing <- R6::R6Class(
       if(length(private$.middleware) > 0L){
         for(i in seq_along(private$.middleware)) {
           mid_basepath <- attr(private$.middleware[[i]], "basepath")
-          mid_basepath <- sprintf("^%s", mid_basepath)
 
           mid_res <- NULL
           if(grepl(mid_basepath, req$PATH_INFO))
