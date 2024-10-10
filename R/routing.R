@@ -460,6 +460,7 @@ Routing <- R6::R6Class(
       if(length(private$.middleware) > 0L){
         for(i in seq_along(private$.middleware)) {
           mid_basepath <- attr(private$.middleware[[i]], "basepath")
+          mid_basepath <- sprintf("^%s", mid_basepath)
 
           mid_res <- NULL
           if(grepl(mid_basepath, req$PATH_INFO))

@@ -98,28 +98,28 @@ Response <- R6::R6Class(
   "Response",
   lock_objects = FALSE,
   public = list(
-#' @details Set the status of the response.
-#' @param status An integer defining the status.
+    #' @details Set the status of the response.
+    #' @param status An integer defining the status.
     set_status = function(status){
       assert_that(not_missing(status))
       private$.status <- status
       invisible(self)
     },
-#' @details Send a plain HTML response.
-#' @param body Body of the response.
-#' @param headers HTTP headers to set.
-#' @param status Status of the response, if `NULL` uses `self$status`.
+    #' @details Send a plain HTML response.
+    #' @param body Body of the response.
+    #' @param headers HTTP headers to set.
+    #' @param status Status of the response, if `NULL` uses `self$status`.
     send = function(body, headers = NULL, status = NULL){
       deprecated_headers(headers)
       deprecated_status(status)
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = convert_body(body))
     },
-#' @details Send a plain HTML response, pre-processed with sprintf.
-#' @param body Body of the response.
-#' @param ... Passed to `...` of `sprintf`.
-#' @param headers HTTP headers to set.
-#' @param status Status of the response, if `NULL` uses `self$status`.
+    #' @details Send a plain HTML response, pre-processed with sprintf.
+    #' @param body Body of the response.
+    #' @param ... Passed to `...` of `sprintf`.
+    #' @param headers HTTP headers to set.
+    #' @param status Status of the response, if `NULL` uses `self$status`.
     sendf = function(body, ..., headers = NULL, status = NULL){
       deprecated_headers(headers)
       deprecated_status(status)
@@ -127,10 +127,10 @@ Response <- R6::R6Class(
       headers <- private$.get_headers(headers)
       response(status = private$.get_status(status), headers = headers, body = convert_body(body))
     },
-#' @details Send a plain text response.
-#' @param body Body of the response.
-#' @param headers HTTP headers to set.
-#' @param status Status of the response, if `NULL` uses `self$status`.
+    #' @details Send a plain text response.
+    #' @param body Body of the response.
+    #' @param headers HTTP headers to set.
+    #' @param status Status of the response, if `NULL` uses `self$status`.
     text = function(body, headers = NULL, status = NULL){
       deprecated_headers(headers)
       deprecated_status(status)
@@ -138,30 +138,30 @@ Response <- R6::R6Class(
       headers[["Content-Type"]] <- content_plain()
       response(status = private$.get_status(status), headers = headers, body = convert_body(body))
     },
-#' @details Send a file.
-#' @param file File to send.
-#' @param headers HTTP headers to set.
-#' @param status Status of the response.
+    #' @details Send a file.
+    #' @param file File to send.
+    #' @param headers HTTP headers to set.
+    #' @param status Status of the response.
     send_file = function(file, headers = NULL, status = NULL){
       deprecated_headers(headers)
       deprecated_status(status)
       assert_that(not_missing(file))
       self$render(file, data = list(), status = status, headers = headers)
     },
-#' @details Redirect to a path or URL.
-#' @param path Path or URL to redirect to.
-#' @param status Status of the response, if `NULL` uses `self$status`.
+    #' @details Redirect to a path or URL.
+    #' @param path Path or URL to redirect to.
+    #' @param status Status of the response, if `NULL` uses `self$status`.
     redirect = function(path, status = NULL){
       deprecated_status(status)
       status <- private$.get_status(status)
       headers <- private$.get_headers(list(Location = path))
       response(status = status, headers = headers, body = "")
     },
-#' @details Render a template file.
-#' @param file Template file.
-#' @param data List to fill `[% tags %]`.
-#' @param headers HTTP headers to set.
-#' @param status Status of the response, if `NULL` uses `self$status`.
+    #' @details Render a template file.
+    #' @param file Template file.
+    #' @param data List to fill `[% tags %]`.
+    #' @param headers HTTP headers to set.
+    #' @param status Status of the response, if `NULL` uses `self$status`.
     render = function(file, data = list(), headers = NULL, status = NULL){
       assert_that(not_missing(file))
       assert_that(has_file(file))
@@ -175,11 +175,11 @@ Response <- R6::R6Class(
 
       response(file_content, status = private$.get_status(status), headers = headers)
     },
-#' @details Render an object as JSON.
-#' @param body Body of the response.
-#' @param headers HTTP headers to set.
-#' @param status Status of the response, if `NULL` uses `self$status`.
-#' @param ... Additional arguments passed to the serialiser.
+    #' @details Render an object as JSON.
+    #' @param body Body of the response.
+    #' @param headers HTTP headers to set.
+    #' @param status Status of the response, if `NULL` uses `self$status`.
+    #' @param ... Additional arguments passed to the serialiser.
     json = function(body, headers = NULL, status = NULL, ...){
       self$header_content_json()
       deprecated_headers(headers)
@@ -187,11 +187,11 @@ Response <- R6::R6Class(
       headers <- private$.get_headers(headers)
       response(serialise(body), headers = headers, status = private$.get_status(status))
     },
-#' @details Sends a comma separated value file
-#' @param data Data to convert to CSV.
-#' @param name Name of the file.
-#' @param status Status of the response, if `NULL` uses `self$status`.
-#' @param ... Additional arguments passed to [readr::format_csv()].
+    #' @details Sends a comma separated value file
+    #' @param data Data to convert to CSV.
+    #' @param name Name of the file.
+    #' @param status Status of the response, if `NULL` uses `self$status`.
+    #' @param ... Additional arguments passed to [readr::format_csv()].
     csv = function(data, name = "data", status = NULL, ...){
       assert_that(not_missing(data))
       check_installed("readr")
@@ -208,11 +208,11 @@ Response <- R6::R6Class(
       data <- readr::format_csv(data, ...)
       response(data, header = headers, status = private$.get_status(status))
     },
-#' @details Sends a tab separated value file
-#' @param data Data to convert to CSV.
-#' @param name Name of the file.
-#' @param status Status of the response, if `NULL` uses `self$status`.
-#' @param ... Additional arguments passed to [readr::format_tsv()].
+    #' @details Sends a tab separated value file
+    #' @param data Data to convert to CSV.
+    #' @param name Name of the file.
+    #' @param status Status of the response, if `NULL` uses `self$status`.
+    #' @param ... Additional arguments passed to [readr::format_tsv()].
     tsv = function(data, name = "data", status = NULL, ...){
       assert_that(not_missing(data))
       check_installed("readr")
@@ -229,10 +229,10 @@ Response <- R6::R6Class(
       data <- readr::format_tsv(data, ...)
       response(data, header = headers, status = private$.get_status(status))
     },
-#' @details Sends an htmlwidget.
-#' @param widget The widget to use.
-#' @param status Status of the response, if `NULL` uses `self$status`.
-#' @param ... Additional arguments passed to [htmlwidgets::saveWidget()].
+    #' @details Sends an htmlwidget.
+    #' @param widget The widget to use.
+    #' @param status Status of the response, if `NULL` uses `self$status`.
+    #' @param ... Additional arguments passed to [htmlwidgets::saveWidget()].
     htmlwidget = function(widget, status = NULL, ...){
       check_installed("htmlwidgets")
       if(!inherits(widget, "htmlwidget"))
@@ -249,41 +249,41 @@ Response <- R6::R6Class(
 
       response(body = paste0(read_lines(tmp), "\n", collapse = ""), status = private$.get_status(status), headers = headers)
     },
-#' @details Render a markdown file.
-#' @param file Template file.
-#' @param data List to fill `[% tags %]`.
-#' @param headers HTTP headers to set.
-#' @param status Status of the response, if `NULL` uses `self$status`.
+    #' @details Render a markdown file.
+    #' @param file Template file.
+    #' @param data List to fill `[% tags %]`.
+    #' @param headers HTTP headers to set.
+    #' @param status Status of the response, if `NULL` uses `self$status`.
     md = function(file, data = list(), headers = NULL, status = NULL) {
       check_installed("commonmark")
       deprecated_headers(headers)
       deprecated_status(status)
       self$render(file, data, headers, status)
     },
-#' @details Send a png file
-#' @param file Path to local file.
+    #' @details Send a png file
+    #' @param file Path to local file.
     png = function(file){
       private$.send_image(file, "png")
     },
-#' @details Send a jpeg file
-#' @param file Path to local file.
+    #' @details Send a jpeg file
+    #' @param file Path to local file.
     jpeg = function(file) {
       private$.send_image(file, "jpeg")
     },
-#' @details Send an image
-#' Similar to `png` and `jpeg` methods but guesses correct method 
-#' based on file extension.
-#' @param file Path to local file.
+    #' @details Send an image
+    #' Similar to `png` and `jpeg` methods but guesses correct method 
+    #' based on file extension.
+    #' @param file Path to local file.
     image = function(file) {
       type <- tools::file_ext(file)
       if(!type %in% c("png", "jpeg"))
         stop("Only accepts .png and .jpeg files")
       private$.send_image(file, type)
     },
-#' @details Ggplot2
-#' @param plot Ggplot2 plot object.
-#' @param type Type of image to save.
-#' @param ... Passed to [ggplot2::ggsave()]
+    #' @details Ggplot2
+    #' @param plot Ggplot2 plot object.
+    #' @param type Type of image to save.
+    #' @param ... Passed to [ggplot2::ggsave()]
     ggplot2 = function(plot, ..., type = c("png", "jpeg")) {
       assert_that(not_missing(plot))
       check_installed("ggplot2")
@@ -298,7 +298,7 @@ Response <- R6::R6Class(
       ) 
       private$.send_image(temp, type, clean = TRUE)
     },
-#' @details Print
+    #' @details Print
     print = function(){
       cli::cli_h3("A Response")
 
@@ -315,10 +315,10 @@ Response <- R6::R6Class(
 
       cli::cli_end()
     },
-#' @details Set Data
-#' @param name Name of the variable.
-#' @param value Value of the variable.
-#' @return Invisible returns self.
+    #' @details Set Data
+    #' @param name Name of the variable.
+    #' @param value Value of the variable.
+    #' @return Invisible returns self.
     set = function(name, value){
       assert_that(not_missing(name))
       assert_that(not_missing(value))
@@ -333,8 +333,8 @@ Response <- R6::R6Class(
 
       invisible(self)
     },
-#' @details Get data
-#' @param name Name of the variable to get.
+    #' @details Get data
+    #' @param name Name of the variable to get.
     get = function(name){
       assert_that(not_missing(name))
       .Deprecated(
@@ -346,9 +346,9 @@ Response <- R6::R6Class(
       name <- as_label(name)
       self[[name]]
     },
-#' @details Add headers to the response.
-#' @param name,value Name and value of the header.
-#' @return Invisibly returns self.
+    #' @details Add headers to the response.
+    #' @param name,value Name and value of the header.
+    #' @return Invisibly returns self.
     header = function(name, value){
       assert_that(not_missing(name))
       assert_that(not_missing(value))
@@ -356,50 +356,50 @@ Response <- R6::R6Class(
       private$.headers[[name]] <- value
       invisible(self)
     },
-#' @details Set Content Type to JSON
-#' @return Invisibly returns self.
+    #' @details Set Content Type to JSON
+    #' @return Invisibly returns self.
     header_content_json = function(){
       self$header("Content-Type", content_json())
       invisible(self)
     },
-  #' @details Set Content Type to HTML
-  #' @return Invisibly returns self.
+    #' @details Set Content Type to HTML
+    #' @return Invisibly returns self.
     header_content_html = function(){
       self$header("Content-Type", content_html())
       invisible(self)
     },
-  #' @details Set Content Type to Plain Text
-  #' @return Invisibly returns self.
+    #' @details Set Content Type to Plain Text
+    #' @return Invisibly returns self.
     header_content_plain = function(){
       self$header("Content-Type", content_plain())
       invisible(self)
     },
-  #' @details Set Content Type to CSV
-  #' @return Invisibly returns self.
+    #' @details Set Content Type to CSV
+    #' @return Invisibly returns self.
     header_content_csv = function(){
       self$header("Content-Type", content_csv())
       invisible(self)
     },
-  #' @details Set Content Type to TSV
-  #' @return Invisibly returns self.
+    #' @details Set Content Type to TSV
+    #' @return Invisibly returns self.
     header_content_tsv = function(){
       self$header("Content-Type", content_tsv())
       invisible(self)
     },
-#' @details Get headers
-#' Returns the list of headers currently set.
+    #' @details Get headers
+    #' Returns the list of headers currently set.
     get_headers = function() {
       return(private$.headers)
     },
-#' @details Get a header
-#' Returns a single header currently, `NULL` if not set.
-#' @param name Name of the header to return.
+    #' @details Get a header
+    #' Returns a single header currently, `NULL` if not set.
+    #' @param name Name of the header to return.
     get_header = function(name) {
       assert_that(not_missing(name))
       return(private$.headers[[name]])
     },
-#' @details Set headers
-#' @param headers A named list of headers to set.
+    #' @details Set headers
+    #' @param headers A named list of headers to set.
     set_headers = function(headers) {
       assert_that(not_missing(headers))
       if(!is.list(headers))
@@ -425,26 +425,26 @@ Response <- R6::R6Class(
       private$.headers[[name]] <- value
       invisible(self)
     },
-#' @details Add a pre render hook.
-#' Runs before the `render` and `send_file` method.
-#' 
-#' @param hook A function that accepts at least 4 arguments:
-#' - `self`: The `Request` class instance.
-#' - `content`: File content a vector of character string,
-#' content of the template.
-#' - `data`: `list` passed from `render` method.
-#' - `ext`: File extension of the template file.
-#' 
-#' This function is used to add pre-render hooks to the `render`
-#' method. The function should return an object of class 
-#' `responsePreHook` as obtained by [pre_hook()].
-#' This is meant to be used by middlewares to, if necessary,
-#' pre-process rendered data.
-#' 
-#' Include `...` in your `hook` to ensure it will handle
-#' potential updates to hooks in the future.
-#' 
-#' @return Invisible returns self.
+    #' @details Add a pre render hook.
+    #' Runs before the `render` and `send_file` method.
+    #' 
+    #' @param hook A function that accepts at least 4 arguments:
+    #' - `self`: The `Request` class instance.
+    #' - `content`: File content a vector of character string,
+    #' content of the template.
+    #' - `data`: `list` passed from `render` method.
+    #' - `ext`: File extension of the template file.
+    #' 
+    #' This function is used to add pre-render hooks to the `render`
+    #' method. The function should return an object of class 
+    #' `responsePreHook` as obtained by [pre_hook()].
+    #' This is meant to be used by middlewares to, if necessary,
+    #' pre-process rendered data.
+    #' 
+    #' Include `...` in your `hook` to ensure it will handle
+    #' potential updates to hooks in the future.
+    #' 
+    #' @return Invisible returns self.
     pre_render_hook = function(hook) {
       assert_that(not_missing(hook))
       assert_that(
@@ -460,19 +460,19 @@ Response <- R6::R6Class(
       private$.preHooks <- append(private$.preHooks, hook)
       invisible(self)
     },
-#' @details Post render hook.
-#' 
-#' @param hook A function to run after the rendering of HTML.
-#' It should accept at least 3 arguments:
-#' - `self`: The `Request` class instance.
-#' - `content`: File content a vector of character string,
-#' content of the template.
-#' - `ext`: File extension of the template file.
-#' 
-#' Include `...` in your `hook` to ensure it will handle
-#' potential updates to hooks in the future.
-#' 
-#' @return Invisible returns self.
+    #' @details Post render hook.
+    #' 
+    #' @param hook A function to run after the rendering of HTML.
+    #' It should accept at least 3 arguments:
+    #' - `self`: The `Request` class instance.
+    #' - `content`: File content a vector of character string,
+    #' content of the template.
+    #' - `ext`: File extension of the template file.
+    #' 
+    #' Include `...` in your `hook` to ensure it will handle
+    #' potential updates to hooks in the future.
+    #' 
+    #' @return Invisible returns self.
     post_render_hook = function(hook) {
       assert_that(not_missing(hook))
       assert_that(
@@ -488,32 +488,32 @@ Response <- R6::R6Class(
       private$.postHooks <- append(private$.postHooks, hook)
       invisible(self)
     },
-#' @details Set a cookie
-#' Overwrites existing cookie of the same `name`.
-#' @param name Name of the cookie.
-#' @param value value of the cookie.
-#' @param expires Expiry, if an integer assumes it's the number of seconds
-#' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
-#' If a `character` string then it is set as-is and not pre-processed.
-#' If unspecified, the cookie becomes a session cookie. A session finishes 
-#' when the client shuts down, after which the session cookie is removed. 
-#' @param max_age Indicates the number of seconds until the cookie expires. 
-#' A zero or negative number will expire the cookie immediately. 
-#' If both `expires` and `max_age` are set, the latter has precedence.
-#' @param domain Defines the host to which the cookie will be sent.
-#' If omitted, this attribute defaults to the host of the current document URL,
-#' not including subdomains.
-#' @param path Indicates the path that must exist in the requested URL for the 
-#' browser to send the Cookie header.
-#' @param secure Indicates that the cookie is sent to the server only when a
-#' request is made with the https: scheme (except on localhost), and therefore, 
-#' is more resistant to man-in-the-middle attacks.
-#' @param http_only Forbids JavaScript from accessing the cookie, for example,
-#' through the document.cookie property.
-#' @param same_site Controls whether or not a cookie is sent with cross-origin
-#' requests, providing some protection against cross-site request forgery
-#' attacks (CSRF). Accepts `Strict`, `Lax`, or `None`.
-#' @return Invisibly returns self.
+    #' @details Set a cookie
+    #' Overwrites existing cookie of the same `name`.
+    #' @param name Name of the cookie.
+    #' @param value value of the cookie.
+    #' @param expires Expiry, if an integer assumes it's the number of seconds
+    #' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
+    #' If a `character` string then it is set as-is and not pre-processed.
+    #' If unspecified, the cookie becomes a session cookie. A session finishes 
+    #' when the client shuts down, after which the session cookie is removed. 
+    #' @param max_age Indicates the number of seconds until the cookie expires. 
+    #' A zero or negative number will expire the cookie immediately. 
+    #' If both `expires` and `max_age` are set, the latter has precedence.
+    #' @param domain Defines the host to which the cookie will be sent.
+    #' If omitted, this attribute defaults to the host of the current document URL,
+    #' not including subdomains.
+    #' @param path Indicates the path that must exist in the requested URL for the 
+    #' browser to send the Cookie header.
+    #' @param secure Indicates that the cookie is sent to the server only when a
+    #' request is made with the https: scheme (except on localhost), and therefore, 
+    #' is more resistant to man-in-the-middle attacks.
+    #' @param http_only Forbids JavaScript from accessing the cookie, for example,
+    #' through the document.cookie property.
+    #' @param same_site Controls whether or not a cookie is sent with cross-origin
+    #' requests, providing some protection against cross-site request forgery
+    #' attacks (CSRF). Accepts `Strict`, `Lax`, or `None`.
+    #' @return Invisibly returns self.
     cookie = function(
       name,
       value,
@@ -559,10 +559,10 @@ Response <- R6::R6Class(
 
       invisible(self)
     },
-#' @details Clear a cookie
-#' Clears the value of a cookie.
-#' @param name Name of the cookie to clear.
-#' @return Invisibly returns self.
+    #' @details Clear a cookie
+    #' Clears the value of a cookie.
+    #' @param name Name of the cookie to clear.
+    #' @return Invisibly returns self.
     clear_cookie = function(name) {
       # cookies with date in the past are removed from the browser
       self$cookie(
