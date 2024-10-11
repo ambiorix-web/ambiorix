@@ -37,6 +37,8 @@ A request.
 
 \item{\code{HTTP_USER_AGENT}}{User agent.}
 
+\item{\code{SERVER_NAME}}{Name of the server.}
+
 \item{\code{httpuv.version}}{Version of httpuv.}
 
 \item{\code{PATH_INFO}}{Path of the request.}
@@ -57,9 +59,7 @@ A request.
 
 \item{\code{rook.version}}{Rook version.}
 
-\item{\code{SCRIPT_NAME}}{The initial portion of the request URL's "path" that corresponds to the application object, so that the application knows its virtual "location".}
-
-\item{\code{SERVER_NAME}}{Server name.}
+\item{\code{SCRIPT_NAME}}{The initial portion of the request URL's "path" that corresponds to the application object, so that the application knows its virtual "location".  #' @field SERVER_NAME Server name.}
 
 \item{\code{SERVER_PORT}}{Server port}
 
@@ -84,8 +84,6 @@ A request.
 \itemize{
 \item \href{#method-Request-new}{\code{Request$new()}}
 \item \href{#method-Request-print}{\code{Request$print()}}
-\item \href{#method-Request-set}{\code{Request$set()}}
-\item \href{#method-Request-get}{\code{Request$get()}}
 \item \href{#method-Request-get_header}{\code{Request$get_header()}}
 \item \href{#method-Request-parse_multipart}{\code{Request$parse_multipart()}}
 \item \href{#method-Request-parse_json}{\code{Request$parse_json()}}
@@ -122,51 +120,6 @@ Constructor
 
 \subsection{Details}{
 Print
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Request-set"></a>}}
-\if{latex}{\out{\hypertarget{method-Request-set}{}}}
-\subsection{Method \code{set()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Request$set(name, value)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Name of the variable.}
-
-\item{\code{value}}{Value of the variable.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Set Data
-}
-
-\subsection{Returns}{
-Invisible returns self.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Request-get"></a>}}
-\if{latex}{\out{\hypertarget{method-Request-get}{}}}
-\subsection{Method \code{get()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Request$get(name)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Name of the variable to get.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Get data
 }
 
 }

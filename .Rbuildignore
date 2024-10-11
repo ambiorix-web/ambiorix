@@ -19,3 +19,4 @@ docker/
 ^makefile$
 ^test\.html$
 ^\.vscode$
+^\.lintr$
