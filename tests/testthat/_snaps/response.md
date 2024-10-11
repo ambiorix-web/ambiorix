@@ -49,7 +49,7 @@
     Message
         * HEADER Content-Length
     Output
-       num 17685
+       num 17645
     Message
         * HEADER xxx
     Output
