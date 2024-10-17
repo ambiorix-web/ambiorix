@@ -5,11 +5,11 @@
 <img src="man/figures/ambiorix.png" height = "200px"/>
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/devOpifex/ambiorix/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/devOpifex/ambiorix/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/devOpifex/ambiorix/branch/master/graph/badge.svg)](https://app.codecov.io/gh/devOpifex/ambiorix?branch=master)
+[![R-CMD-check](https://github.com/ambiorix-web/ambiorix/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ambiorix-web/ambiorix/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/ambiorix-web/ambiorix/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ambiorix-web/ambiorix?branch=master)
 <!-- badges: end -->
 
-[Website](https://ambiorix.dev) | [CLI](https://github.com/devOpifex/ambiorix-cli) | [Generator](https://github.com/devOpifex/ambiorix.generator) | [Docker](https://hub.docker.com/r/jcoenep/ambiorix) | [Load Balancer](https://github.com/devOpifex/belgic)
+[Website](https://ambiorix.dev) | [CLI](https://github.com/ambiorix-web/ambiorix-cli) | [Generator](https://github.com/ambiorix-web/ambiorix.generator) | [Docker](https://hub.docker.com/r/jcoenep/ambiorix) | [Load Balancer](https://github.com/ambiorix-web/belgic)
 
 Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and inspired by [express.js](https://github.com/expressjs/express).
 
@@ -36,23 +36,23 @@ app$start()
 
 ## Middlewares
 
-- [druid](https://github.com/devOpifex/druid) Logger
-- [alesia](https://github.com/devOpifex/alesia) Minifier
-- [eburones](https://github.com/devOpifex/eburones) Sessions
-- [agris](https://github.com/devOpifex/druid) Security
-- [scilis](https://github.com/devOpifex/scilis) Cookies
-- [titan](https://github.com/devOpifex/titan) Prometheus metrics
-- [surf](https://github.com/devOpifex/surf) CSRF protection
-- [signaculum](https://github.com/devOpifex/signaculum) favicon
-- [pugger](https://github.com/devOpifex/pugger) Pug engine
-- [jader](https://github.com/devOpifex/jader) Jade engine
+- [druid](https://github.com/ambiorix-web/druid) Logger
+- [alesia](https://github.com/ambiorix-web/alesia) Minifier
+- [eburones](https://github.com/ambiorix-web/eburones) Sessions
+- [agris](https://github.com/ambiorix-web/druid) Security
+- [scilis](https://github.com/ambiorix-web/scilis) Cookies
+- [titan](https://github.com/ambiorix-web/titan) Prometheus metrics
+- [surf](https://github.com/ambiorix-web/surf) CSRF protection
+- [signaculum](https://github.com/ambiorix-web/signaculum) favicon
+- [pugger](https://github.com/ambiorix-web/pugger) Pug engine
+- [jader](https://github.com/ambiorix-web/jader) Jade engine
 
 ## Tools & Extensions
 
-- [belgic](https://github.com/devOpifex/belgic) Load balancer
+- [belgic](https://github.com/ambiorix-web/belgic) Load balancer
 - [packer](https://github.com/JohnCoene/packer) JavaScript
-- [CLI](https://github.com/devOpifex/ambiorix-cli) for generator
-- [Generator](https://github.com/devOpifex/ambiorix.generator) Project generator
+- [CLI](https://github.com/ambiorix-web/ambiorix-cli) for generator
+- [Generator](https://github.com/ambiorix-web/ambiorix.generator) Project generator
 - [Docker](https://hub.docker.com/r/jcoenep/ambiorix) Docker image
 
 ## Install
@@ -67,7 +67,7 @@ You can also install the development version from Github:
 
 ```r
 # install.packages("ambiorix")
-remotes::install_github("devOpifex/ambiorix")
+remotes::install_github("ambiorix-web/ambiorix")
 ```
 
 ## Contributing
