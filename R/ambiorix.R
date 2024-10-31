@@ -64,7 +64,7 @@ Ambiorix <- R6::R6Class(
     },
     #' @details Cache templates in memory instead of reading
     #' them from disk.
-    cache_templates = \(){
+    cache_templates = function() {
       .globals$cache_tmpls <- TRUE
       invisible(self)
     },
