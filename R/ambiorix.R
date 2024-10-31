@@ -64,7 +64,7 @@ Ambiorix <- R6::R6Class(
     },
     #' @details Cache templates in memory instead of reading
     #' them from disk.
-    cache_templates = \(){
+    cache_templates = function() {
       .globals$cache_tmpls <- TRUE
       invisible(self)
     },
@@ -195,6 +195,8 @@ Ambiorix <- R6::R6Class(
 
       if(is.null(host))
         host <- private$.host
+
+      port <- get_port(host, port)
 
       super$prepare()
       private$.routes <- super$get_routes()
