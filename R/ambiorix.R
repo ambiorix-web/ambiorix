@@ -196,6 +196,8 @@ Ambiorix <- R6::R6Class(
       if(is.null(host))
         host <- private$.host
 
+      port <- get_port(host, port)
+
       super$prepare()
       private$.routes <- super$get_routes()
       private$.receivers <- super$get_receivers()
