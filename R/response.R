@@ -56,16 +56,13 @@ convert_body <- function(body) {
   if(inherits(body, "AsIs"))
     return(body)
 
-  if(is.raw(body))
-    return(body)
-
-  if(is.character(body) && length(body) == 1L)
-    return(body)
-
-  if(is.factor(body) || inherits(body, "shiny.tag"))
+  if (is.factor(body))
     return(as.character(body))
 
-  return(body)
+  if(inherits(body, "shiny.tag") || inherits(body, "shiny.tag.list"))
+    return(htmltools::doRenderTags(body))
+
+  body
 }
 
 #' Construct Response
@@ -113,7 +110,7 @@ Response <- R6::R6Class(
       deprecated_headers(headers)
       deprecated_status(status)
       headers <- private$.get_headers(headers)
-      response(status = private$.get_status(status), headers = headers, body = convert_body(body))
+      response(status = private$.get_status(status), headers = headers, body = body)
     },
     #' @details Send a plain HTML response, pre-processed with sprintf.
     #' @param body Body of the response.
@@ -125,7 +122,7 @@ Response <- R6::R6Class(
       deprecated_status(status)
       body <- sprintf(body, ...)
       headers <- private$.get_headers(headers)
-      response(status = private$.get_status(status), headers = headers, body = convert_body(body))
+      response(status = private$.get_status(status), headers = headers, body = body)
     },
     #' @details Send a plain text response.
     #' @param body Body of the response.
@@ -136,7 +133,7 @@ Response <- R6::R6Class(
       deprecated_status(status)
       headers <- private$.get_headers(headers)
       headers[["Content-Type"]] <- content_plain()
-      response(status = private$.get_status(status), headers = headers, body = convert_body(body))
+      response(status = private$.get_status(status), headers = headers, body = body)
     },
     #' @details Send a file.
     #' @param file File to send.
