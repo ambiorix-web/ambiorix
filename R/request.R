@@ -226,6 +226,9 @@ set_params <- function(path, route = NULL){
   nms <- c()
   pms <- list()
   for(i in seq_along(path_split)){
+    if(i > length(route$components))
+      break
+
     if(route$components[[i]]$dynamic){
       nms <- c(nms, route$components[[i]]$name)
       pms <- append(pms, utils::URLdecode(path_split[i]))

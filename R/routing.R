@@ -455,7 +455,7 @@ Routing <- R6::R6Class(
         new_routes[[i]] <- private$.routes[[df$order[i]]]
       }
 
-      private$.routes <- new_routes
+      private$.routes <- rev(new_routes)
     },
     .call = function(req){
 
@@ -484,7 +484,16 @@ Routing <- R6::R6Class(
           .globals$infoLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO)
 
           # parse request
-          request$params <- set_params(request$PATH_INFO, private$.routes[[i]]$route)
+          request$params <- tryCatch(
+            set_params(request$PATH_INFO, private$.routes[[i]]$route),
+            error = function(error){
+              error
+            }
+          )
+
+          if(inherits(request$params, "error")){
+            return(private$.routes[[i]]$error(request, res, request$params))
+          }
 
           # get response
           response <- tryCatch(
