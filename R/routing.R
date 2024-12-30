@@ -492,7 +492,7 @@ Routing <- R6::R6Class(
           )
 
           if(inherits(request$params, "error")){
-            return(private$.routes[[i]]$error(request, res, response))
+            return(private$.routes[[i]]$error(request, res, request$params))
           }
 
           # get response
