@@ -514,7 +514,6 @@ Routing <- R6::R6Class(
                   )
                 },
                 onRejected = function(error){
-                  message(error)
                   .globals$errorLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO, "-", "Server error")
                   private$.routes[[i]]$error(request, res, error)
                 }

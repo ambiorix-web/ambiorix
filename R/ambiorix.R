@@ -60,6 +60,12 @@ Ambiorix <- R6::R6Class(
         response_404()
       }
 
+      self$error <- function(req, res, error) {
+        message(conditionMessage(error))
+        res$status <- 500L
+        res$send("500: Internal Server Error")
+      }
+
       invisible(self)
     },
     #' @details Cache templates in memory instead of reading
