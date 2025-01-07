@@ -56,12 +56,17 @@ convert_body <- function(body) {
   if(inherits(body, "AsIs"))
     return(body)
 
+  if (is.factor(body))
+    return(as.character(body))
+
   if(inherits(body, what = c("shiny.tag", "shiny.tag.list"))) {
     check_installed(pkg = "htmltools")
     return(htmltools::doRenderTags(body))
   }
 
-  as.character(body)
+  # do not force conversion to character. see
+  # https://github.com/ambiorix-web/ambiorix/issues/44
+  body
 }
 
 #' Construct Response
