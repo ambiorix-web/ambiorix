@@ -56,13 +56,10 @@ convert_body <- function(body) {
   if(inherits(body, "AsIs"))
     return(body)
 
-  if (is.factor(body))
-    return(as.character(body))
-
-  if(inherits(body, "shiny.tag") || inherits(body, "shiny.tag.list"))
+  if(inherits(body, what = c("shiny.tag", "shiny.tag.list")))
     return(htmltools::doRenderTags(body))
 
-  body
+  as.character(body)
 }
 
 #' Construct Response
