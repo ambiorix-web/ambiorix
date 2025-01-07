@@ -56,8 +56,10 @@ convert_body <- function(body) {
   if(inherits(body, "AsIs"))
     return(body)
 
-  if(inherits(body, what = c("shiny.tag", "shiny.tag.list")))
+  if(inherits(body, what = c("shiny.tag", "shiny.tag.list"))) {
+    check_installed(pkg = "htmltools")
     return(htmltools::doRenderTags(body))
+  }
 
   as.character(body)
 }
