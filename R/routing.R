@@ -503,8 +503,6 @@ Routing <- R6::R6Class(
           }
 
           if(inherits(x = response, what = c("promise", "Future"))){
-            check_installed(pkg = "promises")
-
             return(
               promises::then(
                 response, 
