@@ -60,9 +60,20 @@ convert_body <- function(body) {
     return(as.character(body))
 
   if(inherits(body, "shiny.tag") || inherits(body, "shiny.tag.list"))
-    return(htmltools::doRenderTags(body))
+    return(render_htmltools(body))
 
   body
+}
+
+render_htmltools <- function(x) {
+  tmp <- tempfile(fileext = ".html")
+  on.exit({
+    unlink(tmp)
+  })
+  save_html(x, tmp)
+
+  read_lines(tmp) |>
+    (\(.) paste0(., collapse = ""))()
 }
 
 #' Construct Response
