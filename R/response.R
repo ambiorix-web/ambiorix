@@ -45,24 +45,37 @@ response_500 <- function(body = "500: Server Error", headers = list("Content-Typ
   construct_response(res)
 }
 
-#' Convert Body
-#' 
+#' Convert body
+#'
 #' Body may only be a character vector of length 1.
-#' 
+#'
 #' @param body Body of response.
-#' 
+#'
 #' @keywords internal
 convert_body <- function(body) {
-  if(inherits(body, "AsIs"))
-    return(body)
+  UseMethod("convert_body")
+}
 
-  if (is.factor(body))
-    return(as.character(body))
-
-  if(inherits(body, "shiny.tag") || inherits(body, "shiny.tag.list"))
-    return(htmltools::doRenderTags(body))
-
+#' @export
+convert_body.default <- function(body) {
+  # by default, do not force conversion to character. see
+  # https://github.com/ambiorix-web/ambiorix/issues/44
   body
+}
+
+#' @export
+convert_body.factor <- function(body) {
+  as.character(body)
+}
+
+#' @export
+convert_body.shiny.tag <- function(body) {
+  htmltools::doRenderTags(body)
+}
+
+#' @export
+convert_body.shiny.tag.list <- function(body) {
+  htmltools::doRenderTags(body)
 }
 
 #' Construct Response

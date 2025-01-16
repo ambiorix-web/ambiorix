@@ -511,7 +511,7 @@ Routing <- R6::R6Class(
             return(self$error(request, res, response))
           }
 
-          if(promises::is.promising(response)){
+          if(inherits(x = response, what = c("promise", "Future"))){
             return(
               promises::then(
                 response, 
@@ -521,7 +521,7 @@ Routing <- R6::R6Class(
                   )
                 },
                 onRejected = function(error){
-                  message(error)
+                  message(conditionMessage(error))
                   .globals$errorLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO, "-", "Server error")
                   private$.routes[[i]]$error(request, res, error)
                 }
