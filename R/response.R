@@ -56,20 +56,24 @@ convert_body <- function(body) {
   UseMethod("convert_body")
 }
 
-# by default, do not force conversion to character. see
-# https://github.com/ambiorix-web/ambiorix/issues/44
+#' @export
 convert_body.default <- function(body) {
+  # by default, do not force conversion to character. see
+  # https://github.com/ambiorix-web/ambiorix/issues/44
   body
 }
 
+#' @export
 convert_body.factor <- function(body) {
   as.character(body)
 }
 
+#' @export
 convert_body.shiny.tag <- function(body) {
   htmltools::doRenderTags(body)
 }
 
+#' @export
 convert_body.shiny.tag.list <- function(body) {
   htmltools::doRenderTags(body)
 }

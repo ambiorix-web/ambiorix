@@ -2,7 +2,7 @@
 % Please edit documentation in R/response.R
 \name{convert_body}
 \alias{convert_body}
-\title{Convert Body}
+\title{Convert body}
 \usage{
 convert_body(body)
 }
