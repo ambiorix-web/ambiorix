@@ -45,35 +45,37 @@ response_500 <- function(body = "500: Server Error", headers = list("Content-Typ
   construct_response(res)
 }
 
-#' Convert Body
-#' 
+#' Convert body
+#'
 #' Body may only be a character vector of length 1.
-#' 
+#'
 #' @param body Body of response.
-#' 
+#'
 #' @keywords internal
 convert_body <- function(body) {
-  if(inherits(body, "AsIs"))
-    return(body)
+  UseMethod("convert_body")
+}
 
-  if (is.factor(body))
-    return(as.character(body))
-
-  if(inherits(body, "shiny.tag") || inherits(body, "shiny.tag.list"))
-    return(render_htmltools(body))
-
+#' @export
+convert_body.default <- function(body) {
+  # by default, do not force conversion to character. see
+  # https://github.com/ambiorix-web/ambiorix/issues/44
   body
 }
 
-render_htmltools <- function(x) {
-  tmp <- tempfile(fileext = ".html")
-  on.exit({
-    unlink(tmp)
-  })
-  save_html(x, tmp)
+#' @export
+convert_body.factor <- function(body) {
+  as.character(body)
+}
 
-  read_lines(tmp) |>
-    (\(.) paste0(., collapse = ""))()
+#' @export
+convert_body.shiny.tag <- function(body) {
+  render_htmltools(body)
+}
+
+#' @export
+convert_body.shiny.tag.list <- function(body) {
+  render_htmltools(body)
 }
 
 #' Construct Response
@@ -82,6 +84,65 @@ render_htmltools <- function(x) {
 #' @keywords internal
 construct_response <- function(res){
   structure(res, class = c(class(res), "ambiorixResponse"))
+}
+
+inline_dependencies <- function(deps) {
+  deps |>
+    lapply(\(dep) {
+      if(!length(dep$src))
+        return()
+
+      if(!length(dep$src$file))
+        return()
+
+      scripts <- dep$script |>
+        lapply(\(s) {
+          content <- read_lines(file.path(dep$src$file, s)) |>
+            (\(.) paste0(., collapse = "\n"))()
+          htmltools::tags$script(type = "application/javascript", htmltools::HTML(content))
+        })
+
+      styles <- dep$stylesheet |>
+        lapply(\(s) {
+          content <- read_lines(file.path(dep$src$file, s)) |>
+            (\(.) paste0(., collapse = "\n"))()
+          htmltools::tags$style(htmltools::HTML(content))
+        })
+
+      list(scripts, styles)
+    })
+}
+
+render_htmltools <- function(x) {
+  # it it has a <body> tag we assume
+  # it's a document and render with
+  # dependencies, etc.
+  # otherwise we just render the tags.
+  q <- htmltools::tagQuery(x)
+
+  print(q$closest("html")$selectedTags())
+  if(!length(q$closest("html")$selectedTags()))
+    return(htmltools::doRenderTags(x))
+
+  deps <- x |>
+    htmltools::findDependencies() |>
+    htmltools::resolveDependencies()
+
+  inline_deps <- inline_dependencies(deps)
+
+  # add <head> if not present
+  if(!length(q$find("head")$selectedTags()))
+    q$closest("html")$append(htmltools::tags$head())
+
+  # add encoding and dependencies
+  q$closest("html")$find("head")$append(htmltools::tags$meta(charset = "UTF-8"))
+  q$closest("html")$find("head")$append(inline_deps)
+
+  # get all tags and render
+  x <- q$allTags()
+  rendered <- htmltools::doRenderTags(x)
+
+  paste0("<!DOCTYPE html>\n", rendered)
 }
 
 #' @export
