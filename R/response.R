@@ -120,7 +120,6 @@ render_htmltools <- function(x) {
   # otherwise we just render the tags.
   q <- htmltools::tagQuery(x)
 
-  print(q$closest("html")$selectedTags())
   if(!length(q$closest("html")$selectedTags()))
     return(htmltools::doRenderTags(x))
 
