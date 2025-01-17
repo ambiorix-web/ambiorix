@@ -129,12 +129,20 @@ render_htmltools <- function(x) {
 
   inline_deps <- inline_dependencies(deps)
 
+  xx <- htmltools::renderDependencies(deps)
   # add <head> if not present
   if(!length(q$find("head")$selectedTags()))
     q$closest("html")$append(htmltools::tags$head())
 
+  # htmltools::renderDependencies(..., srcType = "href")
+  # does not work
+  rendered_deps <- htmltools::renderDependencies(deps)
+  href_deps <- grep("http", strsplit(rendered_deps, "\n")[[1]], value = TRUE)
+  href_deps <- paste0(href_deps, collapse = "\n")
+
   # add encoding and dependencies
   q$closest("html")$find("head")$append(htmltools::tags$meta(charset = "UTF-8"))
+  q$closest("html")$find("head")$append(HTML(href_deps))
   q$closest("html")$find("head")$append(inline_deps)
 
   # get all tags and render
