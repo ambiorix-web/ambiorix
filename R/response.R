@@ -142,7 +142,7 @@ render_htmltools <- function(x) {
 
   # add encoding and dependencies
   q$closest("html")$find("head")$append(htmltools::tags$meta(charset = "UTF-8"))
-  q$closest("html")$find("head")$append(HTML(href_deps))
+  q$closest("html")$find("head")$append(htmltools::HTML(href_deps))
   q$closest("html")$find("head")$append(inline_deps)
 
   # get all tags and render
