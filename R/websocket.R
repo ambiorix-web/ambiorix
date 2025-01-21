@@ -88,11 +88,17 @@ Websocket <- R6::R6Class(
 copy_websocket_client <- function(path){
   assert_that(not_missing(path))
 
-  lib <- get_websocket_client()
+  lib <- get_websocket_client_path()
   fs::file_copy(lib, path)
 }
 
 #' @rdname websocket_client
-get_websocket_client <- function(){
+get_websocket_client_path <- function(){
   system.file("ambiorix.js", package = "ambiorix")
+}
+
+#' Retrieve Websocket clients connected to the server.
+#' @export
+get_websocket_clients <- function() {
+  return(.globals$wsc)
 }

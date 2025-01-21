@@ -3,12 +3,12 @@
 \name{websocket_client}
 \alias{websocket_client}
 \alias{copy_websocket_client}
-\alias{get_websocket_client}
+\alias{get_websocket_client_path}
 \title{Websocket Client}
 \usage{
 copy_websocket_client(path)
 
-get_websocket_client()
+get_websocket_client_path()
 }
 \arguments{
 \item{path}{Path to copy the file to.}

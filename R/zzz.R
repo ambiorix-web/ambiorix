@@ -10,4 +10,5 @@
   .globals$cookiePreprocessors <- list()
   .globals$renderer <- NULL
   .globals$cache_tmpls <- FALSE
+  .globals$wsc <- list()
 }
