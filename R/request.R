@@ -178,27 +178,10 @@ Request <- R6::R6Class(
   ),
   private = list(
     .parse_query_string = function(query){
-      if(is.null(query))
+      if(identical(length(query), 0L))
         return()
 
-      if(query == "")
-        return()
-      
-      q <- gsub("^\\?", "", query)
-      params <- strsplit(q, "&")[[1]]
-      params_split <- strsplit(params, "=")
-
-      lst <- sapply(params_split, function(x){
-        if(length(x) > 1) return(utils::URLdecode(x[2]))
-
-        utils::URLdecode(x[1])
-      })
-      names(lst) <- sapply(params_split, function(x){
-        if(length(x) > 1) return(utils::URLdecode(x[1]))
-        return(NULL)
-      })
-
-      self$query <- as.list(lst)
+      self$query <- webutils::parse_query(query)
       invisible()
     }
   )
