@@ -50,19 +50,25 @@ Supported \code{Content-Type} values include:
 \item \code{application/json}
 }
 
-The \code{fields_to_extract} & \code{new_field_names} parameters are currently only
+The \code{fields_to_extract} & \code{new_field_names} parameters are currently \strong{only}
 used for 'multipart/form-data'.
 
-\strong{Limitations}:
+For 'multipart/form-data', if a field is a file upload it is returned as a named list with:
 \itemize{
-\item File uploads are not yet supported but could be added in future updates if
-required.
+\item \code{value}: Raw vector representing the file contents. You must
+process this further (eg. convert to data.frame). See the examples section.
+\item \code{content_disposition}: Typically "form-data", indicating how the content
+is meant to be handled.
+\item \code{content_type}: MIME type of the uploaded file (e.g., "image/png" or "application/pdf").
+\item \code{name}: Name of the form input field.
+\item \code{filename}: Original name of the uploaded file.
 }
 }
 \examples{
 if (interactive()) {
   library(ambiorix)
   library(htmltools)
+  library(readxl)
 
   page_links <- \() {
     Map(
@@ -80,8 +86,10 @@ if (interactive()) {
       method = "GET",
       enctype = "application/x-www-form-urlencoded",
       tags$h4("form-url-encoded:"),
-      tags$input(name = "first_name", value = "John"),
-      tags$input(name = "last_name", value = "Coene"),
+      tags$label(`for` = "first_name", "First Name"),
+      tags$input(id = "first_name", name = "first_name", value = "John"),
+      tags$label(`for` = "last_name", "Last Name"),
+      tags$input(id = "last_name", name = "last_name", value = "Coene"),
       tags$button(type = "submit", "Submit")
     )
 
@@ -90,8 +98,14 @@ if (interactive()) {
       method = "POST",
       enctype = "multipart/form-data",
       tags$h4("multipart/form-data:"),
-      tags$input(name = "email", value = "john@mail.com"),
-      tags$input(name = "framework", value = "ambiorix"),
+      tags$label(`for` = "email", "Email"),
+      tags$input(id = "email", name = "email", value = "john@mail.com"),
+      tags$label(`for` = "framework", "Framework"),
+      tags$input(id = "framework", name = "framework", value = "ambiorix"),
+      tags$label(`for` = "file", "Upload CSV file"),
+      tags$input(type = "file", id = "file", name = "file", accept = ".csv"),
+      tags$label(`for` = "file2", "Upload xlsx file"),
+      tags$input(type = "file", id = "file2", name = "file2", accept = ".xlsx"),
       tags$button(type = "submit", "Submit")
     )
 
@@ -100,9 +114,12 @@ if (interactive()) {
       method = "POST",
       enctype = "multipart/form-data",
       tags$h4("multipart/form-data (specific fields extracted & renamed):"),
-      tags$input(name = "family_name", value = "the johns"),
-      tags$input(name = "user_book", value = "JavaScript for R"),
-      tags$input(name = "user_age", value = "15"),
+      tags$label(`for` = "family_name", "Family Name"),
+      tags$input(id = "family_name", name = "family_name", value = "the johns"),
+      tags$label(`for` = "user_book", "User Book"),
+      tags$input(id = "user_book", name = "user_book", value = "JavaScript for R"),
+      tags$label(`for` = "user_age", "User Age"),
+      tags$input(id = "user_age", name = "user_age", value = "15"),
       tags$button(type = "submit", "Submit")
     )
 
@@ -124,7 +141,11 @@ if (interactive()) {
     list_items <- lapply(
       X = names(query),
       FUN = \(nm) {
-        tags$li(nm, ":", query[[nm]])
+        tags$li(
+          nm,
+          ":",
+          query[[nm]]
+        )
       }
     )
     input_vals <- tags$ul(list_items)
@@ -144,7 +165,36 @@ if (interactive()) {
     list_items <- lapply(
       X = names(body),
       FUN = \(nm) {
-        tags$li(nm, ":", body[[nm]])
+        field <- body[[nm]]
+
+        # if 'field' is a file, parse it & print on console:
+        is_file <- "filename" \%in\% names(field)
+        is_csv <- is_file && identical(field[["content_type"]], "text/csv")
+        is_xlsx <- is_file &&
+          identical(
+            field[["content_type"]],
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          )
+
+        if (is_file) {
+          file_path <- tempfile()
+          writeBin(object = field$value, con = file_path)
+          on.exit(unlink(x = file_path))
+        }
+
+        if (is_csv) {
+          read.csv(file = file_path) |> print()
+        }
+
+        if (is_xlsx) {
+          readxl::read_xlsx(path = file_path) |> print()
+        }
+
+        tags$li(
+          nm,
+          ":",
+          if (is_file) "printed on console" else field
+        )
       }
     )
     input_vals <- tags$ul(list_items)
