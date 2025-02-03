@@ -8,7 +8,8 @@ parse_req(
   req,
   content_type = NULL,
   fields_to_extract = character(),
-  new_field_names = character()
+  new_field_names = character(),
+  ...
 )
 }
 \arguments{
@@ -33,10 +34,14 @@ fields found after parsing of the HTTP request.}
 in the returned list. Useful for renaming the fields for clarity or
 consistency in the output. If not provided or empty (default), the
 original names in \code{fields_to_extract} are used.}
+
+\item{...}{Named arguments. Passed to the parser function. For
+"application/json", these are passed to \code{\link[yyjsonr:read_json_raw]{yyjsonr::read_json_raw()}}. Otherwise,
+the dots are passed to \code{\link[webutils:parse_http]{webutils::parse_http()}}.}
 }
 \value{
 Named list containing the extracted fields and their associated
-values. If no data is found or an error occurs, an empty list is returned.
+values. If no data is found in the request body, an empty list is returned.
 }
 \description{
 Parses the body of an HTTP request based on its \code{Content-Type} header. This

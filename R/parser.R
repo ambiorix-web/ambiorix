@@ -42,7 +42,10 @@
 #' consistency in the output. If not provided or empty (default), the
 #' original names in `fields_to_extract` are used.
 #' @return Named list containing the extracted fields and their associated
-#' values. If no data is found or an error occurs, an empty list is returned.
+#' values. If no data is found in the request body, an empty list is returned.
+#' @param ... Named arguments. Passed to the parser function. For
+#' "application/json", these are passed to [yyjsonr::read_json_raw()]. Otherwise,
+#' the dots are passed to [webutils::parse_http()].
 #' @examples
 #' if (interactive()) {
 #'   library(ambiorix)
@@ -250,7 +253,7 @@
 #'   app$start()
 #' }
 #' @export
-parse_req <- function(req, content_type = NULL, fields_to_extract = character(), new_field_names = character()) {
+parse_req <- function(req, content_type = NULL, fields_to_extract = character(), new_field_names = character(), ...) {
   body <- req$rook.input$read()
   if (identical(body, raw())) {
     return(list())
@@ -261,25 +264,25 @@ parse_req <- function(req, content_type = NULL, fields_to_extract = character(),
     "multipart/form-data",
     "application/x-www-form-urlencoded"
   )
-  content_type <- if (!is.null(content_type)) {
-    match.arg(arg = content_type, choices = content_type_choices)
-  } else {
+  content_type <- if (is.null(content_type)) {
     req$CONTENT_TYPE
-  }
+  } else {
+    match.arg(arg = content_type, choices = content_type_choices)
+    }
 
   # -----application/json-----
   if (identical(content_type, "application/json")) {
     return(
-      yyjsonr::read_json_raw(raw_vec = body)
+      yyjsonr::read_json_raw(raw_vec = body, ...)
     )
   }
 
-  parsed <- webutils::parse_http(body = body, content_type = content_type)
+  parsed <- webutils::parse_http(body = body, content_type = content_type, ...)
 
   # -----application/x-www-form-urlencoded-----
   if (identical(content_type, "application/x-www-form-urlencoded")) {
     return(
-      extract_and_rename_req_fields(
+      select_and_rename_request_fields(
         x = parsed,
         fields_to_extract = fields_to_extract,
         new_field_names = new_field_names
@@ -303,21 +306,21 @@ parse_req <- function(req, content_type = NULL, fields_to_extract = character(),
     }
   )
 
-  extract_and_rename_req_fields(
+  select_and_rename_request_fields(
     x = values,
     fields_to_extract = fields_to_extract,
     new_field_names = new_field_names
   )
 }
 
-#' Extract & rename parsed request fields
+#' Select & rename parsed request fields
 #'
 #' @param x Named list. The parsed request.
 #' @param fields_to_extract Character vector.
 #' @param new_field_names Character vector.
 #' @keywords internal
 #' @noRd
-extract_and_rename_req_fields <- function(x, fields_to_extract = character(), new_field_names = character()) {
+select_and_rename_request_fields <- function(x, fields_to_extract = character(), new_field_names = character()) {
   if (identical(fields_to_extract, character())) {
     return(x)
   }
@@ -359,7 +362,7 @@ extract_and_rename_req_fields <- function(x, fields_to_extract = character(), ne
 #' @name parsers
 #' @export
 parse_multipart <- function(req, ...) {
-  parse_req(req)
+  parse_req(req, ...)
 }
 
 #' @export
