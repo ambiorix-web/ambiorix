@@ -1,8 +1,8 @@
-#' Parse HTTP request
+#' Parse an HTTP request
 #'
 #' @description
-#' Parses the body of an HTTP request based on its `Content-Type` header. This
-#' function simplifies working with HTTP requests by extracting specific data
+#' Parses the body of an HTTP request based on its `Content-Type` header.
+#' Simplifies working with HTTP requests by extracting specific data
 #' fields from the parsed body.
 #'
 #' @details
@@ -252,6 +252,7 @@
 #'
 #'   app$start()
 #' }
+#' @name parsers
 #' @export
 parse_req <- function(req, content_type = NULL, fields_to_extract = character(), new_field_names = character(), ...) {
   body <- req$rook.input$read()
@@ -343,24 +344,8 @@ select_and_rename_request_fields <- function(x, fields_to_extract = character(),
   required
 }
 
-#' Parsers
-#'
-#' Collection of parsers to translate request data.
-#'
-#' @param req The request object.
-#' @param ... Additional arguments passed to the internal parsers.
-#'
-#' @section Functions:
-#' - [parse_multipart()]: Parse `multipart/form-data` using [webutils::parse_multipart()].
-#' - [parse_json()]: Parse `application/json` using [yyjsonr::read_json_raw()].
-#'
-#' @return Returns the parsed value as a `list` or `NULL`
-#' if it failed to parse.
-#'
-#' @seealso [parse_req()] for a more robust request parser.
-#'
-#' @name parsers
 #' @export
+#' @rdname parsers
 parse_multipart <- function(req, ...) {
   parse_req(req, ...)
 }
