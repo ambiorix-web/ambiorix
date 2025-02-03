@@ -263,10 +263,8 @@ Ambiorix <- R6::R6Class(
         self$stop()
       })
 
-      # keep R "alive"
-      while (TRUE) {
-        httpuv::service()
-      }
+      # continually process requests:
+      httpuv::service(timeoutMs = Inf)
 
       invisible(self)
     },
