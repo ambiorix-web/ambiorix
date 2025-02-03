@@ -9,9 +9,10 @@
 #' Supported `Content-Type` values include:
 #' - `multipart/form-data`
 #' - `application/json`
+#' - `application/x-www-form-urlencoded`
 #'
-#' The `fields_to_extract` & `new_field_names` parameters are currently **only**
-#' used for 'multipart/form-data'.
+#' The `fields_to_extract` & `new_field_names` parameters **only**
+#' used for 'multipart/form-data' and 'application/x-www-form-urlencoded'.
 #'
 #' For 'multipart/form-data', if a field is a file upload it is returned as a named list with:
 #' - `value`: Raw vector representing the file contents. You must
@@ -256,8 +257,9 @@ parse_req <- function(req, content_type = NULL, fields_to_extract = character(),
   }
 
   content_type_choices <- c(
+    "application/json",
     "multipart/form-data",
-    "application/json"
+    "application/x-www-form-urlencoded"
   )
   content_type <- if (!is.null(content_type)) {
     match.arg(arg = content_type, choices = content_type_choices)
@@ -273,6 +275,17 @@ parse_req <- function(req, content_type = NULL, fields_to_extract = character(),
   }
 
   parsed <- webutils::parse_http(body = body, content_type = content_type)
+
+  # -----application/x-www-form-urlencoded-----
+  if (identical(content_type, "application/x-www-form-urlencoded")) {
+    return(
+      extract_and_rename_req_fields(
+        x = parsed,
+        fields_to_extract = fields_to_extract,
+        new_field_names = new_field_names
+      )
+    )
+  }
 
   # -----multipart/form-data-----
   raw_to_char <- function(x) rawToChar(as.raw(x))
@@ -290,11 +303,26 @@ parse_req <- function(req, content_type = NULL, fields_to_extract = character(),
     }
   )
 
+  extract_and_rename_req_fields(
+    x = values,
+    fields_to_extract = fields_to_extract,
+    new_field_names = new_field_names
+  )
+}
+
+#' Extract & rename parsed request fields
+#'
+#' @param x Named list. The parsed request.
+#' @param fields_to_extract Character vector.
+#' @param new_field_names Character vector.
+#' @keywords internal
+#' @noRd
+extract_and_rename_req_fields <- function(x, fields_to_extract = character(), new_field_names = character()) {
   if (identical(fields_to_extract, character())) {
-    return(values)
+    return(x)
   }
 
-  required <- values[fields_to_extract]
+  required <- x[fields_to_extract]
 
   if (identical(new_field_names, character())) {
     return(required)

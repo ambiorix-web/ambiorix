@@ -48,10 +48,11 @@ Supported \code{Content-Type} values include:
 \itemize{
 \item \code{multipart/form-data}
 \item \code{application/json}
+\item \code{application/x-www-form-urlencoded}
 }
 
-The \code{fields_to_extract} & \code{new_field_names} parameters are currently \strong{only}
-used for 'multipart/form-data'.
+The \code{fields_to_extract} & \code{new_field_names} parameters \strong{only}
+used for 'multipart/form-data' and 'application/x-www-form-urlencoded'.
 
 For 'multipart/form-data', if a field is a file upload it is returned as a named list with:
 \itemize{
