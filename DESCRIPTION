@@ -20,14 +20,16 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: R (>= 4.1.0)
 Imports:
-  fs,
-  log,
-  cli,
-  glue,
-  httpuv,
-  methods,
-  jsonlite,
-  assertthat
+    fs,
+    log,
+    cli,
+    glue,
+    httpuv,
+    methods,
+    jsonlite,
+    assertthat,
+    webutils (>= 1.2.0),
+    yyjsonr (>= 0.1.20)
 Suggests:
   mime,
   readr,
