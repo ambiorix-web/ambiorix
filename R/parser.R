@@ -7,9 +7,9 @@
 #'
 #' @details
 #' Supported `Content-Type` values include:
-#' - `multipart/form-data`
-#' - `application/json`
-#' - `application/x-www-form-urlencoded`
+#' - "multipart/form-data"
+#' - "application/json"
+#' - "application/x-www-form-urlencoded"
 #'
 #' The `fields_to_extract` & `new_field_names` parameters **only**
 #' used for 'multipart/form-data' and 'application/x-www-form-urlencoded'.
@@ -22,6 +22,35 @@
 #' - `content_type`: MIME type of the uploaded file (e.g., "image/png" or "application/pdf").
 #' - `name`: Name of the form input field.
 #' - `filename`: Original name of the uploaded file.
+#'
+#' ### Overriding Default Parsers
+#' By default, `parse_req()` uses the following parsers:
+#' - "application/json": [yyjsonr::read_json_raw()]
+#' - "multipart/form-data": [webutils::parse_http()]
+#' - "application/x-www-form-urlencoded": [webutils::parse_http()]
+#'
+#' Users can override these defaults globally using `options()`:
+#'
+#' ```r
+#' my_json_parser <- function(body, ...) {
+#'   txt <- rawToChar(body)
+#'   jsonlite::fromJSON(txt, ...)
+#' }
+#' options(AMBIORIX_JSON_PARSER = my_json_parser)
+#'
+#' options(AMBIORIX_MULTIPART_FORM_DATA_PARSER = my_custom_parser)
+#' options(AMBIORIX_FORM_URLENCODED_PARSER = my_other_custom_parser)
+#' ```
+#'
+#' This allows `parse_req()` to use a different parser for each request type.
+#'
+#' The custom parser functions *MUST* accept two parameters:
+#' 1. `body`: A raw vector as the first parameter
+#' 2. `...`: Optional parameters passed from [parse_req()].
+#'
+#' Please note that if a custom parser is used there is no post-processing
+#' done (eg. extracting fields) as it is assumed that the parser handled
+#' everything.
 #'
 #' @param req A request object. The request must include a `CONTENT_TYPE` header
 #' and a body accessible via `req$rook.input$read()`.
@@ -269,19 +298,27 @@ parse_req <- function(req, content_type = NULL, fields_to_extract = character(),
     req$CONTENT_TYPE
   } else {
     match.arg(arg = content_type, choices = content_type_choices)
-    }
+  }
 
   # -----application/json-----
   if (identical(content_type, "application/json")) {
+    parser <- get_json_parser()
     return(
-      yyjsonr::read_json_raw(raw_vec = body, ...)
+      parser(body, ...)
     )
   }
 
-  parsed <- webutils::parse_http(body = body, content_type = content_type, ...)
-
   # -----application/x-www-form-urlencoded-----
   if (identical(content_type, "application/x-www-form-urlencoded")) {
+    parser <- get_form_urlencoded_parser()
+    if (!identical(parser, webutils::parse_http)) {
+      return(
+        parser(body, ...)
+      )
+    }
+
+    parsed <- parser(body = body, content_type = content_type, ...)
+
     return(
       select_and_rename_request_fields(
         x = parsed,
@@ -293,6 +330,15 @@ parse_req <- function(req, content_type = NULL, fields_to_extract = character(),
 
   # -----multipart/form-data-----
   raw_to_char <- function(x) rawToChar(as.raw(x))
+
+  parser <- get_multipart_form_data_parser()
+  if (!identical(parser, webutils::parse_http)) {
+    return(
+      parser(body, ...)
+    )
+  }
+
+  parsed <- parser(body = body, content_type = content_type, ...)
 
   values <- lapply(
     X = parsed,
@@ -354,4 +400,28 @@ parse_multipart <- function(req, ...) {
 #' @rdname parsers
 parse_json <- function(req, ...) {
   parse_req(req, ...)
+}
+
+#' Retrieve application/json parser
+#'
+#' @keywords internal
+#' @noRd
+get_json_parser <- function() {
+  getOption(x = "AMBIORIX_JSON_PARSER", default = yyjsonr::read_json_raw)
+}
+
+#' Retrieve multipart/form-data form data parser
+#'
+#' @keywords internal
+#' @noRd
+get_multipart_form_data_parser <- function() {
+  getOption(x = "AMBIORIX_MULTIPART_FORM_DATA_PARSER", default = webutils::parse_http)
+}
+
+#' Retrieve application/x-www-form-urlencoded parser
+#'
+#' @keywords internal
+#' @noRd
+get_form_urlencoded_parser <- function() {
+  getOption(x = "AMBIORIX_FORM_URLENCODED_PARSER", default = webutils::parse_http)
 }

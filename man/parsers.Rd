@@ -58,9 +58,9 @@ fields from the parsed body.
 \details{
 Supported \code{Content-Type} values include:
 \itemize{
-\item \code{multipart/form-data}
-\item \code{application/json}
-\item \code{application/x-www-form-urlencoded}
+\item "multipart/form-data"
+\item "application/json"
+\item "application/x-www-form-urlencoded"
 }
 
 The \code{fields_to_extract} & \code{new_field_names} parameters \strong{only}
@@ -75,6 +75,39 @@ is meant to be handled.
 \item \code{content_type}: MIME type of the uploaded file (e.g., "image/png" or "application/pdf").
 \item \code{name}: Name of the form input field.
 \item \code{filename}: Original name of the uploaded file.
+}
+\subsection{Overriding Default Parsers}{
+
+By default, \code{parse_req()} uses the following parsers:
+\itemize{
+\item "application/json": \code{\link[yyjsonr:read_json_raw]{yyjsonr::read_json_raw()}}
+\item "multipart/form-data": \code{\link[webutils:parse_http]{webutils::parse_http()}}
+\item "application/x-www-form-urlencoded": \code{\link[webutils:parse_http]{webutils::parse_http()}}
+}
+
+Users can override these defaults globally using \code{options()}:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{my_json_parser <- function(body, ...) \{
+  txt <- rawToChar(body)
+  jsonlite::fromJSON(txt, ...)
+\}
+options(AMBIORIX_JSON_PARSER = my_json_parser)
+
+options(AMBIORIX_MULTIPART_FORM_DATA_PARSER = my_custom_parser)
+options(AMBIORIX_FORM_URLENCODED_PARSER = my_other_custom_parser)
+}\if{html}{\out{</div>}}
+
+This allows \code{parse_req()} to use a different parser for each request type.
+
+The custom parser functions \emph{MUST} accept two parameters:
+\enumerate{
+\item \code{body}: A raw vector as the first parameter
+\item \code{...}: Optional parameters passed from \code{\link[=parse_req]{parse_req()}}.
+}
+
+Please note that if a custom parser is used there is no post-processing
+done (eg. extracting fields) as it is assumed that the parser handled
+everything.
 }
 }
 \examples{
