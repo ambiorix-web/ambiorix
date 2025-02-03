@@ -320,29 +320,22 @@ parse_req <- function(req, content_type = NULL, fields_to_extract = character(),
 #' @param ... Additional arguments passed to the internal parsers.
 #'
 #' @section Functions:
-#' - [parse_multipart()]: Parse `multipart/form-data` using [mime::parse_multipart()].
-#' - [parse_json()]: Parse `multipart/form-data` using [jsonlite::fromJSON()].
+#' - [parse_multipart()]: Parse `multipart/form-data` using [webutils::parse_multipart()].
+#' - [parse_json()]: Parse `application/json` using [yyjsonr::read_json_raw()].
 #'
 #' @return Returns the parsed value as a `list` or `NULL`
 #' if it failed to parse.
 #'
+#' @seealso [parse_req()] for a more robust request parser.
+#'
 #' @name parsers
 #' @export
-parse_multipart <- function(req) {
-  check_installed("mime")
-  tryCatch(
-    mime::parse_multipart(req$body),
-    error = function(e) NULL
-  )
+parse_multipart <- function(req, ...) {
+  parse_req(req)
 }
 
 #' @export
 #' @rdname parsers
 parse_json <- function(req, ...) {
-  data <- req$body[["rook.input"]]
-  data <- data$read_lines()
-  tryCatch(
-    jsonlite::fromJSON(data, ...),
-    error = function(e) NULL
-  )
+  parse_req(req, ...)
 }

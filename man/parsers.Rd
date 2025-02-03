@@ -6,7 +6,7 @@
 \alias{parse_json}
 \title{Parsers}
 \usage{
-parse_multipart(req)
+parse_multipart(req, ...)
 
 parse_json(req, ...)
 }
@@ -25,8 +25,11 @@ Collection of parsers to translate request data.
 \section{Functions}{
 
 \itemize{
-\item \code{\link[=parse_multipart]{parse_multipart()}}: Parse \code{multipart/form-data} using \code{\link[mime:parse_multipart]{mime::parse_multipart()}}.
-\item \code{\link[=parse_json]{parse_json()}}: Parse \code{multipart/form-data} using \code{\link[jsonlite:fromJSON]{jsonlite::fromJSON()}}.
+\item \code{\link[=parse_multipart]{parse_multipart()}}: Parse \code{multipart/form-data} using \code{\link[webutils:parse_multipart]{webutils::parse_multipart()}}.
+\item \code{\link[=parse_json]{parse_json()}}: Parse \code{application/json} using \code{\link[yyjsonr:read_json_raw]{yyjsonr::read_json_raw()}}.
 }
 }
 
+\seealso{
+\code{\link[=parse_req]{parse_req()}} for a more robust request parser.
+}
