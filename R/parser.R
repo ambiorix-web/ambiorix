@@ -1,20 +1,12 @@
-#' Parse an HTTP request
+#' Parse multipart form data
 #'
-#' @description
-#' Parses the body of an HTTP request based on its `Content-Type` header.
-#' Simplifies working with HTTP requests by extracting specific data
-#' fields from the parsed body.
+#' Parses multipart form data, including file uploads, and returns the parsed fields as a list.
+#'
+#' @param req The request object.
+#' @param ... Additional parameters passed to the parser function.
 #'
 #' @details
-#' Supported `Content-Type` values include:
-#' - "multipart/form-data"
-#' - "application/json"
-#' - "application/x-www-form-urlencoded"
-#'
-#' The `fields_to_extract` & `new_field_names` parameters **only**
-#' used for 'multipart/form-data' and 'application/x-www-form-urlencoded'.
-#'
-#' For 'multipart/form-data', if a field is a file upload it is returned as a named list with:
+#' If a field is a file upload it is returned as a named list with:
 #' - `value`: Raw vector representing the file contents. You must
 #'    process this further (eg. convert to data.frame). See the examples section.
 #' - `content_disposition`: Typically "form-data", indicating how the content
@@ -23,58 +15,22 @@
 #' - `name`: Name of the form input field.
 #' - `filename`: Original name of the uploaded file.
 #'
-#' ### Overriding Default Parsers
-#' By default, `parse_req()` uses the following parsers:
-#' - "application/json": [yyjsonr::read_json_raw()]
-#' - "multipart/form-data": [webutils::parse_http()]
-#' - "application/x-www-form-urlencoded": [webutils::parse_http()]
+#' If no body data, an empty list is returned.
 #'
-#' Users can override these defaults globally using `options()`:
+#' ### Overriding Default Parser
+#'
+#' By default, `parse_multipart()` uses [webutils::parse_http()] internally.
+#' You can override this globally by setting the `AMBIORIX_MULTIPART_FORM_DATA_PARSER` option:
 #'
 #' ```r
-#' my_json_parser <- function(body, ...) {
-#'   txt <- rawToChar(body)
-#'   jsonlite::fromJSON(txt, ...)
-#' }
-#' options(AMBIORIX_JSON_PARSER = my_json_parser)
-#'
 #' options(AMBIORIX_MULTIPART_FORM_DATA_PARSER = my_custom_parser)
-#' options(AMBIORIX_FORM_URLENCODED_PARSER = my_other_custom_parser)
 #' ```
 #'
-#' This allows `parse_req()` to use a different parser for each request type.
+#' Your custom parser function must accept the following parameters:
+#' 1. `body`: Raw vector containing the form data.
+#' 2. `content_type`: The 'Content-Type' header of the request as defined by the client.
+#' 3. `...`: Additional optional parameters.
 #'
-#' The custom parser functions *MUST* accept two parameters:
-#' 1. `body`: A raw vector as the first parameter
-#' 2. `...`: Optional parameters passed from [parse_req()].
-#'
-#' Please note that if a custom parser is used there is no post-processing
-#' done (eg. extracting fields) as it is assumed that the parser handled
-#' everything.
-#'
-#' @param req A request object. The request must include a `CONTENT_TYPE` header
-#' and a body accessible via `req$rook.input$read()`.
-#' @param content_type String. 'Content-Type' of the request. See details for
-#' valid values.
-#' By default, this parameter is set to `NULL` and is inferred from the `req`
-#' object during run time.
-#' The only time you need to provide this argument is if `req$CONTENT_TYPE`
-#' is different from how you want the request body to be parsed.
-#' For example, `req$CONTENT_TYPE` gives "text/plain;charset=UTF-8" but you want
-#' to parse the request body as "application/json".
-#' @param fields_to_extract Character vector specifying the names of fields to
-#' extract from the parsed request body. If missing, returns all
-#' fields found after parsing of the HTTP request.
-#' @param new_field_names Character vector of same length as
-#' `fields_to_extract`. Specifies new names to assign to the extracted fields
-#' in the returned list. Useful for renaming the fields for clarity or
-#' consistency in the output. If not provided or empty (default), the
-#' original names in `fields_to_extract` are used.
-#' @return Named list containing the extracted fields and their associated
-#' values. If no data is found in the request body, an empty list is returned.
-#' @param ... Named arguments. Passed to the parser function. For
-#' "application/json", these are passed to [yyjsonr::read_json_raw()]. Otherwise,
-#' the dots are passed to [webutils::parse_http()].
 #' @examples
 #' if (interactive()) {
 #'   library(ambiorix)
@@ -94,7 +50,7 @@
 #'   forms <- \() {
 #'     form1 <- tags$form(
 #'       action = "/url-form-encoded",
-#'       method = "GET",
+#'       method = "POST",
 #'       enctype = "application/x-www-form-urlencoded",
 #'       tags$h4("form-url-encoded:"),
 #'       tags$label(`for` = "first_name", "First Name"),
@@ -120,21 +76,7 @@
 #'       tags$button(type = "submit", "Submit")
 #'     )
 #'
-#'     form3 <- tags$form(
-#'       action = "/multipart-form-data2",
-#'       method = "POST",
-#'       enctype = "multipart/form-data",
-#'       tags$h4("multipart/form-data (specific fields extracted & renamed):"),
-#'       tags$label(`for` = "family_name", "Family Name"),
-#'       tags$input(id = "family_name", name = "family_name", value = "the johns"),
-#'       tags$label(`for` = "user_book", "User Book"),
-#'       tags$input(id = "user_book", name = "user_book", value = "JavaScript for R"),
-#'       tags$label(`for` = "user_age", "User Age"),
-#'       tags$input(id = "user_age", name = "user_age", value = "15"),
-#'       tags$button(type = "submit", "Submit")
-#'     )
-#'
-#'     tagList(form1, form2, form3)
+#'     tagList(form1, form2)
 #'   }
 #'
 #'   home_get <- \(req, res) {
@@ -147,15 +89,34 @@
 #'     res$send(html)
 #'   }
 #'
-#'   url_form_encoded_get <- \(req, res) {
-#'     query <- req$query
+#'   home_post <- \(req, res) {
+#'     body <- parse_json(req)
+#'     cat(strrep(x = "-", times = 10), "\n")
+#'     cat("Parsed JSON:\n")
+#'     print(body)
+#'     cat(strrep(x = "-", times = 10), "\n")
+#'
+#'     response <- list(
+#'       code = 200L,
+#'       msg = "hello, world"
+#'     )
+#'     res$json(response)
+#'   }
+#'
+#'   url_form_encoded_post <- \(req, res) {
+#'     body <- parse_form_urlencoded(req)
+#'     cat(strrep(x = "-", times = 8), "\n")
+#'     cat("Parsed application/x-www-form-urlencoded:\n")
+#'     print(body)
+#'     cat(strrep(x = "-", times = 8), "\n")
+#'
 #'     list_items <- lapply(
-#'       X = names(query),
+#'       X = names(body),
 #'       FUN = \(nm) {
 #'         tags$li(
 #'           nm,
 #'           ":",
-#'           query[[nm]]
+#'           body[[nm]]
 #'         )
 #'       }
 #'     )
@@ -171,7 +132,7 @@
 #'   }
 #'
 #'   multipart_form_data_post <- \(req, res) {
-#'     body <- parse_req(req)
+#'     body <- parse_multipart(req)
 #'
 #'     list_items <- lapply(
 #'       X = names(body),
@@ -219,30 +180,6 @@
 #'     res$send(html)
 #'   }
 #'
-#'   multipart_form_data_post2 <- \(req, res) {
-#'     body <- parse_req(
-#'       req,
-#'       fields_to_extract = c("user_book", "user_age"),
-#'       new_field_names = c("book", "age")
-#'     )
-#'
-#'     list_items <- lapply(
-#'       X = names(body),
-#'       FUN = \(nm) {
-#'         tags$li(nm, ":", body[[nm]])
-#'       }
-#'     )
-#'     input_vals <- tags$ul(list_items)
-#'
-#'     html <- tagList(
-#'       page_links(),
-#'       tags$h3("Request processed, only these fields extracted & renamed:"),
-#'       input_vals
-#'     )
-#'
-#'     res$send(html)
-#'   }
-#'
 #'   about_get <- \(req, res) {
 #'     html <- tagList(
 #'       page_links(),
@@ -259,15 +196,6 @@
 #'     res$send(html)
 #'   }
 #'
-#'   home_post <- \(req, res) {
-#'     body <- parse_req(req)
-#'     response <- list(
-#'       code = 200L,
-#'       msg = "hello, world"
-#'     )
-#'     res$json(response)
-#'   }
-#'
 #'   app <- Ambiorix$new(port = 5000L)
 #'
 #'   app$
@@ -275,70 +203,35 @@
 #'     post("/", home_post)$
 #'     get("/about", about_get)$
 #'     get("/contact", contact_get)$
-#'     get("/url-form-encoded", url_form_encoded_get)$
-#'     post("/multipart-form-data", multipart_form_data_post)$
-#'     post("/multipart-form-data2", multipart_form_data_post2)
+#'     post("/url-form-encoded", url_form_encoded_post)$
+#'     post("/multipart-form-data", multipart_form_data_post)
 #'
 #'   app$start()
 #' }
-#' @name parsers
+#' @seealso [parse_form_urlencoded()], [parse_json()]
 #' @export
-parse_req <- function(req, content_type = NULL, fields_to_extract = character(), new_field_names = character(), ...) {
+parse_multipart <- function(req, ...) {
   body <- req$rook.input$read()
   if (identical(body, raw())) {
     return(list())
   }
 
-  content_type_choices <- c(
-    "application/json",
-    "multipart/form-data",
-    "application/x-www-form-urlencoded"
-  )
-  content_type <- if (is.null(content_type)) {
-    req$CONTENT_TYPE
-  } else {
-    match.arg(arg = content_type, choices = content_type_choices)
-  }
-
-  # -----application/json-----
-  if (identical(content_type, "application/json")) {
-    parser <- get_json_parser()
-    return(
-      parser(body, ...)
+  default <- function(body, content_type, ...) {
+    webutils::parse_http(
+      body = body,
+      content_type = content_type,
+      ...
     )
   }
 
-  # -----application/x-www-form-urlencoded-----
-  if (identical(content_type, "application/x-www-form-urlencoded")) {
-    parser <- get_form_urlencoded_parser()
-    if (!identical(parser, webutils::parse_http)) {
-      return(
-        parser(body, ...)
-      )
-    }
+  parser <- getOption(x = "AMBIORIX_MULTIPART_FORM_DATA_PARSER", default = default)
+  parsed <- parser(body = body, content_type = req$CONTENT_TYPE, ...)
 
-    parsed <- parser(body = body, content_type = content_type, ...)
-
-    return(
-      select_and_rename_request_fields(
-        x = parsed,
-        fields_to_extract = fields_to_extract,
-        new_field_names = new_field_names
-      )
-    )
+  if (!identical(parser, default)) {
+    return(parsed)
   }
 
-  # -----multipart/form-data-----
   raw_to_char <- function(x) rawToChar(as.raw(x))
-
-  parser <- get_multipart_form_data_parser()
-  if (!identical(parser, webutils::parse_http)) {
-    return(
-      parser(body, ...)
-    )
-  }
-
-  parsed <- parser(body = body, content_type = content_type, ...)
 
   values <- lapply(
     X = parsed,
@@ -353,75 +246,95 @@ parse_req <- function(req, content_type = NULL, fields_to_extract = character(),
     }
   )
 
-  select_and_rename_request_fields(
-    x = values,
-    fields_to_extract = fields_to_extract,
-    new_field_names = new_field_names
-  )
+  values
 }
 
-#' Select & rename parsed request fields
+#' Parse application/x-www-form-urlencoded data
 #'
-#' @param x Named list. The parsed request.
-#' @param fields_to_extract Character vector.
-#' @param new_field_names Character vector.
-#' @keywords internal
-#' @noRd
-select_and_rename_request_fields <- function(x, fields_to_extract = character(), new_field_names = character()) {
-  if (identical(fields_to_extract, character())) {
-    return(x)
+#' @description
+#' This function parses `application/x-www-form-urlencoded` data, typically used in form submissions.
+#'
+#' @param req The request object.
+#' @param ... Additional parameters passed to the parser function.
+#'
+#' @return A list of parsed form fields, with each key representing a form field name and each value
+#' representing the form field's value.
+#'
+#' @details
+#'
+#' ### Overriding Default Parser
+#'
+#' By default, `parse_form_urlencoded()` uses [webutils::parse_http()].
+#' You can override this globally by setting the `AMBIORIX_FORM_URLENCODED_PARSER` option:
+#'
+#' ```r
+#' options(AMBIORIX_FORM_URLENCODED_PARSER = my_other_custom_parser)
+#' ```
+#'
+#' Your custom parser function *MUST* accept the following parameters:
+#' 1. `body`: Raw vector containing the form data.
+#' 2. `...`: Additional optional parameters.
+#'
+#' @inherit parse_multipart examples
+#' @seealso [parse_multipart()], [parse_json()]
+#' @export
+parse_form_urlencoded <- function(req, ...) {
+  body <- req$rook.input$read()
+  if (identical(body, raw())) {
+    return(list())
   }
 
-  required <- x[fields_to_extract]
-
-  if (identical(new_field_names, character())) {
-    return(required)
+  default <- function(body, ...) {
+    webutils::parse_http(
+      body = body,
+      content_type = "application/x-www-form-urlencoded",
+      ...
+    )
   }
 
-  stopifnot(
-    "'fields_to_extract' must have same length as 'new_field_names'" =
-      identical(
-        length(fields_to_extract),
-        length(new_field_names)
-      )
-  )
+  parser <- getOption(x = "AMBIORIX_FORM_URLENCODED_PARSER", default = default)
 
-  names(required) <- new_field_names
-  required
+  parser(body = body, ...)
 }
 
+#' Parse application/json data
+#'
+#' @description
+#' This function parses JSON data from the request body.
+#'
+#' @param req The request object.
+#' @param ... Additional parameters passed to the parser function.
+#'
+#' @return An R object (e.g., list or data frame) parsed from the JSON data.
+#'
+#' @details
+#'
+#' ### Overriding Default Parser
+#'
+#' By default, `parse_json()` uses [yyjsonr::read_json_raw()] for JSON parsing.
+#' You can override this globally by setting the `AMBIORIX_JSON_PARSER` option:
+#'
+#' ```r
+#' my_json_parser <- function(body, ...) {
+#'   txt <- rawToChar(body)
+#'   jsonlite::fromJSON(txt, ...)
+#' }
+#' options(AMBIORIX_JSON_PARSER = my_json_parser)
+#' ```
+#'
+#' Your custom parser *MUST* accept the following parameters:
+#' 1. `body`: Raw vector containing the JSON data.
+#' 2. `...`: Additional optional parameters.
+#'
+#' @inherit parse_multipart examples
+#' @seealso [parse_multipart()], [parse_form_urlencoded()]
 #' @export
-#' @rdname parsers
-parse_multipart <- function(req, ...) {
-  parse_req(req, ...)
-}
-
-#' @export
-#' @rdname parsers
 parse_json <- function(req, ...) {
-  parse_req(req, ...)
-}
+  body <- req$rook.input$read()
+  if (identical(body, raw())) {
+    return(list())
+  }
 
-#' Retrieve application/json parser
-#'
-#' @keywords internal
-#' @noRd
-get_json_parser <- function() {
-  getOption(x = "AMBIORIX_JSON_PARSER", default = yyjsonr::read_json_raw)
-}
-
-#' Retrieve multipart/form-data form data parser
-#'
-#' @keywords internal
-#' @noRd
-get_multipart_form_data_parser <- function() {
-  getOption(x = "AMBIORIX_MULTIPART_FORM_DATA_PARSER", default = webutils::parse_http)
-}
-
-#' Retrieve application/x-www-form-urlencoded parser
-#'
-#' @keywords internal
-#' @noRd
-get_form_urlencoded_parser <- function() {
-  getOption(x = "AMBIORIX_FORM_URLENCODED_PARSER", default = webutils::parse_http)
+  parser <- getOption(x = "AMBIORIX_JSON_PARSER", default = yyjsonr::read_json_raw)
+  parser(body, ...)
 }
