@@ -131,9 +131,7 @@ as_label <- function(x) {
 #' 
 #' @keywords internal
 read_lines <- function(...) {
-  suppressWarnings(
-    readLines(...)
-  )
+  readLines(..., warn = FALSE)
 }
 
 #' Read file from disk or cache
