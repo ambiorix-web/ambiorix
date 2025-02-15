@@ -145,7 +145,7 @@ render_htmltools <- function(x) {
   xx <- htmltools::renderDependencies(deps)
   # add <head> if not present
   if(!length(q$find("head")$selectedTags()))
-    q$closest("html")$append(htmltools::tags$head())
+    q$closest("html")$prepend(htmltools::tags$head())
 
   # htmltools::renderDependencies(..., srcType = "href")
   # does not work
