@@ -86,35 +86,48 @@ construct_response <- function(res){
   structure(res, class = c(class(res), "ambiorixResponse"))
 }
 
+
 inline_dependencies <- function(deps) {
-  deps |>
-    lapply(\(dep) {
-      if(!length(dep$src))
+  lapply(
+    X = deps,
+    FUN = function(dep) {
+      if (!length(dep$src)) {
         return()
+      }
 
-      if(!length(dep$src$file))
+      if (!length(dep$src$file)) {
         return()
+      }
 
-      scripts <- dep$script |>
-        lapply(\(s) {
-          content <- read_lines(file.path(dep$src$file, s)) |>
-            (\(.) paste0(., collapse = "\n"))()
+      scripts <- lapply(
+        X = dep$script,
+        FUN = function(s) {
+          content <- paste0(
+            read_lines(file.path(dep$src$file, s)),
+            collapse = "\n"
+          )
           htmltools::tags$script(type = "application/javascript", htmltools::HTML(content))
-        })
+        }
+      )
 
-      styles <- dep$stylesheet |>
-        lapply(\(s) {
-          content <- read_lines(file.path(dep$src$file, s)) |>
-            (\(.) paste0(., collapse = "\n"))()
+      styles <- lapply(
+        X = dep$stylesheet,
+        FUN = function(s) {
+          content <- paste0(
+            read_lines(file.path(dep$src$file, s)),
+            collapse = "\n"
+          )
           htmltools::tags$style(htmltools::HTML(content))
-        })
+        }
+      )
 
       list(scripts, styles)
-    })
+    }
+  )
 }
 
 render_htmltools <- function(x) {
-  # it it has a <body> tag we assume
+  # if it has a <html> tag we assume
   # it's a document and render with
   # dependencies, etc.
   # otherwise we just render the tags.
@@ -123,9 +136,9 @@ render_htmltools <- function(x) {
   if(!length(q$closest("html")$selectedTags()))
     return(htmltools::doRenderTags(x))
 
-  deps <- x |>
-    htmltools::findDependencies() |>
-    htmltools::resolveDependencies()
+  deps <- htmltools::resolveDependencies(
+    dependencies = htmltools::findDependencies(x)
+  )
 
   inline_deps <- inline_dependencies(deps)
 
