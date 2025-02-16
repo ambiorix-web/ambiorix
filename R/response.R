@@ -326,7 +326,7 @@ Response <- R6::R6Class(
       cli::cli_end()
     },
     #' @details Set Data
-    #' @param name Name of the variable.
+    #' @param name String. Name of the variable.
     #' @param value Value of the variable.
     #' @return Invisible returns self.
     set = function(name, value){
@@ -338,13 +338,11 @@ Response <- R6::R6Class(
         "Deprecated. The environment is no longer locked, you may simply `res$name <- value`"
       )
 
-      name <- as_label(name)
       self[[name]] <- value
-
       invisible(self)
     },
     #' @details Get data
-    #' @param name Name of the variable to get.
+    #' @param name String. Name of the variable to get.
     get = function(name){
       assert_that(not_missing(name))
       .Deprecated(
@@ -353,16 +351,15 @@ Response <- R6::R6Class(
         "Deprecated. The environment is no longer locked, you may simply `req$value"
       )
 
-      name <- as_label(name)
       self[[name]]
     },
     #' @details Add headers to the response.
-    #' @param name,value Name and value of the header.
+    #' @param name String. Name of the header.
+    #' @param value Value of the header.
     #' @return Invisibly returns self.
     header = function(name, value){
       assert_that(not_missing(name))
       assert_that(not_missing(value))
-      name <- as_label(name)
       private$.headers[[name]] <- value
       invisible(self)
     },
@@ -500,7 +497,7 @@ Response <- R6::R6Class(
     },
     #' @details Set a cookie
     #' Overwrites existing cookie of the same `name`.
-    #' @param name Name of the cookie.
+    #' @param name String. Name of the cookie.
     #' @param value value of the cookie.
     #' @param expires Expiry, if an integer assumes it's the number of seconds
     #' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
@@ -554,7 +551,6 @@ Response <- R6::R6Class(
         }
       }
 
-      name <- as_label(name)
       private$.cookies[[name]] <- cookie(
         name,
         value,
