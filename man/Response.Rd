@@ -458,7 +458,7 @@ Print
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Name of the variable.}
+\item{\code{name}}{String. Name of the variable.}
 
 \item{\code{value}}{Value of the variable.}
 }
@@ -483,7 +483,7 @@ Invisible returns self.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Name of the variable to get.}
+\item{\code{name}}{String. Name of the variable to get.}
 }
 \if{html}{\out{</div>}}
 }
@@ -503,7 +503,9 @@ Get data
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name, value}}{Name and value of the header.}
+\item{\code{name}}{String. Name of the header.}
+
+\item{\code{value}}{Value of the header.}
 }
 \if{html}{\out{</div>}}
 }
@@ -769,7 +771,7 @@ Invisible returns self.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Name of the cookie.}
+\item{\code{name}}{String. Name of the cookie.}
 
 \item{\code{value}}{value of the cookie.}
 
