@@ -167,7 +167,7 @@ Parse Multipart encoded data
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{...}}{Arguments passed to \code{\link[jsonlite:fromJSON]{jsonlite::fromJSON()}}.}
+\item{\code{...}}{Arguments passed to \code{\link[=parse_json]{parse_json()}}.}
 }
 \if{html}{\out{</div>}}
 }
