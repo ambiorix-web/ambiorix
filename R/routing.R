@@ -552,7 +552,7 @@ Routing <- R6::R6Class(
         # don't run if no receiver
         if(length(private$.receivers) == 0) return(NULL)
 
-        message <- jsonlite::fromJSON(message)
+        message <- yyjsonr::read_json_str(message)
 
         for(i in seq_along(private$.receivers)){
           if(private$.receivers[[i]]$is_handler(message)){
