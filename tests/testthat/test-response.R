@@ -42,7 +42,7 @@ test_that("Response", {
   resp <- res$send(
     htmltools::p("hello")
   )
-  expect_equal(resp$body, "<p>hello</p>")
+  expect_equal(resp$body, htmltools::HTML("<p>hello</p>"))
   
   # factor
   resp <- res$send(as.factor("hello"))

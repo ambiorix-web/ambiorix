@@ -2,7 +2,7 @@
 % Please edit documentation in R/serialise.R
 \name{serialise}
 \alias{serialise}
-\title{Serialise to JSON}
+\title{Serialise an Object to JSON}
 \usage{
 serialise(data, ...)
 }
@@ -12,11 +12,41 @@ serialise(data, ...)
 \item{...}{Passed to serialiser.}
 }
 \description{
-Serialise an object to JSON.
-Default serialiser can be change by setting the
-\code{AMBIORIX_SERIALISER} option to the desired function.
+Serialise an Object to JSON
+}
+\details{
+Ambiorix uses \code{\link[yyjsonr:write_json_str]{yyjsonr::write_json_str()}} by default for serialization.
+\subsection{Custom Serialiser}{
+
+To override the default, set the \code{AMBIORIX_SERIALISER} option to a function that accepts:
+\itemize{
+\item \code{data}: Object to serialise.
+\item \code{...}: Additional arguments passed to the function.
+}
+
+For example:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{my_serialiser <- function(data, ...) \{
+ jsonlite::toJSON(x = data, ...)
+\}
+
+options(AMBIORIX_SERIALISER = my_serialiser)
+}\if{html}{\out{</div>}}
+}
 }
 \examples{
-\dontrun{serialise(cars)}
+if (interactive()) {
+  # a list:
+  response <- list(code = 200L, msg = "hello, world!")
+
+  serialise(response)
+  #> {"code":200,"msg":"hello, world"}
+
+  serialise(response, auto_unbox = FALSE)
+  #> {"code":[200],"msg":["hello, world"]}
+
+  # data.frame:
+  serialise(cars)
+}
 
 }

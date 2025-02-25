@@ -189,13 +189,13 @@ Response <- R6::R6Class(
     #' @param body Body of the response.
     #' @param headers HTTP headers to set.
     #' @param status Status of the response, if `NULL` uses `self$status`.
-    #' @param ... Additional arguments passed to the serialiser.
+    #' @param ... Additional named arguments passed to the serialiser.
     json = function(body, headers = NULL, status = NULL, ...){
       self$header_content_json()
       deprecated_headers(headers)
       deprecated_status(status)
       headers <- private$.get_headers(headers)
-      response(serialise(body), headers = headers, status = private$.get_status(status))
+      response(serialise(body, ...), headers = headers, status = private$.get_status(status))
     },
     #' @details Sends a comma separated value file
     #' @param data Data to convert to CSV.

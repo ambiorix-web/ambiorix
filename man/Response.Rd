@@ -237,7 +237,7 @@ Render a template file.
 
 \item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 
-\item{\code{...}}{Additional arguments passed to the serialiser.}
+\item{\code{...}}{Additional named arguments passed to the serialiser.}
 }
 \if{html}{\out{</div>}}
 }
