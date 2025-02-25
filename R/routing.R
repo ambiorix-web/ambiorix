@@ -433,29 +433,22 @@ Routing <- R6::R6Class(
     # we reorder the routes before launching the app
     # we make sure the longest patterns are checked first
     # this makes sure /:id/x matches BEFORE /:id does
-    # howerver we also want to try to match extact paths
-    # BEFORE dynamic once
+    # however we also want to try to match exact paths
+    # BEFORE dynamic ones
     # e.g. /hello should be matched before /:id
-    # TODO https://github.com/devOpifex/ambiorix/issues/47
     reorder_routes = function() {
       indices <- seq_along(private$.routes)
-      pats <- lapply(private$.routes, \(route) {
+      paths <- lapply(private$.routes, function(route) {
         data.frame(
-          pattern = route$route$pattern,
+          nchar = nchar(route$route$path),
           dynamic = route$route$dynamic
         )
       })
-      df <- do.call(rbind, pats)
+      df <- do.call(rbind, paths)
       df$order <- seq_len(nrow(df))
-      df$nchar <- nchar(df$pattern)
       df <- df[order(df$dynamic, -df$nchar), ]
 
-      new_routes <- as.list(c(seq_len(nrow(df))))
-      for(i in seq_len(nrow(df))) {
-        new_routes[[i]] <- private$.routes[[df$order[i]]]
-      }
-
-      private$.routes <- rev(new_routes)
+      private$.routes <- private$.routes[df$order]
     },
     .call = function(req){
 
