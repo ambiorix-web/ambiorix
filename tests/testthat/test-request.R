@@ -13,10 +13,10 @@ test_that("Request", {
 
   expect_error(req$set())
   expect_error(req$set("hello"))
-  expect_warning(req$set("hello", "world"))
+  expect_error(req$set("hello", "world"))
 
   expect_error(req$get())
-  expect_warning(req$get("hello"))
+  expect_error(req$get("hello"))
 
   expect_error(req$get_header())
 })
