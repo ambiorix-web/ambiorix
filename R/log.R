@@ -6,7 +6,7 @@
 #' @noRd 
 #' @keywords internal
 logPredicate <- function(log){
-  \() log
+  function() log
 }
 
 #' Logger
@@ -83,21 +83,21 @@ set_log_error <- function(log) {
 #' CLI Symbols for log
 #' 
 #' @keywords internal
-success <- \() {
+success <- function() {
   cli::col_green(cli::symbol$tick)
 }
 
 #' @keywords internal
-error <- \() {
+error <- function() {
   cli::col_red(cli::symbol$cross)
 }
 
 #' @keywords internal
-info <- \() {
+info <- function() {
   cli::col_blue(cli::symbol$info)
 }
 
 #' @keywords internal
-warn <- \() {
+warn <- function() {
   cli::col_yellow(cli::symbol$warning)
 }

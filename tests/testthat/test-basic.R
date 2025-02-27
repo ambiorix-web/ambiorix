@@ -22,13 +22,13 @@ test_that("Ambiorix", {
   expect_equal(app$host, "127.0.0.1")
 
   expect_error(app$set_404("error"))
-  expect_error(app$set_404(\(req) {}))
-  expect_s3_class(app$set_404(\(req, res) {
+  expect_error(app$set_404(function(req) {}))
+  expect_s3_class(app$set_404(function(req, res) {
     res$send("Errr")
   }), "Ambiorix")
 
   expect_error(app$serialiser("error"))
-  expect_s3_class(app$serialiser(\(data) {
+  expect_s3_class(app$serialiser(function(data) {
     return("data")
   }), "Ambiorix")
 

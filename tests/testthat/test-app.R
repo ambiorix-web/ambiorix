@@ -3,40 +3,40 @@ test_that("application", {
 
   app <- Ambiorix$new()
 
-  app$get("/", \(req, res) {
+  app$get("/", function(req, res) {
     res$send("home")
   })
 
-  app$post("/", \(req, res) {
+  app$post("/", function(req, res) {
     res$send("home")
   })
   
-  app$put("/", \(req, res) {
+  app$put("/", function(req, res) {
     res$send("home")
   })
 
-  app$patch("/", \(req, res) {
+  app$patch("/", function(req, res) {
     res$send("home")
   })
 
-  app$delete("/", \(req, res) {
+  app$delete("/", function(req, res) {
     res$send("home")
   })
 
-  app$all("/", \(req, res) {
+  app$all("/", function(req, res) {
     res$send("home")
   })
 
-  app$options("/", \(req, res) {
+  app$options("/", function(req, res) {
     res$send("home")
   })
 
   # dynamic
-  app$get("/.path", \(req, res) {
+  app$get("/.path", function(req, res) {
     res$send("home")
   })
 
-  app$receive("message", \(...) {
+  app$receive("message", function(...) {
     print("received")
   })
 

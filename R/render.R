@@ -7,7 +7,7 @@
 #' @param dir Directory of file from which `content` originates.
 #' 
 #' @keywords internal
-replace_partials <- \(content, dir) {
+replace_partials <- function(content, dir) {
   content <- apply_replace_partial(content, dir)
 
   if(any(grepl("\\[! .* !\\]", content)))
@@ -25,7 +25,7 @@ replace_partials <- \(content, dir) {
 #' @param dir Base directory.
 #' 
 #' @keywords internal
-replace_partial <- \(line, dir) {
+replace_partial <- function(line, dir) {
   if(length(line) > 1)
     line <- apply_replace_partial(line, dir)
 
@@ -45,8 +45,7 @@ replace_partial <- \(line, dir) {
     line
   ) 
 
-  path <- gsub("\\[!|!\\]", "", line) |> 
-    trimws()
+  path <- trimws(gsub("\\[!|!\\]", "", line))
 
   # construct new base directory
   new_dir <- dirname(path)
@@ -71,9 +70,8 @@ replace_partial <- \(line, dir) {
 #' @param file File to retrieve directory from.
 #' 
 #' @keywords internal
-get_dir <- \(file) {
-  normalizePath(file) |> 
-    dirname()
+get_dir <- function(file) {
+  dirname(normalizePath(file))
 }
 
 #' Replace Partial Vectorised
@@ -83,10 +81,12 @@ get_dir <- \(file) {
 #' @inheritParams replace_partials
 #' 
 #' @keywords internal
-apply_replace_partial <- \(content, dir) {
-  sapply(content, replace_partial, dir) |> 
-    unname() |> 
-    unlist()
+apply_replace_partial <- function(content, dir) {
+  unlist(
+    unname(
+      sapply(content, replace_partial, dir)
+    )
+  )
 }
 
 #' R Object
@@ -117,9 +117,7 @@ robj <- function(obj){
 print.robj <- function(x, ...){
   cli::cli_alert_info("R object")
   class(x) <- class(x)[!class(x) %in% "robj"]
-  x |> 
-    dput() |> 
-    print()
+  print(dput(x))
 }
 
 #' JSON Object
@@ -138,8 +136,7 @@ jobj <- function(obj) {
 #' @export
 print.jobj <- function(x, ...){
   cli::cli_alert_info("JSON object")
-  serialise(x, ...) |> 
-    print()
+  print(serialise(x, ...))
 }
 
 #' Pre Hook Response
@@ -197,7 +194,7 @@ use_html_template <- function() {
 #' @param data Data to render, a `list`.
 #' 
 #' @keywords internal
-render_tags <- \(lines, data){
+render_tags <- function(lines, data){
   new_lines <- c()
   n <- 0L
   str <- ""
