@@ -45,8 +45,7 @@ replace_partial <- \(line, dir) {
     line
   ) 
 
-  path <- gsub("\\[!|!\\]", "", line) |> 
-    trimws()
+  path <- trimws(gsub("\\[!|!\\]", "", line))
 
   # construct new base directory
   new_dir <- dirname(path)
@@ -72,8 +71,7 @@ replace_partial <- \(line, dir) {
 #' 
 #' @keywords internal
 get_dir <- \(file) {
-  normalizePath(file) |> 
-    dirname()
+  dirname(normalizePath(file))
 }
 
 #' Replace Partial Vectorised
@@ -84,9 +82,11 @@ get_dir <- \(file) {
 #' 
 #' @keywords internal
 apply_replace_partial <- \(content, dir) {
-  sapply(content, replace_partial, dir) |> 
-    unname() |> 
-    unlist()
+  unlist(
+    unname(
+      sapply(content, replace_partial, dir)
+    )
+  )
 }
 
 #' R Object
@@ -117,9 +117,7 @@ robj <- function(obj){
 print.robj <- function(x, ...){
   cli::cli_alert_info("R object")
   class(x) <- class(x)[!class(x) %in% "robj"]
-  x |> 
-    dput() |> 
-    print()
+  print(dput(x))
 }
 
 #' JSON Object
@@ -138,8 +136,7 @@ jobj <- function(obj) {
 #' @export
 print.jobj <- function(x, ...){
   cli::cli_alert_info("JSON object")
-  serialise(x, ...) |> 
-    print()
+  print(serialise(x, ...))
 }
 
 #' Pre Hook Response

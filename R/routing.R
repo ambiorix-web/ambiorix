@@ -331,12 +331,14 @@ Routing <- R6::R6Class(
     get_routes = function(routes = list(), parent = ""){
       routes <- append(
         routes, 
-        private$.routes |>
-          lapply(\(route) {
+        lapply(
+          private$.routes,
+          function(route) {
             route$route$as_pattern(parent)
             route$route$decompose(parent)
             route
-          })
+          }
+        )
       )
 
       if(!length(private$.routers)) return(routes)
@@ -368,11 +370,13 @@ Routing <- R6::R6Class(
     get_middleware = function(middlewares = list(), parent = ""){
       middlewares <- append(
         middlewares,
-        private$.middleware |>
-          lapply(\(fn) {
+        lapply(
+          private$.middleware, 
+          function(fn) {
             attr(fn, "basepath") <- paste0(parent, private$.basepath) 
             return(fn)
-          })
+          }
+        )
       )
 
       if(!length(private$.routers)) return(middlewares)
