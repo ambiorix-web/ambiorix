@@ -90,7 +90,7 @@ is_cookie_parser <- function(obj) {
 #' `value`.
 #' 
 #' @examples 
-#' func <- \(name, value, ...) {
+#' func <- function(name, value, ...) {
 #'  sprintf("prefix.%s", value)
 #' }
 #' 

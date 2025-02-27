@@ -49,9 +49,9 @@ if (interactive()) {
   library(htmltools)
   library(readxl)
 
-  page_links <- \() {
+  page_links <- function() {
     Map(
-      f = \(href, label) {
+      f = function(href, label) {
         tags$a(href = href, label)
       },
       c("/", "/about", "/contact"),
@@ -59,7 +59,7 @@ if (interactive()) {
     )
   }
 
-  forms <- \() {
+  forms <- function() {
     form1 <- tags$form(
       action = "/url-form-encoded",
       method = "POST",
@@ -91,7 +91,7 @@ if (interactive()) {
     tagList(form1, form2)
   }
 
-  home_get <- \(req, res) {
+  home_get <- function(req, res) {
     html <- tagList(
       page_links(),
       tags$h3("hello, world!"),
@@ -101,7 +101,7 @@ if (interactive()) {
     res$send(html)
   }
 
-  home_post <- \(req, res) {
+  home_post <- function(req, res) {
     body <- parse_json(req)
     cat(strrep(x = "-", times = 10), "\n")
     cat("Parsed JSON:\n")
@@ -115,7 +115,7 @@ if (interactive()) {
     res$json(response)
   }
 
-  url_form_encoded_post <- \(req, res) {
+  url_form_encoded_post <- function(req, res) {
     body <- parse_form_urlencoded(req)
     cat(strrep(x = "-", times = 8), "\n")
     cat("Parsed application/x-www-form-urlencoded:\n")
@@ -124,7 +124,7 @@ if (interactive()) {
 
     list_items <- lapply(
       X = names(body),
-      FUN = \(nm) {
+      FUN = function(nm) {
         tags$li(
           nm,
           ":",
@@ -143,12 +143,12 @@ if (interactive()) {
     res$send(html)
   }
 
-  multipart_form_data_post <- \(req, res) {
+  multipart_form_data_post <- function(req, res) {
     body <- parse_multipart(req)
 
     list_items <- lapply(
       X = names(body),
-      FUN = \(nm) {
+      FUN = function(nm) {
         field <- body[[nm]]
 
         # if 'field' is a file, parse it & print on console:
@@ -167,11 +167,11 @@ if (interactive()) {
         }
 
         if (is_csv) {
-          read.csv(file = file_path) |> print()
+          print(read.csv(file = file_path))
         }
 
         if (is_xlsx) {
-          readxl::read_xlsx(path = file_path) |> print()
+          print(readxl::read_xlsx(path = file_path))
         }
 
         tags$li(
@@ -192,7 +192,7 @@ if (interactive()) {
     res$send(html)
   }
 
-  about_get <- \(req, res) {
+  about_get <- function(req, res) {
     html <- tagList(
       page_links(),
       tags$h3("About Us")
@@ -200,7 +200,7 @@ if (interactive()) {
     res$send(html)
   }
 
-  contact_get <- \(req, res) {
+  contact_get <- function(req, res) {
     html <- tagList(
       page_links(),
       tags$h3("Get In Touch!")

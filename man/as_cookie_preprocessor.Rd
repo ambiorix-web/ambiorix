@@ -16,7 +16,7 @@ as the \code{cookie} method of the \link{Response} class
 Identifies a function as a cookie preprocessor.
 }
 \examples{
-func <- \(name, value, ...) {
+func <- function(name, value, ...) {
  sprintf("prefix.\%s", value)
 }
 
