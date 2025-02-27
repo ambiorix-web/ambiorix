@@ -624,7 +624,7 @@ Response <- R6::R6Class(
       file_content <- replace_partials(file_content, get_dir(file))
 
       if(ext == "html") {
-        data <- lapply(data, \(x) {
+        data <- lapply(data, function(x) {
           if(!inherits(x, "jobj"))
             return(x)
 

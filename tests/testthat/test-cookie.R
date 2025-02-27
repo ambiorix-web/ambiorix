@@ -33,7 +33,7 @@ test_that("Request cookie", {
   )
 
   # parser
-  fn <- \(req) {
+  fn <- function(req) {
     return(req$HTTP_COOKIE)
   }
   expect_false(is_cookie_parser(fn))
@@ -72,7 +72,7 @@ test_that("Request cookie", {
   )
 
   # preprocessor
-  .fn <- \(name, value, ...){
+  .fn <- function(name, value, ...){
     sprintf("prefix.%s", value)
   }
   prep <- as_cookie_preprocessor(.fn)
