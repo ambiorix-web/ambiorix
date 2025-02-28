@@ -5,40 +5,40 @@ test_that("rlication", {
 
   r <- Router$new("/users")
 
-  r$get("/", \(req, res) {
+  r$get("/", function(req, res) {
     res$send("home")
   })
 
-  r$post("/", \(req, res) {
+  r$post("/", function(req, res) {
     res$send("home")
   })
   
-  r$put("/", \(req, res) {
+  r$put("/", function(req, res) {
     res$send("home")
   })
 
-  r$patch("/", \(req, res) {
+  r$patch("/", function(req, res) {
     res$send("home")
   })
 
-  r$delete("/", \(req, res) {
+  r$delete("/", function(req, res) {
     res$send("home")
   })
 
-  r$all("/", \(req, res) {
+  r$all("/", function(req, res) {
     res$send("home")
   })
 
-  r$options("/", \(req, res) {
+  r$options("/", function(req, res) {
     res$send("home")
   })
 
   # dynamic
-  r$get("/.path", \(req, res) {
+  r$get("/.path", function(req, res) {
     res$send("home")
   })
 
-  r$receive("message", \(...) {
+  r$receive("message", function(...) {
     print("received")
   })
 

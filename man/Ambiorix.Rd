@@ -62,7 +62,7 @@ if(interactive())
 ## ------------------------------------------------
 
 # my custom error handler:
-error_handler <- \(req, res, error) {
+error_handler <- function(req, res, error) {
   if (!is.null(error)) {
     error_msg <- conditionMessage(error)
     cli::cli_alert_danger("Error: {error_msg}")
@@ -77,7 +77,7 @@ error_handler <- \(req, res, error) {
 }
 
 # handler for GET at /whoami:
-whoami <- \(req, res) {
+whoami <- function(req, res) {
   # simulate error (object 'Pikachu' is not defined)
   print(Pikachu)
 }
@@ -323,7 +323,7 @@ Sets the error handler.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{# my custom error handler:
-error_handler <- \(req, res, error) {
+error_handler <- function(req, res, error) {
   if (!is.null(error)) {
     error_msg <- conditionMessage(error)
     cli::cli_alert_danger("Error: {error_msg}")
@@ -338,7 +338,7 @@ error_handler <- \(req, res, error) {
 }
 
 # handler for GET at /whoami:
-whoami <- \(req, res) {
+whoami <- function(req, res) {
   # simulate error (object 'Pikachu' is not defined)
   print(Pikachu)
 }

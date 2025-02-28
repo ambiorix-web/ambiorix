@@ -121,7 +121,7 @@ Ambiorix <- R6::R6Class(
     #' 
     #' @examples 
     #' # my custom error handler:
-    #' error_handler <- \(req, res, error) {
+    #' error_handler <- function(req, res, error) {
     #'   if (!is.null(error)) {
     #'     error_msg <- conditionMessage(error)
     #'     cli::cli_alert_danger("Error: {error_msg}")
@@ -136,7 +136,7 @@ Ambiorix <- R6::R6Class(
     #' }
     #'
     #' # handler for GET at /whoami:
-    #' whoami <- \(req, res) {
+    #' whoami <- function(req, res) {
     #'   # simulate error (object 'Pikachu' is not defined)
     #'   print(Pikachu)
     #' }

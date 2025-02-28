@@ -43,7 +43,7 @@ test_that("Response", {
     htmltools::p("hello")
   )
   expect_equal(resp$body, htmltools::HTML("<p>hello</p>"))
-  
+
   # factor
   resp <- res$send(as.factor("hello"))
   expect_equal(resp$body, "hello")
@@ -99,8 +99,8 @@ test_that("Response", {
   # json
   resp <- res$json(list(1, 2))
   expect_equal(
-    resp$body, 
-    serialise(list(1,2))
+    resp$body,
+    serialise(list(1, 2))
   )
   expect_equal(
     resp$headers[["Content-Type"]],
@@ -139,10 +139,10 @@ test_that("Response", {
   # png
   img <- "logo.png"
   resp <- res$png(img)
-  response <- resp$body |> 
-    head() |> 
-    as.character() |> 
-    paste0(collapse = "")
+  response <- paste0(
+    as.character(head(resp$body)),
+    collapse = ""
+  )
   expect_equal(
     response,
     "89504e470d0a"
@@ -150,10 +150,10 @@ test_that("Response", {
 
   # image
   resp <- res$image(img)
-  response <- resp$body |> 
-    head() |> 
-    as.character() |> 
-    paste0(collapse = "")
+  response <- paste0(
+    as.character(head(resp$body)),
+    collapse = ""
+  )
   expect_equal(
     response,
     "89504e470d0a"
@@ -164,10 +164,10 @@ test_that("Response", {
   # ggplot2
   plot <- ggplot2::ggplot(cars)
   resp <- res$ggplot2(plot)
-  response <- resp$body |> 
-    head() |> 
-    as.character() |> 
-    paste0(collapse = "")
+  response <- paste0(
+    as.character(head(resp$body)),
+    collapse = ""
+  )
   expect_equal(
     response,
     "89504e470d0a"
