@@ -91,35 +91,28 @@ inline_dependencies <- function(deps) {
   lapply(
     X = deps,
     FUN = function(dep) {
-      if (!length(dep$src)) {
+      if (!length(dep$src) || !length(dep$src$file)) {
         return()
       }
 
-      if (!length(dep$src$file)) {
-        return()
+      f <- function(file_name, type = c("text/css", "application/javascript")) {
+        type <- match.arg(arg = type)
+        tag <- switch(
+          EXPR = type,
+          "text/css" = htmltools::tags$style,
+          "application/javascript" = htmltools::tags$script
+        )
+
+        content <- paste0(
+          read_lines(file.path(dep$src$file, file_name)),
+          collapse = "\n"
+        )
+
+        tag(type = type, htmltools::HTML(content))
       }
 
-      scripts <- lapply(
-        X = dep$script,
-        FUN = function(s) {
-          content <- paste0(
-            read_lines(file.path(dep$src$file, s)),
-            collapse = "\n"
-          )
-          htmltools::tags$script(type = "application/javascript", htmltools::HTML(content))
-        }
-      )
-
-      styles <- lapply(
-        X = dep$stylesheet,
-        FUN = function(s) {
-          content <- paste0(
-            read_lines(file.path(dep$src$file, s)),
-            collapse = "\n"
-          )
-          htmltools::tags$style(htmltools::HTML(content))
-        }
-      )
+      scripts <- lapply(X = dep$script, FUN = f, type = "application/javascript")
+      styles <- lapply(X = dep$stylesheet, FUN = f, type = "text/css")
 
       list(scripts, styles)
     }
@@ -142,7 +135,6 @@ render_htmltools <- function(x) {
 
   inline_deps <- inline_dependencies(deps)
 
-  xx <- htmltools::renderDependencies(deps)
   # add <head> if not present
   if(!length(q$find("head")$selectedTags()))
     q$closest("html")$prepend(htmltools::tags$head())
