@@ -70,12 +70,12 @@ convert_body.factor <- function(body) {
 
 #' @export
 convert_body.shiny.tag <- function(body) {
-  htmltools::doRenderTags(body)
+  render_htmltools(body)
 }
 
 #' @export
 convert_body.shiny.tag.list <- function(body) {
-  htmltools::doRenderTags(body)
+  render_htmltools(body)
 }
 
 #' Construct Response
@@ -84,6 +84,77 @@ convert_body.shiny.tag.list <- function(body) {
 #' @keywords internal
 construct_response <- function(res){
   structure(res, class = c(class(res), "ambiorixResponse"))
+}
+
+
+inline_dependencies <- function(deps) {
+  lapply(
+    X = deps,
+    FUN = function(dep) {
+      if (!length(dep$src) || !length(dep$src$file)) {
+        return()
+      }
+
+      f <- function(file_name, type = c("text/css", "application/javascript")) {
+        type <- match.arg(arg = type)
+        tag <- switch(
+          EXPR = type,
+          "text/css" = htmltools::tags$style,
+          "application/javascript" = htmltools::tags$script
+        )
+
+        content <- paste0(
+          read_lines(file.path(dep$src$file, file_name)),
+          collapse = "\n"
+        )
+
+        tag(type = type, htmltools::HTML(content))
+      }
+
+      scripts <- lapply(X = dep$script, FUN = f, type = "application/javascript")
+      styles <- lapply(X = dep$stylesheet, FUN = f, type = "text/css")
+
+      list(scripts, styles)
+    }
+  )
+}
+
+render_htmltools <- function(x) {
+  # if it has a <html> tag we assume
+  # it's a document and render with
+  # dependencies, etc.
+  # otherwise we just render the tags.
+  q <- htmltools::tagQuery(x)
+
+  if(!length(q$closest("html")$selectedTags()))
+    return(htmltools::doRenderTags(x))
+
+  deps <- htmltools::resolveDependencies(
+    dependencies = htmltools::findDependencies(x)
+  )
+
+  inline_deps <- inline_dependencies(deps)
+
+  # add <head> if not present
+  if(!length(q$find("head")$selectedTags()))
+    q$closest("html")$prepend(htmltools::tags$head())
+
+  # htmltools::renderDependencies(..., srcType = "href")
+  # does not work
+  rendered_deps <- htmltools::renderDependencies(deps)
+  href_deps <- grep("http", strsplit(rendered_deps, "\n")[[1]], value = TRUE)
+  href_deps <- paste0(href_deps, collapse = "\n")
+
+  # add encoding and dependencies
+  q$closest("html")$find("head")$append(htmltools::tags$meta(charset = "UTF-8"))
+  q$closest("html")$find("head")$append(htmltools::HTML(href_deps))
+  q$closest("html")$find("head")$append(inline_deps)
+
+  # get all tags and render
+  x <- q$allTags()
+  rendered <- htmltools::doRenderTags(x)
+
+  paste0("<!DOCTYPE html>\n", rendered)
 }
 
 #' @export

@@ -544,6 +544,8 @@ Routing <- R6::R6Class(
     },
     .wss = function(ws){
 
+      .globals$wsc <- append(.globals$wsc, Websocket$new(ws))
+
       # receive
       ws$onMessage(function(binary, message) {
         # don't run if no receiver
