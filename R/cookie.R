@@ -3,9 +3,26 @@
 #' Parses the cookie string.
 #' 
 #' @param req A [Request].
+#' @examples
+#' if (interactive()) {
+#'   library(ambiorix)
 #' 
+#'   #' Handle GET at '/greet'
+#'   #'
+#'   #' @export
+#'   say_hello <- function(req, res) {
+#'     cookies <- default_cookie_parser(req)
+#'     print(cookies)
+#' 
+#'     res$send("hello there!")
+#'   }
+#' 
+#'   app <- Ambiorix$new()
+#'   app$get("/greet", say_hello)
+#'   app$start()
+#' }
+#'
 #' @return A `list` of key value pairs or cookie values.
-#' 
 #' @export 
 default_cookie_parser <- function(req) {
   cookie_new <- list()

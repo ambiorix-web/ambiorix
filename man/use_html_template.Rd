@@ -13,3 +13,6 @@ A renderer function.
 Use \code{\link[htmltools:htmlTemplate]{htmltools::htmlTemplate()}} as renderer.
 Passed to \code{use} method.
 }
+\examples{
+use_html_template()
+}

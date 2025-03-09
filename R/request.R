@@ -38,6 +38,19 @@
 #' @field cookie Parsed `HTTP_COOKIE`.
 #' 
 #' @return A Request object. 
+#' @examples
+#' if (interactive()) {
+#'   library(ambiorix)
+#' 
+#'   app <- Ambiorix$new()
+#' 
+#'   app$get("/", function(req, res) {
+#'     print(req)
+#'     res$send("Using {ambiorix}!")
+#'   })
+#' 
+#'   app$start()
+#' }
 #' @export 
 Request <- R6::R6Class(
   "Request",

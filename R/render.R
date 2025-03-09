@@ -105,6 +105,8 @@ apply_replace_partial <- function(content, dir) {
 #'
 #' @param obj R object to treat.
 #' @return Object of class "robj".
+#' @examples
+#' robj(1:10)
 #' @export
 robj <- function(obj){
   assert_that(not_missing(obj))
@@ -129,7 +131,9 @@ print.robj <- function(x, ...){
 #' Serialises an object to JSON in `res$render`.
 #' 
 #' @param obj Object to serialise.
-#' 
+#' @examples
+#' l <- list(a = "hello", b = 2L, c = 3)
+#' jobj(l)
 #' @return Object of class "jobj".
 #' @export 
 jobj <- function(obj) {
@@ -199,6 +203,8 @@ print.responsePreHook <- function(x, ...) {
 #' Passed to `use` method.
 #' 
 #' @return A renderer function.
+#' @examples
+#' use_html_template()
 #' @export 
 use_html_template <- function() {
   as_renderer(function(file, data) {
@@ -292,8 +298,16 @@ render_html <- function(expr){
 #' the full path to the `file` to render, and the
 #' `data` to render.
 #' 
+#' @return A renderer function.
+#' @examples
+#' if (interactive()) {
+#'   fn <- function(path, data) {
+#'     # ...
+#'   }
+#' 
+#'   as_renderer(fn)
+#' }
 #' @export 
-#' @noRd
 as_renderer <- function(fn) {
   assert_that(is_function(fn))
   assert_that(is_renderer(fn))
@@ -319,6 +333,8 @@ print.renderer <- function(x, ...) {
 #' @param obj Object to check.
 #' 
 #' @return Boolean
+#' @keywords internal
+#' @noRd
 is_renderer_obj <- function(obj) {
   inherits(obj, "renderer")
 }

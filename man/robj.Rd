@@ -22,3 +22,6 @@ For instance in a template, \verb{x <- [\% var \%]} will not work with
 like \code{x <- hello} (missing quote): breaking the template. Using \code{robj} one would
 obtain \code{x <- "hello"}.
 }
+\examples{
+robj(1:10)
+}

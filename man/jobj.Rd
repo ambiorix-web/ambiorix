@@ -15,3 +15,7 @@ Object of class "jobj".
 \description{
 Serialises an object to JSON in \code{res$render}.
 }
+\examples{
+l <- list(a = "hello", b = 2L, c = 3)
+jobj(l)
+}

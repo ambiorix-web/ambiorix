@@ -24,6 +24,19 @@
 #'
 #' @name responses
 #' @return An Ambiorix response.
+#' @examples
+#' if (interactive()) {
+#'   library(ambiorix)
+#' 
+#'   app <- Ambiorix$new()
+#' 
+#'   app$get("/", function(req, res) {
+#'     print(res)
+#'     res$send("Using {ambiorix}!")
+#'   })
+#' 
+#'   app$start()
+#' }
 #' @export
 response <- function(body, headers = list(), status = 200L){
   assert_that(not_missing(body))

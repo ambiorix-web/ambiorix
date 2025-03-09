@@ -12,3 +12,8 @@ stop_all()
 \description{
 Stop all servers.
 }
+\examples{
+if (interactive()) {
+  stop_all()
+}
+}
