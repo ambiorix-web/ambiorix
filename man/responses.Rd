@@ -50,16 +50,4 @@ app$get("/text", function(req, res){
 if(interactive())
  app$start()
 
-if (interactive()) {
-  library(ambiorix)
-
-  app <- Ambiorix$new()
-
-  app$get("/", function(req, res) {
-    print(res)
-    res$send("Using {ambiorix}!")
-  })
-
-  app$start()
-}
 }

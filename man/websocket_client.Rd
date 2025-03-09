@@ -36,3 +36,13 @@ ambiorix was not setup with the ambiorix generator.
 }
 }
 
+\examples{
+chat_ws <- function(msg, ws) {
+  lapply(
+    X = get_websocket_clients(),
+    FUN = function(c) {
+      c$send("chat", msg)
+    }
+  )
+}
+}

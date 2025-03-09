@@ -9,6 +9,20 @@ A Response object.
 \description{
 Response class to generate responses sent from the server.
 }
+\examples{
+if (interactive()) {
+  library(ambiorix)
+
+  app <- Ambiorix$new()
+
+  app$get("/", function(req, res) {
+    print(res)
+    res$send("Using {ambiorix}!")
+  })
+
+  app$start()
+}
+}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{

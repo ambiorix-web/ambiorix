@@ -91,6 +91,15 @@ Websocket <- R6::R6Class(
 #' - `copy_websocket_client`: String. The new path (invisibly).
 #' - `get_websocket_client_path`: String. The path to the local websocket client.
 #' - `get_websocket_clients`: List. Websocket clients.
+#' @examples
+#' chat_ws <- function(msg, ws) {
+#'   lapply(
+#'     X = get_websocket_clients(),
+#'     FUN = function(c) {
+#'       c$send("chat", msg)
+#'     }
+#'   )
+#' }
 #' @export 
 copy_websocket_client <- function(path){
   assert_that(not_missing(path))

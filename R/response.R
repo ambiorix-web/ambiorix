@@ -24,19 +24,6 @@
 #'
 #' @name responses
 #' @return An Ambiorix response.
-#' @examples
-#' if (interactive()) {
-#'   library(ambiorix)
-#' 
-#'   app <- Ambiorix$new()
-#' 
-#'   app$get("/", function(req, res) {
-#'     print(res)
-#'     res$send("Using {ambiorix}!")
-#'   })
-#' 
-#'   app$start()
-#' }
 #' @export
 response <- function(body, headers = list(), status = 200L){
   assert_that(not_missing(body))
@@ -189,6 +176,19 @@ is_response <- function(obj) {
 #' @field headers Named list of headers.
 #'
 #' @return A Response object. 
+#' @examples
+#' if (interactive()) {
+#'   library(ambiorix)
+#' 
+#'   app <- Ambiorix$new()
+#' 
+#'   app$get("/", function(req, res) {
+#'     print(res)
+#'     res$send("Using {ambiorix}!")
+#'   })
+#' 
+#'   app$start()
+#' }
 #' @export 
 Response <- R6::R6Class(
   "Response",
