@@ -1,5 +1,28 @@
 # ambiorix 2.2.0
 
+__New Features__
+
+- Enable nesting of Routers, [pull/73](https://github.com/ambiorix-web/ambiorix/pull/73).
+- Enable full support for htmltools tags, no need for html templates, [pull/78](https://github.com/ambiorix-web/ambiorix/pull/78), [pull/92](https://github.com/ambiorix-web/ambiorix/pull/92).
+- Add `engine()` method set custom renderers, [pull/66](https://github.com/ambiorix-web/ambiorix/pull/66).
+- Add `set_error()` method to set a global error handler, [pull/64](https://github.com/ambiorix-web/ambiorix/pull/64).
+- Add a default error handler, [pull/88](https://github.com/ambiorix-web/ambiorix/pull/88).
+
+__Changes__
+
+- Resolve port to bind server on in a specific order, [pull/75](https://github.com/ambiorix-web/ambiorix/pull/75).
+- Switch to {yyjsonr} for faster serialization & de-serialization, [pull/100](https://github.com/ambiorix-web/ambiorix/pull/100).
+- Switch to {webutils} for faster parsing of multipart & urlencoded request bodies, [pull/100](https://github.com/ambiorix-web/ambiorix/pull/100).
+- Continually process requests using `httpuv::service()` instead of a while loop, [pull/98](https://github.com/ambiorix-web/ambiorix/pull/98).
+- Remove syntactic sugar to improve backwards compatibility with R <= 4.1.0, [pull/113](https://github.com/ambiorix-web/ambiorix/pull/113).
+
+__Bug Fixes__
+
+- Fix bug hindering change of the max body size of a request,
+[pull/69](https://github.com/ambiorix-web/ambiorix/pull/69).
+- Fix issue causing pattern matching in routes to throw error, [pull/82](https://github.com/ambiorix-web/ambiorix/pull/82), [pull/110](https://github.com/ambiorix-web/ambiorix/pull/110).
+- Fix bug on error condition messaging when promise evaluation fails, [pull/88](https://github.com/ambiorix-web/ambiorix/pull/88).
+
 # ambiorix 2.1.1
 
 - Added `cache_templates` method to cache templates
