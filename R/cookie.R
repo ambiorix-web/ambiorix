@@ -18,7 +18,7 @@ default_cookie_parser <- function(req) {
 
   split <- strsplit(req$HTTP_COOKIE, ";")[[1]]
   split <- strsplit(split, "=")
-  for(i in 1:length(split)) {
+  for(i in seq_along(split)) {
     value <- trimws(split[[i]])
 
     if(length(value) < 2)

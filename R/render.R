@@ -226,7 +226,7 @@ render_tags <- function(lines, data){
   n <- 0L
   str <- ""
 
-  for(i in 1:length(lines)) {
+  for(i in seq_along(lines)) {
     line <- lines[i]
     if(!grepl("\\[%|%\\]", line) && n == 0L) {
       new_lines <- c(new_lines, line)
