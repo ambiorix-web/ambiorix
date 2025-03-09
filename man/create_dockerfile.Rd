@@ -20,6 +20,8 @@ that much improve the speed of building of Dockerfiles.
 Reads the \code{DESCRIPTION} file of the project to produce the \code{Dockerfile}.
 }
 \examples{
-\dontrun{create_dockerfile()}
+if (interactive()) {
+  create_dockerfile()
+}
 
 }

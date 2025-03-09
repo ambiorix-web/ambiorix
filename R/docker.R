@@ -11,7 +11,9 @@
 #' @param port,host Port and host to serve the application.
 #' 
 #' @examples 
-#' \dontrun{create_dockerfile()}
+#' if (interactive()) {
+#'   create_dockerfile()
+#' }
 #' 
 #' @export
 create_dockerfile <- function(port, host = "0.0.0.0"){

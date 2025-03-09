@@ -16,6 +16,8 @@ Invisibly returns \code{NULL}.
 Import all R-files in a directory.
 }
 \examples{
-\dontrun{import("views")}
+if (interactive()) {
+  import("views")
+}
 
 }
