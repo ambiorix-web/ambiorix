@@ -16,6 +16,8 @@ Object of class "jobj".
 Serialises an object to JSON in \code{res$render}.
 }
 \examples{
-l <- list(a = "hello", b = 2L, c = 3)
-jobj(l)
+if (interactive()) {
+  l <- list(a = "hello", b = 2L, c = 3)
+  jobj(l)
+}
 }

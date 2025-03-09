@@ -132,8 +132,10 @@ print.robj <- function(x, ...){
 #' 
 #' @param obj Object to serialise.
 #' @examples
-#' l <- list(a = "hello", b = 2L, c = 3)
-#' jobj(l)
+#' if (interactive()) {
+#'   l <- list(a = "hello", b = 2L, c = 3)
+#'   jobj(l)
+#' }
 #' @return Object of class "jobj".
 #' @export 
 jobj <- function(obj) {
