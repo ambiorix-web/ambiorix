@@ -4,14 +4,24 @@
 \alias{websocket_client}
 \alias{copy_websocket_client}
 \alias{get_websocket_client_path}
+\alias{get_websocket_clients}
 \title{Websocket Client}
 \usage{
 copy_websocket_client(path)
 
 get_websocket_client_path()
+
+get_websocket_clients()
 }
 \arguments{
 \item{path}{Path to copy the file to.}
+}
+\value{
+\itemize{
+\item \code{copy_websocket_client}: String. The new path (invisibly).
+\item \code{get_websocket_client_path}: String. The path to the local websocket client.
+\item \code{get_websocket_clients}: List. Websocket clients.
+}
 }
 \description{
 Handle ambiorix websocket client.
@@ -19,8 +29,10 @@ Handle ambiorix websocket client.
 \section{Functions}{
 
 \itemize{
-\item \code{copy_websocket_client} Copies the websocket client file, useful when ambiorix was not setup with the ambiorix generator.
-\item \code{get_websocket_client} Retrieves the full path to the local websocket client.
+\item \code{copy_websocket_client} Copies the websocket client file, useful when
+ambiorix was not setup with the ambiorix generator.
+\item \code{get_websocket_client_path} Retrieves the full path to the local websocket client.
+\item \code{get_websocket_clients} Retrieves clients connected to the server.
 }
 }
 

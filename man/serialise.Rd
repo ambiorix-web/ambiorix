@@ -11,6 +11,9 @@ serialise(data, ...)
 
 \item{...}{Passed to serialiser.}
 }
+\value{
+JSON string.
+}
 \description{
 Serialise an Object to JSON
 }

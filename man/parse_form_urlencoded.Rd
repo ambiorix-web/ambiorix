@@ -14,6 +14,8 @@ parse_form_urlencoded(req, ...)
 \value{
 A list of parsed form fields, with each key representing a form field name and each value
 representing the form field's value.
+
+Named list
 }
 \description{
 This function parses \code{application/x-www-form-urlencoded} data, typically used in form submissions.

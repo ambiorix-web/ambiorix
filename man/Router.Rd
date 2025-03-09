@@ -3,6 +3,9 @@
 \name{Router}
 \alias{Router}
 \title{Router}
+\value{
+A Router object.
+}
 \description{
 Web server.
 }

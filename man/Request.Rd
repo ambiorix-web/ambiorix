@@ -3,6 +3,9 @@
 \name{Request}
 \alias{Request}
 \title{Request}
+\value{
+A Request object.
+}
 \description{
 A request.
 }

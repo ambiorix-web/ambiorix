@@ -15,6 +15,7 @@
 #'   create_dockerfile()
 #' }
 #' 
+#' @return `NULL` (invisibly)
 #' @export
 create_dockerfile <- function(port, host = "0.0.0.0"){
   assert_that(has_file("DESCRIPTION"))

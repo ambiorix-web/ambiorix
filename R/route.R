@@ -81,6 +81,7 @@ Route <- R6::R6Class(
 #' and returns another character vector of length 1.
 #' 
 #' @export 
+#' @return Object of class "pathToPattern".
 as_path_to_pattern <- function(path) {
   assert_that(is_function(path))
 
@@ -100,6 +101,7 @@ print.pathToPattern <- function(x, ...) {
 }
 
 #' @keywords internal
+#' @noRd
 is_path_to_pattern <- function(obj) {
   inherits(obj, "pathToPattern")
 }

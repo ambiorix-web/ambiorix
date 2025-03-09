@@ -9,6 +9,13 @@ token_create(n = 16L)
 \arguments{
 \item{n}{Number of bytes.}
 }
+\value{
+Length 1 character vector.
+}
 \description{
 Create a token
+}
+\examples{
+token_create()
+token_create(n = 32L)
 }

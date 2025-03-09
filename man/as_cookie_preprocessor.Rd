@@ -12,6 +12,9 @@ as the \code{cookie} method of the \link{Response} class
 (name, value, ...), and returns a modified
 \code{value}.}
 }
+\value{
+Object of class "cookiePreprocessor".
+}
 \description{
 Identifies a function as a cookie preprocessor.
 }

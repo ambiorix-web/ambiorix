@@ -13,6 +13,8 @@ parse_json(req, ...)
 }
 \value{
 An R object (e.g., list or data frame) parsed from the JSON data.
+
+Named list
 }
 \description{
 This function parses JSON data from the request body.

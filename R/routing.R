@@ -7,6 +7,7 @@
 #' @field basepath Basepath, read-only.
 #' @field websocket Websocket handler.
 #' 
+#' @return A Routing object.
 #' @keywords export
 Routing <- R6::R6Class(
   "Routing",

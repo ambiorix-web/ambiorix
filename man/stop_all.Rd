@@ -6,6 +6,9 @@
 \usage{
 stop_all()
 }
+\value{
+\code{NULL} (invisibly)
+}
 \description{
 Stop all servers.
 }

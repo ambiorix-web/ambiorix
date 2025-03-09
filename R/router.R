@@ -41,6 +41,7 @@
 #' @importFrom assertthat assert_that
 #' @importFrom utils browseURL
 #' 
+#' @return A Router object.
 #' @export
 Router <- R6::R6Class(
   "Router",

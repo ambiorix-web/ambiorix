@@ -3,6 +3,9 @@
 \name{Websocket}
 \alias{Websocket}
 \title{Websocket}
+\value{
+A Websocket object.
+}
 \description{
 Handle websocket messages.
 }

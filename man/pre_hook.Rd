@@ -11,6 +11,29 @@ pre_hook(content, data)
 
 \item{data}{A list of data passed to \code{glue::glue_data}.}
 }
+\value{
+A response pre-hook.
+}
 \description{
 Pre Hook Response
+}
+\examples{
+my_prh <- function(self, content, data, ext, ...) {
+  data$title <- "Mansion"
+  pre_hook(content, data)
+}
+
+#' Handler for GET at '/'
+#' 
+#' @details Renders the homepage
+#' @export
+home_get <- function(req, res) {
+  res$pre_render_hook(my_prh)
+  res$render(
+    file = "page.html",
+    data = list(
+      title = "Home"
+    )
+  )
+}
 }

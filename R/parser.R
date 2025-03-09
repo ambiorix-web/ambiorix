@@ -209,6 +209,7 @@
 #'   app$start()
 #' }
 #' @seealso [parse_form_urlencoded()], [parse_json()]
+#' @return Named list.
 #' @export
 parse_multipart <- function(req, ...) {
   body <- req$rook.input$read()
@@ -277,6 +278,7 @@ parse_multipart <- function(req, ...) {
 #'
 #' @inherit parse_multipart examples
 #' @seealso [parse_multipart()], [parse_json()]
+#' @return Named list
 #' @export
 parse_form_urlencoded <- function(req, ...) {
   body <- req$rook.input$read()
@@ -328,6 +330,7 @@ parse_form_urlencoded <- function(req, ...) {
 #'
 #' @inherit parse_multipart examples
 #' @seealso [parse_multipart()], [parse_form_urlencoded()]
+#' @return Named list
 #' @export
 parse_json <- function(req, ...) {
   body <- req$rook.input$read()

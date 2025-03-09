@@ -37,6 +37,7 @@
 #' @field params A `list` of parameters.
 #' @field cookie Parsed `HTTP_COOKIE`.
 #' 
+#' @return A Request object. 
 #' @export 
 Request <- R6::R6Class(
   "Request",
@@ -191,10 +192,12 @@ Request <- R6::R6Class(
 #' 
 #' Set the query's parameters.
 #' 
-#' @param path Correspond's the the requests' `PATH_INFO`
+#' @param path Corresponds the requests' `PATH_INFO`
 #' @param route See `Route`
 #' 
 #' @return Parameter list
+#' @keywords internal
+#' @noRd
 set_params <- function(path, route = NULL){
 
   if(is.null(route))
@@ -233,6 +236,7 @@ set_params <- function(path, route = NULL){
 #' @examples 
 #' mockRequest()
 #' 
+#' @return A `Request` object.
 #' @export 
 mockRequest <- function(
   cookie = "",

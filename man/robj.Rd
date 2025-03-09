@@ -9,6 +9,9 @@ robj(obj)
 \arguments{
 \item{obj}{R object to treat.}
 }
+\value{
+Object of class "robj".
+}
 \description{
 Treats a data element rendered in a response (\code{res$render}) as
 a data object and ultimately uses \code{\link[=dput]{dput()}}.

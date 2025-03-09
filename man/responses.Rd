@@ -28,6 +28,9 @@ response_500(
 
 \item{status}{Response status}
 }
+\value{
+An Ambiorix response.
+}
 \description{
 Plain HTTP Responses.
 }

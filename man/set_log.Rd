@@ -17,6 +17,9 @@ set_log_error(log)
 \item{log}{An object of class \code{Logger}, see
 \link[log:Logger]{log::Logger}.}
 }
+\value{
+The \code{log} object.
+}
 \description{
 Customise the internal logs used by Ambiorix.
 }

@@ -54,6 +54,7 @@ default_cookie_parser <- function(req) {
 #' app <- Ambiorix$new()
 #' app$use(parser)
 #' 
+#' @return Object of class "cookieParser".
 #' @export 
 as_cookie_parser <- function(fn) {
   assert_that(not_missing(fn))
@@ -76,6 +77,7 @@ print.cookieParser <- function(x, ...) {
 }
 
 #' @keywords internal
+#' @noRd
 is_cookie_parser <- function(obj) {
   inherits(obj, "cookieParser")
 }
@@ -99,6 +101,7 @@ is_cookie_parser <- function(obj) {
 #' app <- Ambiorix$new()
 #' app$use(prep)
 #' 
+#' @return Object of class "cookiePreprocessor".
 #' @export 
 as_cookie_preprocessor <- function(fn) {
   assert_that(not_missing(fn))
@@ -154,6 +157,7 @@ is_cookie_preprocessor <- function(obj) {
 #' attacks (CSRF). Accepts `Strict`, `Lax`, or `None`.
 #' 
 #' @keywords internal
+#' @noRd
 cookie <- function(
   name,
   value,

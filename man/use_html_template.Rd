@@ -6,7 +6,10 @@
 \usage{
 use_html_template()
 }
+\value{
+A renderer function.
+}
 \description{
 Use \code{\link[htmltools:htmlTemplate]{htmltools::htmlTemplate()}} as renderer.
-Passe to \code{use} method.
+Passed to \code{use} method.
 }

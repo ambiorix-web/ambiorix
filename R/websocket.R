@@ -42,6 +42,7 @@ WebsocketHandler <- R6::R6Class(
 #' 
 #' Handle websocket messages.
 #' 
+#' @return A Websocket object.
 #' @export 
 Websocket <- R6::R6Class(
   "Websocket",
@@ -80,10 +81,16 @@ Websocket <- R6::R6Class(
 #' @param path Path to copy the file to.
 #' 
 #' @section Functions:
-#' - `copy_websocket_client` Copies the websocket client file, useful when ambiorix was not setup with the ambiorix generator.
-#' - `get_websocket_client` Retrieves the full path to the local websocket client.
+#' - `copy_websocket_client` Copies the websocket client file, useful when
+#'   ambiorix was not setup with the ambiorix generator.
+#' - `get_websocket_client_path` Retrieves the full path to the local websocket client.
+#' - `get_websocket_clients` Retrieves clients connected to the server.
 #' 
 #' @name websocket_client
+#' @return 
+#' - `copy_websocket_client`: String. The new path (invisibly).
+#' - `get_websocket_client_path`: String. The path to the local websocket client.
+#' - `get_websocket_clients`: List. Websocket clients.
 #' @export 
 copy_websocket_client <- function(path){
   assert_that(not_missing(path))
@@ -97,8 +104,7 @@ get_websocket_client_path <- function(){
   system.file("ambiorix.js", package = "ambiorix")
 }
 
-#' Retrieve Websocket clients connected to the server.
-#' @export
+#' @rdname websocket_client
 get_websocket_clients <- function() {
   return(.globals$wsc)
 }

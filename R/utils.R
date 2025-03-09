@@ -111,6 +111,7 @@ get_port <- function(host, port = NULL){
 #' @param ... Passed to [readLines()]:
 #' 
 #' @keywords internal
+#' @noRd
 read_lines <- function(...) {
   readLines(..., warn = FALSE)
 }
@@ -120,6 +121,7 @@ read_lines <- function(...) {
 #' @param path Path to file.
 #' 
 #' @keywords internal
+#' @noRd
 read_lines_cached <- function(path) {
   if(!.globals$cache_tmpls)
     return(read_lines(path))

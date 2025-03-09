@@ -3,6 +3,9 @@
 \name{Routing}
 \alias{Routing}
 \title{Core Routing Class}
+\value{
+A Routing object.
+}
 \description{
 Core routing class.
 Do not use directly, see \link{Ambiorix}, and \link{Router}.

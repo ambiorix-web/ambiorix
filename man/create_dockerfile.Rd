@@ -9,6 +9,9 @@ create_dockerfile(port, host = "0.0.0.0")
 \arguments{
 \item{port, host}{Port and host to serve the application.}
 }
+\value{
+\code{NULL} (invisibly)
+}
 \description{
 Create the dockerfile required to run the application.
 The dockerfile created will install packages from

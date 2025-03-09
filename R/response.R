@@ -23,7 +23,7 @@
 #'  app$start()
 #'
 #' @name responses
-#'
+#' @return An Ambiorix response.
 #' @export
 response <- function(body, headers = list(), status = 200L){
   assert_that(not_missing(body))
@@ -52,6 +52,7 @@ response_500 <- function(body = "500: Server Error", headers = list("Content-Typ
 #' @param body Body of response.
 #'
 #' @keywords internal
+#' @noRd
 convert_body <- function(body) {
   UseMethod("convert_body")
 }
@@ -174,6 +175,7 @@ is_response <- function(obj) {
 #' @field status Status of the response, defaults to `200L`.
 #' @field headers Named list of headers.
 #'
+#' @return A Response object. 
 #' @export 
 Response <- R6::R6Class(
   "Response",
@@ -542,7 +544,7 @@ Response <- R6::R6Class(
     #' 
     #' @param hook A function to run after the rendering of HTML.
     #' It should accept at least 3 arguments:
-    #' - `self`: The `Request` class instance.
+    #' - `self`: The `Response` class instance.
     #' - `content`: File content a vector of character string,
     #' content of the template.
     #' - `ext`: File extension of the template file.

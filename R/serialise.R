@@ -77,6 +77,7 @@ get_serialise <- function() {
 #'   serialise(cars)
 #' }
 #'
+#' @return JSON string.
 #' @export
 serialise <- function(data, ...) {
   get_serialise()(data, ...)

@@ -11,6 +11,9 @@ parse_multipart(req, ...)
 
 \item{...}{Additional parameters passed to the parser function.}
 }
+\value{
+Named list.
+}
 \description{
 Parses multipart form data, including file uploads, and returns the parsed fields as a list.
 }

@@ -51,7 +51,7 @@ new_log <- function(
 #' [log::Logger].
 #' 
 #' @name set_log
-#' 
+#' @return The `log` object.
 #' @export
 set_log_info <- function(log) {
   assert_that(not_missing(log))
@@ -83,21 +83,25 @@ set_log_error <- function(log) {
 #' CLI Symbols for log
 #' 
 #' @keywords internal
+#' @noRd
 success <- function() {
   cli::col_green(cli::symbol$tick)
 }
 
 #' @keywords internal
+#' @noRd
 error <- function() {
   cli::col_red(cli::symbol$cross)
 }
 
 #' @keywords internal
+#' @noRd
 info <- function() {
   cli::col_blue(cli::symbol$info)
 }
 
 #' @keywords internal
+#' @noRd
 warn <- function() {
   cli::col_yellow(cli::symbol$warning)
 }
