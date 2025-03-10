@@ -43,6 +43,53 @@ WebsocketHandler <- R6::R6Class(
 #' Handle websocket messages.
 #' 
 #' @return A Websocket object.
+#' @examples
+#' # create an Ambiorix app with websocket support:
+#' if (interactive()) {
+#'   library(ambiorix)
+#' 
+#'   home_get <- function(req, res) {
+#'     res$send("hello, world!")
+#'   }
+#' 
+#'   greeting_ws_handler <- function(msg, ws) {
+#'     cat("Received message:", "\n")
+#'     print(msg)
+#'     ws$send("greeting", "Hello from the server!")
+#'   }
+#' 
+#'   app <- Ambiorix$new(port = 8080)
+#'   app$get("/", home_get)
+#'   app$receive("greeting", greeting_ws_handler)
+#'   app$start()
+#' }
+#' 
+#' # create websocket client from another R session:
+#' if (interactive()) {
+#'   client <- websocket::WebSocket$new("ws://127.0.0.1:8080", autoConnect = FALSE)
+#' 
+#'   client$onOpen(function(event) {
+#'     cat("Connection opened\n")
+#' 
+#'     msg <- list(
+#'       isAmbiorix = TRUE, # __MUST__ be set!
+#'       name = "greeting",
+#'       message = "Hello from the client!"
+#'     )
+#' 
+#'     # serialise:
+#'     msg <- yyjsonr::write_json_str(msg, auto_unbox = TRUE)
+#' 
+#'     client$send(msg)
+#'   })
+#' 
+#'   client$onMessage(function(event) {
+#'     cat("Received message from server:", event$data, "\n")
+#'   })
+#' 
+#'   client$connect()
+#' }
+#' 
 #' @export 
 Websocket <- R6::R6Class(
   "Websocket",

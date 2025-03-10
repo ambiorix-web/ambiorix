@@ -52,6 +52,20 @@ new_log <- function(
 #' 
 #' @name set_log
 #' @return The `log` object.
+#' @examples
+#' # define custom loggers:
+#' info_logger <- log::Logger$new("INFO")
+#' success_logger <- log::Logger$new("SUCCESS")
+#' error_logger <- log::Logger$new("ERROR")
+#' 
+#' info_logger$log("This is an info message.")
+#' success_logger$log("This is a success message.")
+#' error_logger$log("This is an error message.")
+#' 
+#' # set custom loggers for Ambiorix:
+#' set_log_info(info_logger)
+#' set_log_success(success_logger)
+#' set_log_error(error_logger)
 #' @export
 set_log_info <- function(log) {
   assert_that(not_missing(log))

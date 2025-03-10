@@ -74,14 +74,27 @@ Route <- R6::R6Class(
 
 #' Path to pattern
 #' 
-#' identify a function as a path to pattern function;
+#' Identify a function as a path to pattern function;
 #' a function that accepts a path and returns a matching pattern.
 #' 
 #' @param path A function that accepts a character vector of length 1
 #' and returns another character vector of length 1.
 #' 
-#' @export 
+#' @examples
+#' fn <- function(path) {
+#'   pattern <- gsub(":([^/]+)", "(\\\\w+)", path)
+#'   pattern <- paste0("^", pattern, "$")
+#'   return(pattern)
+#' }
+#' 
+#' path_to_pattern <- as_path_to_pattern(fn)
+#' 
+#' path <- "/dashboard/profile/:user_id"
+#' pattern <- path_to_pattern(path)
+#' print(pattern) # "^/dashboard/profile/(\\w+)$"
+#'
 #' @return Object of class "pathToPattern".
+#' @export 
 as_path_to_pattern <- function(path) {
   assert_that(is_function(path))
 
