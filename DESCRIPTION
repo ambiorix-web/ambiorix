@@ -41,6 +41,6 @@ Suggests:
   commonmark,
   htmlwidgets,
   testthat (>= 3.0.0)
-URL: https://github.com/devOpifex/ambiorix, https://ambiorix.dev
-BugReports: https://github.com/devOpifex/ambiorix/issues
+URL: https://github.com/ambiorix-web/ambiorix, https://ambiorix.dev
+BugReports: https://github.com/ambiorix-web/ambiorix/issues
 Config/testthat/edition: 3
