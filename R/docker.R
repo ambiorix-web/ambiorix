@@ -9,17 +9,20 @@
 #' @details Reads the `DESCRIPTION` file of the project to produce the `Dockerfile`.
 #' 
 #' @param port,host Port and host to serve the application.
+#' @param file_path String. Path to file to write to.
 #' 
 #' @examples 
 #' if (interactive()) {
-#'   create_dockerfile()
+#'   create_dockerfile(port = 5000L, host = "0.0.0.0", file_path = tempfile())
+#'   # create_dockerfile(port = 5000L, host = "0.0.0.0", file_path = "Dockerfile") 
 #' }
 #' 
 #' @return `NULL` (invisibly)
 #' @export
-create_dockerfile <- function(port, host = "0.0.0.0"){
+create_dockerfile <- function(port, host = "0.0.0.0", file_path){
   assert_that(has_file("DESCRIPTION"))
   assert_that(not_missing(port))
+  assert_that(not_missing(file_path))
 
   cli::cli_alert_warning("Ensure your {.file DESCRIPTION} file is up to date with {.fun devtools::check}")
 
@@ -65,7 +68,7 @@ create_dockerfile <- function(port, host = "0.0.0.0"){
     cmd
   )
 
-  x <- writeLines(dockerfile, "Dockerfile")
+  x <- writeLines(dockerfile, file_path)
 
   cli::cli_alert_success("Created {.file Dockerfile}")
 
