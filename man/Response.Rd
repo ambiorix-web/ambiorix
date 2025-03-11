@@ -16,7 +16,7 @@ if (interactive()) {
   app <- Ambiorix$new()
 
   app$get("/", function(req, res) {
-    print(res)
+    # print(res)
     res$send("Using {ambiorix}!")
   })
 

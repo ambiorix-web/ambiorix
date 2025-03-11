@@ -20,14 +20,12 @@ a function that accepts a path and returns a matching pattern.
 \examples{
 fn <- function(path) {
   pattern <- gsub(":([^/]+)", "(\\\\\\\\w+)", path)
-  pattern <- paste0("^", pattern, "$")
-  return(pattern)
+  paste0("^", pattern, "$")
 }
 
 path_to_pattern <- as_path_to_pattern(fn)
 
 path <- "/dashboard/profile/:user_id"
-pattern <- path_to_pattern(path)
-print(pattern) # "^/dashboard/profile/(\\w+)$"
+pattern <- path_to_pattern(path) # "^/dashboard/profile/(\\w+)$"
 
 }

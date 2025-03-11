@@ -123,7 +123,7 @@ robj <- function(obj){
 print.robj <- function(x, ...){
   cli::cli_alert_info("R object")
   class(x) <- class(x)[!class(x) %in% "robj"]
-  print(dput(x))
+  dput(x)
 }
 
 #' JSON Object
@@ -147,7 +147,7 @@ jobj <- function(obj) {
 #' @export
 print.jobj <- function(x, ...){
   cli::cli_alert_info("JSON object")
-  print(serialise(x, ...))
+  serialise(x, ...)
 }
 
 #' Pre Hook Response
@@ -264,7 +264,7 @@ render_tags <- function(lines, data){
   }
 
   if(str != "")
-    cat("error")
+    message("error")
 
   new_lines
 }

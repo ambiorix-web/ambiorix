@@ -18,7 +18,7 @@ browse_ambiorix <- function(open, url){
   )
 
   if(inherits(x, "error"))
-    cat("Unable to open browser, please open manually.\n")
+    message("Unable to open browser, please open manually.")
 
   invisible()
 }

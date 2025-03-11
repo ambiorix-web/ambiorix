@@ -160,7 +160,7 @@ render_htmltools <- function(x) {
 
 #' @export
 print.ambiorixResponse <- function(x, ...){
-  cat("An ambiorix response")
+  message("An ambiorix response")
 }
 
 #' @keywords internal
@@ -183,7 +183,7 @@ is_response <- function(obj) {
 #'   app <- Ambiorix$new()
 #' 
 #'   app$get("/", function(req, res) {
-#'     print(res)
+#'     # print(res)
 #'     res$send("Using {ambiorix}!")
 #'   })
 #' 
@@ -723,7 +723,7 @@ Response <- R6::R6Class(
         for(i in seq_along(private$.preHooks)) {
           pre_processed <- private$.preHooks[[i]](self, file_content, data, ext)
           if(!is_pre_hook(pre_processed)){
-            cat(error(), "Not a valid return value from pre-hook (ignoring)\n")
+            message(error(), "Not a valid return value from pre-hook (ignoring)")
             next
           }
 
@@ -771,7 +771,7 @@ Response <- R6::R6Class(
         content <- private$.postHooks[[i]](self, file_content, ext)
 
         if(!is.character(content)){
-          cat(error(), "Not a character vector returned from post-hook (ignoring)\n", stdout())
+          message(error(), "Not a character vector returned from post-hook (ignoring)")
           next
         }
 

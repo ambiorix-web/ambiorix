@@ -67,7 +67,7 @@ Route <- R6::R6Class(
     },
     print = function(){
       cli::cli_rule("Ambiorix", right = "route")
-      cat("Only used internally\n")
+      message("Only used internally")
     }
   )
 )
@@ -83,15 +83,13 @@ Route <- R6::R6Class(
 #' @examples
 #' fn <- function(path) {
 #'   pattern <- gsub(":([^/]+)", "(\\\\w+)", path)
-#'   pattern <- paste0("^", pattern, "$")
-#'   return(pattern)
+#'   paste0("^", pattern, "$")
 #' }
 #' 
 #' path_to_pattern <- as_path_to_pattern(fn)
 #' 
 #' path <- "/dashboard/profile/:user_id"
-#' pattern <- path_to_pattern(path)
-#' print(pattern) # "^/dashboard/profile/(\\w+)$"
+#' pattern <- path_to_pattern(path) # "^/dashboard/profile/(\\w+)$"
 #'
 #' @return Object of class "pathToPattern".
 #' @export 
