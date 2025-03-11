@@ -66,7 +66,6 @@ install.packages("ambiorix")
 You can also install the development version from Github:
 
 ```r
-# install.packages("ambiorix")
 remotes::install_github("ambiorix-web/ambiorix")
 ```
 
