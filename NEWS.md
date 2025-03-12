@@ -15,6 +15,7 @@ __Changes__
 - Switch to {webutils} for faster parsing of multipart & urlencoded request bodies, [pull/100](https://github.com/ambiorix-web/ambiorix/pull/100).
 - Continually process requests using `httpuv::service()` instead of a while loop, [pull/98](https://github.com/ambiorix-web/ambiorix/pull/98).
 - Remove syntactic sugar to improve backwards compatibility with R <= 4.1.0, [pull/113](https://github.com/ambiorix-web/ambiorix/pull/113).
+- Deprecate `create_dockerfile()`, [pull/116](https://github.com/ambiorix-web/ambiorix/pull/116)
 
 __Bug Fixes__
 

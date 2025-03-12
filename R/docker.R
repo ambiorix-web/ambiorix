@@ -20,6 +20,7 @@
 #' @return `NULL` (invisibly)
 #' @export
 create_dockerfile <- function(port, host = "0.0.0.0", file_path){
+  .Deprecated(msg = "'create_dockerfile' is deprecated. Please write the Dockerfile manually.")
   assert_that(has_file("DESCRIPTION"))
   assert_that(not_missing(port))
   assert_that(not_missing(file_path))
@@ -31,8 +32,7 @@ create_dockerfile <- function(port, host = "0.0.0.0", file_path){
 
   dockerfile <- c(
     "FROM jcoenep/ambiorix",
-    "RUN echo \"options(repos = c(CRAN = 'https://packagemanager.rstudio.com/all/latest'))\" >> /usr/local/lib/R/etc/Rprofile.site",
-    "RUN R -e 'install.packages(\"remotes\")'"
+    "RUN echo \"options(repos = c(CRAN = 'https://packagemanager.rstudio.com/all/latest'))\" >> /usr/local/lib/R/etc/Rprofile.site"
   )
 
   # CRAN packages
@@ -40,21 +40,6 @@ create_dockerfile <- function(port, host = "0.0.0.0", file_path){
   pkgs <- desc[, "Imports"]
   pkgs <- strsplit(pkgs, ",")[[1]]
   pkgs <- gsub("\\\n", "", pkgs)
-  cran <- sapply(pkgs, function(pkg){
-    sprintf("RUN R -e \"install.packages('%s')\"", pkg)
-  })
-
-  # remotes
-  rmts <- tryCatch(desc[, 'Remotes'], error = function(e) NULL)
-  if(!is.null(rmts)){
-    rmts <- strsplit(rmts, ",")[[1]]
-    rmts <- gsub("\\\n", "", rmts)
-    rmts <- rmts[rmts != "ambiorix"]
-    rmts <- sapply(rmts, function(pkg){
-      sprintf("RUN R -e \"remotes::install_github('%s', force=FALSE)\"", pkg)
-    })
-    cran <- c(cran, rmts)
-  }
 
   cmd <- sprintf(
     "CMD R -e \"options(ambiorix.host='%s', 'ambiorix.port'=%s);source('app.R')\"", 
@@ -63,7 +48,6 @@ create_dockerfile <- function(port, host = "0.0.0.0", file_path){
 
   dockerfile <- c(
     dockerfile,
-    cran,
     "COPY . .",
     cmd
   )
