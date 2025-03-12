@@ -404,7 +404,7 @@ Response <- R6::R6Class(
       cli::cli_h3("Headers")
       cli::cli_ul()
 
-      for(i in 1:length(private$.headers)) {
+      for(i in seq_along(private$.headers)) {
         cli::cli_li("HEADER {names(private$.headers)[i]}")
         str(private$.headers[[i]])
       }
@@ -622,7 +622,7 @@ Response <- R6::R6Class(
       assert_that(not_missing(value))
 
       if(length(.globals$cookiePreprocessors) > 0) {
-        for(i in 1:length(.globals$cookiePreprocessors)) {
+        for(i in seq_along(.globals$cookiePreprocessors)) {
           value <- .globals$cookiePreprocessors[[i]](
             name,
             value,
@@ -767,7 +767,7 @@ Response <- R6::R6Class(
         return(file_content)
       }
 
-      for(i in 1:length(private$.postHooks)) {
+      for(i in seq_along(private$.postHooks)) {
         content <- private$.postHooks[[i]](self, file_content, ext)
 
         if(!is.character(content)){
