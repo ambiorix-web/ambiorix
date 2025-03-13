@@ -91,7 +91,7 @@ of said router.
 - Added `mockRequest` to for testing purposes.
 - Fixed `port`, `host`, and `websocket` active bindings.
 - Add ability to create custom renderer, see
-[jader](https://github.com/devOpifex/jader), and
+[jader](https://github.com/ambiorix-web/jader), and
 [pugger](https://github.com/ambiorix-web/pugger).
 
 # ambiorix 2.0.0

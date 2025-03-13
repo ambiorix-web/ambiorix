@@ -15,7 +15,6 @@ Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and ins
 
 </div>
 
-
 ## Example
 
 ``` r
@@ -45,7 +44,7 @@ app$start()
 - [surf](https://github.com/ambiorix-web/surf) CSRF protection
 - [signaculum](https://github.com/ambiorix-web/signaculum) favicon
 - [pugger](https://github.com/ambiorix-web/pugger) Pug engine
-- [jader](https://github.com/devOpifex/jader) Jade engine
+- [jader](https://github.com/ambiorix-web/jader) Jade engine
 
 ## Tools & Extensions
 
