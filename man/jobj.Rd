@@ -9,6 +9,15 @@ jobj(obj)
 \arguments{
 \item{obj}{Object to serialise.}
 }
+\value{
+Object of class "jobj".
+}
 \description{
 Serialises an object to JSON in \code{res$render}.
+}
+\examples{
+if (interactive()) {
+  l <- list(a = "hello", b = 2L, c = 3)
+  jobj(l)
+}
 }

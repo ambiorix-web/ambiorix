@@ -14,6 +14,8 @@ parse_form_urlencoded(req, ...)
 \value{
 A list of parsed form fields, with each key representing a form field name and each value
 representing the form field's value.
+
+Named list
 }
 \description{
 This function parses \code{application/x-www-form-urlencoded} data, typically used in form submissions.
@@ -94,10 +96,7 @@ if (interactive()) {
 
   home_post <- function(req, res) {
     body <- parse_json(req)
-    cat(strrep(x = "-", times = 10), "\n")
-    cat("Parsed JSON:\n")
-    print(body)
-    cat(strrep(x = "-", times = 10), "\n")
+    # print(body)
 
     response <- list(
       code = 200L,
@@ -108,10 +107,7 @@ if (interactive()) {
 
   url_form_encoded_post <- function(req, res) {
     body <- parse_form_urlencoded(req)
-    cat(strrep(x = "-", times = 8), "\n")
-    cat("Parsed application/x-www-form-urlencoded:\n")
-    print(body)
-    cat(strrep(x = "-", times = 8), "\n")
+    # print(body)
 
     list_items <- lapply(
       X = names(body),
@@ -158,11 +154,11 @@ if (interactive()) {
         }
 
         if (is_csv) {
-          print(read.csv(file = file_path))
+          # print(read.csv(file = file_path))
         }
 
         if (is_xlsx) {
-          print(readxl::read_xlsx(path = file_path))
+          # print(readxl::read_xlsx(path = file_path))
         }
 
         tags$li(

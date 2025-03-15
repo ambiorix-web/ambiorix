@@ -13,6 +13,9 @@ mockRequest(cookie = "", query = "", path = "/")
 
 \item{path}{Path string.}
 }
+\value{
+A \code{Request} object.
+}
 \description{
 Mock a request, used for tests.
 }

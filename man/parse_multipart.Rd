@@ -11,6 +11,9 @@ parse_multipart(req, ...)
 
 \item{...}{Additional parameters passed to the parser function.}
 }
+\value{
+Named list.
+}
 \description{
 Parses multipart form data, including file uploads, and returns the parsed fields as a list.
 }
@@ -103,10 +106,7 @@ if (interactive()) {
 
   home_post <- function(req, res) {
     body <- parse_json(req)
-    cat(strrep(x = "-", times = 10), "\n")
-    cat("Parsed JSON:\n")
-    print(body)
-    cat(strrep(x = "-", times = 10), "\n")
+    # print(body)
 
     response <- list(
       code = 200L,
@@ -117,10 +117,7 @@ if (interactive()) {
 
   url_form_encoded_post <- function(req, res) {
     body <- parse_form_urlencoded(req)
-    cat(strrep(x = "-", times = 8), "\n")
-    cat("Parsed application/x-www-form-urlencoded:\n")
-    print(body)
-    cat(strrep(x = "-", times = 8), "\n")
+    # print(body)
 
     list_items <- lapply(
       X = names(body),
@@ -167,11 +164,11 @@ if (interactive()) {
         }
 
         if (is_csv) {
-          print(read.csv(file = file_path))
+          # print(read.csv(file = file_path))
         }
 
         if (is_xlsx) {
-          print(readxl::read_xlsx(path = file_path))
+          # print(readxl::read_xlsx(path = file_path))
         }
 
         tags$li(

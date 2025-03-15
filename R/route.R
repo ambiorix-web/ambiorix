@@ -67,19 +67,31 @@ Route <- R6::R6Class(
     },
     print = function(){
       cli::cli_rule("Ambiorix", right = "route")
-      cat("Only used internally\n")
+      message("Only used internally")
     }
   )
 )
 
 #' Path to pattern
 #' 
-#' identify a function as a path to pattern function;
+#' Identify a function as a path to pattern function;
 #' a function that accepts a path and returns a matching pattern.
 #' 
 #' @param path A function that accepts a character vector of length 1
 #' and returns another character vector of length 1.
 #' 
+#' @examples
+#' fn <- function(path) {
+#'   pattern <- gsub(":([^/]+)", "(\\\\w+)", path)
+#'   paste0("^", pattern, "$")
+#' }
+#' 
+#' path_to_pattern <- as_path_to_pattern(fn)
+#' 
+#' path <- "/dashboard/profile/:user_id"
+#' pattern <- path_to_pattern(path) # "^/dashboard/profile/(\\w+)$"
+#'
+#' @return Object of class "pathToPattern".
 #' @export 
 as_path_to_pattern <- function(path) {
   assert_that(is_function(path))
@@ -100,6 +112,7 @@ print.pathToPattern <- function(x, ...) {
 }
 
 #' @keywords internal
+#' @noRd
 is_path_to_pattern <- function(obj) {
   inherits(obj, "pathToPattern")
 }

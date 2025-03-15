@@ -23,7 +23,7 @@
 #'  app$start()
 #'
 #' @name responses
-#'
+#' @return An Ambiorix response.
 #' @export
 response <- function(body, headers = list(), status = 200L){
   assert_that(not_missing(body))
@@ -52,6 +52,7 @@ response_500 <- function(body = "500: Server Error", headers = list("Content-Typ
 #' @param body Body of response.
 #'
 #' @keywords internal
+#' @noRd
 convert_body <- function(body) {
   UseMethod("convert_body")
 }
@@ -159,7 +160,7 @@ render_htmltools <- function(x) {
 
 #' @export
 print.ambiorixResponse <- function(x, ...){
-  cat("An ambiorix response")
+  message("An ambiorix response")
 }
 
 #' @keywords internal
@@ -174,6 +175,20 @@ is_response <- function(obj) {
 #' @field status Status of the response, defaults to `200L`.
 #' @field headers Named list of headers.
 #'
+#' @return A Response object. 
+#' @examples
+#' if (interactive()) {
+#'   library(ambiorix)
+#' 
+#'   app <- Ambiorix$new()
+#' 
+#'   app$get("/", function(req, res) {
+#'     # print(res)
+#'     res$send("Using {ambiorix}!")
+#'   })
+#' 
+#'   app$start()
+#' }
 #' @export 
 Response <- R6::R6Class(
   "Response",
@@ -389,7 +404,7 @@ Response <- R6::R6Class(
       cli::cli_h3("Headers")
       cli::cli_ul()
 
-      for(i in 1:length(private$.headers)) {
+      for(i in seq_along(private$.headers)) {
         cli::cli_li("HEADER {names(private$.headers)[i]}")
         str(private$.headers[[i]])
       }
@@ -542,7 +557,7 @@ Response <- R6::R6Class(
     #' 
     #' @param hook A function to run after the rendering of HTML.
     #' It should accept at least 3 arguments:
-    #' - `self`: The `Request` class instance.
+    #' - `self`: The `Response` class instance.
     #' - `content`: File content a vector of character string,
     #' content of the template.
     #' - `ext`: File extension of the template file.
@@ -607,7 +622,7 @@ Response <- R6::R6Class(
       assert_that(not_missing(value))
 
       if(length(.globals$cookiePreprocessors) > 0) {
-        for(i in 1:length(.globals$cookiePreprocessors)) {
+        for(i in seq_along(.globals$cookiePreprocessors)) {
           value <- .globals$cookiePreprocessors[[i]](
             name,
             value,
@@ -708,7 +723,7 @@ Response <- R6::R6Class(
         for(i in seq_along(private$.preHooks)) {
           pre_processed <- private$.preHooks[[i]](self, file_content, data, ext)
           if(!is_pre_hook(pre_processed)){
-            cat(error(), "Not a valid return value from pre-hook (ignoring)\n")
+            message(error(), "Not a valid return value from pre-hook (ignoring)")
             next
           }
 
@@ -752,11 +767,11 @@ Response <- R6::R6Class(
         return(file_content)
       }
 
-      for(i in 1:length(private$.postHooks)) {
+      for(i in seq_along(private$.postHooks)) {
         content <- private$.postHooks[[i]](self, file_content, ext)
 
         if(!is.character(content)){
-          cat(error(), "Not a character vector returned from post-hook (ignoring)\n", stdout())
+          message(error(), "Not a character vector returned from post-hook (ignoring)")
           next
         }
 

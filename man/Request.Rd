@@ -3,8 +3,25 @@
 \name{Request}
 \alias{Request}
 \title{Request}
+\value{
+A Request object.
+}
 \description{
 A request.
+}
+\examples{
+if (interactive()) {
+  library(ambiorix)
+
+  app <- Ambiorix$new()
+
+  app$get("/", function(req, res) {
+    print(req)
+    res$send("Using {ambiorix}!")
+  })
+
+  app$start()
+}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

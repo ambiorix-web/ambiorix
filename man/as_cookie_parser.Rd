@@ -14,6 +14,9 @@ Note that the original cookie string is available on the
 \link{Request} at the \code{HTTP_COOKIE} field, get it with:
 \code{req$HTTP_COOKIE}}
 }
+\value{
+Object of class "cookieParser".
+}
 \description{
 Identifies a function as a cookie parser (see example).
 }

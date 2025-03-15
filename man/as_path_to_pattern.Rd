@@ -10,7 +10,22 @@ as_path_to_pattern(path)
 \item{path}{A function that accepts a character vector of length 1
 and returns another character vector of length 1.}
 }
+\value{
+Object of class "pathToPattern".
+}
 \description{
-identify a function as a path to pattern function;
+Identify a function as a path to pattern function;
 a function that accepts a path and returns a matching pattern.
+}
+\examples{
+fn <- function(path) {
+  pattern <- gsub(":([^/]+)", "(\\\\\\\\w+)", path)
+  paste0("^", pattern, "$")
+}
+
+path_to_pattern <- as_path_to_pattern(fn)
+
+path <- "/dashboard/profile/:user_id"
+pattern <- path_to_pattern(path) # "^/dashboard/profile/(\\w+)$"
+
 }

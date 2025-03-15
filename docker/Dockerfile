@@ -9,7 +9,7 @@ RUN R -e 'install.packages("mime")'
 RUN R -e 'install.packages("readr")'
 RUN R -e 'install.packages("htmltools")'
 RUN R -e 'install.packages("htmlwidgets")'
-RUN R -e 'remotes::install_github("devOpifex/ambiorix")'
+RUN R -e 'remotes::install_github("ambiorix-web/ambiorix")'
 RUN R -e "install.packages('htmltools')"
 ARG app=/usr/local/lib/R/site-library/ambiorix/app.R
 WORKDIR /app

@@ -6,6 +6,14 @@
 \usage{
 stop_all()
 }
+\value{
+\code{NULL} (invisibly)
+}
 \description{
 Stop all servers.
+}
+\examples{
+if (interactive()) {
+  stop_all()
+}
 }

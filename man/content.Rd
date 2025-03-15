@@ -22,6 +22,9 @@ content_tsv()
 
 content_protobuf()
 }
+\value{
+Length 1 character vector.
+}
 \description{
 Convenient functions for more readable content type headers.
 }

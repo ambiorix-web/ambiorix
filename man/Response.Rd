@@ -3,8 +3,25 @@
 \name{Response}
 \alias{Response}
 \title{Response}
+\value{
+A Response object.
+}
 \description{
 Response class to generate responses sent from the server.
+}
+\examples{
+if (interactive()) {
+  library(ambiorix)
+
+  app <- Ambiorix$new()
+
+  app$get("/", function(req, res) {
+    # print(res)
+    res$send("Using {ambiorix}!")
+  })
+
+  app$start()
+}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -731,7 +748,7 @@ Invisible returns self.
 \item{\code{hook}}{A function to run after the rendering of HTML.
 It should accept at least 3 arguments:
 \itemize{
-\item \code{self}: The \code{Request} class instance.
+\item \code{self}: The \code{Response} class instance.
 \item \code{content}: File content a vector of character string,
 content of the template.
 \item \code{ext}: File extension of the template file.

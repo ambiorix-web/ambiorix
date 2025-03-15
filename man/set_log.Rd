@@ -17,6 +17,24 @@ set_log_error(log)
 \item{log}{An object of class \code{Logger}, see
 \link[log:Logger]{log::Logger}.}
 }
+\value{
+The \code{log} object.
+}
 \description{
 Customise the internal logs used by Ambiorix.
+}
+\examples{
+# define custom loggers:
+info_logger <- log::Logger$new("INFO")
+success_logger <- log::Logger$new("SUCCESS")
+error_logger <- log::Logger$new("ERROR")
+
+info_logger$log("This is an info message.")
+success_logger$log("This is a success message.")
+error_logger$log("This is an error message.")
+
+# set custom loggers for Ambiorix:
+set_log_info(info_logger)
+set_log_success(success_logger)
+set_log_error(error_logger)
 }

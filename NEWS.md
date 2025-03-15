@@ -1,3 +1,29 @@
+# ambiorix 2.2.0
+
+__New Features__
+
+- Enable nesting of Routers, [pull/73](https://github.com/ambiorix-web/ambiorix/pull/73).
+- Enable full support for htmltools tags, no need for html templates, [pull/78](https://github.com/ambiorix-web/ambiorix/pull/78), [pull/92](https://github.com/ambiorix-web/ambiorix/pull/92).
+- Add `engine()` method set custom renderers, [pull/66](https://github.com/ambiorix-web/ambiorix/pull/66).
+- Add `set_error()` method to set a global error handler, [pull/64](https://github.com/ambiorix-web/ambiorix/pull/64).
+- Add a default error handler, [pull/88](https://github.com/ambiorix-web/ambiorix/pull/88).
+
+__Changes__
+
+- Resolve port to bind server on in a specific order, [pull/75](https://github.com/ambiorix-web/ambiorix/pull/75).
+- Switch to {yyjsonr} for faster serialization & de-serialization, [pull/100](https://github.com/ambiorix-web/ambiorix/pull/100).
+- Switch to {webutils} for faster parsing of multipart & urlencoded request bodies, [pull/100](https://github.com/ambiorix-web/ambiorix/pull/100).
+- Continually process requests using `httpuv::service()` instead of a while loop, [pull/98](https://github.com/ambiorix-web/ambiorix/pull/98).
+- Remove syntactic sugar to improve backwards compatibility with R <= 4.1.0, [pull/113](https://github.com/ambiorix-web/ambiorix/pull/113).
+- Deprecate `create_dockerfile()`, [pull/116](https://github.com/ambiorix-web/ambiorix/pull/116)
+
+__Bug Fixes__
+
+- Fix bug hindering change of the max body size of a request,
+[pull/69](https://github.com/ambiorix-web/ambiorix/pull/69).
+- Fix issue causing pattern matching in routes to throw error, [pull/82](https://github.com/ambiorix-web/ambiorix/pull/82), [pull/110](https://github.com/ambiorix-web/ambiorix/pull/110).
+- Fix bug on error condition messaging when promise evaluation fails, [pull/88](https://github.com/ambiorix-web/ambiorix/pull/88).
+
 # ambiorix 2.1.1
 
 - Added `cache_templates` method to cache templates
@@ -6,7 +32,7 @@ in memory.
 rendering.
 - Custom renderers (`as_renderer`) are now more robust.
 - Add `limit` field to protect against large uploads.
-- Fix issue with setting custom websocket handler [#62](https://github.com/devOpifex/ambiorix/issues/62).
+- Fix issue with setting custom websocket handler [#62](https://github.com/ambiorix-web/ambiorix/issues/62).
 - Add `engine` method on router to set custom renderers (`use` deprecated for custom renderers).
 
 # ambiorix 2.1.0
@@ -38,16 +64,16 @@ No longer force render data as JSON if using an HTML template.
 - Export `serialise`
 - Fixed issue where wrong path pattern was matched.
 - Catch error if no route is specified.
-- Do not force body to character fixes [#44](https://github.com/devOpifex/ambiorix/issues/44)
-- Do no force content type on response fixes [#45](https://github.com/devOpifex/ambiorix/issues/45)
+- Do not force body to character fixes [#44](https://github.com/ambiorix-web/ambiorix/issues/44)
+- Do no force content type on response fixes [#45](https://github.com/ambiorix-web/ambiorix/issues/45)
 - Deprecate passing headers to `response` or `send`-like functions, use
 `header` method.
 - Deprecate `set_header` in favour of `header` method.
 - Added family of `header_content*` methods to easily set `Content-Type`.
 - Request `HEADERS` is always a `list`.
-- Deprecate `set` and `get` on Response and Request, this is no longer 
+- Deprecate `set` and `get` on Response and Request, this is no longer
 needed the environments are no longer locked; `res$myVar <- 2L`.
-- Deprecate `status` argument of responses, the active binding should 
+- Deprecate `status` argument of responses, the active binding should
 be used instead; `res$status <- 404L`.
 - Partially improved route matching.
 - Allow customising the path to pattern converter.
@@ -64,9 +90,9 @@ of said router.
 - Empty cookie is empty list instead of empty string.
 - Added `mockRequest` to for testing purposes.
 - Fixed `port`, `host`, and `websocket` active bindings.
-- Add ability to create custom renderer, see 
-[jader](https://github.com/devOpifex/jader), and 
-[pugger](https://github.com/devOpifex/pugger).
+- Add ability to create custom renderer, see
+[jader](https://github.com/ambiorix-web/jader), and
+[pugger](https://github.com/ambiorix-web/pugger).
 
 # ambiorix 2.0.0
 
@@ -76,7 +102,7 @@ The `render` and `send_file` methods of the `Response` object now
 expect the full path to the template, with the file extension.
 Where one would before `res$render("home")`, now one
 `res$render("templates/home.html")`.
-Similarly, in said templates, to import partials, 
+Similarly, in said templates, to import partials,
 use full path relative to the template in which the partial is used
 e.g.: from `[! header.html !]` to `[! partials/header.html !]`.
 
@@ -90,15 +116,15 @@ locking variables when using `set`.
 - Remove the deprecated `Logger` class, see [log](https://github.com/devOpifex/log) package.
 - Pass `host` to free port fetch function.
 - Add hidden option to force change port for upcoming related service.
-- Internals of calls reworked to share response object. 
-This is how it should always have worked, it allows middlewares to 
+- Internals of calls reworked to share response object.
+This is how it should always have worked, it allows middlewares to
 updatre request and response to be used/passed to subsequent calls.
 - Middleware check for run has been fixed.
 - Document and export the `Response` class.
 - Added pre-hook to response.
 - Document and export `Request` class.
 - `set` and `get` methods on `Request` and `Response` accept character
-strings as `name`. 
+strings as `name`.
 - Use R 4.1.0 + add `Depends`
 - Allow passing a list of functions to `use` to easily se multiple
 middlewares at once.
@@ -124,19 +150,19 @@ with `sprintf`.
 # ambiorix 1.0.2
 
 - Reaches CRAN
-- Removed `create_ambiorix`, see [ambiorix.generator](https://github.com/devOpifex/ambiorix.generator).
-- Removed `add_template`, see [ambiorix.generator](https://github.com/devOpifex/ambiorix.generator).
+- Removed `create_ambiorix`, see [ambiorix.generator](https://github.com/ambiorix-web/ambiorix.generator).
+- Removed `add_template`, see [ambiorix.generator](https://github.com/ambiorix-web/ambiorix.generator).
 - Deprecate the `Logger` class in favour of the [log](https://github.com/devOpifex/log) package.
-- Fixed `parse_json` [#36](https://github.com/devOpifex/ambiorix/issues/36)
+- Fixed `parse_json` [#36](https://github.com/ambiorix-web/ambiorix/issues/36)
 
 # ambiorix 1.0.1
 
-- Deprecate `create_ambiorix`: moving to [ambiorix.generator](https://github.com/devOpifex/ambiorix.generator) package.
-- Deprecate `add_template`: moving to [ambiorix.generator](https://github.com/devOpifex/ambiorix.generator) package.
+- Deprecate `create_ambiorix`: moving to [ambiorix.generator](https://github.com/ambiorix-web/ambiorix.generator) package.
+- Deprecate `add_template`: moving to [ambiorix.generator](https://github.com/ambiorix-web/ambiorix.generator) package.
 - Added `all` method to define route and handler for all methods `GET`, `POST`, `PUT`, `DELETE`, and `PATCH`.
 - The `use` method now accepts a function which is run every time the server receives a request.
 - Add `set` and `get` to request to add and retrieve params (namely with the middleware)
-- Fix `check_installed`, see [#33](https://github.com/devOpifex/ambiorix/issues/33)
+- Fix `check_installed`, see [#33](https://github.com/ambiorix-web/ambiorix/issues/33)
 
 # ambiorix 1.0.0
 

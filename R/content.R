@@ -15,7 +15,7 @@
 #'  )
 #' 
 #' @name content
-#' 
+#' @return Length 1 character vector.
 #' @export 
 content_html <- function() {
   "text/html"

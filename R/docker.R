@@ -9,14 +9,21 @@
 #' @details Reads the `DESCRIPTION` file of the project to produce the `Dockerfile`.
 #' 
 #' @param port,host Port and host to serve the application.
+#' @param file_path String. Path to file to write to.
 #' 
 #' @examples 
-#' \dontrun{create_dockerfile()}
+#' if (interactive()) {
+#'   create_dockerfile(port = 5000L, host = "0.0.0.0", file_path = tempfile())
+#'   # create_dockerfile(port = 5000L, host = "0.0.0.0", file_path = "Dockerfile") 
+#' }
 #' 
+#' @return `NULL` (invisibly)
 #' @export
-create_dockerfile <- function(port, host = "0.0.0.0"){
+create_dockerfile <- function(port, host = "0.0.0.0", file_path){
+  .Deprecated(msg = "'create_dockerfile' is deprecated. Please write the Dockerfile manually.")
   assert_that(has_file("DESCRIPTION"))
   assert_that(not_missing(port))
+  assert_that(not_missing(file_path))
 
   cli::cli_alert_warning("Ensure your {.file DESCRIPTION} file is up to date with {.fun devtools::check}")
 
@@ -25,8 +32,7 @@ create_dockerfile <- function(port, host = "0.0.0.0"){
 
   dockerfile <- c(
     "FROM jcoenep/ambiorix",
-    "RUN echo \"options(repos = c(CRAN = 'https://packagemanager.rstudio.com/all/latest'))\" >> /usr/local/lib/R/etc/Rprofile.site",
-    "RUN R -e 'install.packages(\"remotes\")'"
+    "RUN echo \"options(repos = c(CRAN = 'https://packagemanager.rstudio.com/all/latest'))\" >> /usr/local/lib/R/etc/Rprofile.site"
   )
 
   # CRAN packages
@@ -34,21 +40,6 @@ create_dockerfile <- function(port, host = "0.0.0.0"){
   pkgs <- desc[, "Imports"]
   pkgs <- strsplit(pkgs, ",")[[1]]
   pkgs <- gsub("\\\n", "", pkgs)
-  cran <- sapply(pkgs, function(pkg){
-    sprintf("RUN R -e \"install.packages('%s')\"", pkg)
-  })
-
-  # remotes
-  rmts <- tryCatch(desc[, 'Remotes'], error = function(e) NULL)
-  if(!is.null(rmts)){
-    rmts <- strsplit(rmts, ",")[[1]]
-    rmts <- gsub("\\\n", "", rmts)
-    rmts <- rmts[rmts != "ambiorix"]
-    rmts <- sapply(rmts, function(pkg){
-      sprintf("RUN R -e \"remotes::install_github('%s', force=FALSE)\"", pkg)
-    })
-    cran <- c(cran, rmts)
-  }
 
   cmd <- sprintf(
     "CMD R -e \"options(ambiorix.host='%s', 'ambiorix.port'=%s);source('app.R')\"", 
@@ -57,12 +48,11 @@ create_dockerfile <- function(port, host = "0.0.0.0"){
 
   dockerfile <- c(
     dockerfile,
-    cran,
     "COPY . .",
     cmd
   )
 
-  x <- writeLines(dockerfile, "Dockerfile")
+  x <- writeLines(dockerfile, file_path)
 
   cli::cli_alert_success("Created {.file Dockerfile}")
 

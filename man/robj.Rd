@@ -9,6 +9,9 @@ robj(obj)
 \arguments{
 \item{obj}{R object to treat.}
 }
+\value{
+Object of class "robj".
+}
 \description{
 Treats a data element rendered in a response (\code{res$render}) as
 a data object and ultimately uses \code{\link[=dput]{dput()}}.
@@ -18,4 +21,7 @@ For instance in a template, \verb{x <- [\% var \%]} will not work with
 \code{res$render(data=list(var = "hello"))} because this will be replace
 like \code{x <- hello} (missing quote): breaking the template. Using \code{robj} one would
 obtain \code{x <- "hello"}.
+}
+\examples{
+robj(1:10)
 }

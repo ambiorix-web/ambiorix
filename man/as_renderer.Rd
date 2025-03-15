@@ -11,6 +11,18 @@ as_renderer(fn)
 the full path to the \code{file} to render, and the
 \code{data} to render.}
 }
+\value{
+A renderer function.
+}
 \description{
 Create a custom renderer.
+}
+\examples{
+if (interactive()) {
+  fn <- function(path, data) {
+    # ...
+  }
+
+  as_renderer(fn)
+}
 }

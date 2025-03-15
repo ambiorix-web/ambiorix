@@ -4,10 +4,15 @@
 \alias{create_dockerfile}
 \title{Dockerfile}
 \usage{
-create_dockerfile(port, host = "0.0.0.0")
+create_dockerfile(port, host = "0.0.0.0", file_path)
 }
 \arguments{
 \item{port, host}{Port and host to serve the application.}
+
+\item{file_path}{String. Path to file to write to.}
+}
+\value{
+\code{NULL} (invisibly)
 }
 \description{
 Create the dockerfile required to run the application.
@@ -20,6 +25,9 @@ that much improve the speed of building of Dockerfiles.
 Reads the \code{DESCRIPTION} file of the project to produce the \code{Dockerfile}.
 }
 \examples{
-\dontrun{create_dockerfile()}
+if (interactive()) {
+  create_dockerfile(port = 5000L, host = "0.0.0.0", file_path = tempfile())
+  # create_dockerfile(port = 5000L, host = "0.0.0.0", file_path = "Dockerfile") 
+}
 
 }

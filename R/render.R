@@ -7,6 +7,7 @@
 #' @param dir Directory of file from which `content` originates.
 #' 
 #' @keywords internal
+#' @noRd
 replace_partials <- function(content, dir) {
   content <- apply_replace_partial(content, dir)
 
@@ -25,6 +26,7 @@ replace_partials <- function(content, dir) {
 #' @param dir Base directory.
 #' 
 #' @keywords internal
+#' @noRd
 replace_partial <- function(line, dir) {
   if(length(line) > 1)
     line <- apply_replace_partial(line, dir)
@@ -70,6 +72,7 @@ replace_partial <- function(line, dir) {
 #' @param file File to retrieve directory from.
 #' 
 #' @keywords internal
+#' @noRd
 get_dir <- function(file) {
   dirname(normalizePath(file))
 }
@@ -81,6 +84,7 @@ get_dir <- function(file) {
 #' @inheritParams replace_partials
 #' 
 #' @keywords internal
+#' @noRd
 apply_replace_partial <- function(content, dir) {
   unlist(
     unname(
@@ -100,7 +104,9 @@ apply_replace_partial <- function(content, dir) {
 #' obtain `x <- "hello"`.
 #'
 #' @param obj R object to treat.
-#'
+#' @return Object of class "robj".
+#' @examples
+#' robj(1:10)
 #' @export
 robj <- function(obj){
   assert_that(not_missing(obj))
@@ -117,7 +123,7 @@ robj <- function(obj){
 print.robj <- function(x, ...){
   cli::cli_alert_info("R object")
   class(x) <- class(x)[!class(x) %in% "robj"]
-  print(dput(x))
+  dput(x)
 }
 
 #' JSON Object
@@ -125,7 +131,12 @@ print.robj <- function(x, ...){
 #' Serialises an object to JSON in `res$render`.
 #' 
 #' @param obj Object to serialise.
-#' 
+#' @examples
+#' if (interactive()) {
+#'   l <- list(a = "hello", b = 2L, c = 3)
+#'   jobj(l)
+#' }
+#' @return Object of class "jobj".
 #' @export 
 jobj <- function(obj) {
   suppressWarnings(
@@ -136,7 +147,7 @@ jobj <- function(obj) {
 #' @export
 print.jobj <- function(x, ...){
   cli::cli_alert_info("JSON object")
-  print(serialise(x, ...))
+  serialise(x, ...)
 }
 
 #' Pre Hook Response
@@ -144,6 +155,26 @@ print.jobj <- function(x, ...){
 #' @param content File content, a character vector.
 #' @param data A list of data passed to `glue::glue_data`.
 #' 
+#' @examples
+#' my_prh <- function(self, content, data, ext, ...) {
+#'   data$title <- "Mansion"
+#'   pre_hook(content, data)
+#' }
+#' 
+#' #' Handler for GET at '/'
+#' #' 
+#' #' @details Renders the homepage
+#' #' @export
+#' home_get <- function(req, res) {
+#'   res$pre_render_hook(my_prh)
+#'   res$render(
+#'     file = "page.html",
+#'     data = list(
+#'       title = "Home"
+#'     )
+#'   )
+#' }
+#' @return A response pre-hook.
 #' @export 
 pre_hook <- function(
   content,
@@ -171,8 +202,11 @@ print.responsePreHook <- function(x, ...) {
 #' HTML Template
 #' 
 #' Use [htmltools::htmlTemplate()] as renderer.
-#' Passe to `use` method.
+#' Passed to `use` method.
 #' 
+#' @return A renderer function.
+#' @examples
+#' use_html_template()
 #' @export 
 use_html_template <- function() {
   as_renderer(function(file, data) {
@@ -194,12 +228,13 @@ use_html_template <- function() {
 #' @param data Data to render, a `list`.
 #' 
 #' @keywords internal
+#' @noRd
 render_tags <- function(lines, data){
   new_lines <- c()
   n <- 0L
   str <- ""
 
-  for(i in 1:length(lines)) {
+  for(i in seq_along(lines)) {
     line <- lines[i]
     if(!grepl("\\[%|%\\]", line) && n == 0L) {
       new_lines <- c(new_lines, line)
@@ -229,7 +264,7 @@ render_tags <- function(lines, data){
   }
 
   if(str != "")
-    cat("error")
+    message("error")
 
   new_lines
 }
@@ -265,6 +300,15 @@ render_html <- function(expr){
 #' the full path to the `file` to render, and the
 #' `data` to render.
 #' 
+#' @return A renderer function.
+#' @examples
+#' if (interactive()) {
+#'   fn <- function(path, data) {
+#'     # ...
+#'   }
+#' 
+#'   as_renderer(fn)
+#' }
 #' @export 
 as_renderer <- function(fn) {
   assert_that(is_function(fn))
@@ -291,6 +335,8 @@ print.renderer <- function(x, ...) {
 #' @param obj Object to check.
 #' 
 #' @return Boolean
+#' @keywords internal
+#' @noRd
 is_renderer_obj <- function(obj) {
   inherits(obj, "renderer")
 }
