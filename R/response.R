@@ -160,10 +160,10 @@ render_htmltools <- function(x) {
   href_deps <- grep("http", strsplit(rendered_deps, "\n")[[1]], value = TRUE)
   href_deps <- paste0(href_deps, collapse = "\n")
 
-  # add encoding and dependencies
-  q$closest("html")$find("head")$append(htmltools::tags$meta(charset = "UTF-8"))
-  q$closest("html")$find("head")$append(htmltools::HTML(href_deps))
-  q$closest("html")$find("head")$append(inline_deps)
+  # add encoding and dependencies for the first selected tag this avoid duplicates as append *appends* for each selected tag
+  q$closest("html")$find("head")$filter(function(x,i)i==1)$append(htmltools::tags$meta(charset = "UTF-8"))
+  q$closest("html")$find("head")$filter(function(x,i)i==1)$append(htmltools::HTML(href_deps))
+  q$closest("html")$find("head")$filter(function(x,i)i==1)$append(inline_deps)
 
   # get all tags and render
   x <- q$allTags()
