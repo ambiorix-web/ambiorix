@@ -128,13 +128,27 @@ render_htmltools <- function(x) {
   q <- htmltools::tagQuery(x)
 
   if(!length(q$closest("html")$selectedTags()))
-    return(htmltools::doRenderTags(x))
+    return(htmltools::renderTags(x)$html)
+  
+  html_attr <- if(!length(x$attribs)){
+    ""
+  } else {
+    attribs_vals <- unlist(x$attribs)
+    attribs_vals <- gsub(
+      "=NA\\b", "", paste0(names(attribs_vals), "=", attribs_vals, collapse = " ")
+    )
+  }
 
   deps <- htmltools::resolveDependencies(
     dependencies = htmltools::findDependencies(x)
   )
 
   inline_deps <- inline_dependencies(deps)
+
+  # add <body> if not present, and enclose all children tags within it, <head> tags will be extracted thanks to htmltools::renderTags
+  if(!length(q$find("body")$selectedTags())){
+    q$closest("html")$empty()$append(htmltools::tags$body(x$children))
+  }
 
   # add <head> if not present
   if(!length(q$find("head")$selectedTags()))
@@ -153,9 +167,22 @@ render_htmltools <- function(x) {
 
   # get all tags and render
   x <- q$allTags()
-  rendered <- htmltools::doRenderTags(x)
+  rendered <- htmltools::renderTags(x)
+  bodyTag <- as.character(Find(f = function(s)s$name=="body",x$children))
 
-  paste0("<!DOCTYPE html>\n", rendered)
+  paste0(
+    c(
+      "<!DOCTYPE html>",
+      sprintf("<html %s>", html_attr),
+      "<head>",
+      rendered$head,
+      "</head>",
+      bodyTag, 
+      "</html>"
+    ),
+    collapse = "\n"
+  )
+
 }
 
 #' @export
