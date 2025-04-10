@@ -130,15 +130,6 @@ render_htmltools <- function(x) {
   if(!length(q$closest("html")$selectedTags()))
     return(htmltools::renderTags(x)$html)
   
-  html_attr <- if(!length(x$attribs)){
-    ""
-  } else {
-    attribs_vals <- unlist(x$attribs)
-    attribs_vals <- gsub(
-      "=NA\\b", "", paste0(names(attribs_vals), "=", attribs_vals, collapse = " ")
-    )
-  }
-
   deps <- htmltools::resolveDependencies(
     dependencies = htmltools::findDependencies(x)
   )
@@ -165,24 +156,13 @@ render_htmltools <- function(x) {
   q$closest("html")$find("head")$filter(function(x,i)i==1)$append(htmltools::HTML(href_deps))
   q$closest("html")$find("head")$filter(function(x,i)i==1)$append(inline_deps)
 
+  # add placeholder for head tag children
+  q$closest("html")$prepend(htmltools::HTML("<head>\n<!--HEAD_CONTENT-->\n</head>"))
   # get all tags and render
   x <- q$allTags()
   rendered <- htmltools::renderTags(x)
-  bodyTag <- as.character(Find(f = function(s)s$name=="body",x$children))
 
-  paste0(
-    c(
-      "<!DOCTYPE html>",
-      sprintf("<html %s>", html_attr),
-      "<head>",
-      rendered$head,
-      "</head>",
-      bodyTag, 
-      "</html>"
-    ),
-    collapse = "\n"
-  )
-
+  paste0("<!DOCTYPE html>\n",sub("<!--HEAD_CONTENT-->",rendered$head, rendered$html, fixed = TRUE))
 }
 
 #' @export
