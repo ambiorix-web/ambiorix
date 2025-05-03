@@ -442,6 +442,10 @@ Routing <- R6::R6Class(
     # BEFORE dynamic ones
     # e.g. /hello should be matched before /:id
     reorder_routes = function() {
+      if (!length(private$.routes)) {
+        return()
+      }
+
       indices <- seq_along(private$.routes)
       paths <- lapply(private$.routes, function(route) {
         data.frame(

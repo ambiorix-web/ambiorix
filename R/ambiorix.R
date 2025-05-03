@@ -192,10 +192,6 @@ Ambiorix <- R6::R6Class(
         cli::cli_alert_warning("Server is already running")
         return()
       }
-
-      if(private$n_routes() == 0L)
-        stop("No routes specified")
-
       if(is.null(port))
         port <- private$.port
 
@@ -206,6 +202,10 @@ Ambiorix <- R6::R6Class(
 
       super$prepare()
       private$.routes <- super$get_routes()
+
+      if(private$n_routes() == 0L)
+        stop("No routes specified")
+
       private$.receivers <- super$get_receivers()
       private$.middleware <- super$get_middleware()
 
