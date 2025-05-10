@@ -133,10 +133,16 @@ render_htmltools <- function(x) {
   deps <- htmltools::resolveDependencies(
     dependencies = htmltools::findDependencies(x)
   )
-
   inline_deps <- inline_dependencies(deps)
 
-  # add <body> if not present, and enclose all children tags within it, <head> tags will be extracted thanks to htmltools::renderTags
+  # htmltools::renderDependencies(..., srcType = "href")
+  # does not work
+  rendered_deps <- htmltools::renderDependencies(deps)
+  href_deps <- grep("http", strsplit(rendered_deps, "\n")[[1]], value = TRUE)
+  href_deps <- paste0(href_deps, collapse = "\n")
+
+  # add <body> if not present, and enclose all children tags within it, <head> tags will
+  # be extracted thanks to htmltools::renderTags
   if(!length(q$find("body")$selectedTags())){
     q$closest("html")$empty()$append(htmltools::tags$body(x$children))
   }
@@ -145,16 +151,13 @@ render_htmltools <- function(x) {
   if(!length(q$find("head")$selectedTags()))
     q$closest("html")$prepend(htmltools::tags$head())
 
-  # htmltools::renderDependencies(..., srcType = "href")
-  # does not work
-  rendered_deps <- htmltools::renderDependencies(deps)
-  href_deps <- grep("http", strsplit(rendered_deps, "\n")[[1]], value = TRUE)
-  href_deps <- paste0(href_deps, collapse = "\n")
-
-  # add encoding and dependencies for the first selected tag this avoid duplicates as append *appends* for each selected tag
-  q$closest("html")$find("head")$filter(function(x,i)i==1)$append(htmltools::tags$meta(charset = "UTF-8"))
-  q$closest("html")$find("head")$filter(function(x,i)i==1)$append(htmltools::HTML(href_deps))
-  q$closest("html")$find("head")$filter(function(x,i)i==1)$append(inline_deps)
+  # add encoding and dependencies for the first selected tag this avoid duplicates as 
+  # append *appends* for each selected tag
+  q$closest("html")$find("head")$filter(function(x,i) i == 1)$append(
+    htmltools::tags$meta(charset = "UTF-8"),
+    htmltools::HTML(href_deps),
+    inline_deps
+  )
 
   # add placeholder for head tag children
   q$closest("html")$prepend(htmltools::HTML("<head>\n<!--HEAD_CONTENT-->\n</head>"))
@@ -162,7 +165,15 @@ render_htmltools <- function(x) {
   x <- q$allTags()
   rendered <- htmltools::renderTags(x)
 
-  paste0("<!DOCTYPE html>\n",sub("<!--HEAD_CONTENT-->",rendered$head, rendered$html, fixed = TRUE))
+  paste0(
+    "<!DOCTYPE html>\n",
+    sub(
+      pattern = "<!--HEAD_CONTENT-->",
+      replacement = rendered$head,
+      x = rendered$html,
+      fixed = TRUE
+    )
+  )
 }
 
 #' @export
