@@ -128,17 +128,12 @@ render_htmltools <- function(x) {
   q <- htmltools::tagQuery(x)
 
   if(!length(q$closest("html")$selectedTags()))
-    return(htmltools::doRenderTags(x))
-
+    return(htmltools::renderTags(x)$html)
+  
   deps <- htmltools::resolveDependencies(
     dependencies = htmltools::findDependencies(x)
   )
-
   inline_deps <- inline_dependencies(deps)
-
-  # add <head> if not present
-  if(!length(q$find("head")$selectedTags()))
-    q$closest("html")$prepend(htmltools::tags$head())
 
   # htmltools::renderDependencies(..., srcType = "href")
   # does not work
@@ -146,16 +141,39 @@ render_htmltools <- function(x) {
   href_deps <- grep("http", strsplit(rendered_deps, "\n")[[1]], value = TRUE)
   href_deps <- paste0(href_deps, collapse = "\n")
 
-  # add encoding and dependencies
-  q$closest("html")$find("head")$append(htmltools::tags$meta(charset = "UTF-8"))
-  q$closest("html")$find("head")$append(htmltools::HTML(href_deps))
-  q$closest("html")$find("head")$append(inline_deps)
+  # add <body> if not present, and enclose all children tags within it, <head> tags will
+  # be extracted thanks to htmltools::renderTags
+  if(!length(q$find("body")$selectedTags())){
+    q$closest("html")$empty()$append(htmltools::tags$body(x$children))
+  }
 
+  # add <head> if not present
+  if(!length(q$find("head")$selectedTags()))
+    q$closest("html")$prepend(htmltools::tags$head())
+
+  # add encoding and dependencies for the first selected tag this avoid duplicates as 
+  # append *appends* for each selected tag
+  q$closest("html")$find("head")$filter(function(x,i) i == 1)$append(
+    htmltools::tags$meta(charset = "UTF-8"),
+    htmltools::HTML(href_deps),
+    inline_deps
+  )
+
+  # add placeholder for head tag children
+  q$closest("html")$prepend(htmltools::HTML("<head>\n<!--HEAD_CONTENT-->\n</head>"))
   # get all tags and render
   x <- q$allTags()
-  rendered <- htmltools::doRenderTags(x)
+  rendered <- htmltools::renderTags(x)
 
-  paste0("<!DOCTYPE html>\n", rendered)
+  paste0(
+    "<!DOCTYPE html>\n",
+    sub(
+      pattern = "<!--HEAD_CONTENT-->",
+      replacement = rendered$head,
+      x = rendered$html,
+      fixed = TRUE
+    )
+  )
 }
 
 #' @export

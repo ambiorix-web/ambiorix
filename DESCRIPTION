@@ -9,7 +9,8 @@ Authors@R:
            email = "jcoenep@gmail.com",
            comment = c(ORCID = "0000-0002-6637-4107")),
     person(family = "Opifex", role = c("fnd")),
-    person(given = "Kennedy", family = "Mwavu", role = "ctb", comment = c(ORCID = "0009-0006-3157-7234"))
+    person(given = "Kennedy", family = "Mwavu", role = "ctb", comment = c(ORCID = "0009-0006-3157-7234")),
+    person(given = "Julio", family = "Collazos", role = "ctb", comment = c(ORCID = "0009-0006-5503-0997"))
   )
 Description: A web framework inspired by 'express.js' to build
   any web service from multi-page websites to 'RESTful' 
