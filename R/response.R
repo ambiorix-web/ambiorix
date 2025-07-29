@@ -179,8 +179,13 @@ render_htmltools <- function(x) {
 
   # add encoding and dependencies for the first selected tag this avoid duplicates as
   # append *appends* for each selected tag
-  q$closest("html")$find("head")$filter(function(x, i) i == 1)$append(
-    htmltools::tags$meta(charset = "UTF-8"),
+  q$closest("html")$find("head")$filter(
+    function(x, i) {
+      i == 1
+    }
+  )$prepend(
+    htmltools::tags$meta(charset = "UTF-8")
+  )$append(
     htmltools::HTML(href_deps),
     inline_deps
   )
