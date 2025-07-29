@@ -27,7 +27,7 @@ Reads the \code{DESCRIPTION} file of the project to produce the \code{Dockerfile
 \examples{
 if (interactive()) {
   create_dockerfile(port = 5000L, host = "0.0.0.0", file_path = tempfile())
-  # create_dockerfile(port = 5000L, host = "0.0.0.0", file_path = "Dockerfile") 
+  # create_dockerfile(port = 5000L, host = "0.0.0.0", file_path = "Dockerfile")
 }
 
 }

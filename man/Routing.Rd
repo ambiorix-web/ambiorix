@@ -37,7 +37,7 @@ app$get("/", function(req, res){
 
 app$receive("hello", function(msg, ws){
  print(msg) # print msg received
- 
+
  # send a message back
  ws$send("hello", "Hello back! (sent from R)")
 })
@@ -339,7 +339,7 @@ app$get("/", function(req, res){
 
 app$receive("hello", function(msg, ws){
  print(msg) # print msg received
- 
+
  # send a message back
  ws$send("hello", "Hello back! (sent from R)")
 })

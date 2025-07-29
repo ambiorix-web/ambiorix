@@ -96,7 +96,7 @@ Websocket <- R6::R6Class(
   "Websocket",
   public = list(
     #' @details Constructor
-    #' @param ws
+    #' @param ws The websocket
     initialize = function(ws) {
       private$.ws <- ws
     },
