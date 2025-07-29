@@ -12,7 +12,7 @@ test_that("rlication", {
   r$post("/", function(req, res) {
     res$send("home")
   })
-  
+
   r$put("/", function(req, res) {
     res$send("home")
   })

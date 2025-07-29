@@ -1,4 +1,4 @@
-library(htmltools);
+library(htmltools)
 
 tags$html(
   tags$title("[% title %]"),

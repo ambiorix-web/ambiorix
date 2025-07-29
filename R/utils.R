@@ -7,8 +7,10 @@
 #'
 #' @noRd
 #' @keywords internal
-browse_ambiorix <- function(open, url){
-  if(!open) return()
+browse_ambiorix <- function(open, url) {
+  if (!open) {
+    return()
+  }
 
   viewer <- getOption("viewer", browseURL)
 
@@ -17,20 +19,27 @@ browse_ambiorix <- function(open, url){
     error = function(e) e
   )
 
-  if(inherits(x, "error"))
+  if (inherits(x, "error")) {
     message("Unable to open browser, please open manually.")
+  }
 
   invisible()
 }
 
-`%response%` <- function(lhs, rhs){
-  if(is.null(lhs)) return(rhs)
-  if(!inherits(lhs, "ambiorixResponse")) return(rhs)
+`%response%` <- function(lhs, rhs) {
+  if (is.null(lhs)) {
+    return(rhs)
+  }
+  if (!inherits(lhs, "ambiorixResponse")) {
+    return(rhs)
+  }
   return(lhs)
 }
 
-`%error%` <- function(lhs, rhs){
-  if(is.null(lhs)) return(rhs)
+`%error%` <- function(lhs, rhs) {
+  if (is.null(lhs)) {
+    return(rhs)
+  }
   return(lhs)
 }
 
@@ -40,7 +49,7 @@ browse_ambiorix <- function(open, url){
 #'
 #' @noRd
 #' @keywords internal
-remove_extensions <- function(files){
+remove_extensions <- function(files) {
   tools::file_path_sans_ext(files)
 }
 
@@ -52,11 +61,12 @@ remove_extensions <- function(files){
 #'
 #' @noRd
 #' @keywords internal
-check_installed <- function(pkg){
+check_installed <- function(pkg) {
   has_it <- base::requireNamespace(pkg, quietly = TRUE)
 
-  if(!has_it)
+  if (!has_it) {
     stop(sprintf("This function requires the package {%s}", pkg), call. = FALSE)
+  }
 }
 
 #' Retrieve the Port for Server Binding
@@ -79,37 +89,43 @@ check_installed <- function(pkg){
 #'
 #' @noRd
 #' @keywords internal
-get_port <- function(host, port = NULL){
+get_port <- function(host, port = NULL) {
   # we need to override the port if the load balancer
   # is running. This should NOT be set by a dev
   # this ensures we can overwrite
   forced <- getOption("ambiorix.port.force")
-  if(!is.null(forced))
+  if (!is.null(forced)) {
     return(forced)
+  }
 
   has_ints_only <- function(x) !grepl(pattern = "\\D", x = x)
-  is_valid_port <- function(x) !is.null(x) && !identical(x, "") && has_ints_only(x)
+  is_valid_port <- function(x) {
+    !is.null(x) && !identical(x, "") && has_ints_only(x)
+  }
 
   ambiorix_port <- Sys.getenv("AMBIORIX_PORT")
-  if (is_valid_port(ambiorix_port))
+  if (is_valid_port(ambiorix_port)) {
     return(as.integer(ambiorix_port))
+  }
 
-  if (is_valid_port(port))
+  if (is_valid_port(port)) {
     return(as.integer(port))
+  }
 
   shiny_port <- Sys.getenv("SHINY_PORT")
-  if (is_valid_port(shiny_port))
+  if (is_valid_port(shiny_port)) {
     return(as.integer(shiny_port))
+  }
 
   httpuv::randomPort(host = host)
 }
 
 #' Silent readLines
-#' 
+#'
 #' Avoids EOF warnings.
-#' 
+#'
 #' @param ... Passed to [readLines()]:
-#' 
+#'
 #' @keywords internal
 #' @noRd
 read_lines <- function(...) {
@@ -117,17 +133,19 @@ read_lines <- function(...) {
 }
 
 #' Read file from disk or cache
-#' 
+#'
 #' @param path Path to file.
-#' 
+#'
 #' @keywords internal
 #' @noRd
 read_lines_cached <- function(path) {
-  if(!.globals$cache_tmpls)
+  if (!.globals$cache_tmpls) {
     return(read_lines(path))
+  }
 
-  if(length(.cache_tmpls[[path]]) > 0L)
+  if (length(.cache_tmpls[[path]]) > 0L) {
     return(.cache_tmpls[[path]])
+  }
 
   content <- read_lines(path)
   .cache_tmpls[[path]] <- content
