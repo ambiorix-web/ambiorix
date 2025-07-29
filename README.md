@@ -5,8 +5,11 @@
 <img src="man/figures/ambiorix.png" height = "200px"/>
 
 <!-- badges: start -->
+
 [![R-CMD-check](https://github.com/ambiorix-web/ambiorix/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ambiorix-web/ambiorix/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/ambiorix-web/ambiorix/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ambiorix-web/ambiorix?branch=master)
+[![CRAN status](https://www.r-pkg.org/badges/version/ambiorix)](https://CRAN.R-project.org/package=ambiorix)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+
 <!-- badges: end -->
 
 [Website](https://ambiorix.dev) | [CLI](https://github.com/devOpifex/ambiorix-cli) | [Generator](https://github.com/ambiorix-web/ambiorix.generator) | [Docker](https://hub.docker.com/r/jcoenep/ambiorix) | [Load Balancer](https://github.com/ambiorix-web/belgic)
@@ -17,7 +20,7 @@ Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and ins
 
 ## Example
 
-``` r
+```r
 library(ambiorix)
 
 app <- Ambiorix$new()
