@@ -241,7 +241,8 @@ test_that("Response", {
   res$set_headers(list(x = 1))
   headers <- res$get_headers()
   expect_equal(
-    headers$x, 1L
+    headers$x,
+    1L
   )
 
   expect_error(res$headers <- "error")

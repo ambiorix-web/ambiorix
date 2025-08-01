@@ -5,22 +5,23 @@ Route <- R6::R6Class(
     components = list(),
     pattern = NULL,
     dynamic = FALSE,
-    initialize = function(path){
+    initialize = function(path) {
       assert_that(not_missing(path))
       self$path <- gsub("\\?.*$", "", path) # remove query
       self$dynamic <- grepl(":", path)
     },
-    as_pattern = function(parent = ""){
-      if(!is.null(.globals$pathToPattern)) {
+    as_pattern = function(parent = "") {
+      if (!is.null(.globals$pathToPattern)) {
         self$pattern <- .globals$pathToPattern(self$path)
         return(
           invisible(self)
         )
       }
 
-      pattern <- sapply(self$components, function(comp){
-        if(comp$dynamic)
+      pattern <- sapply(self$components, function(comp) {
+        if (comp$dynamic) {
           return("[[:alnum:][:space:][:punct:]]*")
+        }
 
         return(comp$name)
       })
@@ -29,7 +30,7 @@ Route <- R6::R6Class(
       self$pattern <- paste0("^", parent, "/", pattern, "$")
       invisible(self)
     },
-    decompose = function(parent = ""){
+    decompose = function(parent = "") {
       path <- paste0(parent, self$path)
       # split
       components <- strsplit(path, "(?<=.)(?=[:/])", perl = TRUE)[[1]]
@@ -37,10 +38,10 @@ Route <- R6::R6Class(
       # remove lonely /
       components <- components[components != "/"]
 
-      if(length(components) == 0){
+      if (length(components) == 0) {
         self$components <- list(
           list(
-            index = 1L, 
+            index = 1L,
             dynamic = FALSE,
             name = ""
           )
@@ -53,9 +54,9 @@ Route <- R6::R6Class(
 
       components <- as.list(components)
       comp <- list()
-      for(i in seq_along(components)){
+      for (i in seq_along(components)) {
         c <- list(
-          index = i, 
+          index = i,
           dynamic = grepl(":", components[[i]]),
           name = gsub(":|$", "", components[[i]])
         )
@@ -65,7 +66,7 @@ Route <- R6::R6Class(
       self$components <- comp
       invisible(self)
     },
-    print = function(){
+    print = function() {
       cli::cli_rule("Ambiorix", right = "route")
       message("Only used internally")
     }
@@ -73,26 +74,26 @@ Route <- R6::R6Class(
 )
 
 #' Path to pattern
-#' 
+#'
 #' Identify a function as a path to pattern function;
 #' a function that accepts a path and returns a matching pattern.
-#' 
+#'
 #' @param path A function that accepts a character vector of length 1
 #' and returns another character vector of length 1.
-#' 
+#'
 #' @examples
 #' fn <- function(path) {
 #'   pattern <- gsub(":([^/]+)", "(\\\\w+)", path)
 #'   paste0("^", pattern, "$")
 #' }
-#' 
+#'
 #' path_to_pattern <- as_path_to_pattern(fn)
-#' 
+#'
 #' path <- "/dashboard/profile/:user_id"
 #' pattern <- path_to_pattern(path) # "^/dashboard/profile/(\\w+)$"
 #'
 #' @return Object of class "pathToPattern".
-#' @export 
+#' @export
 as_path_to_pattern <- function(path) {
   assert_that(is_function(path))
 
@@ -106,7 +107,7 @@ as_path_to_pattern <- function(path) {
 }
 
 
-#' @export 
+#' @export
 print.pathToPattern <- function(x, ...) {
   cli::cli_alert_info("A path to pattern converter")
 }

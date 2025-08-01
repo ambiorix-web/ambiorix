@@ -24,7 +24,7 @@ my_prh <- function(self, content, data, ext, ...) {
 }
 
 #' Handler for GET at '/'
-#' 
+#'
 #' @details Renders the homepage
 #' @export
 home_get <- function(req, res) {

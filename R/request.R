@@ -1,7 +1,7 @@
 #' Request
-#' 
+#'
 #' A request.
-#' 
+#'
 #' @field HEADERS Headers from the request.
 #' @field HTTP_ACCEPT Content types to accept.
 #' @field HTTP_ACCEPT_ENCODING Encoding of the request.
@@ -12,7 +12,7 @@
 #' @field HTTP_HOST Host making the request.
 #' @field HTTP_SEC_FETCH_DEST Indicates the request's destination. That is the initiator of the original fetch request, which is where (and how) the fetched data will be used.
 #' @field HTTP_SEC_FETCH_MODE Indicates mode of the request.
-#' @field HTTP_SEC_FETCH_SITE Indicates the relationship between a request initiator's origin and the origin of the requested resource. 
+#' @field HTTP_SEC_FETCH_SITE Indicates the relationship between a request initiator's origin and the origin of the requested resource.
 #' @field HTTP_SEC_FETCH_USER Only sent for requests initiated by user activation, and its value will always be `?1`.
 #' @field HTTP_UPGRADE_INSECURE_REQUESTS Signals that server supports upgrade.
 #' @field HTTP_USER_AGENT User agent.
@@ -36,50 +36,50 @@
 #' @field query Parsed `QUERY_STRING`, `list`.
 #' @field params A `list` of parameters.
 #' @field cookie Parsed `HTTP_COOKIE`.
-#' 
-#' @return A Request object. 
+#'
+#' @return A Request object.
 #' @examples
 #' if (interactive()) {
 #'   library(ambiorix)
-#' 
+#'
 #'   app <- Ambiorix$new()
-#' 
+#'
 #'   app$get("/", function(req, res) {
 #'     print(req)
 #'     res$send("Using {ambiorix}!")
 #'   })
-#' 
+#'
 #'   app$start()
 #' }
-#' @export 
+#' @export
 Request <- R6::R6Class(
   "Request",
   lock_objects = FALSE,
   public = list(
     HEADERS = NULL,
-    HTTP_ACCEPT = NULL, 
+    HTTP_ACCEPT = NULL,
     HTTP_ACCEPT_ENCODING = NULL,
-    HTTP_ACCEPT_LANGUAGE = NULL, 
+    HTTP_ACCEPT_LANGUAGE = NULL,
     HTTP_CACHE_CONTROL = NULL,
     HTTP_CONNECTION = NULL,
     HTTP_COOKIE = NULL,
     HTTP_HOST = NULL,
     HTTP_SEC_FETCH_DEST = NULL,
     HTTP_SEC_FETCH_MODE = NULL,
-    HTTP_SEC_FETCH_SITE = NULL, 
+    HTTP_SEC_FETCH_SITE = NULL,
     HTTP_SEC_FETCH_USER = NULL,
     HTTP_UPGRADE_INSECURE_REQUESTS = NULL,
     HTTP_USER_AGENT = NULL,
     httpuv.version = NULL,
     PATH_INFO = NULL,
-    QUERY_STRING = NULL, 
+    QUERY_STRING = NULL,
     REMOTE_ADDR = NULL,
     REMOTE_PORT = NULL,
     REQUEST_METHOD = NULL,
     rook.errors = NULL,
     rook.input = NULL,
     rook.url_scheme = NULL,
-    rook.version = NULL, 
+    rook.version = NULL,
     SCRIPT_NAME = NULL,
     SERVER_NAME = NULL,
     SERVER_PORT = NULL,
@@ -92,7 +92,7 @@ Request <- R6::R6Class(
     cookie = list(),
     #' @details Constructor
     #' @param req Original request (environment).
-    initialize = function(req){
+    initialize = function(req) {
       self$HEADERS <- as.list(req$HEADERS)
       self$HTTP_ACCEPT <- req$HTTP_ACCEPT
       self$HTTP_ACCEPT_ENCODING <- req$HTTP_ACCEPT_ENCODING
@@ -127,10 +127,9 @@ Request <- R6::R6Class(
 
       private$.parse_query_string(req$QUERY_STRING)
       self$cookie <- .globals$cookieParser(req)
-
     },
     #' @details Print
-    print = function(){
+    print = function() {
       cli::cli_h3("A Request")
       cli::cli_ul()
       cli::cli_li("HEADERS: {.val {self$HEADERS}}")
@@ -145,7 +144,9 @@ Request <- R6::R6Class(
       cli::cli_li("HTTP_SEC_FETCH_MODE: {.val {self$HTTP_SEC_FETCH_MODE}}")
       cli::cli_li("HTTP_SEC_FETCH_SITE: {.val {self$HTTP_SEC_FETCH_SITE}}")
       cli::cli_li("HTTP_SEC_FETCH_USER: {.val {self$HTTP_SEC_FETCH_USER}}")
-      cli::cli_li("HTTP_UPGRADE_INSECURE_REQUESTS: {.val {self$HTTP_UPGRADE_INSECURE_REQUESTS}}")
+      cli::cli_li(
+        "HTTP_UPGRADE_INSECURE_REQUESTS: {.val {self$HTTP_UPGRADE_INSECURE_REQUESTS}}"
+      )
       cli::cli_li("HTTP_USER_AGENT: {.val {self$HTTP_USER_AGENT}}")
       cli::cli_li("httpuv.version {.val {self$httpuv.version}}")
       cli::cli_li("PATH_INFO: {.val {self$PATH_INFO}}")
@@ -162,12 +163,12 @@ Request <- R6::R6Class(
       cli::cli_li("rook.version: {.val {self$rook.version}}")
       cli::cli_li("rook.url_scheme: {.val {self$rook.url_scheme}}")
 
-      if(length(self$params)){
+      if (length(self$params)) {
         cli::cli_li("params: {.val params}")
         str(self$params)
       }
 
-      if(length(self$query)){
+      if (length(self$query)) {
         cli::cli_li("query: {.val query}")
         str(self$query)
       }
@@ -176,7 +177,7 @@ Request <- R6::R6Class(
     },
     #' @details Get Header
     #' @param name Name of the header
-    get_header = function(name){
+    get_header = function(name) {
       assert_that(not_missing(name))
       req$HEADERS[[name]]
     },
@@ -191,9 +192,10 @@ Request <- R6::R6Class(
     }
   ),
   private = list(
-    .parse_query_string = function(query){
-      if(identical(length(query), 0L))
+    .parse_query_string = function(query) {
+      if (identical(length(query), 0L)) {
         return()
+      }
 
       self$query <- webutils::parse_query(query)
       invisible()
@@ -202,33 +204,35 @@ Request <- R6::R6Class(
 )
 
 #' Set Parameters
-#' 
+#'
 #' Set the query's parameters.
-#' 
+#'
 #' @param path Corresponds the requests' `PATH_INFO`
 #' @param route See `Route`
-#' 
+#'
 #' @return Parameter list
 #' @keywords internal
 #' @noRd
-set_params <- function(path, route = NULL){
-
-  if(is.null(route))
+set_params <- function(path, route = NULL) {
+  if (is.null(route)) {
     return(list())
+  }
 
-  if(!route$dynamic)
+  if (!route$dynamic) {
     return(list())
+  }
 
   path_split <- strsplit(path, "/")[[1]]
   path_split <- path_split[path_split != ""]
 
   nms <- c()
   pms <- list()
-  for(i in seq_along(path_split)){
-    if(i > length(route$components))
+  for (i in seq_along(path_split)) {
+    if (i > length(route$components)) {
       break
+    }
 
-    if(route$components[[i]]$dynamic){
+    if (route$components[[i]]$dynamic) {
       nms <- c(nms, route$components[[i]]$name)
       pms <- append(pms, utils::URLdecode(path_split[i]))
     }
@@ -239,67 +243,67 @@ set_params <- function(path, route = NULL){
 }
 
 #' Mock Request
-#' 
+#'
 #' Mock a request, used for tests.
-#' 
+#'
 #' @param cookie Cookie string.
 #' @param query Query string.
 #' @param path Path string.
-#' 
-#' @examples 
+#'
+#' @examples
 #' mockRequest()
-#' 
+#'
 #' @return A `Request` object.
-#' @export 
+#' @export
 mockRequest <- function(
   cookie = "",
   query = "",
   path = "/"
-){
+) {
   req <- list(
     HEADERS = list(
-      accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", 
-      `accept-encoding` = "gzip, deflate, br", 
-      `accept-language` = "en-US,en;q=0.9", 
-      connection = "keep-alive", 
-      host = "localhost:13698", 
-      `sec-ch-ua` = "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"99\"", 
-      `sec-ch-ua-mobile` = "?0", 
-      `sec-ch-ua-platform` = "\"Linux\"", 
-      `sec-fetch-dest` = "document", 
-      `sec-fetch-mode` = "navigate", 
-      `sec-fetch-site` = "none", 
-      `sec-fetch-user` = "?1", 
-      `upgrade-insecure-requests` = "1", 
+      accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+      `accept-encoding` = "gzip, deflate, br",
+      `accept-language` = "en-US,en;q=0.9",
+      connection = "keep-alive",
+      host = "localhost:13698",
+      `sec-ch-ua` = "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"99\"",
+      `sec-ch-ua-mobile` = "?0",
+      `sec-ch-ua-platform` = "\"Linux\"",
+      `sec-fetch-dest` = "document",
+      `sec-fetch-mode` = "navigate",
+      `sec-fetch-site` = "none",
+      `sec-fetch-user` = "?1",
+      `upgrade-insecure-requests` = "1",
       `user-agent` = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36"
-    ), 
-    HTTP_COOKIE = cookie, 
-    HTTP_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", 
-    HTTP_ACCEPT_ENCODING = "gzip, deflate, br", 
-    HTTP_ACCEPT_LANGUAGE = "en-US,en;q=0.9", 
-    HTTP_CONNECTION = "keep-alive", 
-    HTTP_HOST = "localhost:13698", 
-    HTTP_SEC_FETCH_DEST = "document", 
-    HTTP_SEC_FETCH_MODE = "navigate", 
-    HTTP_SEC_FETCH_SITE = "none", 
-    HTTP_SEC_FETCH_USER = "?1", 
-    HTTP_UPGRADE_INSECURE_REQUESTS = "1", 
-    HTTP_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36", 
+    ),
+    HTTP_COOKIE = cookie,
+    HTTP_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    HTTP_ACCEPT_ENCODING = "gzip, deflate, br",
+    HTTP_ACCEPT_LANGUAGE = "en-US,en;q=0.9",
+    HTTP_CONNECTION = "keep-alive",
+    HTTP_HOST = "localhost:13698",
+    HTTP_SEC_FETCH_DEST = "document",
+    HTTP_SEC_FETCH_MODE = "navigate",
+    HTTP_SEC_FETCH_SITE = "none",
+    HTTP_SEC_FETCH_USER = "?1",
+    HTTP_UPGRADE_INSECURE_REQUESTS = "1",
+    HTTP_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36",
     httpuv.version = structure(
-      list(c(1L, 6L, 5L)), 
+      list(c(1L, 6L, 5L)),
       class = c("package_version", "numeric_version")
-    ), 
-    PATH_INFO = path, 
-    QUERY_STRING = query, 
-    REMOTE_ADDR = "127.0.0.1", 
-    REMOTE_PORT = "44328", 
-    REQUEST_METHOD = "GET", 
-    rook.errors = list(), 
-    rook.input = list(), 
-    rook.url_scheme = "http", 
-    rook.version = "1.1-0", 
-    SCRIPT_NAME = "", 
-    SERVER_NAME = "127.0.0.1", 
+    ),
+    PATH_INFO = path,
+    QUERY_STRING = query,
+    REMOTE_ADDR = "127.0.0.1",
+    REMOTE_PORT = "44328",
+    REQUEST_METHOD = "GET",
+    rook.errors = list(),
+    rook.input = list(),
+    rook.url_scheme = "http",
+    rook.version = "1.1-0",
+    SCRIPT_NAME = "",
+    SERVER_NAME = "127.0.0.1",
     SERVER_PORT = "127.0.0.1"
   )
 

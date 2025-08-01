@@ -10,7 +10,7 @@ test_that("application", {
   app$post("/", function(req, res) {
     res$send("home")
   })
-  
+
   app$put("/", function(req, res) {
     res$send("home")
   })

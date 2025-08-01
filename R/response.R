@@ -5,43 +5,63 @@
 #' @param body Body of response.
 #' @param headers HTTP headers.
 #' @param status Response status
-#' 
+#'
 #' @examples
 #' app <- Ambiorix$new()
-#' 
+#'
 #' # html
 #' app$get("/", function(req, res){
 #'  res$send("hello!")
 #' })
-#' 
+#'
 #' # text
 #' app$get("/text", function(req, res){
 #'  res$text("hello!")
 #' })
-#' 
+#'
 #' if(interactive())
 #'  app$start()
 #'
 #' @name responses
 #' @return An Ambiorix response.
 #' @export
-response <- function(body, headers = list(), status = 200L){
+response <- function(body, headers = list(), status = 200L) {
   assert_that(not_missing(body))
-  res <- list(status = as.integer(status), headers = headers, body = convert_body(body))
+  res <- list(
+    status = as.integer(status),
+    headers = headers,
+    body = convert_body(body)
+  )
   construct_response(res)
 }
 
 #' @rdname responses
 #' @export
-response_404 <- function(body = "404: Not found", headers = list("Content-Type" = content_html()), status = 404L){
-  res <- list(status = as.integer(status), headers = headers, body = convert_body(body))
+response_404 <- function(
+  body = "404: Not found",
+  headers = list("Content-Type" = content_html()),
+  status = 404L
+) {
+  res <- list(
+    status = as.integer(status),
+    headers = headers,
+    body = convert_body(body)
+  )
   construct_response(res)
 }
 
 #' @rdname responses
 #' @export
-response_500 <- function(body = "500: Server Error", headers = list("Content-Type" = content_html()), status = 500L){
-  res <- list(status = as.integer(status), headers = headers, body = convert_body(body))
+response_500 <- function(
+  body = "500: Server Error",
+  headers = list("Content-Type" = content_html()),
+  status = 500L
+) {
+  res <- list(
+    status = as.integer(status),
+    headers = headers,
+    body = convert_body(body)
+  )
   construct_response(res)
 }
 
@@ -83,7 +103,7 @@ convert_body.shiny.tag.list <- function(body) {
 #'
 #' @noRd
 #' @keywords internal
-construct_response <- function(res){
+construct_response <- function(res) {
   structure(res, class = c(class(res), "ambiorixResponse"))
 }
 
@@ -112,7 +132,11 @@ inline_dependencies <- function(deps) {
         tag(type = type, htmltools::HTML(content))
       }
 
-      scripts <- lapply(X = dep$script, FUN = f, type = "application/javascript")
+      scripts <- lapply(
+        X = dep$script,
+        FUN = f,
+        type = "application/javascript"
+      )
       styles <- lapply(X = dep$stylesheet, FUN = f, type = "text/css")
 
       list(scripts, styles)
@@ -127,9 +151,10 @@ render_htmltools <- function(x) {
   # otherwise we just render the tags.
   q <- htmltools::tagQuery(x)
 
-  if(!length(q$closest("html")$selectedTags()))
+  if (!length(q$closest("html")$selectedTags())) {
     return(htmltools::renderTags(x)$html)
-  
+  }
+
   deps <- htmltools::resolveDependencies(
     dependencies = htmltools::findDependencies(x)
   )
@@ -143,24 +168,32 @@ render_htmltools <- function(x) {
 
   # add <body> if not present, and enclose all children tags within it, <head> tags will
   # be extracted thanks to htmltools::renderTags
-  if(!length(q$find("body")$selectedTags())){
+  if (!length(q$find("body")$selectedTags())) {
     q$closest("html")$empty()$append(htmltools::tags$body(x$children))
   }
 
   # add <head> if not present
-  if(!length(q$find("head")$selectedTags()))
+  if (!length(q$find("head")$selectedTags())) {
     q$closest("html")$prepend(htmltools::tags$head())
+  }
 
-  # add encoding and dependencies for the first selected tag this avoid duplicates as 
+  # add encoding and dependencies for the first selected tag this avoid duplicates as
   # append *appends* for each selected tag
-  q$closest("html")$find("head")$filter(function(x,i) i == 1)$append(
-    htmltools::tags$meta(charset = "UTF-8"),
+  q$closest("html")$find("head")$filter(
+    function(x, i) {
+      i == 1
+    }
+  )$prepend(
+    htmltools::tags$meta(charset = "UTF-8")
+  )$append(
     htmltools::HTML(href_deps),
     inline_deps
   )
 
   # add placeholder for head tag children
-  q$closest("html")$prepend(htmltools::HTML("<head>\n<!--HEAD_CONTENT-->\n</head>"))
+  q$closest("html")$prepend(htmltools::HTML(
+    "<head>\n<!--HEAD_CONTENT-->\n</head>"
+  ))
   # get all tags and render
   x <- q$allTags()
   rendered <- htmltools::renderTags(x)
@@ -177,7 +210,7 @@ render_htmltools <- function(x) {
 }
 
 #' @export
-print.ambiorixResponse <- function(x, ...){
+print.ambiorixResponse <- function(x, ...) {
   message("An ambiorix response")
 }
 
@@ -187,34 +220,34 @@ is_response <- function(obj) {
 }
 
 #' Response
-#' 
+#'
 #' Response class to generate responses sent from the server.
-#' 
+#'
 #' @field status Status of the response, defaults to `200L`.
 #' @field headers Named list of headers.
 #'
-#' @return A Response object. 
+#' @return A Response object.
 #' @examples
 #' if (interactive()) {
 #'   library(ambiorix)
-#' 
+#'
 #'   app <- Ambiorix$new()
-#' 
+#'
 #'   app$get("/", function(req, res) {
 #'     # print(res)
 #'     res$send("Using {ambiorix}!")
 #'   })
-#' 
+#'
 #'   app$start()
 #' }
-#' @export 
+#' @export
 Response <- R6::R6Class(
   "Response",
   lock_objects = FALSE,
   public = list(
     #' @details Set the status of the response.
     #' @param status An integer defining the status.
-    set_status = function(status){
+    set_status = function(status) {
       assert_that(not_missing(status))
       private$.status <- status
       invisible(self)
@@ -223,40 +256,52 @@ Response <- R6::R6Class(
     #' @param body Body of the response.
     #' @param headers HTTP headers to set.
     #' @param status Status of the response, if `NULL` uses `self$status`.
-    send = function(body, headers = NULL, status = NULL){
+    send = function(body, headers = NULL, status = NULL) {
       deprecated_headers(headers)
       deprecated_status(status)
       headers <- private$.get_headers(headers)
-      response(status = private$.get_status(status), headers = headers, body = body)
+      response(
+        status = private$.get_status(status),
+        headers = headers,
+        body = body
+      )
     },
     #' @details Send a plain HTML response, pre-processed with sprintf.
     #' @param body Body of the response.
     #' @param ... Passed to `...` of `sprintf`.
     #' @param headers HTTP headers to set.
     #' @param status Status of the response, if `NULL` uses `self$status`.
-    sendf = function(body, ..., headers = NULL, status = NULL){
+    sendf = function(body, ..., headers = NULL, status = NULL) {
       deprecated_headers(headers)
       deprecated_status(status)
       body <- sprintf(body, ...)
       headers <- private$.get_headers(headers)
-      response(status = private$.get_status(status), headers = headers, body = body)
+      response(
+        status = private$.get_status(status),
+        headers = headers,
+        body = body
+      )
     },
     #' @details Send a plain text response.
     #' @param body Body of the response.
     #' @param headers HTTP headers to set.
     #' @param status Status of the response, if `NULL` uses `self$status`.
-    text = function(body, headers = NULL, status = NULL){
+    text = function(body, headers = NULL, status = NULL) {
       deprecated_headers(headers)
       deprecated_status(status)
       headers <- private$.get_headers(headers)
       headers[["Content-Type"]] <- content_plain()
-      response(status = private$.get_status(status), headers = headers, body = body)
+      response(
+        status = private$.get_status(status),
+        headers = headers,
+        body = body
+      )
     },
     #' @details Send a file.
     #' @param file File to send.
     #' @param headers HTTP headers to set.
     #' @param status Status of the response.
-    send_file = function(file, headers = NULL, status = NULL){
+    send_file = function(file, headers = NULL, status = NULL) {
       deprecated_headers(headers)
       deprecated_status(status)
       assert_that(not_missing(file))
@@ -265,7 +310,7 @@ Response <- R6::R6Class(
     #' @details Redirect to a path or URL.
     #' @param path Path or URL to redirect to.
     #' @param status Status of the response, if `NULL` uses `self$status`.
-    redirect = function(path, status = NULL){
+    redirect = function(path, status = NULL) {
       deprecated_status(status)
       status <- private$.get_status(status)
       headers <- private$.get_headers(list(Location = path))
@@ -276,7 +321,7 @@ Response <- R6::R6Class(
     #' @param data List to fill `[% tags %]`.
     #' @param headers HTTP headers to set.
     #' @param status Status of the response, if `NULL` uses `self$status`.
-    render = function(file, data = list(), headers = NULL, status = NULL){
+    render = function(file, data = list(), headers = NULL, status = NULL) {
       assert_that(not_missing(file))
       assert_that(has_file(file))
       deprecated_status(status)
@@ -287,26 +332,34 @@ Response <- R6::R6Class(
       file_content <- private$.render_template(file, data)
       headers <- private$.get_headers(headers)
 
-      response(file_content, status = private$.get_status(status), headers = headers)
+      response(
+        file_content,
+        status = private$.get_status(status),
+        headers = headers
+      )
     },
     #' @details Render an object as JSON.
     #' @param body Body of the response.
     #' @param headers HTTP headers to set.
     #' @param status Status of the response, if `NULL` uses `self$status`.
     #' @param ... Additional named arguments passed to the serialiser.
-    json = function(body, headers = NULL, status = NULL, ...){
+    json = function(body, headers = NULL, status = NULL, ...) {
       self$header_content_json()
       deprecated_headers(headers)
       deprecated_status(status)
       headers <- private$.get_headers(headers)
-      response(serialise(body, ...), headers = headers, status = private$.get_status(status))
+      response(
+        serialise(body, ...),
+        headers = headers,
+        status = private$.get_status(status)
+      )
     },
     #' @details Sends a comma separated value file
     #' @param data Data to convert to CSV.
     #' @param name Name of the file.
     #' @param status Status of the response, if `NULL` uses `self$status`.
     #' @param ... Additional arguments passed to [readr::format_csv()].
-    csv = function(data, name = "data", status = NULL, ...){
+    csv = function(data, name = "data", status = NULL, ...) {
       assert_that(not_missing(data))
       check_installed("readr")
       deprecated_status(status)
@@ -327,7 +380,7 @@ Response <- R6::R6Class(
     #' @param name Name of the file.
     #' @param status Status of the response, if `NULL` uses `self$status`.
     #' @param ... Additional arguments passed to [readr::format_tsv()].
-    tsv = function(data, name = "data", status = NULL, ...){
+    tsv = function(data, name = "data", status = NULL, ...) {
       assert_that(not_missing(data))
       check_installed("readr")
       deprecated_status(status)
@@ -347,10 +400,11 @@ Response <- R6::R6Class(
     #' @param widget The widget to use.
     #' @param status Status of the response, if `NULL` uses `self$status`.
     #' @param ... Additional arguments passed to [htmlwidgets::saveWidget()].
-    htmlwidget = function(widget, status = NULL, ...){
+    htmlwidget = function(widget, status = NULL, ...) {
       check_installed("htmlwidgets")
-      if(!inherits(widget, "htmlwidget"))
+      if (!inherits(widget, "htmlwidget")) {
         stop("This is not an htmlwidget", call. = FALSE)
+      }
       deprecated_status(status)
 
       # save and read
@@ -361,7 +415,11 @@ Response <- R6::R6Class(
       })
       headers <- private$.get_headers()
 
-      response(body = paste0(read_lines(tmp), "\n", collapse = ""), status = private$.get_status(status), headers = headers)
+      response(
+        body = paste0(read_lines(tmp), "\n", collapse = ""),
+        status = private$.get_status(status),
+        headers = headers
+      )
     },
     #' @details Render a markdown file.
     #' @param file Template file.
@@ -376,7 +434,7 @@ Response <- R6::R6Class(
     },
     #' @details Send a png file
     #' @param file Path to local file.
-    png = function(file){
+    png = function(file) {
       private$.send_image(file, "png")
     },
     #' @details Send a jpeg file
@@ -385,13 +443,14 @@ Response <- R6::R6Class(
       private$.send_image(file, "jpeg")
     },
     #' @details Send an image
-    #' Similar to `png` and `jpeg` methods but guesses correct method 
+    #' Similar to `png` and `jpeg` methods but guesses correct method
     #' based on file extension.
     #' @param file Path to local file.
     image = function(file) {
       type <- tools::file_ext(file)
-      if(!type %in% c("png", "jpeg"))
+      if (!type %in% c("png", "jpeg")) {
         stop("Only accepts .png and .jpeg files")
+      }
       private$.send_image(file, type)
     },
     #' @details Ggplot2
@@ -407,22 +466,23 @@ Response <- R6::R6Class(
       temp <- tempfile(fileext = ext)
       ggplot2::ggsave(
         temp,
-        plot, 
+        plot,
         ...
-      ) 
+      )
       private$.send_image(temp, type, clean = TRUE)
     },
     #' @details Print
-    print = function(){
+    print = function() {
       cli::cli_h3("A Response")
 
-      if(!length(private$.headers))
+      if (!length(private$.headers)) {
         return(invisible())
-      
+      }
+
       cli::cli_h3("Headers")
       cli::cli_ul()
 
-      for(i in seq_along(private$.headers)) {
+      for (i in seq_along(private$.headers)) {
         cli::cli_li("HEADER {names(private$.headers)[i]}")
         str(private$.headers[[i]])
       }
@@ -433,7 +493,7 @@ Response <- R6::R6Class(
     #' @param name String. Name of the variable.
     #' @param value Value of the variable.
     #' @return Invisible returns self.
-    set = function(name, value){
+    set = function(name, value) {
       assert_that(not_missing(name))
       assert_that(not_missing(value))
       .Deprecated(
@@ -447,7 +507,7 @@ Response <- R6::R6Class(
     },
     #' @details Get data
     #' @param name String. Name of the variable to get.
-    get = function(name){
+    get = function(name) {
       assert_that(not_missing(name))
       .Deprecated(
         "",
@@ -461,7 +521,7 @@ Response <- R6::R6Class(
     #' @param name String. Name of the header.
     #' @param value Value of the header.
     #' @return Invisibly returns self.
-    header = function(name, value){
+    header = function(name, value) {
       assert_that(not_missing(name))
       assert_that(not_missing(value))
       private$.headers[[name]] <- value
@@ -469,31 +529,31 @@ Response <- R6::R6Class(
     },
     #' @details Set Content Type to JSON
     #' @return Invisibly returns self.
-    header_content_json = function(){
+    header_content_json = function() {
       self$header("Content-Type", content_json())
       invisible(self)
     },
     #' @details Set Content Type to HTML
     #' @return Invisibly returns self.
-    header_content_html = function(){
+    header_content_html = function() {
       self$header("Content-Type", content_html())
       invisible(self)
     },
     #' @details Set Content Type to Plain Text
     #' @return Invisibly returns self.
-    header_content_plain = function(){
+    header_content_plain = function() {
       self$header("Content-Type", content_plain())
       invisible(self)
     },
     #' @details Set Content Type to CSV
     #' @return Invisibly returns self.
-    header_content_csv = function(){
+    header_content_csv = function() {
       self$header("Content-Type", content_csv())
       invisible(self)
     },
     #' @details Set Content Type to TSV
     #' @return Invisibly returns self.
-    header_content_tsv = function(){
+    header_content_tsv = function() {
       self$header("Content-Type", content_tsv())
       invisible(self)
     },
@@ -513,8 +573,9 @@ Response <- R6::R6Class(
     #' @param headers A named list of headers to set.
     set_headers = function(headers) {
       assert_that(not_missing(headers))
-      if(!is.list(headers))
+      if (!is.list(headers)) {
         stop("`headers` must be a named list")
+      }
 
       private$.headers <- headers
       invisible(self)
@@ -538,23 +599,23 @@ Response <- R6::R6Class(
     },
     #' @details Add a pre render hook.
     #' Runs before the `render` and `send_file` method.
-    #' 
+    #'
     #' @param hook A function that accepts at least 4 arguments:
     #' - `self`: The `Request` class instance.
     #' - `content`: File content a vector of character string,
     #' content of the template.
     #' - `data`: `list` passed from `render` method.
     #' - `ext`: File extension of the template file.
-    #' 
+    #'
     #' This function is used to add pre-render hooks to the `render`
-    #' method. The function should return an object of class 
+    #' method. The function should return an object of class
     #' `responsePreHook` as obtained by [pre_hook()].
     #' This is meant to be used by middlewares to, if necessary,
     #' pre-process rendered data.
-    #' 
+    #'
     #' Include `...` in your `hook` to ensure it will handle
     #' potential updates to hooks in the future.
-    #' 
+    #'
     #' @return Invisible returns self.
     pre_render_hook = function(hook) {
       assert_that(not_missing(hook))
@@ -572,17 +633,17 @@ Response <- R6::R6Class(
       invisible(self)
     },
     #' @details Post render hook.
-    #' 
+    #'
     #' @param hook A function to run after the rendering of HTML.
     #' It should accept at least 3 arguments:
     #' - `self`: The `Response` class instance.
     #' - `content`: File content a vector of character string,
     #' content of the template.
     #' - `ext`: File extension of the template file.
-    #' 
+    #'
     #' Include `...` in your `hook` to ensure it will handle
     #' potential updates to hooks in the future.
-    #' 
+    #'
     #' @return Invisible returns self.
     post_render_hook = function(hook) {
       assert_that(not_missing(hook))
@@ -595,7 +656,7 @@ Response <- R6::R6Class(
         length(formalArgs(hook)) >= 3,
         msg = "`hook` must take 2 arguments: `self`, `content`, and `ext`"
       )
-      
+
       private$.postHooks <- append(private$.postHooks, hook)
       invisible(self)
     },
@@ -606,18 +667,18 @@ Response <- R6::R6Class(
     #' @param expires Expiry, if an integer assumes it's the number of seconds
     #' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
     #' If a `character` string then it is set as-is and not pre-processed.
-    #' If unspecified, the cookie becomes a session cookie. A session finishes 
-    #' when the client shuts down, after which the session cookie is removed. 
-    #' @param max_age Indicates the number of seconds until the cookie expires. 
-    #' A zero or negative number will expire the cookie immediately. 
+    #' If unspecified, the cookie becomes a session cookie. A session finishes
+    #' when the client shuts down, after which the session cookie is removed.
+    #' @param max_age Indicates the number of seconds until the cookie expires.
+    #' A zero or negative number will expire the cookie immediately.
     #' If both `expires` and `max_age` are set, the latter has precedence.
     #' @param domain Defines the host to which the cookie will be sent.
     #' If omitted, this attribute defaults to the host of the current document URL,
     #' not including subdomains.
-    #' @param path Indicates the path that must exist in the requested URL for the 
+    #' @param path Indicates the path that must exist in the requested URL for the
     #' browser to send the Cookie header.
     #' @param secure Indicates that the cookie is sent to the server only when a
-    #' request is made with the https: scheme (except on localhost), and therefore, 
+    #' request is made with the https: scheme (except on localhost), and therefore,
     #' is more resistant to man-in-the-middle attacks.
     #' @param http_only Forbids JavaScript from accessing the cookie, for example,
     #' through the document.cookie property.
@@ -639,8 +700,8 @@ Response <- R6::R6Class(
       assert_that(not_missing(name))
       assert_that(not_missing(value))
 
-      if(length(.globals$cookiePreprocessors) > 0) {
-        for(i in seq_along(.globals$cookiePreprocessors)) {
+      if (length(.globals$cookiePreprocessors) > 0) {
+        for (i in seq_along(.globals$cookiePreprocessors)) {
           value <- .globals$cookiePreprocessors[[i]](
             name,
             value,
@@ -686,17 +747,20 @@ Response <- R6::R6Class(
   ),
   active = list(
     status = function(value) {
-      if(missing(value))
+      if (missing(value)) {
         return(private$.status)
+      }
 
       private$.status <- as.integer(value)
     },
     headers = function(value) {
-      if(missing(value))
+      if (missing(value)) {
         return(private$.headers)
+      }
 
-      if(!is.list(value))
+      if (!is.list(value)) {
         stop("Must be a `list`")
+      }
 
       private$.headers <- value
     }
@@ -704,17 +768,18 @@ Response <- R6::R6Class(
   private = list(
     .status = 200L,
     .cookies = list(),
-    .headers = list(), 
+    .headers = list(),
     .preHooks = list(),
     .postHooks = list(),
-    .render_template = function(file, data){
+    .render_template = function(file, data) {
       file <- normalizePath(file)
 
-      if(!is.null(.globals$renderer)) {
+      if (!is.null(.globals$renderer)) {
         response <- .globals$renderer(file, data)
         # if the response is NULL we keep going
-        if(isTRUE(!is.null(response)))
+        if (isTRUE(!is.null(response))) {
           return(response)
+        }
       }
 
       # read and replace tags
@@ -727,21 +792,25 @@ Response <- R6::R6Class(
       # replace brackets so glue::glue_data evals
       file_content <- replace_partials(file_content, get_dir(file))
 
-      if(ext == "html") {
+      if (ext == "html") {
         data <- lapply(data, function(x) {
-          if(!inherits(x, "jobj"))
+          if (!inherits(x, "jobj")) {
             return(x)
+          }
 
           as.character(serialise(x))
         })
       }
 
       # hooks
-      if(length(private$.preHooks) > 0) {
-        for(i in seq_along(private$.preHooks)) {
+      if (length(private$.preHooks) > 0) {
+        for (i in seq_along(private$.preHooks)) {
           pre_processed <- private$.preHooks[[i]](self, file_content, data, ext)
-          if(!is_pre_hook(pre_processed)){
-            message(error(), "Not a valid return value from pre-hook (ignoring)")
+          if (!is_pre_hook(pre_processed)) {
+            message(
+              error(),
+              "Not a valid return value from pre-hook (ignoring)"
+            )
             next
           }
 
@@ -751,45 +820,56 @@ Response <- R6::R6Class(
       }
 
       file_content <- render_tags(file_content, data)
-      
-      if(ext == "md")
+
+      if (ext == "md") {
         file_content <- commonmark::markdown_html(file_content)
+      }
 
       # collapse html
-      if(ext == "html" || ext == "md")
-        return(private$.run_post_hooks(paste0(file_content, collapse = ""), ext))
+      if (ext == "html" || ext == "md") {
+        return(private$.run_post_hooks(
+          paste0(file_content, collapse = ""),
+          ext
+        ))
+      }
 
       # parse R
       private$.run_post_hooks(render_html(file_content), ext)
     },
-    .get_status = function(status){
-      if(is.null(status))
+    .get_status = function(status) {
+      if (is.null(status)) {
         return(private$.status)
+      }
 
       status
     },
-    .get_headers = function(headers = NULL){
+    .get_headers = function(headers = NULL) {
       private$.render_cookies()
       heads <- private$.headers
 
-      if(!is.null(headers))
+      if (!is.null(headers)) {
         heads <- modifyList(heads, headers)
+      }
 
-      if(is.null(heads[["Content-Type"]]))
+      if (is.null(heads[["Content-Type"]])) {
         heads <- modifyList(heads, list("Content-Type" = content_html()))
+      }
 
       return(heads)
     },
     .run_post_hooks = function(file_content, ext) {
-      if(length(private$.postHooks) == 0) {
+      if (length(private$.postHooks) == 0) {
         return(file_content)
       }
 
-      for(i in seq_along(private$.postHooks)) {
+      for (i in seq_along(private$.postHooks)) {
         content <- private$.postHooks[[i]](self, file_content, ext)
 
-        if(!is.character(content)){
-          message(error(), "Not a character vector returned from post-hook (ignoring)")
+        if (!is.character(content)) {
+          message(
+            error(),
+            "Not a character vector returned from post-hook (ignoring)"
+          )
           next
         }
 
@@ -799,34 +879,41 @@ Response <- R6::R6Class(
       return(file_content)
     },
     .render_cookies = function() {
-      if(length(private$.cookies) == 0L)
+      if (length(private$.cookies) == 0L) {
         return()
+      }
 
-      for(opts in private$.cookies) {
+      for (opts in private$.cookies) {
         cookie <- sprintf("%s=%s", opts$name, opts$value)
 
-        if(!is.null(opts$expires)) {
+        if (!is.null(opts$expires)) {
           expires <- convert_cookie_expires(opts$expires)
           cookie <- sprintf("%s; Expires=%s", cookie, expires)
         }
 
-        if(!is.null(opts$max_age))
+        if (!is.null(opts$max_age)) {
           cookie <- sprintf("%s; Max-Age=%s", cookie, opts$max_age)
+        }
 
-        if(!is.null(opts$domain))
+        if (!is.null(opts$domain)) {
           cookie <- sprintf("%s; Domain=%s", cookie, opts$domain)
+        }
 
-        if(!is.null(opts$path))
+        if (!is.null(opts$path)) {
           cookie <- sprintf("%s; Path=%s", cookie, opts$path)
+        }
 
-        if(opts$secure)
+        if (opts$secure) {
           cookie <- sprintf("%s; Secure", cookie)
+        }
 
-        if(opts$http_only)
+        if (opts$http_only) {
           cookie <- sprintf("%s; HttpOnly", cookie)
+        }
 
-        if(!is.null(opts$same_site)) 
+        if (!is.null(opts$same_site)) {
           cookie <- sprintf("%s; SameSite=%s", cookie, opts$same_site)
+        }
 
         names(cookie) <- "Set-Cookie"
 
@@ -839,10 +926,11 @@ Response <- R6::R6Class(
     .send_image = function(file, type = c("png", "jpeg"), clean = FALSE) {
       assert_that(not_missing(file))
 
-      if(grepl("http", file))
+      if (grepl("http", file)) {
         stop("Must be a local file", call. = FALSE)
+      }
 
-      if(clean) {
+      if (clean) {
         on.exit({
           unlink(file)
         })
@@ -853,9 +941,12 @@ Response <- R6::R6Class(
 
       size <- file.info(file)$size
       con <- file(file, "rb")
-      on.exit({
-        close(con)
-      }, add = TRUE)
+      on.exit(
+        {
+          close(con)
+        },
+        add = TRUE
+      )
 
       raw <- readBin(con, raw(), size)
 
@@ -867,35 +958,36 @@ Response <- R6::R6Class(
 )
 
 #' Convert Cookie Expires
-#' 
+#'
 #' Converts the cookie `expires` argument
 #' to the expected
 #' [Date format](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Date).
-#' 
+#'
 #' @param expires Expiry, if an integer assumes it's the number of seconds
 #' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
-#' 
-#' @examples 
+#'
+#' @examples
 #' # expires in an hour
 #' convert_cookie_expires(60 * 60)
-#' 
+#'
 #' # expires tomorrow
 #' convert_cookie_expires(Sys.Date() + 1)
-#' 
+#'
 #' # expires in 1 minute
 #' convert_cookie_expires(Sys.time() + 60)
-#' 
-#' @noRd 
+#'
+#' @noRd
 #' @keywords internal
 convert_cookie_expires <- function(expires) {
-  if(is.character(expires))
+  if (is.character(expires)) {
     return(expires)
+  }
 
-  if(is.numeric(expires)) {
+  if (is.numeric(expires)) {
     expires <- as.POSIXct(Sys.time(), tz = "UTC") + expires
   }
 
-  if(inherits(expires, "Date") || inherits(expires, "POSIXct")) {
+  if (inherits(expires, "Date") || inherits(expires, "POSIXct")) {
     expires <- as.POSIXct(expires, tz = "UTC")
     expires <- format(
       expires,
@@ -907,8 +999,9 @@ convert_cookie_expires <- function(expires) {
 }
 
 deprecated_headers <- function(headers = NULL) {
-  if(is.null(headers))
+  if (is.null(headers)) {
     return()
+  }
 
   .Deprecated(
     "header",
@@ -918,8 +1011,9 @@ deprecated_headers <- function(headers = NULL) {
 }
 
 deprecated_status <- function(status = NULL) {
-  if(is.null(status))
+  if (is.null(status)) {
     return()
+  }
 
   .Deprecated(
     "status",

@@ -1,36 +1,36 @@
 #' Ambiorix
-#' 
+#'
 #' Web server.
-#' 
+#'
 #' @field not_found 404 Response, must be a handler function that accepts the request and the response, by default uses [response_404()].
 #' @field error 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
 #' @field on_stop Callback function to run when the app stops, takes no argument.
 #' @field port Port to run the application.
 #' @field host Host to run the application.
 #' @field limit Max body size, defaults to `5 * 1024 * 1024`.
-#' 
+#'
 #' @importFrom assertthat assert_that
 #' @importFrom utils browseURL
 #' @importFrom methods formalArgs
-#' 
-#' @examples 
+#'
+#' @examples
 #' app <- Ambiorix$new()
-#' 
+#'
 #' app$get("/", function(req, res){
 #'  res$send("Using {ambiorix}!")
 #' })
-#' 
+#'
 #' app$on_stop <- function(){
 #'  cat("Bye!\n")
 #' }
-#' 
+#'
 #' if(interactive())
 #'  app$start()
-#' 
+#'
 #' @return An object of class `Ambiorix` from which one can
 #' add routes, routers, and run the application.
-#' 
-#' @export 
+#'
+#' @export
 Ambiorix <- R6::R6Class(
   "Ambiorix",
   inherit = Routing,
@@ -39,15 +39,15 @@ Ambiorix <- R6::R6Class(
     error = NULL,
     on_stop = NULL,
     #' @details Define the webserver.
-    #' 
+    #'
     #' @param host A string defining the host.
     #' @param port Integer defining the port, defaults to `ambiorix.port` option: uses a random port if `NULL`.
     #' @param log Whether to generate a log of events.
     initialize = function(
-      host = getOption("ambiorix.host", "0.0.0.0"), 
+      host = getOption("ambiorix.host", "0.0.0.0"),
       port = getOption("ambiorix.port", NULL),
       log = getOption("ambiorix.logger", TRUE)
-    ){
+    ) {
       super$initialize()
       .globals$infoLog$predicate <- logPredicate(log)
       .globals$errorLog$predicate <- logPredicate(log)
@@ -56,7 +56,7 @@ Ambiorix <- R6::R6Class(
       private$.host <- host
       private$.port <- get_port(host, port)
 
-      self$not_found <- function(req, res){
+      self$not_found <- function(req, res) {
         response_404()
       }
 
@@ -76,41 +76,41 @@ Ambiorix <- R6::R6Class(
     },
     #' @details Specifies the port to listen on.
     #' @param port Port number.
-    #' 
-    #' @examples 
+    #'
+    #' @examples
     #' app <- Ambiorix$new()
-    #' 
+    #'
     #' app$listen(3000L)
-    #' 
+    #'
     #' app$get("/", function(req, res){
     #'  res$send("Using {ambiorix}!")
     #' })
-    #' 
+    #'
     #' if(interactive())
     #'  app$start()
-    listen = function(port){
+    listen = function(port) {
       assert_that(not_missing(port))
       private$.port <- as.integer(port)
       invisible(self)
     },
     #' @details Sets the 404 page.
-    #' @param handler Function that accepts the request and returns an object 
+    #' @param handler Function that accepts the request and returns an object
     #' describing an httpuv response, e.g.: [response()].
-    #' 
-    #' @examples 
+    #'
+    #' @examples
     #' app <- Ambiorix$new()
-    #' 
+    #'
     #' app$set_404(function(req, res){
     #'  res$send("Nothing found here")
     #' })
-    #' 
+    #'
     #' app$get("/", function(req, res){
     #'  res$send("Using {ambiorix}!")
     #' })
-    #' 
+    #'
     #' if(interactive())
     #'  app$start()
-    set_404 = function(handler){
+    set_404 = function(handler) {
       assert_that(not_missing(handler))
       assert_that(is_handler(handler))
       self$not_found <- handler
@@ -118,8 +118,8 @@ Ambiorix <- R6::R6Class(
     },
     #' @details Sets the error handler.
     #' @param handler Function that accepts a request, response and an error object.
-    #' 
-    #' @examples 
+    #'
+    #' @examples
     #' # my custom error handler:
     #' error_handler <- function(req, res, error) {
     #'   if (!is.null(error)) {
@@ -156,10 +156,10 @@ Ambiorix <- R6::R6Class(
       invisible(self)
     },
     #' @details Static directories
-    #' 
+    #'
     #' @param path Local path to directory of assets.
     #' @param uri URL path where the directory will be available.
-    static = function(path, uri = "www"){
+    static = function(path, uri = "www") {
       assert_that(not_missing(uri))
       assert_that(not_missing(path))
 
@@ -173,48 +173,51 @@ Ambiorix <- R6::R6Class(
     #' @param host A string defining the host.
     #' @param port Integer defining the port, defaults to `ambiorix.port` option: uses a random port if `NULL`.
     #' @param open Whether to open the app the browser.
-    #' 
-    #' @examples 
+    #'
+    #' @examples
     #' app <- Ambiorix$new()
-    #' 
+    #'
     #' app$get("/", function(req, res){
     #'  res$send("Using {ambiorix}!")
     #' })
-    #' 
+    #'
     #' if(interactive())
     #'  app$start(port = 3000L)
     start = function(
-      port = NULL, 
-      host = NULL, 
+      port = NULL,
+      host = NULL,
       open = interactive()
     ) {
-      if(private$.is_running){
+      if (private$.is_running) {
         cli::cli_alert_warning("Server is already running")
         return()
       }
-      if(is.null(port))
+      if (is.null(port)) {
         port <- private$.port
+      }
 
-      if(is.null(host))
+      if (is.null(host)) {
         host <- private$.host
+      }
 
       port <- get_port(host, port)
 
       super$prepare()
       private$.routes <- super$get_routes()
 
-      if(private$n_routes() == 0L)
+      if (private$n_routes() == 0L) {
         stop("No routes specified")
+      }
 
       private$.receivers <- super$get_receivers()
       private$.middleware <- super$get_middleware()
 
       private$.server <- httpuv::startServer(
-        host = host, 
+        host = host,
         port = port,
         app = list(
-          call = super$.call, 
-          staticPaths = private$.static, 
+          call = super$.call,
+          staticPaths = private$.static,
           onWSOpen = super$websocket,
           staticPathOptions = httpuv::staticPathOptions(
             html_charset = "utf-8",
@@ -224,15 +227,17 @@ Ambiorix <- R6::R6Class(
           ),
           onHeaders = function(req) {
             size <- 0L
-            if (private$.limit <= 0)
+            if (private$.limit <= 0) {
               return(NULL)
+            }
 
-            if (length(req$CONTENT_LENGTH) > 0)
+            if (length(req$CONTENT_LENGTH) > 0) {
               size <- as.numeric(req$CONTENT_LENGTH)
-            else if (length(req$HTTP_TRANSFER_ENCODING) > 0)
+            } else if (length(req$HTTP_TRANSFER_ENCODING) > 0) {
               size <- Inf
+            }
 
-            if (size > private$.limit){
+            if (size > private$.limit) {
               .globals$errorLog$log("Request size exceeded, see app$limit")
 
               return(
@@ -250,7 +255,7 @@ Ambiorix <- R6::R6Class(
       )
 
       url <- sprintf("http://%s:%s", host, port)
-      
+
       .globals$successLog$log("Listening on", url)
 
       # runs
@@ -269,39 +274,39 @@ Ambiorix <- R6::R6Class(
       invisible(self)
     },
     #' @details Define Serialiser
-    #' @param handler Function to use to serialise. 
+    #' @param handler Function to use to serialise.
     #' This function should accept two arguments: the object to serialise and `...`.
-    #' 
-    #' @examples 
+    #'
+    #' @examples
     #' app <- Ambiorix$new()
-    #' 
+    #'
     #' app$serialiser(function(data, ...){
     #'  jsonlite::toJSON(x, ..., pretty = TRUE)
     #' })
-    #' 
+    #'
     #' app$get("/", function(req, res){
     #'  res$send("Using {ambiorix}!")
     #' })
-    #' 
+    #'
     #' if(interactive())
     #'  app$start()
-    serialiser = function(handler){
+    serialiser = function(handler) {
       assert_that(is_function(handler))
       options(AMBIORIX_SERIALISER = handler)
       invisible(self)
     },
     #' @details Stop
     #' Stop the webserver.
-    stop = function(){
-
-      if(!private$.is_running){
+    stop = function() {
+      if (!private$.is_running) {
         .globals$errorLog$log("Server not running")
         return(invisible())
       }
 
       # run on stop
-      if(!is.null(self$on_stop))
+      if (!is.null(self$on_stop)) {
         self$on_stop()
+      }
 
       private$.server$stop()
       .globals$errorLog$log("Server stopped")
@@ -311,27 +316,30 @@ Ambiorix <- R6::R6Class(
       invisible(self)
     },
     #' @details Print
-    print = function(){
+    print = function() {
       cli::cli_rule("Ambiorix", right = "web server")
       cli::cli_li("routes: {.val {private$n_routes()}}")
     }
   ),
   active = list(
     port = function(value) {
-      if(missing(value))
+      if (missing(value)) {
         return(private$.port)
+      }
 
       private$.port <- as.integer(value)
     },
     host = function(value) {
-      if(missing(value))
+      if (missing(value)) {
         return(private$.host)
+      }
 
       private$.host <- value
     },
-    limit = function(value){
-      if(missing(value))
+    limit = function(value) {
+      if (missing(value)) {
         return(private$.limit)
+      }
 
       private$.limit <- as.integer(value)
     }
@@ -343,10 +351,10 @@ Ambiorix <- R6::R6Class(
     .static = list(),
     .is_running = FALSE,
     .limit = 5 * 1024 * 1024,
-    n_routes = function(){
+    n_routes = function() {
       length(private$.routes)
     },
-    .make_path = function(path){
+    .make_path = function(path) {
       paste0(private$.basepath, path)
     }
   )

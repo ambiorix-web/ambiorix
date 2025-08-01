@@ -1,39 +1,42 @@
 #' Replace Partials
-#' 
+#'
 #' Replaces partial tags `[! ... !]` with their content.
-#' 
+#'
 #' @param content File content where partials should be
 #' replaced.
 #' @param dir Directory of file from which `content` originates.
-#' 
+#'
 #' @keywords internal
 #' @noRd
 replace_partials <- function(content, dir) {
   content <- apply_replace_partial(content, dir)
 
-  if(any(grepl("\\[! .* !\\]", content)))
+  if (any(grepl("\\[! .* !\\]", content))) {
     content <- replace_partials(content, dir)
+  }
 
   return(content)
 }
 
 #' Replace Partial
-#' 
+#'
 #' Replaces partial on a single line.
 #' Assumes we have a single partial on a single line.
-#' 
+#'
 #' @param line Single content line.
 #' @param dir Base directory.
-#' 
+#'
 #' @keywords internal
 #' @noRd
 replace_partial <- function(line, dir) {
-  if(length(line) > 1)
+  if (length(line) > 1) {
     line <- apply_replace_partial(line, dir)
+  }
 
-  if(!grepl("\\[! .* !\\]", line))
+  if (!grepl("\\[! .* !\\]", line)) {
     return(line)
-  
+  }
+
   # every line is enclosed in <p> tag coming from markdown
   # we remove this, it's safe to assume that is not wanted.
   line <- gsub(
@@ -45,7 +48,7 @@ replace_partial <- function(line, dir) {
     " ?\\!\\]</p>",
     "!]",
     line
-  ) 
+  )
 
   path <- trimws(gsub("\\[!|!\\]", "", line))
 
@@ -66,11 +69,11 @@ replace_partial <- function(line, dir) {
 }
 
 #' Get Directory
-#' 
+#'
 #' Retrieve directory from a file.
-#' 
+#'
 #' @param file File to retrieve directory from.
-#' 
+#'
 #' @keywords internal
 #' @noRd
 get_dir <- function(file) {
@@ -78,11 +81,11 @@ get_dir <- function(file) {
 }
 
 #' Replace Partial Vectorised
-#' 
+#'
 #' Vectorised version of [replace_partial()].
-#' 
+#'
 #' @inheritParams replace_partials
-#' 
+#'
 #' @keywords internal
 #' @noRd
 apply_replace_partial <- function(content, dir) {
@@ -108,7 +111,7 @@ apply_replace_partial <- function(content, dir) {
 #' @examples
 #' robj(1:10)
 #' @export
-robj <- function(obj){
+robj <- function(obj) {
   assert_that(not_missing(obj))
 
   # Supress warnings otherwise
@@ -120,16 +123,16 @@ robj <- function(obj){
 }
 
 #' @export
-print.robj <- function(x, ...){
+print.robj <- function(x, ...) {
   cli::cli_alert_info("R object")
   class(x) <- class(x)[!class(x) %in% "robj"]
   dput(x)
 }
 
 #' JSON Object
-#' 
+#'
 #' Serialises an object to JSON in `res$render`.
-#' 
+#'
 #' @param obj Object to serialise.
 #' @examples
 #' if (interactive()) {
@@ -137,7 +140,7 @@ print.robj <- function(x, ...){
 #'   jobj(l)
 #' }
 #' @return Object of class "jobj".
-#' @export 
+#' @export
 jobj <- function(obj) {
   suppressWarnings(
     structure(obj, class = c("jobj", class(obj)))
@@ -145,24 +148,24 @@ jobj <- function(obj) {
 }
 
 #' @export
-print.jobj <- function(x, ...){
+print.jobj <- function(x, ...) {
   cli::cli_alert_info("JSON object")
   serialise(x, ...)
 }
 
 #' Pre Hook Response
-#' 
+#'
 #' @param content File content, a character vector.
 #' @param data A list of data passed to `glue::glue_data`.
-#' 
+#'
 #' @examples
 #' my_prh <- function(self, content, data, ext, ...) {
 #'   data$title <- "Mansion"
 #'   pre_hook(content, data)
 #' }
-#' 
+#'
 #' #' Handler for GET at '/'
-#' #' 
+#' #'
 #' #' @details Renders the homepage
 #' #' @export
 #' home_get <- function(req, res) {
@@ -175,7 +178,7 @@ print.jobj <- function(x, ...){
 #'   )
 #' }
 #' @return A response pre-hook.
-#' @export 
+#' @export
 pre_hook <- function(
   content,
   data
@@ -194,24 +197,25 @@ is_pre_hook <- function(obj) {
   inherits(obj, "responsePreHook")
 }
 
-#' @export 
+#' @export
 print.responsePreHook <- function(x, ...) {
   cli::cli_alert_info("A response pre hook")
 }
 
 #' HTML Template
-#' 
+#'
 #' Use [htmltools::htmlTemplate()] as renderer.
 #' Passed to `use` method.
-#' 
+#'
 #' @return A renderer function.
 #' @examples
 #' use_html_template()
-#' @export 
+#' @export
 use_html_template <- function() {
   as_renderer(function(file, data) {
-    if(tools::file_ext(file) != "html")
+    if (tools::file_ext(file) != "html") {
       return()
+    }
 
     data$filename <- file
     x <- do.call(
@@ -223,25 +227,25 @@ use_html_template <- function() {
 }
 
 #' Render Tags
-#' 
+#'
 #' @param lines Output of [read_lines()]
 #' @param data Data to render, a `list`.
-#' 
+#'
 #' @keywords internal
 #' @noRd
-render_tags <- function(lines, data){
+render_tags <- function(lines, data) {
   new_lines <- c()
   n <- 0L
   str <- ""
 
-  for(i in seq_along(lines)) {
+  for (i in seq_along(lines)) {
     line <- lines[i]
-    if(!grepl("\\[%|%\\]", line) && n == 0L) {
+    if (!grepl("\\[%|%\\]", line) && n == 0L) {
       new_lines <- c(new_lines, line)
       next()
     }
-    
-    if(!grepl("\\[%|%\\]", line) && n > 0L) {
+
+    if (!grepl("\\[%|%\\]", line) && n > 0L) {
       str <- paste(str, line)
       next()
     }
@@ -254,17 +258,17 @@ render_tags <- function(lines, data){
     str <- paste(str, line)
 
     # all in one line we render and continue
-    if(n == 0L) {
+    if (n == 0L) {
       new_line <- glue::glue_data(data, str, .open = "[%", .close = "%]")
       new_lines <- c(new_lines, new_line)
       str <- ""
       next
     }
-
   }
 
-  if(str != "")
+  if (str != "") {
     message("error")
+  }
 
   new_lines
 }
@@ -278,8 +282,7 @@ render_tags <- function(lines, data){
 #'
 #' @noRd
 #' @keywords internal
-render_html <- function(expr){
-
+render_html <- function(expr) {
   tags <- eval(parse(text = expr))
 
   tmp <- tempfile(fileext = ".html")
@@ -293,23 +296,23 @@ render_html <- function(expr){
 }
 
 #' Create a Renderer
-#' 
+#'
 #' Create a custom renderer.
-#' 
+#'
 #' @param fn A function that accepts two arguments,
 #' the full path to the `file` to render, and the
 #' `data` to render.
-#' 
+#'
 #' @return A renderer function.
 #' @examples
 #' if (interactive()) {
 #'   fn <- function(path, data) {
 #'     # ...
 #'   }
-#' 
+#'
 #'   as_renderer(fn)
 #' }
-#' @export 
+#' @export
 as_renderer <- function(fn) {
   assert_that(is_function(fn))
   assert_that(is_renderer(fn))
@@ -323,17 +326,17 @@ as_renderer <- function(fn) {
   )
 }
 
-#' @export 
+#' @export
 print.renderer <- function(x, ...) {
   cli::cli_alert_info("A renderer")
 }
 
 #' Is Renderer
-#' 
+#'
 #' Check whether an object is a renderer.
-#' 
+#'
 #' @param obj Object to check.
-#' 
+#'
 #' @return Boolean
 #' @keywords internal
 #' @noRd

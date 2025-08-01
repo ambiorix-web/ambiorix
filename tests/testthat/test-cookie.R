@@ -8,7 +8,7 @@ test_that("Request cookie", {
   expect_equal(
     req$cookie,
     list(
-      yummy_cookie = "choco", 
+      yummy_cookie = "choco",
       tasty_cookie = "strawberry"
     )
   )
@@ -26,7 +26,7 @@ test_that("Request cookie", {
   expect_length(req$cookie, 1L)
   expect_type(req$cookie, "list")
   expect_equal(
-    req$cookie, 
+    req$cookie,
     list(
       yummy_cookie = "choco"
     )
@@ -72,7 +72,7 @@ test_that("Request cookie", {
   )
 
   # preprocessor
-  .fn <- function(name, value, ...){
+  .fn <- function(name, value, ...) {
     sprintf("prefix.%s", value)
   }
   prep <- as_cookie_preprocessor(.fn)

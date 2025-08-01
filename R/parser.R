@@ -219,7 +219,10 @@ parse_multipart <- function(req, ...) {
     )
   }
 
-  parser <- getOption(x = "AMBIORIX_MULTIPART_FORM_DATA_PARSER", default = default)
+  parser <- getOption(
+    x = "AMBIORIX_MULTIPART_FORM_DATA_PARSER",
+    default = default
+  )
   parsed <- parser(body = body, content_type = req$CONTENT_TYPE, ...)
 
   if (!identical(parser, default)) {
@@ -332,6 +335,9 @@ parse_json <- function(req, ...) {
     return(list())
   }
 
-  parser <- getOption(x = "AMBIORIX_JSON_PARSER", default = yyjsonr::read_json_raw)
+  parser <- getOption(
+    x = "AMBIORIX_JSON_PARSER",
+    default = yyjsonr::read_json_raw
+  )
   parser(body, ...)
 }

@@ -77,7 +77,7 @@ if (interactive()) {
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{ws}}{}
+\item{\code{ws}}{The websocket}
 }
 \if{html}{\out{</div>}}
 }
