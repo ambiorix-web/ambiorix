@@ -197,6 +197,45 @@ Routing <- R6::R6Class(
 
       invisible(self)
     },
+    #' @details PARAM Method
+    #'
+    #' @param name Name of the parameter
+    #' @param handler Function that accepts the request, response and the parameter value.
+    #'
+    #' @examples
+    #' app <- Ambiorix$new()
+    #'
+    #' app$get("/", function(req,res){
+    #'  res$send("Hello!")
+    #' })
+    #'
+    #' app$param("person", function(req, res, param){
+    #'  if(param == "notWanted"){
+    #'   res$status <- 403L
+    #'   res$send("This is the end.")
+    #'  }
+    #'
+    #'  # continue processing the request...
+    #' })
+    #'
+    #' app$get("/hi/:person", function(req,res){
+    #'  res$sendf("Hi! %s", req$params$person)
+    #' })
+    #' app$get("/info/:person", function(req,res){
+    #'  res$sendf("Here is all your info, %s", req$params$person)
+    #' })
+    #' if(interactive())
+    #'  app$start()
+    param = function(name, handler) {
+      assert_that(not_missing(handler))
+      assert_that(is_param_handler(handler))
+      p <- list(
+        handler = handler,
+        params = name
+      )
+      private$.params <- append(private$.params, list(p))
+      invisible(self)
+    },
     #' @details Receive Websocket Message
     #' @param name Name of message.
     #' @param handler Function to run when message is received.
@@ -338,6 +377,7 @@ Routing <- R6::R6Class(
           function(route) {
             route$route$as_pattern(parent)
             route$route$decompose(parent)
+            route$route$basepath <- private$.basepath
             route
           }
         )
@@ -354,6 +394,33 @@ Routing <- R6::R6Class(
       }
 
       return(routes)
+    },
+    #' @details Get the parameter middlewares
+    #' @param params Existing list of parameter middlewares.
+    #' @param parent Parent path.
+    get_params = function(params = list(), parent = "") {
+      params <- append(
+        params,
+        lapply(
+          private$.params,
+          function(fn) {
+            attr(fn, "basepath") <- private$.basepath
+            return(fn)
+          }
+        )
+      )
+
+      if (!length(private$.routers)) {
+        return(params)
+      }
+
+      parent <- paste0(parent, private$.basepath)
+
+      for (router in private$.routers) {
+        params <- router$get_params(params, parent)
+      }
+
+      return(params)
     },
     #' @details Get the websocket receivers
     #' @param receivers Existing list of receivers
@@ -443,6 +510,7 @@ Routing <- R6::R6Class(
     .static = list(),
     .receivers = list(),
     .middleware = list(),
+    .params = list(),
     .is_running = FALSE,
     .wss_custom = NULL,
     .routers = list(),
@@ -474,21 +542,6 @@ Routing <- R6::R6Class(
       request <- Request$new(req)
       res <- Response$new()
 
-      if (length(private$.middleware) > 0L) {
-        for (i in seq_along(private$.middleware)) {
-          mid_basepath <- attr(private$.middleware[[i]], "basepath")
-
-          mid_res <- NULL
-          if (grepl(mid_basepath, req$PATH_INFO)) {
-            mid_res <- private$.middleware[[i]](request, res)
-          }
-
-          if (is_response(mid_res)) {
-            return(mid_res)
-          }
-        }
-      }
-
       # loop over routes
       for (i in seq_along(private$.routes)) {
         # if path matches pattern and method
@@ -497,6 +550,8 @@ Routing <- R6::R6Class(
             req$REQUEST_METHOD %in% private$.routes[[i]]$method
         ) {
           .globals$infoLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO)
+
+          basepath <- private$.routes[[i]]$route$basepath
 
           # parse request
           request$params <- tryCatch(
@@ -508,6 +563,51 @@ Routing <- R6::R6Class(
 
           if (inherits(request$params, "error")) {
             return(private$.routes[[i]]$error(request, res, request$params))
+          }
+
+          # parameter middleware
+
+          if (length(private$.params) > 0L && length(request$params) > 0L) {
+            for (j in seq_along(private$.params)) {
+              param_res <- NULL
+              param <- private$.params[[j]]$params
+              param <- request$params[[param]]
+
+              # if param middleware is on correct router and has a handler for
+              # a request parameter.
+
+              if (
+                identical(attr(private$.params[[j]], "basepath"), basepath) &&
+                  !is.null(param)
+              ) {
+                param_res <- private$.params[[j]]$handler(
+                  request,
+                  res,
+                  param
+                )
+
+                if (is_response(param_res)) {
+                  return(param_res)
+                }
+              }
+            }
+          }
+
+          # Middleware
+
+          if (length(private$.middleware) > 0L) {
+            for (j in seq_along(private$.middleware)) {
+              mid_basepath <- attr(private$.middleware[[j]], "basepath")
+
+              mid_res <- NULL
+              if (grepl(mid_basepath, req$PATH_INFO)) {
+                mid_res <- private$.middleware[[j]](request, res)
+              }
+
+              if (is_response(mid_res)) {
+                return(mid_res)
+              }
+            }
           }
 
           # get response
