@@ -43,12 +43,14 @@ assertthat::on_failure(is_handler) <- function(call, env) {
 
 is_param_handler <- function(x) {
   is_fun <- is.function(x)
-  has_args <- length(formalArgs(x)) == 3
+  has_args <- length(formalArgs(x)) == 4
   all(is_fun, has_args)
 }
 
 assertthat::on_failure(is_param_handler) <- function(call, env) {
-  paste("`handler` must be a function that accepts: `req`, `res` and `param`")
+  paste(
+    "`handler` must be a function that accepts: `req`, `res`, `value` and `name`"
+  )
 }
 
 is_error_handler <- function(x) {

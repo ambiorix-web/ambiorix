@@ -229,11 +229,13 @@ Routing <- R6::R6Class(
     param = function(name, handler) {
       assert_that(not_missing(handler))
       assert_that(is_param_handler(handler))
-      p <- list(
-        handler = handler,
-        params = name
-      )
-      private$.params <- append(private$.params, list(p))
+      p <- lapply(name, function(s) {
+        list(
+          handler = handler,
+          params = s
+        )
+      })
+      private$.params <- append(private$.params, p)
       invisible(self)
     },
     #' @details Receive Websocket Message
@@ -570,20 +572,21 @@ Routing <- R6::R6Class(
           if (length(private$.params) > 0L && length(request$params) > 0L) {
             for (j in seq_along(private$.params)) {
               param_res <- NULL
-              param <- private$.params[[j]]$params
-              param <- request$params[[param]]
+              pn <- private$.params[[j]]$params
+              pv <- request$params[[pn]]
 
               # if param middleware is on correct router and has a handler for
               # a request parameter.
 
               if (
                 identical(attr(private$.params[[j]], "basepath"), basepath) &&
-                  !is.null(param)
+                  !is.null(pv)
               ) {
                 param_res <- private$.params[[j]]$handler(
                   request,
                   res,
-                  param
+                  pv,
+                  pn
                 )
 
                 if (is_response(param_res)) {
