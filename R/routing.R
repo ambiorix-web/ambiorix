@@ -200,7 +200,7 @@ Routing <- R6::R6Class(
     #' @details PARAM Method
     #'
     #' @param name Name of the parameter
-    #' @param handler Function that accepts the request, response and the parameter value.
+    #' @param handler Function that accepts the request, response, parameter value and the parameter name.
     #'
     #' @examples
     #' app <- Ambiorix$new()
@@ -209,8 +209,8 @@ Routing <- R6::R6Class(
     #'  res$send("Hello!")
     #' })
     #'
-    #' app$param("person", function(req, res, param){
-    #'  if(param == "notWanted"){
+    #' app$param("person", function(req, res, value, name){
+    #'  if(value == "notWanted"){
     #'   res$status <- 403L
     #'   res$send("This is the end.")
     #'  }
