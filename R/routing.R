@@ -528,7 +528,10 @@ Routing <- R6::R6Class(
             return(self$error(request, res, response))
           }
 
-          if (inherits(x = response, what = c("promise", "Future"))) {
+          if (
+            inherits(x = response, what = c("promise", "Future")) ||
+              inherits(x = response, what = "mirai")
+          ) {
             return(
               promises::then(
                 response,
