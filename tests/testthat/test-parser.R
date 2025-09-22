@@ -1,33 +1,45 @@
 test_that("parse_json works correctly", {
   # empty body
   req <- mockRequest()
-  req$rook.input <- list(read = function() raw())
+  req$rook.input <- list(read = function() raw(), rewind = function() NULL)
   result <- parse_json(req)
   expect_equal(result, list())
 
   # JSON object
   json_data <- '{"name": "John", "age": 30, "active": true}'
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw(json_data))
+  req$rook.input <- list(
+    read = function() charToRaw(json_data),
+    rewind = function() NULL
+  )
   result <- parse_json(req)
   expected <- list(name = "John", age = 30L, active = TRUE)
   expect_equal(result, expected)
 
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw('{"invalid": json}'))
+  req$rook.input <- list(
+    read = function() charToRaw('{"invalid": json}'),
+    rewind = function() NULL
+  )
   expect_error(parse_json(req))
 
   # JSON array
   json_array <- '[{"id": 1}, {"id": 2}]'
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw(json_array))
+  req$rook.input <- list(
+    read = function() charToRaw(json_array),
+    rewind = function() NULL
+  )
   result <- parse_json(req)
   expected <- data.frame(id = 1:2)
   expect_equal(result, expected)
 
   # empty JSON object
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw("{}"))
+  req$rook.input <- list(
+    read = function() charToRaw("{}"),
+    rewind = function() NULL
+  )
   result <- parse_json(req)
   expected <- list()
   names(expected) <- character()
@@ -35,7 +47,10 @@ test_that("parse_json works correctly", {
 
   # empty JSON array
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw("[]"))
+  req$rook.input <- list(
+    read = function() charToRaw("[]"),
+    rewind = function() NULL
+  )
   result <- parse_json(req)
   expected <- list()
   expect_equal(result, expected)
@@ -48,7 +63,10 @@ test_that("parse_json works correctly", {
   options(AMBIORIX_JSON_PARSER = custom_parser)
 
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw('{"test": "data"}'))
+  req$rook.input <- list(
+    read = function() charToRaw('{"test": "data"}'),
+    rewind = function() NULL
+  )
   result <- parse_json(req)
   expect_equal(result$custom, "parsed")
   expect_equal(result$raw_length, nchar('{"test": "data"}'))
@@ -60,14 +78,17 @@ test_that("parse_json works correctly", {
 test_that("parse_form_urlencoded works correctly", {
   # empty body
   req <- mockRequest()
-  req$rook.input <- list(read = function() raw())
+  req$rook.input <- list(read = function() raw(), rewind = function() NULL)
   result <- parse_form_urlencoded(req)
   expect_equal(result, list())
 
   # simple form data
   form_data <- "name=John&age=30&active=true"
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw(form_data))
+  req$rook.input <- list(
+    read = function() charToRaw(form_data),
+    rewind = function() NULL
+  )
   result <- parse_form_urlencoded(req)
   expect_equal(result$name, "John")
   expect_equal(result$age, "30")
@@ -75,7 +96,10 @@ test_that("parse_form_urlencoded works correctly", {
 
   # malformed data
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw("invalid=form=data=here"))
+  req$rook.input <- list(
+    read = function() charToRaw("invalid=form=data=here"),
+    rewind = function() NULL
+  )
   # webutils is quite tolerant, will parse first value:
   result <- parse_form_urlencoded(req)
   expected <- list(invalid = "form")
@@ -84,7 +108,10 @@ test_that("parse_form_urlencoded works correctly", {
   # URL-encoded special characters
   form_data <- "message=Hello%20World%21&email=user%40example.com"
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw(form_data))
+  req$rook.input <- list(
+    read = function() charToRaw(form_data),
+    rewind = function() NULL
+  )
   result <- parse_form_urlencoded(req)
   expect_equal(result$message, "Hello World!")
   expect_equal(result$email, "user@example.com")
@@ -92,7 +119,10 @@ test_that("parse_form_urlencoded works correctly", {
   # empty values
   form_data <- "empty=&filled=value&another="
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw(form_data))
+  req$rook.input <- list(
+    read = function() charToRaw(form_data),
+    rewind = function() NULL
+  )
   result <- parse_form_urlencoded(req)
   expect_equal(result$empty, NA_character_)
   expect_equal(result$filled, "value")
@@ -106,7 +136,10 @@ test_that("parse_form_urlencoded works correctly", {
   options(AMBIORIX_FORM_URLENCODED_PARSER = custom_parser)
 
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw("test=data"))
+  req$rook.input <- list(
+    read = function() charToRaw("test=data"),
+    rewind = function() NULL
+  )
   result <- parse_form_urlencoded(req)
   expect_equal(result$custom, "form_parsed")
   expect_equal(result$body_length, nchar("test=data"))
@@ -118,7 +151,7 @@ test_that("parse_form_urlencoded works correctly", {
 test_that("parse_multipart works correctly", {
   # empty body
   req <- mockRequest()
-  req$rook.input <- list(read = function() raw())
+  req$rook.input <- list(read = function() raw(), rewind = function() NULL)
   req$CONTENT_TYPE <- "multipart/form-data; boundary=----WebKitFormBoundary"
   result <- parse_multipart(req)
   expect_equal(result, list())
@@ -142,7 +175,10 @@ test_that("parse_multipart works correctly", {
   )
 
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw(multipart_body))
+  req$rook.input <- list(
+    read = function() charToRaw(multipart_body),
+    rewind = function() NULL
+  )
   req$CONTENT_TYPE <- paste0("multipart/form-data; boundary=", boundary)
   result <- parse_multipart(req)
 
@@ -170,7 +206,10 @@ test_that("parse_multipart works correctly", {
   )
 
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw(multipart_with_file))
+  req$rook.input <- list(
+    read = function() charToRaw(multipart_with_file),
+    rewind = function() NULL
+  )
   req$CONTENT_TYPE <- paste0("multipart/form-data; boundary=", boundary)
   result <- parse_multipart(req)
 
@@ -191,7 +230,10 @@ test_that("parse_multipart works correctly", {
   options(AMBIORIX_MULTIPART_FORM_DATA_PARSER = custom_parser)
 
   req <- mockRequest()
-  req$rook.input <- list(read = function() charToRaw("dummy"))
+  req$rook.input <- list(
+    read = function() charToRaw("dummy"),
+    rewind = function() NULL
+  )
   req$CONTENT_TYPE <- "multipart/form-data; boundary=test"
   result <- parse_multipart(req)
   expect_equal(result$custom, "multipart_parsed")
@@ -200,4 +242,3 @@ test_that("parse_multipart works correctly", {
   # restore original option
   options(AMBIORIX_MULTIPART_FORM_DATA_PARSER = old_option)
 })
-
