@@ -206,6 +206,7 @@
 #' @return Named list.
 #' @export
 parse_multipart <- function(req, ...) {
+  on.exit(req$rook.input$rewind())
   body <- req$rook.input$read()
   if (identical(body, raw())) {
     return(list())
@@ -278,6 +279,7 @@ parse_multipart <- function(req, ...) {
 #' @return Named list
 #' @export
 parse_form_urlencoded <- function(req, ...) {
+  on.exit(req$rook.input$rewind())
   body <- req$rook.input$read()
   if (identical(body, raw())) {
     return(list())
@@ -330,6 +332,7 @@ parse_form_urlencoded <- function(req, ...) {
 #' @return Named list
 #' @export
 parse_json <- function(req, ...) {
+  on.exit(req$rook.input$rewind())
   body <- req$rook.input$read()
   if (identical(body, raw())) {
     return(list())
