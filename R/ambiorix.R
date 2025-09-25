@@ -254,15 +254,21 @@ Ambiorix <- R6::R6Class(
         )
       )
 
-      url <- sprintf("http://%s:%s", host, port)
+      browser_host <- switch(
+        EXPR = host,
+        "0.0.0.0" = "127.0.0.1",
+        host
+      )
 
-      .globals$successLog$log("Listening on", url)
+      browser_url <- sprintf("http://%s:%s", browser_host, port)
+
+      .globals$successLog$log("Listening on", browser_url)
 
       # runs
       private$.is_running <- TRUE
 
       # open
-      browse_ambiorix(open, url)
+      browse_ambiorix(open, browser_url)
 
       on.exit({
         self$stop()
