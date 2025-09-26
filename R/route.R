@@ -5,6 +5,8 @@ Route <- R6::R6Class(
     components = list(),
     pattern = NULL,
     dynamic = FALSE,
+    params = NULL,
+    basepath = NULL,
     initialize = function(path) {
       assert_that(not_missing(path))
       self$path <- gsub("\\?.*$", "", path) # remove query
@@ -20,6 +22,7 @@ Route <- R6::R6Class(
 
       pattern <- sapply(self$components, function(comp) {
         if (comp$dynamic) {
+          self$params <- append(self$params, comp$name)
           return("[[:alnum:][:space:][:punct:]]*")
         }
 

@@ -211,6 +211,7 @@ Ambiorix <- R6::R6Class(
 
       private$.receivers <- super$get_receivers()
       private$.middleware <- super$get_middleware()
+      private$.params <- super$get_params()
 
       private$.server <- httpuv::startServer(
         host = host,
