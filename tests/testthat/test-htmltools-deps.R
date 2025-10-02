@@ -1,5 +1,4 @@
 test_that("copy_htmltools_dependencies works", {
-
   static_dir <- tempdir()
   options(
     "ambiorix.htmltools_inline" = FALSE,
@@ -15,7 +14,7 @@ test_that("copy_htmltools_dependencies works", {
     bootswatch = "quartz",
     primary = "#007bff",
     secondary = "#6c757d"
-  )  
+  )
 
   page <- page_navbar(
     theme = theme,
@@ -36,7 +35,6 @@ test_that("copy_htmltools_dependencies works", {
     )
   )
   resp <- Response$new()$send(tags$html(page))
-
 
   expect_true(
     grepl(paste0(static_dir, "/bs3compat/bs3compat.js"), resp$body),

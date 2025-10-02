@@ -145,7 +145,8 @@ inline_dependencies <- function(deps) {
 }
 
 copy_htmltools_dependencies <- function(
-  deps, static_path = getOption("ambiorix.static_path", "www")
+  deps,
+  static_path = getOption("ambiorix.static_path", "www")
 ) {
   for (dep in deps) {
     src_dir <- dep$src$file
@@ -183,12 +184,12 @@ render_htmltools <- function(x) {
     rendered_deps <- htmltools::renderDependencies(deps)
     href_deps <- grep("http", strsplit(rendered_deps, "\n")[[1]], value = TRUE)
     href_deps <- paste0(href_deps, collapse = "\n")
-    deps_list <-  list(htmltools::HTML(href_deps), inline_deps)
+    deps_list <- list(htmltools::HTML(href_deps), inline_deps)
   } else {
     deps <- copy_htmltools_dependencies(deps)
     deps_list <- htmltools::renderDependencies(deps)
   }
-  
+
   # add <body> if not present, and enclose all children tags within it, <head> tags will
   # be extracted thanks to htmltools::renderTags
   if (!length(q$find("body")$selectedTags())) {
