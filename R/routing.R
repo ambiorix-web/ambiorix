@@ -1,201 +1,104 @@
+#' Routing HTTP Methods
+#'
+#' Register route handlers for HTTP verbs on a [`Routing`] instance.
+#'
+#' The routing helpers provide a fluent API for attaching handlers to HTTP
+#' methods. Each helper shares the same signature and behaviour.
+#'
+#' ## Supported helpers
+#'
+#' - `get()`: Respond to HTTP `GET` requests.
+#' - `post()`: Respond to HTTP `POST` requests.
+#' - `put()`: Respond to HTTP `PUT` requests.
+#' - `patch()`: Respond to HTTP `PATCH` requests.
+#' - `delete()`: Respond to HTTP `DELETE` requests.
+#' - `options()`: Respond to HTTP `OPTIONS` requests.
+#' - `all()`: Respond to every method above.
+#'
+#' @param path String. Route to listen to; use `:` to define a parameter (e.g.
+#' `"/hello/:name"`).
+#' @param handler Function that accepts the request and response objects and
+#' returns an httpuv response (e.g. [response()]). Handlers can return the result
+#' of helper functions such as [Response$text()], [Response$json()], or the
+#' output of any renderer.
+#' @param error Optional handler invoked if the route raises an error; receives
+#' the request, response, and the error condition.
+#'
+#' @return The routing object invisibly so calls can be chained.
+#'
+#' @examples
+#' app <- Ambiorix$new()
+#'
+#' app$get("/", function(req, res) {
+#'   res$text("Hello, world!")
+#' })
+#'
+#' app$post("/echo", function(req, res) {
+#'   res$json(list(received = req$body))
+#' })
+#'
+#' app$all("/health", function(req, res) {
+#'   res$json(list(status = "ok"))
+#' })
+#'
+#' @seealso [`Routing`]
+#'
+#' @name routing-http-methods
+NULL
+
 #' Core Routing Class
 #'
 #' Core routing class.
 #' Do not use directly, see [Ambiorix], and [Router].
 #'
 #' @field error Error handler.
+#' @field get Register a route handler for HTTP GET requests. See
+#'   [routing-http-methods].
+#' @field put Register a route handler for HTTP PUT requests. See
+#'   [routing-http-methods].
+#' @field patch Register a route handler for HTTP PATCH requests. See
+#'   [routing-http-methods].
+#' @field delete Register a route handler for HTTP DELETE requests. See
+#'   [routing-http-methods].
+#' @field post Register a route handler for HTTP POST requests. See
+#'   [routing-http-methods].
+#' @field options Register a route handler for HTTP OPTIONS requests. See
+#'   [routing-http-methods].
+#' @field all Register a route handler that responds to every HTTP verb used by
+#'   Ambiorix. See [routing-http-methods].
 #' @field basepath Basepath, read-only.
 #' @field websocket Websocket handler.
+#' @section HTTP methods:
+#' See [routing-http-methods] for the full argument reference. The routing
+#' instance exposes helpers for common HTTP verbs; they are registered when the
+#' object is initialised and share the same signature.
+#'
+#' - `get()`, `put()`, `patch()`, `delete()`, `post()`, `options()` register a
+#'   handler for the single corresponding HTTP verb; see
+#'   [routing-http-methods].
+#' - `all()` registers a handler that responds to `GET`, `POST`, `PUT`,
+#'   `DELETE`, and `PATCH`; see [routing-http-methods].
 #'
 #' @return A Routing object.
+#' @seealso [routing-http-methods]
 #' @keywords export
 Routing <- R6::R6Class(
   "Routing",
   public = list(
     error = NULL,
+    get = NULL,
+    put = NULL,
+    patch = NULL,
+    delete = NULL,
+    post = NULL,
+    options = NULL,
+    all = NULL,
     #' @details Initialise
     #' @param path Prefix path.
     initialize = function(path = "") {
       private$.basepath <- path
       private$.is_router <- path != ""
-    },
-    #' @details GET Method
-    #'
-    #' Add routes to listen to.
-    #'
-    #' @param path Route to listen to, `:` defines a parameter.
-    #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
-    #' @param error Handler function to run on error.
-    #'
-    #' @examples
-    #' app <- Ambiorix$new()
-    #'
-    #' app$get("/", function(req, res){
-    #'  res$send("Using {ambiorix}!")
-    #' })
-    #'
-    #' if(interactive())
-    #'  app$start()
-    get = function(path, handler, error = NULL) {
-      assert_that(valid_path(path))
-      assert_that(not_missing(handler))
-      assert_that(is_handler(handler))
-
-      r <- list(
-        route = Route$new(private$.make_path(path)),
-        path = path,
-        fun = handler,
-        method = "GET",
-        error = error %error% self$error
-      )
-      private$.routes <- append(private$.routes, list(r))
-
-      invisible(self)
-    },
-    #' @details PUT Method
-    #'
-    #' Add routes to listen to.
-    #'
-    #' @param path Route to listen to, `:` defines a parameter.
-    #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
-    #' @param error Handler function to run on error.
-    put = function(path, handler, error = NULL) {
-      assert_that(valid_path(path))
-      assert_that(not_missing(handler))
-      assert_that(is_handler(handler))
-
-      r <- list(
-        route = Route$new(private$.make_path(path)),
-        path = path,
-        fun = handler,
-        method = "PUT",
-        error = error %error% self$error
-      )
-      private$.routes <- append(private$.routes, list(r))
-
-      invisible(self)
-    },
-    #' @details PATCH Method
-    #'
-    #' Add routes to listen to.
-    #'
-    #' @param path Route to listen to, `:` defines a parameter.
-    #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
-    #' @param error Handler function to run on error.
-    patch = function(path, handler, error = NULL) {
-      assert_that(valid_path(path))
-      assert_that(not_missing(handler))
-      assert_that(is_handler(handler))
-
-      r <- list(
-        route = Route$new(private$.make_path(path)),
-        path = path,
-        fun = handler,
-        method = "PATCH",
-        error = error %error% self$error
-      )
-      private$.routes <- append(private$.routes, list(r))
-
-      invisible(self)
-    },
-    #' @details DELETE Method
-    #'
-    #' Add routes to listen to.
-    #'
-    #' @param path Route to listen to, `:` defines a parameter.
-    #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
-    #' @param error Handler function to run on error.
-    delete = function(path, handler, error = NULL) {
-      assert_that(valid_path(path))
-      assert_that(not_missing(handler))
-      assert_that(is_handler(handler))
-
-      r <- list(
-        route = Route$new(private$.make_path(path)),
-        path = path,
-        fun = handler,
-        method = "DELETE",
-        error = error %error% self$error
-      )
-      private$.routes <- append(private$.routes, list(r))
-
-      invisible(self)
-    },
-    #' @details POST Method
-    #'
-    #' Add routes to listen to.
-    #'
-    #' @param path Route to listen to.
-    #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
-    #' @param error Handler function to run on error.
-    post = function(path, handler, error = NULL) {
-      assert_that(valid_path(path))
-      assert_that(not_missing(handler))
-      assert_that(is_handler(handler))
-
-      r <- list(
-        route = Route$new(private$.make_path(path)),
-        path = path,
-        fun = handler,
-        method = "POST",
-        error = error %error% self$error
-      )
-      private$.routes <- append(private$.routes, list(r))
-
-      invisible(self)
-    },
-    #' @details OPTIONS Method
-    #'
-    #' Add routes to listen to.
-    #'
-    #' @param path Route to listen to.
-    #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
-    #' @param error Handler function to run on error.
-    options = function(path, handler, error = NULL) {
-      assert_that(valid_path(path))
-      assert_that(not_missing(handler))
-      assert_that(is_handler(handler))
-
-      r <- list(
-        route = Route$new(private$.make_path(path)),
-        path = path,
-        fun = handler,
-        method = "OPTIONS",
-        error = error %error% self$error
-      )
-      private$.routes <- append(private$.routes, list(r))
-
-      invisible(self)
-    },
-    #' @details All Methods
-    #'
-    #' Add routes to listen to for all methods `GET`, `POST`, `PUT`, `DELETE`, and `PATCH`.
-    #'
-    #' @param path Route to listen to.
-    #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
-    #' @param error Handler function to run on error.
-    all = function(path, handler, error = NULL) {
-      assert_that(valid_path(path))
-      assert_that(not_missing(handler))
-      assert_that(is_handler(handler))
-
-      r <- list(
-        route = Route$new(private$.make_path(path)),
-        path = path,
-        fun = handler,
-        method = c("GET", "POST", "PUT", "DELETE", "PATCH"),
-        error = error %error% self$error
-      )
-      private$.routes <- append(private$.routes, list(r))
-
-      invisible(self)
+      private$.register_http_methods()
     },
     #' @details PARAM Method
     #'
@@ -516,6 +419,43 @@ Routing <- R6::R6Class(
     .is_running = FALSE,
     .wss_custom = NULL,
     .routers = list(),
+    .http_methods = list(
+      get = "GET",
+      put = "PUT",
+      patch = "PATCH",
+      delete = "DELETE",
+      post = "POST",
+      options = "OPTIONS",
+      all = c("GET", "POST", "PUT", "DELETE", "PATCH")
+    ),
+    .register_http_methods = function() {
+      for (name in names(private$.http_methods)) {
+        self[[name]] <- private$.route_adder_factory(name)
+      }
+
+      invisible(self)
+    },
+    .route_adder_factory = function(name) {
+      http_methods <- private$.http_methods[[name]]
+      force(http_methods)
+
+      function(path, handler, error = NULL) {
+        assert_that(valid_path(path))
+        assert_that(not_missing(handler))
+        assert_that(is_handler(handler))
+
+        r <- list(
+          route = Route$new(private$.make_path(path)),
+          path = path,
+          fun = handler,
+          method = http_methods,
+          error = error %error% self$error
+        )
+        private$.routes <- append(private$.routes, list(r))
+
+        invisible(self)
+      }
+    },
     # we reorder the routes before launching the app
     # we make sure the longest patterns are checked first
     # this makes sure /:id/x matches BEFORE /:id does
