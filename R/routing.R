@@ -19,7 +19,7 @@
 #' `"/hello/:name"`).
 #' @param handler Function that accepts the request and response objects and
 #' returns an httpuv response (e.g. [response()]). Handlers can return the result
-#' of helper functions such as [Response$text()], [Response$json()], or the
+#' of helper functions such as `Response$text()`, `Response$json()`, or the
 #' output of any renderer.
 #' @param error Optional handler invoked if the route raises an error; receives
 #' the request, response, and the error condition.
