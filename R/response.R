@@ -758,7 +758,17 @@ Response <- R6::R6Class(
         return(private$.status)
       }
 
-      private$.status <- as.integer(value)
+      value <- as.integer(value)
+      is_valid_status <- length(value) == 1L &&
+        !is.na(value) &&
+        is.integer(value)
+
+      if (!is_valid_status) {
+        msg <- paste0("Invalid response status: '", value, "'")
+        stop(msg, call. = FALSE)
+      }
+
+      private$.status <- value
     },
     headers = function(value) {
       if (missing(value)) {
