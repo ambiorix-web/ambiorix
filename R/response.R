@@ -312,7 +312,14 @@ Response <- R6::R6Class(
     #' @param status Status of the response, if `NULL` uses `self$status`.
     redirect = function(path, status = NULL) {
       deprecated_status(status)
-      status <- private$.get_status(status)
+
+      status <- private$.status
+      # for redirection, must start with a "3". if not, default
+      # to 302. see #138.
+      if (!startsWith(x = as.character(status), prefix = "3")) {
+        status <- 302L
+      }
+
       headers <- private$.get_headers(list(Location = path))
       response(status = status, headers = headers, body = "")
     },
@@ -751,7 +758,17 @@ Response <- R6::R6Class(
         return(private$.status)
       }
 
-      private$.status <- as.integer(value)
+      value <- as.integer(value)
+      is_valid_status <- length(value) == 1L &&
+        !is.na(value) &&
+        is.integer(value)
+
+      if (!is_valid_status) {
+        msg <- paste0("Invalid response status: '", value, "'")
+        stop(msg, call. = FALSE)
+      }
+
+      private$.status <- value
     },
     headers = function(value) {
       if (missing(value)) {
