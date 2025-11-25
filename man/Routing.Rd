@@ -26,6 +26,34 @@ if(interactive())
  app$start()
 
 ## ------------------------------------------------
+## Method `Routing$param`
+## ------------------------------------------------
+
+app <- Ambiorix$new()
+
+app$get("/", function(req,res){
+ res$send("Hello!")
+})
+
+app$param("person", function(req, res, value, name){
+ if(value == "notWanted"){
+  res$status <- 403L
+  res$send("This is the end.")
+ }
+
+ # continue processing the request...
+})
+
+app$get("/hi/:person", function(req,res){
+ res$sendf("Hi! \%s", req$params$person)
+})
+app$get("/info/:person", function(req,res){
+ res$sendf("Here is all your info, \%s", req$params$person)
+})
+if(interactive())
+ app$start()
+
+## ------------------------------------------------
 ## Method `Routing$receive`
 ## ------------------------------------------------
 
@@ -73,11 +101,13 @@ if(interactive())
 \item \href{#method-Routing-post}{\code{Routing$post()}}
 \item \href{#method-Routing-options}{\code{Routing$options()}}
 \item \href{#method-Routing-all}{\code{Routing$all()}}
+\item \href{#method-Routing-param}{\code{Routing$param()}}
 \item \href{#method-Routing-receive}{\code{Routing$receive()}}
 \item \href{#method-Routing-print}{\code{Routing$print()}}
 \item \href{#method-Routing-engine}{\code{Routing$engine()}}
 \item \href{#method-Routing-use}{\code{Routing$use()}}
 \item \href{#method-Routing-get_routes}{\code{Routing$get_routes()}}
+\item \href{#method-Routing-get_params}{\code{Routing$get_params()}}
 \item \href{#method-Routing-get_receivers}{\code{Routing$get_receivers()}}
 \item \href{#method-Routing-get_middleware}{\code{Routing$get_middleware()}}
 \item \href{#method-Routing-prepare}{\code{Routing$prepare()}}
@@ -309,6 +339,58 @@ Add routes to listen to for all methods \code{GET}, \code{POST}, \code{PUT}, \co
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Routing-param"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-param}{}}}
+\subsection{Method \code{param()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Routing$param(name, handler)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Name of the parameter}
+
+\item{\code{handler}}{Function that accepts the request, response, parameter value and the parameter name.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+PARAM Method
+}
+
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{app <- Ambiorix$new()
+
+app$get("/", function(req,res){
+ res$send("Hello!")
+})
+
+app$param("person", function(req, res, value, name){
+ if(value == "notWanted"){
+  res$status <- 403L
+  res$send("This is the end.")
+ }
+
+ # continue processing the request...
+})
+
+app$get("/hi/:person", function(req,res){
+ res$sendf("Hi! \%s", req$params$person)
+})
+app$get("/info/:person", function(req,res){
+ res$sendf("Here is all your info, \%s", req$params$person)
+})
+if(interactive())
+ app$start()
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-receive"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-receive}{}}}
 \subsection{Method \code{receive()}}{
@@ -429,6 +511,28 @@ Use a router or middleware
 }
 \subsection{Details}{
 Get the routes
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Routing-get_params"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-get_params}{}}}
+\subsection{Method \code{get_params()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Routing$get_params(params = list(), parent = "")}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{params}}{Existing list of parameter middlewares.}
+
+\item{\code{parent}}{Parent path.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Get the parameter middlewares
 }
 
 }
