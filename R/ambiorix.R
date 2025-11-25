@@ -359,7 +359,7 @@ Ambiorix <- R6::R6Class(
     .is_running = FALSE,
     .limit = 5 * 1024 * 1024,
     n_routes = function() {
-      length(private$.routes)
+      length(private$.routes) + length(private$.static)
     },
     .make_path = function(path) {
       paste0(private$.basepath, path)
