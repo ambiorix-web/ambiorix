@@ -144,6 +144,26 @@ inline_dependencies <- function(deps) {
   )
 }
 
+copy_htmltools_dependencies <- function(
+  deps,
+  static_path = getOption("ambiorix.static_path", "www")
+) {
+  for (dep in deps) {
+    src_dir <- dep$src$file
+    dest_dir <- file.path(static_path, dep$name)
+    dir.create(dest_dir, recursive = TRUE, showWarnings = FALSE)
+    file.copy(
+      list.files(src_dir, full.names = TRUE),
+      dest_dir,
+      recursive = TRUE
+    )
+  }
+  for (i in seq_along(deps)) {
+    deps[[i]]$src$file <- file.path(static_path, deps[[i]]$name)
+  }
+  deps
+}
+
 render_htmltools <- function(x) {
   # if it has a <html> tag we assume
   # it's a document and render with
@@ -158,13 +178,17 @@ render_htmltools <- function(x) {
   deps <- htmltools::resolveDependencies(
     dependencies = htmltools::findDependencies(x)
   )
-  inline_deps <- inline_dependencies(deps)
 
-  # htmltools::renderDependencies(..., srcType = "href")
-  # does not work
-  rendered_deps <- htmltools::renderDependencies(deps)
-  href_deps <- grep("http", strsplit(rendered_deps, "\n")[[1]], value = TRUE)
-  href_deps <- paste0(href_deps, collapse = "\n")
+  if (isTRUE(getOption("ambiorix.htmltools_inline"))) {
+    inline_deps <- inline_dependencies(deps)
+    rendered_deps <- htmltools::renderDependencies(deps)
+    href_deps <- grep("http", strsplit(rendered_deps, "\n")[[1]], value = TRUE)
+    href_deps <- paste0(href_deps, collapse = "\n")
+    deps_list <- list(htmltools::HTML(href_deps), inline_deps)
+  } else {
+    deps <- copy_htmltools_dependencies(deps)
+    deps_list <- htmltools::renderDependencies(deps)
+  }
 
   # add <body> if not present, and enclose all children tags within it, <head> tags will
   # be extracted thanks to htmltools::renderTags
@@ -186,10 +210,8 @@ render_htmltools <- function(x) {
   )$prepend(
     htmltools::tags$meta(charset = "UTF-8")
   )$append(
-    htmltools::HTML(href_deps),
-    inline_deps
+    deps_list
   )
-
   # add placeholder for head tag children
   q$closest("html")$prepend(htmltools::HTML(
     "<head>\n<!--HEAD_CONTENT-->\n</head>"
