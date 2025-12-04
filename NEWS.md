@@ -1,3 +1,20 @@
+# ambiorix 2.2.2
+
+**New Features**
+
+- Add support for parameter middlewares, [pull/131](https://github.com/ambiorix-web/ambiorix/pull/131).
+- Add support for {mirai} promises, [pull/134](https://github.com/ambiorix-web/ambiorix/pull/134).
+
+**Changes**
+
+- Update browser URL to log "127.0.0.1" when the provided app host is "0.0.0.0", [pull/137](https://github.com/ambiorix-web/ambiorix/pull/137). 
+- Set default response status for redirection to 302, [pull/145](https://github.com/ambiorix-web/ambiorix/pull/145).
+
+**Bug Fixes**
+
+- Rewind {Rook} input post-read on all request parsers, [pull/135](https://github.com/ambiorix-web/ambiorix/pull/135).
+- Add static routes to total number of routes, [pull/147](https://github.com/ambiorix-web/ambiorix/pull/147).
+
 # ambiorix 2.2.1
 
 **Changes**
