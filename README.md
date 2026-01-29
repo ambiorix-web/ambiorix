@@ -18,6 +18,20 @@ Web framework for R based on [httpuv](https://github.com/rstudio/httpuv) and ins
 
 </div>
 
+## Install
+
+The stable version is available on CRAN with:
+
+```r
+install.packages("ambiorix")
+```
+
+You can also install the development version from Github:
+
+```r
+remotes::install_github("ambiorix-web/ambiorix")
+```
+
 ## Example
 
 ```r
@@ -56,20 +70,6 @@ app$start()
 - [CLI](https://github.com/devOpifex/ambiorix-cli) for generator
 - [Generator](https://github.com/ambiorix-web/ambiorix.generator) Project generator
 - [Docker](https://hub.docker.com/r/jcoenep/ambiorix) Docker image
-
-## Install
-
-The stable version is available on CRAN with:
-
-```r
-install.packages("ambiorix")
-```
-
-You can also install the development version from Github:
-
-```r
-remotes::install_github("ambiorix-web/ambiorix")
-```
 
 ## Contributing
 
