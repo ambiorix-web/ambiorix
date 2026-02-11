@@ -7,7 +7,7 @@
 A Request object.
 }
 \description{
-A request.
+A request object wrapping the incoming HTTP request.
 }
 \examples{
 if (interactive()) {
@@ -26,73 +26,35 @@ if (interactive()) {
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{HEADERS}}{Headers from the request.}
+\item{\code{headers}}{Named list of request headers.}
 
-\item{\code{HTTP_ACCEPT}}{Content types to accept.}
+\item{\code{method}}{HTTP method (GET, POST, etc.).}
 
-\item{\code{HTTP_ACCEPT_ENCODING}}{Encoding of the request.}
+\item{\code{path}}{Request path.}
 
-\item{\code{HTTP_ACCEPT_LANGUAGE}}{Language of the request.}
+\item{\code{uri}}{Full request URI.}
 
-\item{\code{HTTP_CACHE_CONTROL}}{Directorives for the cache (case-insensitive).}
+\item{\code{query}}{Parsed query string as a list.}
 
-\item{\code{HTTP_CONNECTION}}{Controls whether the network connection stays open after the current transaction finishes.}
+\item{\code{params}}{URL parameters from dynamic routes.}
 
-\item{\code{HTTP_COOKIE}}{Cookie data.}
+\item{\code{body}}{Request body (raw vector).}
 
-\item{\code{HTTP_HOST}}{Host making the request.}
+\item{\code{cookie}}{Parsed cookies.}
 
-\item{\code{HTTP_SEC_FETCH_DEST}}{Indicates the request's destination. That is the initiator of the original fetch request, which is where (and how) the fetched data will be used.}
+\item{\code{CONTENT_TYPE}}{Content type of the request.}
 
-\item{\code{HTTP_SEC_FETCH_MODE}}{Indicates mode of the request.}
+\item{\code{CONTENT_LENGTH}}{Content length of the request.}
 
-\item{\code{HTTP_SEC_FETCH_SITE}}{Indicates the relationship between a request initiator's origin and the origin of the requested resource.}
+\item{\code{PATH_INFO}}{Alias for path (compatibility).}
 
-\item{\code{HTTP_SEC_FETCH_USER}}{Only sent for requests initiated by user activation, and its value will always be \code{?1}.}
+\item{\code{REQUEST_METHOD}}{Alias for method (compatibility).}
 
-\item{\code{HTTP_UPGRADE_INSECURE_REQUESTS}}{Signals that server supports upgrade.}
+\item{\code{QUERY_STRING}}{Raw query string.}
 
-\item{\code{HTTP_USER_AGENT}}{User agent.}
+\item{\code{REMOTE_ADDR}}{Remote address (from X-Forwarded-For header if present).}
 
-\item{\code{SERVER_NAME}}{Name of the server.}
-
-\item{\code{httpuv.version}}{Version of httpuv.}
-
-\item{\code{PATH_INFO}}{Path of the request.}
-
-\item{\code{QUERY_STRING}}{Query string of the request.}
-
-\item{\code{REMOTE_ADDR}}{Remote address.}
-
-\item{\code{REMOTE_PORT}}{Remote port.}
-
-\item{\code{REQUEST_METHOD}}{Method of the request, e.g.: \code{GET}.}
-
-\item{\code{rook.errors}}{Errors from rook.}
-
-\item{\code{rook.input}}{Rook inputs.}
-
-\item{\code{rook.url_scheme}}{Rook url scheme.}
-
-\item{\code{rook.version}}{Rook version.}
-
-\item{\code{SCRIPT_NAME}}{The initial portion of the request URL's "path" that corresponds to the application object, so that the application knows its virtual "location".  #' @field SERVER_NAME Server name.}
-
-\item{\code{SERVER_PORT}}{Server port}
-
-\item{\code{CONTENT_LENGTH}}{Size of the message body.}
-
-\item{\code{CONTENT_TYPE}}{Type of content of the request.}
-
-\item{\code{HTTP_REFERER}}{Contains an absolute or partial address of the page that makes the request.}
-
-\item{\code{body}}{Request, an environment.}
-
-\item{\code{query}}{Parsed \code{QUERY_STRING}, \code{list}.}
-
-\item{\code{params}}{A \code{list} of parameters.}
-
-\item{\code{cookie}}{Parsed \code{HTTP_COOKIE}.}
+\item{\code{SERVER_NAME}}{Server name (from Host header).}
 }
 \if{html}{\out{</div>}}
 }
@@ -118,7 +80,7 @@ if (interactive()) {
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{req}}{Original request (environment).}
+\item{\code{req}}{Original request from nanonext.}
 }
 \if{html}{\out{</div>}}
 }

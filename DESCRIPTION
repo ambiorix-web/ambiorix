@@ -1,6 +1,6 @@
 Package: ambiorix
 Title: Web Framework Inspired by 'Express.js'
-Version: 2.2.2
+Version: 3.0.0
 Authors@R: 
   c(
     person(given = "John",
@@ -25,9 +25,9 @@ Imports:
     log,
     cli,
     glue,
-    httpuv,
     methods,
     assertthat,
+    nanonext (>= 1.8.0),
     webutils (>= 1.2.0),
     yyjsonr (>= 0.1.20)
 Suggests:

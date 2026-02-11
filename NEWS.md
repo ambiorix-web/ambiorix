@@ -1,3 +1,28 @@
+# ambiorix 3.0.0
+
+**Breaking Changes**
+
+- Backend migration: ambiorix now uses nanonext instead of httpuv as the HTTP server backend.
+- Removed Rook-specific request fields: `req$rook.input`, `req$rook.version`, `req$rook.errors`.
+- Removed `req$httpuv.version` field.
+- Body size limit (`app$limit`) now rejects requests after body transfer instead of during (early rejection not available in nanonext).
+
+**New Features**
+
+- `app$stream(path, handler)` method for SSE and HTTP streaming support.
+- `StreamConnection` class with `$sse()`, `$send()`, `$close()`, `$set_header()`, `$set_status()` methods.
+- Native TLS/SSL support via `tls` parameter in `app$start()`.
+- `generate_cert()` helper function to create self-signed certificates for development.
+- `content_sse()` and `content_ndjson()` content type helper functions.
+- `get_stream_connections()` function to retrieve active stream connections.
+- Improved static file serving performance (NNG serves files directly, bypassing R).
+
+**Changes**
+
+- Request object now uses nanonext's request format internally.
+- `stop_all()` now uses a global server registry instead of httpuv's `stopAllServers()`.
+- Port auto-assignment now uses nanonext's port 0 mechanism.
+
 # ambiorix 2.2.2
 
 **New Features**

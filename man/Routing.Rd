@@ -54,6 +54,19 @@ if(interactive())
  app$start()
 
 ## ------------------------------------------------
+## Method `Routing$stream`
+## ------------------------------------------------
+
+app <- Ambiorix$new()
+
+app$stream("/events", function(req, conn) {
+  conn$sse(data = "connected", event = "open")
+})
+
+if(interactive())
+ app$start()
+
+## ------------------------------------------------
 ## Method `Routing$receive`
 ## ------------------------------------------------
 
@@ -102,6 +115,7 @@ if(interactive())
 \item \href{#method-Routing-options}{\code{Routing$options()}}
 \item \href{#method-Routing-all}{\code{Routing$all()}}
 \item \href{#method-Routing-param}{\code{Routing$param()}}
+\item \href{#method-Routing-stream}{\code{Routing$stream()}}
 \item \href{#method-Routing-receive}{\code{Routing$receive()}}
 \item \href{#method-Routing-print}{\code{Routing$print()}}
 \item \href{#method-Routing-engine}{\code{Routing$engine()}}
@@ -109,6 +123,7 @@ if(interactive())
 \item \href{#method-Routing-get_routes}{\code{Routing$get_routes()}}
 \item \href{#method-Routing-get_params}{\code{Routing$get_params()}}
 \item \href{#method-Routing-get_receivers}{\code{Routing$get_receivers()}}
+\item \href{#method-Routing-get_stream_handlers}{\code{Routing$get_stream_handlers()}}
 \item \href{#method-Routing-get_middleware}{\code{Routing$get_middleware()}}
 \item \href{#method-Routing-prepare}{\code{Routing$prepare()}}
 \item \href{#method-Routing-clone}{\code{Routing$clone()}}
@@ -148,7 +163,7 @@ Initialise
 \item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
 
 \item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+describing a response, e.g.: \code{\link[=response]{response()}}.}
 
 \item{\code{error}}{Handler function to run on error.}
 }
@@ -190,7 +205,7 @@ if(interactive())
 \item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
 
 \item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+describing a response, e.g.: \code{\link[=response]{response()}}.}
 
 \item{\code{error}}{Handler function to run on error.}
 }
@@ -217,7 +232,7 @@ Add routes to listen to.
 \item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
 
 \item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+describing a response, e.g.: \code{\link[=response]{response()}}.}
 
 \item{\code{error}}{Handler function to run on error.}
 }
@@ -244,7 +259,7 @@ Add routes to listen to.
 \item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
 
 \item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+describing a response, e.g.: \code{\link[=response]{response()}}.}
 
 \item{\code{error}}{Handler function to run on error.}
 }
@@ -271,7 +286,7 @@ Add routes to listen to.
 \item{\code{path}}{Route to listen to.}
 
 \item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+describing a response, e.g.: \code{\link[=response]{response()}}.}
 
 \item{\code{error}}{Handler function to run on error.}
 }
@@ -298,7 +313,7 @@ Add routes to listen to.
 \item{\code{path}}{Route to listen to.}
 
 \item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+describing a response, e.g.: \code{\link[=response]{response()}}.}
 
 \item{\code{error}}{Handler function to run on error.}
 }
@@ -325,7 +340,7 @@ Add routes to listen to.
 \item{\code{path}}{Route to listen to.}
 
 \item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+describing a response, e.g.: \code{\link[=response]{response()}}.}
 
 \item{\code{error}}{Handler function to run on error.}
 }
@@ -382,6 +397,46 @@ app$get("/hi/:person", function(req,res){
 app$get("/info/:person", function(req,res){
  res$sendf("Here is all your info, \%s", req$params$person)
 })
+if(interactive())
+ app$start()
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Routing-stream"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-stream}{}}}
+\subsection{Method \code{stream()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Routing$stream(path, handler)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{path}}{Route to listen to.}
+
+\item{\code{handler}}{Function with signature \verb{function(req, conn)} where
+\code{req} is the Request object and \code{conn} is a \link{StreamConnection}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Stream Method
+
+Add a streaming endpoint (SSE, NDJSON, etc.).
+}
+
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{app <- Ambiorix$new()
+
+app$stream("/events", function(req, conn) {
+  conn$sse(data = "connected", event = "open")
+})
+
 if(interactive())
  app$start()
 }
@@ -553,6 +608,26 @@ Get the parameter middlewares
 }
 \subsection{Details}{
 Get the websocket receivers
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Routing-get_stream_handlers"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-get_stream_handlers}{}}}
+\subsection{Method \code{get_stream_handlers()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Routing$get_stream_handlers(handlers = list())}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{handlers}}{Existing list of stream handlers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Get the stream handlers
 }
 
 }

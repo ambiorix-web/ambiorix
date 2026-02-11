@@ -95,7 +95,7 @@ Ambiorix <- R6::R6Class(
     },
     #' @details Sets the 404 page.
     #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
+    #' describing a response, e.g.: [response()].
     #'
     #' @examples
     #' app <- Ambiorix$new()
@@ -170,9 +170,11 @@ Ambiorix <- R6::R6Class(
     },
     #' @details Start
     #' Start the webserver.
-    #' @param host A string defining the host.
     #' @param port Integer defining the port, defaults to `ambiorix.port` option: uses a random port if `NULL`.
+    #' @param host A string defining the host.
     #' @param open Whether to open the app the browser.
+    #' @param tls TLS configuration for HTTPS. Can be a result from [generate_cert()],
+    #' or a list with `cert` and `key` file paths.
     #'
     #' @examples
     #' app <- Ambiorix$new()
@@ -186,16 +188,17 @@ Ambiorix <- R6::R6Class(
     start = function(
       port = NULL,
       host = NULL,
-      open = interactive()
+      open = interactive(),
+      tls = NULL
     ) {
       if (private$.is_running) {
         cli::cli_alert_warning("Server is already running")
         return()
       }
+
       if (is.null(port)) {
         port <- private$.port
       }
-
       if (is.null(host)) {
         host <- private$.host
       }
@@ -204,6 +207,7 @@ Ambiorix <- R6::R6Class(
 
       super$prepare()
       private$.routes <- super$get_routes()
+      private$.stream_handlers <- super$get_stream_handlers()
 
       if (private$n_routes() == 0L) {
         stop("No routes specified")
@@ -213,70 +217,44 @@ Ambiorix <- R6::R6Class(
       private$.middleware <- super$get_middleware()
       private$.params <- super$get_params()
 
-      private$.server <- httpuv::startServer(
-        host = host,
-        port = port,
-        app = list(
-          call = super$.call,
-          staticPaths = private$.static,
-          onWSOpen = super$websocket,
-          staticPathOptions = httpuv::staticPathOptions(
-            html_charset = "utf-8",
-            headers = list(
-              "X-UA-Compatible" = "IE=edge,chrome=1"
-            )
-          ),
-          onHeaders = function(req) {
-            size <- 0L
-            if (private$.limit <= 0) {
-              return(NULL)
-            }
+      # build url
+      scheme <- if (!is.null(tls)) "https" else "http"
+      url <- sprintf("%s://%s:%s", scheme, host, port)
 
-            if (length(req$CONTENT_LENGTH) > 0) {
-              size <- as.numeric(req$CONTENT_LENGTH)
-            } else if (length(req$HTTP_TRANSFER_ENCODING) > 0) {
-              size <- Inf
-            }
+      # build tls config
+      tls_config <- NULL
+      if (!is.null(tls)) {
+        if (is.list(tls) && !is.null(tls$server)) {
+          tls_config <- nanonext::tls_config(server = tls$server)
+        } else if (is.list(tls) && !is.null(tls$cert)) {
+          tls_config <- nanonext::tls_config(server = c(tls$cert, tls$key))
+        } else {
+          tls_config <- nanonext::tls_config(server = tls)
+        }
+      }
 
-            if (size > private$.limit) {
-              .globals$errorLog$log("Request size exceeded, see app$limit")
-
-              return(
-                response(
-                  "Maximum upload size exceeded",
-                  status = 413L,
-                  headers = list("Content-Type" = "text/plain")
-                )
-              )
-            }
-
-            return(NULL)
-          }
-        )
+      # create server
+      private$.server <- nanonext::http_server(
+        url = url,
+        handlers = private$.build_handlers(),
+        tls = tls_config
       )
 
-      browser_host <- switch(
-        EXPR = host,
-        "0.0.0.0" = "127.0.0.1",
-        host
-      )
+      private$.server$start()
 
-      browser_url <- sprintf("http://%s:%s", browser_host, port)
+      # register server for stop_all()
+      .globals$servers <- append(.globals$servers, list(private$.server))
+
+      # get actual url (port may have been auto-assigned)
+      actual_url <- private$.server$url
+      browser_host <- switch(host, "0.0.0.0" = "127.0.0.1", host)
+      browser_url <- sub(host, browser_host, actual_url)
 
       .globals$successLog$log("Listening on", browser_url)
 
-      # runs
       private$.is_running <- TRUE
 
-      # open
       browse_ambiorix(open, browser_url)
-
-      on.exit({
-        self$stop()
-      })
-
-      # continually process requests:
-      httpuv::service(timeoutMs = Inf)
 
       invisible(self)
     },
@@ -310,12 +288,11 @@ Ambiorix <- R6::R6Class(
         return(invisible())
       }
 
-      # run on stop
       if (!is.null(self$on_stop)) {
         self$on_stop()
       }
 
-      private$.server$stop()
+      private$.server$close()
       .globals$errorLog$log("Server stopped")
 
       private$.is_running <- FALSE
@@ -356,13 +333,120 @@ Ambiorix <- R6::R6Class(
     .port = 3000,
     .server = NULL,
     .static = list(),
+    .stream_handlers = list(),
+    .stream_connections = list(),
     .is_running = FALSE,
     .limit = 5 * 1024 * 1024,
     n_routes = function() {
-      length(private$.routes) + length(private$.static)
+      length(private$.routes) +
+        length(private$.static) +
+        length(private$.stream_handlers)
     },
     .make_path = function(path) {
       paste0(private$.basepath, path)
+    },
+    .build_handlers = function() {
+      handlers <- list()
+
+      # static file handlers (NNG serves directly)
+      for (uri in names(private$.static)) {
+        uri_path <- if (startsWith(uri, "/")) uri else paste0("/", uri)
+        handlers <- append(
+          handlers,
+          list(
+            nanonext::handler_directory(uri_path, private$.static[[uri]])
+          )
+        )
+      }
+
+      # stream handlers
+      for (path in names(private$.stream_handlers)) {
+        user_handler <- private$.stream_handlers[[path]]
+
+        # create closure to capture path and handler
+        make_stream_handler <- function(p, h) {
+          force(p)
+          force(h)
+          nanonext::handler_stream(
+            path = p,
+            on_request = function(conn, req) {
+              conn$set_header("Content-Type", "text/event-stream")
+              conn$set_header("Cache-Control", "no-cache")
+              conn$set_header("Connection", "keep-alive")
+
+              stream_conn <- StreamConnection$new(conn)
+              request <- Request$new(req)
+              .globals$stream_connections[[as.character(
+                conn$id
+              )]] <- stream_conn
+
+              h(request, stream_conn)
+            },
+            on_close = function(conn) {
+              .globals$stream_connections[[as.character(conn$id)]] <- NULL
+            }
+          )
+        }
+
+        handlers <- append(
+          handlers,
+          list(
+            make_stream_handler(path, user_handler)
+          )
+        )
+      }
+
+      # websocket handler (root path)
+      if (length(private$.receivers) > 0) {
+        handlers <- append(
+          handlers,
+          list(
+            nanonext::handler_ws(
+              path = "/",
+              on_message = function(ws, data) {
+                private$.ws_on_message(ws, data)
+              },
+              on_open = function(ws) {
+                private$.ws_on_open(ws)
+              },
+              on_close = function(ws) {
+                private$.ws_on_close(ws)
+              },
+              textframes = TRUE
+            )
+          )
+        )
+      }
+
+      # catch-all handler for dynamic routes
+      handlers <- append(
+        handlers,
+        list(
+          nanonext::handler(
+            path = "",
+            callback = function(req) {
+              # check body size limit
+              if (private$.limit > 0) {
+                size <- length(req$body)
+                if (size > private$.limit) {
+                  .globals$errorLog$log("Request size exceeded, see app$limit")
+                  return(list(
+                    status = 413L,
+                    headers = c("Content-Type" = "text/plain"),
+                    body = "Maximum upload size exceeded"
+                  ))
+                }
+              }
+
+              private$.call(req)
+            },
+            method = "*",
+            prefix = TRUE
+          )
+        )
+      )
+
+      handlers
     }
   )
 )

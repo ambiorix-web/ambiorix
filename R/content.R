@@ -50,3 +50,15 @@ content_tsv <- function() {
 content_protobuf <- function() {
   "application/x-protobuf"
 }
+
+#' @rdname content
+#' @export
+content_sse <- function() {
+  "text/event-stream"
+}
+
+#' @rdname content
+#' @export
+content_ndjson <- function() {
+  "application/x-ndjson"
+}

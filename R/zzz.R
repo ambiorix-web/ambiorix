@@ -11,4 +11,6 @@
   .globals$renderer <- NULL
   .globals$cache_tmpls <- FALSE
   .globals$wsc <- list()
+  .globals$servers <- list()
+  .globals$stream_connections <- list()
 }

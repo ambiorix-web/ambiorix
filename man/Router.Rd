@@ -73,6 +73,7 @@ if(interactive())
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_params"><a href='../../ambiorix/html/Routing.html#method-Routing-get_params'><code>ambiorix::Routing$get_params()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers"><a href='../../ambiorix/html/Routing.html#method-Routing-get_receivers'><code>ambiorix::Routing$get_receivers()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_routes"><a href='../../ambiorix/html/Routing.html#method-Routing-get_routes'><code>ambiorix::Routing$get_routes()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_stream_handlers"><a href='../../ambiorix/html/Routing.html#method-Routing-get_stream_handlers'><code>ambiorix::Routing$get_stream_handlers()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="options"><a href='../../ambiorix/html/Routing.html#method-Routing-options'><code>ambiorix::Routing$options()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="param"><a href='../../ambiorix/html/Routing.html#method-Routing-param'><code>ambiorix::Routing$param()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="patch"><a href='../../ambiorix/html/Routing.html#method-Routing-patch'><code>ambiorix::Routing$patch()</code></a></span></li>
@@ -80,6 +81,7 @@ if(interactive())
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="prepare"><a href='../../ambiorix/html/Routing.html#method-Routing-prepare'><code>ambiorix::Routing$prepare()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="put"><a href='../../ambiorix/html/Routing.html#method-Routing-put'><code>ambiorix::Routing$put()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive"><a href='../../ambiorix/html/Routing.html#method-Routing-receive'><code>ambiorix::Routing$receive()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="stream"><a href='../../ambiorix/html/Routing.html#method-Routing-stream'><code>ambiorix::Routing$stream()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use"><a href='../../ambiorix/html/Routing.html#method-Routing-use'><code>ambiorix::Routing$use()</code></a></span></li>
 </ul>
 </details>

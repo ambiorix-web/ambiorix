@@ -173,6 +173,7 @@ if(interactive())
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_params"><a href='../../ambiorix/html/Routing.html#method-Routing-get_params'><code>ambiorix::Routing$get_params()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers"><a href='../../ambiorix/html/Routing.html#method-Routing-get_receivers'><code>ambiorix::Routing$get_receivers()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_routes"><a href='../../ambiorix/html/Routing.html#method-Routing-get_routes'><code>ambiorix::Routing$get_routes()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_stream_handlers"><a href='../../ambiorix/html/Routing.html#method-Routing-get_stream_handlers'><code>ambiorix::Routing$get_stream_handlers()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="options"><a href='../../ambiorix/html/Routing.html#method-Routing-options'><code>ambiorix::Routing$options()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="param"><a href='../../ambiorix/html/Routing.html#method-Routing-param'><code>ambiorix::Routing$param()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="patch"><a href='../../ambiorix/html/Routing.html#method-Routing-patch'><code>ambiorix::Routing$patch()</code></a></span></li>
@@ -180,6 +181,7 @@ if(interactive())
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="prepare"><a href='../../ambiorix/html/Routing.html#method-Routing-prepare'><code>ambiorix::Routing$prepare()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="put"><a href='../../ambiorix/html/Routing.html#method-Routing-put'><code>ambiorix::Routing$put()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive"><a href='../../ambiorix/html/Routing.html#method-Routing-receive'><code>ambiorix::Routing$receive()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="stream"><a href='../../ambiorix/html/Routing.html#method-Routing-stream'><code>ambiorix::Routing$stream()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use"><a href='../../ambiorix/html/Routing.html#method-Routing-use'><code>ambiorix::Routing$use()</code></a></span></li>
 </ul>
 </details>
@@ -275,7 +277,7 @@ if(interactive())
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+describing a response, e.g.: \code{\link[=response]{response()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -386,7 +388,7 @@ Static directories
 \if{latex}{\out{\hypertarget{method-Ambiorix-start}{}}}
 \subsection{Method \code{start()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$start(port = NULL, host = NULL, open = interactive())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$start(port = NULL, host = NULL, open = interactive(), tls = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -397,6 +399,9 @@ Static directories
 \item{\code{host}}{A string defining the host.}
 
 \item{\code{open}}{Whether to open the app the browser.}
+
+\item{\code{tls}}{TLS configuration for HTTPS. Can be a result from \code{\link[=generate_cert]{generate_cert()}},
+or a list with \code{cert} and \code{key} file paths.}
 }
 \if{html}{\out{</div>}}
 }

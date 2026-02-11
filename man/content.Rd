@@ -8,6 +8,8 @@
 \alias{content_csv}
 \alias{content_tsv}
 \alias{content_protobuf}
+\alias{content_sse}
+\alias{content_ndjson}
 \title{Content Headers}
 \usage{
 content_html()
@@ -21,6 +23,10 @@ content_csv()
 content_tsv()
 
 content_protobuf()
+
+content_sse()
+
+content_ndjson()
 }
 \value{
 Length 1 character vector.

@@ -9,5 +9,12 @@
 #' }
 #' @export
 stop_all <- function() {
-  httpuv::stopAllServers()
+  for (server in .globals$servers) {
+    tryCatch(
+      server$close(),
+      error = function(e) NULL
+    )
+  }
+  .globals$servers <- list()
+  invisible(NULL)
 }

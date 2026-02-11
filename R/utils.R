@@ -117,7 +117,8 @@ get_port <- function(host, port = NULL) {
     return(as.integer(shiny_port))
   }
 
-  httpuv::randomPort(host = host)
+  # return 0 to let nanonext auto-assign a port
+  0L
 }
 
 #' Silent readLines

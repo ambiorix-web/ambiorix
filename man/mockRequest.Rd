@@ -4,7 +4,7 @@
 \alias{mockRequest}
 \title{Mock Request}
 \usage{
-mockRequest(cookie = "", query = "", path = "/")
+mockRequest(cookie = "", query = "", path = "/", method = "GET")
 }
 \arguments{
 \item{cookie}{Cookie string.}
@@ -12,6 +12,8 @@ mockRequest(cookie = "", query = "", path = "/")
 \item{query}{Query string.}
 
 \item{path}{Path string.}
+
+\item{method}{HTTP method.}
 }
 \value{
 A \code{Request} object.

@@ -25,7 +25,7 @@ Routing <- R6::R6Class(
     #'
     #' @param path Route to listen to, `:` defines a parameter.
     #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
+    #' describing a response, e.g.: [response()].
     #' @param error Handler function to run on error.
     #'
     #' @examples
@@ -59,7 +59,7 @@ Routing <- R6::R6Class(
     #'
     #' @param path Route to listen to, `:` defines a parameter.
     #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
+    #' describing a response, e.g.: [response()].
     #' @param error Handler function to run on error.
     put = function(path, handler, error = NULL) {
       assert_that(valid_path(path))
@@ -83,7 +83,7 @@ Routing <- R6::R6Class(
     #'
     #' @param path Route to listen to, `:` defines a parameter.
     #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
+    #' describing a response, e.g.: [response()].
     #' @param error Handler function to run on error.
     patch = function(path, handler, error = NULL) {
       assert_that(valid_path(path))
@@ -107,7 +107,7 @@ Routing <- R6::R6Class(
     #'
     #' @param path Route to listen to, `:` defines a parameter.
     #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
+    #' describing a response, e.g.: [response()].
     #' @param error Handler function to run on error.
     delete = function(path, handler, error = NULL) {
       assert_that(valid_path(path))
@@ -131,7 +131,7 @@ Routing <- R6::R6Class(
     #'
     #' @param path Route to listen to.
     #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
+    #' describing a response, e.g.: [response()].
     #' @param error Handler function to run on error.
     post = function(path, handler, error = NULL) {
       assert_that(valid_path(path))
@@ -155,7 +155,7 @@ Routing <- R6::R6Class(
     #'
     #' @param path Route to listen to.
     #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
+    #' describing a response, e.g.: [response()].
     #' @param error Handler function to run on error.
     options = function(path, handler, error = NULL) {
       assert_that(valid_path(path))
@@ -179,7 +179,7 @@ Routing <- R6::R6Class(
     #'
     #' @param path Route to listen to.
     #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
+    #' describing a response, e.g.: [response()].
     #' @param error Handler function to run on error.
     all = function(path, handler, error = NULL) {
       assert_that(valid_path(path))
@@ -236,6 +236,31 @@ Routing <- R6::R6Class(
         )
       })
       private$.params <- append(private$.params, p)
+      invisible(self)
+    },
+    #' @details Stream Method
+    #'
+    #' Add a streaming endpoint (SSE, NDJSON, etc.).
+    #'
+    #' @param path Route to listen to.
+    #' @param handler Function with signature `function(req, conn)` where
+    #' `req` is the Request object and `conn` is a [StreamConnection].
+    #'
+    #' @examples
+    #' app <- Ambiorix$new()
+    #'
+    #' app$stream("/events", function(req, conn) {
+    #'   conn$sse(data = "connected", event = "open")
+    #' })
+    #'
+    #' if(interactive())
+    #'  app$start()
+    stream = function(path, handler) {
+      assert_that(valid_path(path))
+      assert_that(not_missing(handler))
+
+      path <- private$.make_path(path)
+      private$.stream_handlers[[path]] <- handler
       invisible(self)
     },
     #' @details Receive Websocket Message
@@ -439,6 +464,21 @@ Routing <- R6::R6Class(
 
       return(receivers)
     },
+    #' @details Get the stream handlers
+    #' @param handlers Existing list of stream handlers.
+    get_stream_handlers = function(handlers = list()) {
+      handlers <- append(handlers, private$.stream_handlers)
+
+      if (!length(private$.routers)) {
+        return(handlers)
+      }
+
+      for (router in private$.routers) {
+        handlers <- router$get_stream_handlers(handlers)
+      }
+
+      return(handlers)
+    },
     #' @details Get the middleware
     #' @param middlewares Existing list of middleswares
     #' @param parent Parent path
@@ -513,6 +553,7 @@ Routing <- R6::R6Class(
     .receivers = list(),
     .middleware = list(),
     .params = list(),
+    .stream_handlers = list(),
     .is_running = FALSE,
     .wss_custom = NULL,
     .routers = list(),
@@ -544,14 +585,17 @@ Routing <- R6::R6Class(
       request <- Request$new(req)
       res <- Response$new()
 
+      # extract path from uri (remove query string)
+      path <- strsplit(req$uri, "?", fixed = TRUE)[[1]][1]
+
       # loop over routes
       for (i in seq_along(private$.routes)) {
         # if path matches pattern and method
         if (
-          grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) &&
-            req$REQUEST_METHOD %in% private$.routes[[i]]$method
+          grepl(private$.routes[[i]]$route$pattern, path) &&
+            req$method %in% private$.routes[[i]]$method
         ) {
-          .globals$infoLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO)
+          .globals$infoLog$log(req$method, "on", path)
 
           basepath <- private$.routes[[i]]$route$basepath
 
@@ -603,7 +647,7 @@ Routing <- R6::R6Class(
               mid_basepath <- attr(private$.middleware[[j]], "basepath")
 
               mid_res <- NULL
-              if (grepl(mid_basepath, req$PATH_INFO)) {
+              if (grepl(mid_basepath, path)) {
                 mid_res <- private$.middleware[[j]](request, res)
               }
 
@@ -647,9 +691,9 @@ Routing <- R6::R6Class(
                 onRejected = function(error) {
                   message(conditionMessage(error))
                   .globals$errorLog$log(
-                    req$REQUEST_METHOD,
+                    req$method,
                     "on",
-                    req$PATH_INFO,
+                    path,
                     "-",
                     "Server error"
                   )
@@ -685,28 +729,39 @@ Routing <- R6::R6Class(
       )
       return(self$not_found(request, res))
     },
-    .wss = function(ws) {
+    .ws_on_open = function(ws) {
       .globals$wsc <- append(.globals$wsc, Websocket$new(ws))
+    },
+    .ws_on_message = function(ws, data) {
+      if (length(private$.receivers) == 0) {
+        return(NULL)
+      }
 
-      # receive
-      ws$onMessage(function(binary, message) {
-        # don't run if no receiver
-        if (length(private$.receivers) == 0) {
-          return(NULL)
+      message <- tryCatch(
+        yyjsonr::read_json_str(data),
+        error = function(e) NULL
+      )
+
+      if (is.null(message)) {
+        return(NULL)
+      }
+
+      for (i in seq_along(private$.receivers)) {
+        if (private$.receivers[[i]]$is_handler(message)) {
+          .globals$infoLog$log(
+            "Received message from websocket:",
+            message$name
+          )
+          return(private$.receivers[[i]]$receive(message, ws))
         }
-
-        message <- yyjsonr::read_json_str(message)
-
-        for (i in seq_along(private$.receivers)) {
-          if (private$.receivers[[i]]$is_handler(message)) {
-            .globals$infoLog$log(
-              "Received message from websocket:",
-              message$name
-            )
-            return(private$.receivers[[i]]$receive(message, ws))
-          }
-        }
-      })
+      }
+    },
+    .ws_on_close = function(ws) {
+      # remove from global websocket clients list
+      .globals$wsc <- Filter(
+        function(client) !identical(client$id, ws$id),
+        .globals$wsc
+      )
     },
     n_routes = function() {
       length(private$.routes)
