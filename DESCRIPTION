@@ -29,19 +29,19 @@ Imports:
     methods,
     assertthat,
     webutils (>= 1.2.0),
-    yyjsonr (>= 0.1.20)
+    yyjsonr (>= 0.1.20),
+    mime (>= 0.13)
 Suggests:
-  mime,
-  readr,
-  readxl,
-  ggplot2,
-  promises,
-  jsonlite,
-  websocket,
-  htmltools,
-  commonmark,
-  htmlwidgets,
-  testthat (>= 3.0.0)
+    readr,
+    readxl,
+    ggplot2,
+    promises,
+    jsonlite,
+    websocket,
+    htmltools,
+    commonmark,
+    htmlwidgets,
+    testthat (>= 3.0.0)
 URL: https://github.com/ambiorix-web/ambiorix, https://ambiorix.dev
 BugReports: https://github.com/ambiorix-web/ambiorix/issues
 Config/testthat/edition: 3
