@@ -107,7 +107,6 @@ construct_response <- function(res) {
   structure(res, class = c(class(res), "ambiorixResponse"))
 }
 
-
 inline_dependencies <- function(deps) {
   lapply(
     X = deps,
@@ -254,56 +253,37 @@ Response <- R6::R6Class(
     },
     #' @details Send a plain HTML response.
     #' @param body Body of the response.
-    #' @param headers HTTP headers to set.
-    #' @param status Status of the response, if `NULL` uses `self$status`.
-    send = function(body, headers = NULL, status = NULL) {
-      deprecated_headers(headers)
-      deprecated_status(status)
-      headers <- private$.get_headers(headers)
+    send = function(body) {
       response(
-        status = private$.get_status(status),
-        headers = headers,
-        body = body
+        body = body,
+        headers = private$.get_headers(),
+        status = private$.get_status()
       )
     },
     #' @details Send a plain HTML response, pre-processed with sprintf.
     #' @param body Body of the response.
     #' @param ... Passed to `...` of `sprintf`.
-    #' @param headers HTTP headers to set.
-    #' @param status Status of the response, if `NULL` uses `self$status`.
-    sendf = function(body, ..., headers = NULL, status = NULL) {
-      deprecated_headers(headers)
-      deprecated_status(status)
-      body <- sprintf(body, ...)
-      headers <- private$.get_headers(headers)
+    sendf = function(body, ...) {
       response(
-        status = private$.get_status(status),
-        headers = headers,
-        body = body
+        body = sprintf(body, ...),
+        headers = private$.get_headers(),
+        status = private$.get_status()
       )
     },
     #' @details Send a plain text response.
     #' @param body Body of the response.
-    #' @param headers HTTP headers to set.
-    #' @param status Status of the response, if `NULL` uses `self$status`.
-    text = function(body, headers = NULL, status = NULL) {
-      deprecated_headers(headers)
-      deprecated_status(status)
-      headers <- private$.get_headers(headers)
-      headers[["Content-Type"]] <- content_plain()
+    text = function(body) {
+      self$header_content_plain()
+
       response(
-        status = private$.get_status(status),
-        headers = headers,
-        body = body
+        body = body,
+        headers = private$.get_headers(),
+        status = private$.get_status()
       )
     },
     #' @details Send a file.
     #' @param file File to send.
-    #' @param headers HTTP headers to set.
-    #' @param status Status of the response.
-    send_file = function(file, headers = NULL, status = NULL) {
-      deprecated_headers(headers)
-      deprecated_status(status)
+    send_file = function(file) {
       assert_that(not_missing(file))
 
       body <- readBin(
@@ -312,146 +292,139 @@ Response <- R6::R6Class(
         n = file.info(file)$size
       )
 
-      headers <- private$.get_headers()
-      headers[["Content-Type"]] <- mime::guess_type(file = file)
+      self$header(
+        name = "Content-Type",
+        value = mime::guess_type(file = file)
+      )
 
       response(
-        status = private$.get_status(),
-        headers = headers,
-        body = body
+        body = body,
+        headers = private$.get_headers(),
+        status = private$.get_status()
       )
     },
     #' @details Redirect to a path or URL.
     #' @param path Path or URL to redirect to.
-    #' @param status Status of the response, if `NULL` uses `self$status`.
-    redirect = function(path, status = NULL) {
-      deprecated_status(status)
+    redirect = function(path) {
+      status <- private$.get_status()
 
-      status <- private$.status
       # for redirection, must start with a "3". if not, default
       # to 302. see #138.
       if (!startsWith(x = as.character(status), prefix = "3")) {
         status <- 302L
       }
 
-      headers <- private$.get_headers(list(Location = path))
-      response(status = status, headers = headers, body = "")
+      self$header(
+        name = "Location",
+        value = path
+      )
+
+      response(
+        body = "",
+        headers = private$.get_headers(),
+        status = status
+      )
     },
     #' @details Render a template file.
     #' @param file Template file.
     #' @param data List to fill `[% tags %]`.
-    #' @param headers HTTP headers to set.
-    #' @param status Status of the response, if `NULL` uses `self$status`.
-    render = function(file, data = list(), headers = NULL, status = NULL) {
+    render = function(file, data = list()) {
       assert_that(not_missing(file))
       assert_that(has_file(file))
-      deprecated_status(status)
-      deprecated_headers(headers)
-
-      status <- private$.get_status(status)
-
-      file_content <- private$.render_template(file, data)
-      headers <- private$.get_headers(headers)
 
       response(
-        file_content,
-        status = private$.get_status(status),
-        headers = headers
+        body = private$.render_template(file, data),
+        headers = private$.get_headers(),
+        status = private$.get_status()
       )
     },
     #' @details Render an object as JSON.
     #' @param body Body of the response.
-    #' @param headers HTTP headers to set.
-    #' @param status Status of the response, if `NULL` uses `self$status`.
     #' @param ... Additional named arguments passed to the serialiser.
-    json = function(body, headers = NULL, status = NULL, ...) {
+    json = function(body, ...) {
       self$header_content_json()
-      deprecated_headers(headers)
-      deprecated_status(status)
-      headers <- private$.get_headers(headers)
+
       response(
-        serialise(body, ...),
-        headers = headers,
-        status = private$.get_status(status)
+        body = serialise(body, ...),
+        headers = private$.get_headers(),
+        status = private$.get_status()
       )
     },
     #' @details Sends a comma separated value file
     #' @param data Data to convert to CSV.
     #' @param name Name of the file.
-    #' @param status Status of the response, if `NULL` uses `self$status`.
     #' @param ... Additional arguments passed to [readr::format_csv()].
-    csv = function(data, name = "data", status = NULL, ...) {
+    csv = function(data, name = "data", ...) {
       assert_that(not_missing(data))
       check_installed("readr")
-      deprecated_status(status)
 
       name <- sprintf("attachment;charset=UTF-8;filename=%s.csv", name)
-
-      headers <- list(
-        "Content-Disposition" = name
+      self$header(
+        name = "Content-Disposition",
+        value = name
       )
       self$header_content_csv()
-      headers <- private$.get_headers(headers)
 
-      data <- readr::format_csv(data, ...)
-      response(data, header = headers, status = private$.get_status(status))
+      data <- readr::format_csv(x = data, ...)
+
+      response(
+        body = data,
+        header = private$.get_headers(),
+        status = private$.get_status()
+      )
     },
     #' @details Sends a tab separated value file
     #' @param data Data to convert to CSV.
     #' @param name Name of the file.
-    #' @param status Status of the response, if `NULL` uses `self$status`.
     #' @param ... Additional arguments passed to [readr::format_tsv()].
-    tsv = function(data, name = "data", status = NULL, ...) {
+    tsv = function(data, name = "data", ...) {
       assert_that(not_missing(data))
       check_installed("readr")
-      deprecated_status(status)
 
       name <- sprintf("attachment;charset=UTF-8;filename=%s.tsv", name)
-
-      headers <- list(
-        "Content-Disposition" = name
+      self$header(
+        name = "Content-Disposition",
+        value = name
       )
       self$header_content_tsv()
-      headers <- private$.get_headers(headers)
 
-      data <- readr::format_tsv(data, ...)
-      response(data, header = headers, status = private$.get_status(status))
+      data <- readr::format_tsv(x = data, ...)
+
+      response(
+        body = data,
+        header = private$.get_headers(),
+        status = private$.get_status()
+      )
     },
     #' @details Sends an htmlwidget.
     #' @param widget The widget to use.
-    #' @param status Status of the response, if `NULL` uses `self$status`.
     #' @param ... Additional arguments passed to [htmlwidgets::saveWidget()].
-    htmlwidget = function(widget, status = NULL, ...) {
+    htmlwidget = function(widget, ...) {
       check_installed("htmlwidgets")
       if (!inherits(widget, "htmlwidget")) {
         stop("This is not an htmlwidget", call. = FALSE)
       }
-      deprecated_status(status)
 
       # save and read
       tmp <- tempfile(fileext = ".html")
       htmlwidgets::saveWidget(widget, tmp, selfcontained = TRUE, ...)
-      on.exit({
-        unlink(tmp)
-      })
-      headers <- private$.get_headers()
+      on.exit(expr = unlink(tmp))
 
       response(
         body = paste0(read_lines(tmp), "\n", collapse = ""),
-        status = private$.get_status(status),
-        headers = headers
+        headers = private$.get_headers(),
+        status = private$.get_status()
       )
     },
     #' @details Render a markdown file.
     #' @param file Template file.
     #' @param data List to fill `[% tags %]`.
-    #' @param headers HTTP headers to set.
-    #' @param status Status of the response, if `NULL` uses `self$status`.
-    md = function(file, data = list(), headers = NULL, status = NULL) {
+    md = function(file, data = list()) {
       check_installed("commonmark")
-      deprecated_headers(headers)
-      deprecated_status(status)
-      self$render(file, data, headers, status)
+      self$render(
+        file = file,
+        data = data
+      )
     },
     #' @details Send a png file
     #' @param file Path to local file.
@@ -553,14 +526,14 @@ Response <- R6::R6Class(
     #' @details Get headers
     #' Returns the list of headers currently set.
     get_headers = function() {
-      return(private$.headers)
+      private$.headers
     },
     #' @details Get a header
     #' Returns a single header currently, `NULL` if not set.
     #' @param name Name of the header to return.
     get_header = function(name) {
       assert_that(not_missing(name))
-      return(private$.headers[[name]])
+      private$.headers[[name]]
     },
     #' @details Set headers
     #' @param headers A named list of headers to set.
@@ -841,7 +814,7 @@ Response <- R6::R6Class(
         heads <- modifyList(heads, list("Content-Type" = content_html()))
       }
 
-      return(heads)
+      heads
     },
     .run_post_hooks = function(file_content, ext) {
       if (length(private$.postHooks) == 0) {
@@ -862,7 +835,7 @@ Response <- R6::R6Class(
         file_content <- content
       }
 
-      return(file_content)
+      file_content
     },
     .render_cookies = function() {
       if (length(private$.cookies) == 0L) {
@@ -981,29 +954,5 @@ convert_cookie_expires <- function(expires) {
     )
   }
 
-  return(expires)
-}
-
-deprecated_headers <- function(headers = NULL) {
-  if (is.null(headers)) {
-    return()
-  }
-
-  .Deprecated(
-    "header",
-    package = "ambiorix",
-    msg = "Deprecated. Pass headers with the `header()` method."
-  )
-}
-
-deprecated_status <- function(status = NULL) {
-  if (is.null(status)) {
-    return()
-  }
-
-  .Deprecated(
-    "status",
-    package = "ambiorix",
-    msg = "Deprecated. Pass status to the `status` binding, e.g.: `res$status <- 404L`."
-  )
+  expires
 }
