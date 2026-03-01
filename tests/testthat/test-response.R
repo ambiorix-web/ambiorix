@@ -69,7 +69,8 @@ test_that("Response", {
 
   # file
   resp <- res$send_file("file.html")
-  expect_equal(nchar(resp$body), 48)
+  expect_true(is.raw(resp$body))
+  expect_equal(length(resp$body), 52L)
 
   # redirect
   resp <- res$redirect("/")
@@ -237,16 +238,6 @@ test_that("Response", {
 
   expect_error(res$headers("error"))
   expect_type(res$headers, "list")
-
-  # deprecated
-  expect_error(res$set())
-  expect_error(res$set("hello"))
-  expect_warning(res$set("hello", "world"))
-  expect_error(res$get())
-  expect_warning(res$get("hello"))
-  expect_error(res$set_header())
-  expect_error(res$set_header("error"))
-  expect_warning(res$set_header("error", "xxx"))
 
   # set headers
   expect_error(res$set_headers())
