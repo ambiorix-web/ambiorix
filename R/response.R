@@ -573,23 +573,6 @@ Response <- R6::R6Class(
       private$.headers <- headers
       invisible(self)
     },
-    #' @details Set a Header
-    #' @param name Name of the header.
-    #' @param value Value to set.
-    #' @return Invisible returns self.
-    set_header = function(name, value) {
-      assert_that(not_missing(name))
-      assert_that(not_missing(value))
-
-      .Deprecated(
-        "header",
-        package = "ambiorix",
-        "Deprecated. This is deprecated, use the `header()` method."
-      )
-
-      private$.headers[[name]] <- value
-      invisible(self)
-    },
     #' @details Add a pre render hook.
     #' Runs before the `render` and `send_file` method.
     #'

@@ -61,7 +61,6 @@ if (interactive()) {
 \item \href{#method-Response-get_headers}{\code{Response$get_headers()}}
 \item \href{#method-Response-get_header}{\code{Response$get_header()}}
 \item \href{#method-Response-set_headers}{\code{Response$set_headers()}}
-\item \href{#method-Response-set_header}{\code{Response$set_header()}}
 \item \href{#method-Response-pre_render_hook}{\code{Response$pre_render_hook()}}
 \item \href{#method-Response-post_render_hook}{\code{Response$post_render_hook()}}
 \item \href{#method-Response-cookie}{\code{Response$cookie()}}
@@ -621,31 +620,6 @@ Returns a single header currently, \code{NULL} if not set.
 Set headers
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Response-set_header"></a>}}
-\if{latex}{\out{\hypertarget{method-Response-set_header}{}}}
-\subsection{Method \code{set_header()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$set_header(name, value)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Name of the header.}
-
-\item{\code{value}}{Value to set.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Set a Header
-}
-
-\subsection{Returns}{
-Invisible returns self.
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Response-pre_render_hook"></a>}}
