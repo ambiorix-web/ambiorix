@@ -52,7 +52,6 @@ if (interactive()) {
 \item \href{#method-Response-image}{\code{Response$image()}}
 \item \href{#method-Response-ggplot2}{\code{Response$ggplot2()}}
 \item \href{#method-Response-print}{\code{Response$print()}}
-\item \href{#method-Response-get}{\code{Response$get()}}
 \item \href{#method-Response-header}{\code{Response$header()}}
 \item \href{#method-Response-header_content_json}{\code{Response$header_content_json()}}
 \item \href{#method-Response-header_content_html}{\code{Response$header_content_html()}}
@@ -460,26 +459,6 @@ Ggplot2
 
 \subsection{Details}{
 Print
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Response-get"></a>}}
-\if{latex}{\out{\hypertarget{method-Response-get}{}}}
-\subsection{Method \code{get()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$get(name)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{String. Name of the variable to get.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Get data
 }
 
 }

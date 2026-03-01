@@ -510,18 +510,6 @@ Response <- R6::R6Class(
 
       cli::cli_end()
     },
-    #' @details Get data
-    #' @param name String. Name of the variable to get.
-    get = function(name) {
-      assert_that(not_missing(name))
-      .Deprecated(
-        "",
-        package = "ambiorix",
-        "Deprecated. The environment is no longer locked, you may simply `req$value"
-      )
-
-      self[[name]]
-    },
     #' @details Add headers to the response.
     #' @param name String. Name of the header.
     #' @param value Value of the header.
