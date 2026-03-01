@@ -52,7 +52,6 @@ if (interactive()) {
 \item \href{#method-Response-image}{\code{Response$image()}}
 \item \href{#method-Response-ggplot2}{\code{Response$ggplot2()}}
 \item \href{#method-Response-print}{\code{Response$print()}}
-\item \href{#method-Response-set}{\code{Response$set()}}
 \item \href{#method-Response-get}{\code{Response$get()}}
 \item \href{#method-Response-header}{\code{Response$header()}}
 \item \href{#method-Response-header_content_json}{\code{Response$header_content_json()}}
@@ -463,31 +462,6 @@ Ggplot2
 Print
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Response-set"></a>}}
-\if{latex}{\out{\hypertarget{method-Response-set}{}}}
-\subsection{Method \code{set()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$set(name, value)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{String. Name of the variable.}
-
-\item{\code{value}}{Value of the variable.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Set Data
-}
-
-\subsection{Returns}{
-Invisible returns self.
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Response-get"></a>}}

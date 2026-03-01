@@ -510,22 +510,6 @@ Response <- R6::R6Class(
 
       cli::cli_end()
     },
-    #' @details Set Data
-    #' @param name String. Name of the variable.
-    #' @param value Value of the variable.
-    #' @return Invisible returns self.
-    set = function(name, value) {
-      assert_that(not_missing(name))
-      assert_that(not_missing(value))
-      .Deprecated(
-        "",
-        package = "ambiorix",
-        "Deprecated. The environment is no longer locked, you may simply `res$name <- value`"
-      )
-
-      self[[name]] <- value
-      invisible(self)
-    },
     #' @details Get data
     #' @param name String. Name of the variable to get.
     get = function(name) {
