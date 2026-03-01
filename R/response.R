@@ -305,7 +305,21 @@ Response <- R6::R6Class(
       deprecated_headers(headers)
       deprecated_status(status)
       assert_that(not_missing(file))
-      self$render(file, data = list(), status = status, headers = headers)
+
+      body <- readBin(
+        con = file,
+        what = "raw",
+        n = file.info(file)$size
+      )
+
+      headers <- private$.get_headers()
+      headers[["Content-Type"]] <- mime::guess_type(file = file)
+
+      response(
+        status = private$.get_status(),
+        headers = headers,
+        body = body
+      )
     },
     #' @details Redirect to a path or URL.
     #' @param path Path or URL to redirect to.
@@ -853,7 +867,7 @@ Response <- R6::R6Class(
       # parse R
       private$.run_post_hooks(render_html(file_content), ext)
     },
-    .get_status = function(status) {
+    .get_status = function(status = NULL) {
       if (is.null(status)) {
         return(private$.status)
       }
