@@ -547,7 +547,7 @@ Response <- R6::R6Class(
       invisible(self)
     },
     #' @details Add a pre render hook.
-    #' Runs before the `render` and `send_file` method.
+    #' Runs before the `render` method.
     #'
     #' @param hook A function that accepts at least 4 arguments:
     #' - `self`: The `Request` class instance.

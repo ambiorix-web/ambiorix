@@ -618,7 +618,7 @@ potential updates to hooks in the future.}
 }
 \subsection{Details}{
 Add a pre render hook.
-Runs before the \code{render} and \code{send_file} method.
+Runs before the \code{render} method.
 }
 
 \subsection{Returns}{
