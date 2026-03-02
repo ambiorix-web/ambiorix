@@ -10,20 +10,21 @@ A Routing object.
 Core routing class.
 Do not use directly, see \link{Ambiorix}, and \link{Router}.
 }
+\section{HTTP methods}{
+
+See \link{routing-http-methods} for the full argument reference. The routing
+instance exposes helpers for common HTTP verbs; they are registered when the
+object is initialised and share the same signature.
+\itemize{
+\item \code{get()}, \code{put()}, \code{patch()}, \code{delete()}, \code{post()}, \code{options()} register a
+handler for the single corresponding HTTP verb; see
+\link{routing-http-methods}.
+\item \code{all()} registers a handler that responds to \code{GET}, \code{POST}, \code{PUT},
+\code{DELETE}, and \code{PATCH}; see \link{routing-http-methods}.
+}
+}
+
 \examples{
-
-## ------------------------------------------------
-## Method `Routing$get`
-## ------------------------------------------------
-
-app <- Ambiorix$new()
-
-app$get("/", function(req, res){
- res$send("Using {ambiorix}!")
-})
-
-if(interactive())
- app$start()
 
 ## ------------------------------------------------
 ## Method `Routing$param`
@@ -73,11 +74,35 @@ app$receive("hello", function(msg, ws){
 if(interactive())
  app$start()
 }
+\seealso{
+\link{routing-http-methods}
+}
 \keyword{export}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{error}}{Error handler.}
+
+\item{\code{get}}{Register a route handler for HTTP GET requests. See
+\link{routing-http-methods}.}
+
+\item{\code{put}}{Register a route handler for HTTP PUT requests. See
+\link{routing-http-methods}.}
+
+\item{\code{patch}}{Register a route handler for HTTP PATCH requests. See
+\link{routing-http-methods}.}
+
+\item{\code{delete}}{Register a route handler for HTTP DELETE requests. See
+\link{routing-http-methods}.}
+
+\item{\code{post}}{Register a route handler for HTTP POST requests. See
+\link{routing-http-methods}.}
+
+\item{\code{options}}{Register a route handler for HTTP OPTIONS requests. See
+\link{routing-http-methods}.}
+
+\item{\code{all}}{Register a route handler that responds to every HTTP verb used by
+Ambiorix. See \link{routing-http-methods}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -94,13 +119,6 @@ if(interactive())
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-Routing-new}{\code{Routing$new()}}
-\item \href{#method-Routing-get}{\code{Routing$get()}}
-\item \href{#method-Routing-put}{\code{Routing$put()}}
-\item \href{#method-Routing-patch}{\code{Routing$patch()}}
-\item \href{#method-Routing-delete}{\code{Routing$delete()}}
-\item \href{#method-Routing-post}{\code{Routing$post()}}
-\item \href{#method-Routing-options}{\code{Routing$options()}}
-\item \href{#method-Routing-all}{\code{Routing$all()}}
 \item \href{#method-Routing-param}{\code{Routing$param()}}
 \item \href{#method-Routing-receive}{\code{Routing$receive()}}
 \item \href{#method-Routing-print}{\code{Routing$print()}}
@@ -131,210 +149,6 @@ if(interactive())
 }
 \subsection{Details}{
 Initialise
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Routing-get"></a>}}
-\if{latex}{\out{\hypertarget{method-Routing-get}{}}}
-\subsection{Method \code{get()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$get(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-GET Method
-
-Add routes to listen to.
-}
-
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{app <- Ambiorix$new()
-
-app$get("/", function(req, res){
- res$send("Using {ambiorix}!")
-})
-
-if(interactive())
- app$start()
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Routing-put"></a>}}
-\if{latex}{\out{\hypertarget{method-Routing-put}{}}}
-\subsection{Method \code{put()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$put(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-PUT Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Routing-patch"></a>}}
-\if{latex}{\out{\hypertarget{method-Routing-patch}{}}}
-\subsection{Method \code{patch()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$patch(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-PATCH Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Routing-delete"></a>}}
-\if{latex}{\out{\hypertarget{method-Routing-delete}{}}}
-\subsection{Method \code{delete()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$delete(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to, \code{:} defines a parameter.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-DELETE Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Routing-post"></a>}}
-\if{latex}{\out{\hypertarget{method-Routing-post}{}}}
-\subsection{Method \code{post()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$post(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-POST Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Routing-options"></a>}}
-\if{latex}{\out{\hypertarget{method-Routing-options}{}}}
-\subsection{Method \code{options()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$options(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-OPTIONS Method
-
-Add routes to listen to.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Routing-all"></a>}}
-\if{latex}{\out{\hypertarget{method-Routing-all}{}}}
-\subsection{Method \code{all()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$all(path, handler, error = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Route to listen to.}
-
-\item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-
-\item{\code{error}}{Handler function to run on error.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-All Methods
-
-Add routes to listen to for all methods \code{GET}, \code{POST}, \code{PUT}, \code{DELETE}, and \code{PATCH}.
 }
 
 }
