@@ -75,6 +75,19 @@ test_that("Response", {
   resp <- res$redirect("/")
   expect_equal(resp$headers$Location, "/")
 
+  redirect_res <- Response$new()
+  resp <- redirect_res$redirect("/default-redirect")
+  expect_equal(resp$status, 302L)
+  expect_equal(resp$headers$Location, "/default-redirect")
+
+  redirect_res$status <- 308L
+  resp <- redirect_res$redirect("/permanent-redirect")
+  expect_equal(resp$status, 308L)
+
+  redirect_res$status <- 404L
+  resp <- redirect_res$redirect("/fallback-redirect")
+  expect_equal(resp$status, 302L)
+
   # render
   resp <- res$render("render.html", list(title = "hello"))
   expect_equal(

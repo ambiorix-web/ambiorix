@@ -305,14 +305,35 @@ Response <- R6::R6Class(
       deprecated_headers(headers)
       deprecated_status(status)
       assert_that(not_missing(file))
-      self$render(file, data = list(), status = status, headers = headers)
+
+      body <- readBin(
+        con = file,
+        what = "raw",
+        n = file.info(file)$size
+      )
+
+      headers <- private$.get_headers()
+      headers[["Content-Type"]] <- mime::guess_type(file = file)
+
+      response(
+        status = private$.get_status(),
+        headers = headers,
+        body = body
+      )
     },
     #' @details Redirect to a path or URL.
     #' @param path Path or URL to redirect to.
     #' @param status Status of the response, if `NULL` uses `self$status`.
     redirect = function(path, status = NULL) {
       deprecated_status(status)
-      status <- private$.get_status(status)
+
+      status <- private$.status
+      # for redirection, must start with a "3". if not, default
+      # to 302. see #138.
+      if (!startsWith(x = as.character(status), prefix = "3")) {
+        status <- 302L
+      }
+
       headers <- private$.get_headers(list(Location = path))
       response(status = status, headers = headers, body = "")
     },
@@ -751,7 +772,17 @@ Response <- R6::R6Class(
         return(private$.status)
       }
 
-      private$.status <- as.integer(value)
+      value <- as.integer(value)
+      is_valid_status <- length(value) == 1L &&
+        !is.na(value) &&
+        is.integer(value)
+
+      if (!is_valid_status) {
+        msg <- paste0("Invalid response status: '", value, "'")
+        stop(msg, call. = FALSE)
+      }
+
+      private$.status <- value
     },
     headers = function(value) {
       if (missing(value)) {
@@ -836,7 +867,7 @@ Response <- R6::R6Class(
       # parse R
       private$.run_post_hooks(render_html(file_content), ext)
     },
-    .get_status = function(status) {
+    .get_status = function(status = NULL) {
       if (is.null(status)) {
         return(private$.status)
       }

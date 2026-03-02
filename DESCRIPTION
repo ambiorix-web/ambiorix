@@ -1,15 +1,15 @@
 Package: ambiorix
 Title: Web Framework Inspired by 'Express.js'
-Version: 2.2.1
+Version: 2.2.2
 Authors@R: 
   c(
     person(given = "John",
            family = "Coene",
-           role = c("aut", "cre"),
+           role = "aut",
            email = "jcoenep@gmail.com",
            comment = c(ORCID = "0000-0002-6637-4107")),
     person(family = "Opifex", role = c("fnd")),
-    person(given = "Kennedy", family = "Mwavu", role = "ctb", comment = c(ORCID = "0009-0006-3157-7234")),
+    person(given = "Kennedy", family = "Mwavu", role = "cre", email = "mwavukennedy@gmail.com", comment = c(ORCID = "0009-0006-3157-7234")),
     person(given = "Julio", family = "Collazos", role = "ctb", comment = c(ORCID = "0009-0006-5503-0997"))
   )
 Description: A web framework inspired by 'express.js' to build
@@ -29,19 +29,19 @@ Imports:
     methods,
     assertthat,
     webutils (>= 1.2.0),
-    yyjsonr (>= 0.1.20)
+    yyjsonr (>= 0.1.20),
+    mime (>= 0.13)
 Suggests:
-  mime,
-  readr,
-  readxl,
-  ggplot2,
-  promises,
-  jsonlite,
-  websocket,
-  htmltools,
-  commonmark,
-  htmlwidgets,
-  testthat (>= 3.0.0)
+    readr,
+    readxl,
+    ggplot2,
+    promises,
+    jsonlite,
+    websocket,
+    htmltools,
+    commonmark,
+    htmlwidgets,
+    testthat (>= 3.0.0)
 URL: https://github.com/ambiorix-web/ambiorix, https://ambiorix.dev
 BugReports: https://github.com/ambiorix-web/ambiorix/issues
 Config/testthat/edition: 3
