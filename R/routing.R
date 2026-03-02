@@ -419,42 +419,41 @@ Routing <- R6::R6Class(
     .is_running = FALSE,
     .wss_custom = NULL,
     .routers = list(),
-    .http_methods = list(
-      get = "GET",
-      put = "PUT",
-      patch = "PATCH",
-      delete = "DELETE",
-      post = "POST",
-      options = "OPTIONS",
-      all = c("GET", "POST", "PUT", "DELETE", "PATCH")
-    ),
     .register_http_methods = function() {
-      for (name in names(private$.http_methods)) {
-        self[[name]] <- private$.route_adder_factory(name)
-      }
+      http_methods = list(
+        get = "GET",
+        put = "PUT",
+        patch = "PATCH",
+        delete = "DELETE",
+        post = "POST",
+        options = "OPTIONS",
+        all = c("GET", "POST", "PUT", "DELETE", "PATCH")
+      )
+
+      Map(
+        f = function(name, value) {
+          self[[name]] <- function(path, handler, error = NULL) {
+            assert_that(valid_path(path))
+            assert_that(not_missing(handler))
+            assert_that(is_handler(handler))
+
+            r <- list(
+              route = Route$new(private$.make_path(path)),
+              path = path,
+              fun = handler,
+              method = value,
+              error = error %error% self$error
+            )
+            private$.routes <- append(private$.routes, list(r))
+
+            invisible(self)
+          }
+        },
+        name = names(http_methods),
+        value = unname(http_methods)
+      )
 
       invisible(self)
-    },
-    .route_adder_factory = function(name) {
-      http_methods <- private$.http_methods[[name]]
-      force(http_methods)
-
-      function(path, handler, error = NULL) {
-        assert_that(valid_path(path))
-        assert_that(not_missing(handler))
-        assert_that(is_handler(handler))
-
-        r <- list(
-          route = Route$new(private$.make_path(path)),
-          path = path,
-          fun = handler,
-          method = http_methods,
-          error = error %error% self$error
-        )
-        private$.routes <- append(private$.routes, list(r))
-
-        invisible(self)
-      }
     },
     # we reorder the routes before launching the app
     # we make sure the longest patterns are checked first
