@@ -82,7 +82,7 @@ get_dir <- function(file) {
 
 #' Replace Partial Vectorised
 #'
-#' Vectorised version of [replace_partial()].
+#' Vectorised version of `replace_partial()`.
 #'
 #' @inheritParams replace_partials
 #'
