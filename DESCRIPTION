@@ -1,6 +1,6 @@
 Package: ambiorix
 Title: Web Framework Inspired by 'Express.js'
-Version: 2.2.2
+Version: 3.0.0
 Authors@R: 
   c(
     person(given = "John",
@@ -30,12 +30,12 @@ Imports:
     assertthat,
     webutils (>= 1.2.0),
     yyjsonr (>= 0.1.20),
-    mime (>= 0.13)
+    mime (>= 0.13),
+    promises (>= 1.5.0)
 Suggests:
     readr,
     readxl,
     ggplot2,
-    promises,
     jsonlite,
     websocket,
     htmltools,
