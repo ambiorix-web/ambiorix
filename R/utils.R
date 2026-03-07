@@ -33,14 +33,16 @@ browse_ambiorix <- function(open, url) {
   if (!inherits(lhs, "ambiorixResponse")) {
     return(rhs)
   }
-  return(lhs)
+
+  lhs
 }
 
 `%error%` <- function(lhs, rhs) {
   if (is.null(lhs)) {
     return(rhs)
   }
-  return(lhs)
+
+  lhs
 }
 
 #' Remove Extensions
@@ -149,5 +151,22 @@ read_lines_cached <- function(path) {
 
   content <- read_lines(path)
   .cache_tmpls[[path]] <- content
-  return(content)
+
+  content
+}
+
+#' Ignore Unused Imports
+#'
+#' R CMD check does not detect imports in R6 classes
+#' because it does not consider code that runs at install
+#' time.
+#'
+#' Having this dummy function helps avoid this note:
+#' "Namespaces in Imports field not imported from"
+#'
+#' @keywords internal
+#' @noRd
+ignore_unused_imports <- function() {
+  mime::guess_type
+  promises::promise
 }
