@@ -1,3 +1,5 @@
+# ambiorix 3.0.0
+
 # ambiorix 2.2.2
 
 **New Features**

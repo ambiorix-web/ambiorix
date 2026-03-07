@@ -52,8 +52,6 @@ if (interactive()) {
 \item \href{#method-Response-image}{\code{Response$image()}}
 \item \href{#method-Response-ggplot2}{\code{Response$ggplot2()}}
 \item \href{#method-Response-print}{\code{Response$print()}}
-\item \href{#method-Response-set}{\code{Response$set()}}
-\item \href{#method-Response-get}{\code{Response$get()}}
 \item \href{#method-Response-header}{\code{Response$header()}}
 \item \href{#method-Response-header_content_json}{\code{Response$header_content_json()}}
 \item \href{#method-Response-header_content_html}{\code{Response$header_content_html()}}
@@ -63,7 +61,6 @@ if (interactive()) {
 \item \href{#method-Response-get_headers}{\code{Response$get_headers()}}
 \item \href{#method-Response-get_header}{\code{Response$get_header()}}
 \item \href{#method-Response-set_headers}{\code{Response$set_headers()}}
-\item \href{#method-Response-set_header}{\code{Response$set_header()}}
 \item \href{#method-Response-pre_render_hook}{\code{Response$pre_render_hook()}}
 \item \href{#method-Response-post_render_hook}{\code{Response$post_render_hook()}}
 \item \href{#method-Response-cookie}{\code{Response$cookie()}}
@@ -96,17 +93,13 @@ Set the status of the response.
 \if{latex}{\out{\hypertarget{method-Response-send}{}}}
 \subsection{Method \code{send()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$send(body, headers = NULL, status = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$send(body)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{body}}{Body of the response.}
-
-\item{\code{headers}}{HTTP headers to set.}
-
-\item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -120,7 +113,7 @@ Send a plain HTML response.
 \if{latex}{\out{\hypertarget{method-Response-sendf}{}}}
 \subsection{Method \code{sendf()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$sendf(body, ..., headers = NULL, status = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$sendf(body, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -129,10 +122,6 @@ Send a plain HTML response.
 \item{\code{body}}{Body of the response.}
 
 \item{\code{...}}{Passed to \code{...} of \code{sprintf}.}
-
-\item{\code{headers}}{HTTP headers to set.}
-
-\item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -146,17 +135,13 @@ Send a plain HTML response, pre-processed with sprintf.
 \if{latex}{\out{\hypertarget{method-Response-text}{}}}
 \subsection{Method \code{text()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$text(body, headers = NULL, status = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$text(body)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{body}}{Body of the response.}
-
-\item{\code{headers}}{HTTP headers to set.}
-
-\item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -170,17 +155,13 @@ Send a plain text response.
 \if{latex}{\out{\hypertarget{method-Response-send_file}{}}}
 \subsection{Method \code{send_file()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$send_file(file, headers = NULL, status = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$send_file(file)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{file}}{File to send.}
-
-\item{\code{headers}}{HTTP headers to set.}
-
-\item{\code{status}}{Status of the response.}
 }
 \if{html}{\out{</div>}}
 }
@@ -194,15 +175,13 @@ Send a file.
 \if{latex}{\out{\hypertarget{method-Response-redirect}{}}}
 \subsection{Method \code{redirect()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$redirect(path, status = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$redirect(path)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{path}}{Path or URL to redirect to.}
-
-\item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -216,7 +195,7 @@ Redirect to a path or URL.
 \if{latex}{\out{\hypertarget{method-Response-render}{}}}
 \subsection{Method \code{render()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$render(file, data = list(), headers = NULL, status = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$render(file, data = list())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -225,10 +204,6 @@ Redirect to a path or URL.
 \item{\code{file}}{Template file.}
 
 \item{\code{data}}{List to fill \verb{[\% tags \%]}.}
-
-\item{\code{headers}}{HTTP headers to set.}
-
-\item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -242,17 +217,13 @@ Render a template file.
 \if{latex}{\out{\hypertarget{method-Response-json}{}}}
 \subsection{Method \code{json()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$json(body, headers = NULL, status = NULL, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$json(body, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{body}}{Body of the response.}
-
-\item{\code{headers}}{HTTP headers to set.}
-
-\item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 
 \item{\code{...}}{Additional named arguments passed to the serialiser.}
 }
@@ -268,7 +239,7 @@ Render an object as JSON.
 \if{latex}{\out{\hypertarget{method-Response-csv}{}}}
 \subsection{Method \code{csv()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$csv(data, name = "data", status = NULL, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$csv(data, name = "data", ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -277,8 +248,6 @@ Render an object as JSON.
 \item{\code{data}}{Data to convert to CSV.}
 
 \item{\code{name}}{Name of the file.}
-
-\item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 
 \item{\code{...}}{Additional arguments passed to \code{\link[readr:format_delim]{readr::format_csv()}}.}
 }
@@ -294,7 +263,7 @@ Sends a comma separated value file
 \if{latex}{\out{\hypertarget{method-Response-tsv}{}}}
 \subsection{Method \code{tsv()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$tsv(data, name = "data", status = NULL, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$tsv(data, name = "data", ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -303,8 +272,6 @@ Sends a comma separated value file
 \item{\code{data}}{Data to convert to CSV.}
 
 \item{\code{name}}{Name of the file.}
-
-\item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 
 \item{\code{...}}{Additional arguments passed to \code{\link[readr:format_delim]{readr::format_tsv()}}.}
 }
@@ -320,15 +287,13 @@ Sends a tab separated value file
 \if{latex}{\out{\hypertarget{method-Response-htmlwidget}{}}}
 \subsection{Method \code{htmlwidget()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$htmlwidget(widget, status = NULL, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$htmlwidget(widget, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{widget}}{The widget to use.}
-
-\item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 
 \item{\code{...}}{Additional arguments passed to \code{\link[htmlwidgets:saveWidget]{htmlwidgets::saveWidget()}}.}
 }
@@ -344,7 +309,7 @@ Sends an htmlwidget.
 \if{latex}{\out{\hypertarget{method-Response-md}{}}}
 \subsection{Method \code{md()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$md(file, data = list(), headers = NULL, status = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Response$md(file, data = list())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -353,10 +318,6 @@ Sends an htmlwidget.
 \item{\code{file}}{Template file.}
 
 \item{\code{data}}{List to fill \verb{[\% tags \%]}.}
-
-\item{\code{headers}}{HTTP headers to set.}
-
-\item{\code{status}}{Status of the response, if \code{NULL} uses \code{self$status}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -461,51 +422,6 @@ Ggplot2
 
 \subsection{Details}{
 Print
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Response-set"></a>}}
-\if{latex}{\out{\hypertarget{method-Response-set}{}}}
-\subsection{Method \code{set()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$set(name, value)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{String. Name of the variable.}
-
-\item{\code{value}}{Value of the variable.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Set Data
-}
-
-\subsection{Returns}{
-Invisible returns self.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Response-get"></a>}}
-\if{latex}{\out{\hypertarget{method-Response-get}{}}}
-\subsection{Method \code{get()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$get(name)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{String. Name of the variable to get.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Get data
 }
 
 }
@@ -670,31 +586,6 @@ Set headers
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Response-set_header"></a>}}
-\if{latex}{\out{\hypertarget{method-Response-set_header}{}}}
-\subsection{Method \code{set_header()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Response$set_header(name, value)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Name of the header.}
-
-\item{\code{value}}{Value to set.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Set a Header
-}
-
-\subsection{Returns}{
-Invisible returns self.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Response-pre_render_hook"></a>}}
 \if{latex}{\out{\hypertarget{method-Response-pre_render_hook}{}}}
 \subsection{Method \code{pre_render_hook()}}{
@@ -727,7 +618,7 @@ potential updates to hooks in the future.}
 }
 \subsection{Details}{
 Add a pre render hook.
-Runs before the \code{render} and \code{send_file} method.
+Runs before the \code{render} method.
 }
 
 \subsection{Returns}{
