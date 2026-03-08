@@ -570,18 +570,13 @@ Routing <- R6::R6Class(
             return(self$error(request, res, response))
           }
 
-          if (
-            inherits(x = response, what = c("promise", "Future")) ||
-              inherits(x = response, what = "mirai")
-          ) {
+          if (inherits(x = response, what = c("promise", "Future", "mirai"))) {
             return(
               promises::then(
                 response,
                 onFulfilled = function(response) {
-                  return(
-                    response %response%
-                      response("Must return a response", status = 206L)
-                  )
+                  response %response%
+                    response("Must return a response", status = 206L)
                 },
                 onRejected = function(error) {
                   message(conditionMessage(error))
@@ -622,7 +617,8 @@ Routing <- R6::R6Class(
         request$PATH_INFO,
         Route$new(request$PATH_INFO)
       )
-      return(self$not_found(request, res))
+
+      self$not_found(request, res)
     },
     .wss = function(ws) {
       .globals$wsc <- append(.globals$wsc, Websocket$new(ws))
