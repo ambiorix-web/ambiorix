@@ -286,9 +286,7 @@ render_html <- function(expr) {
   tags <- eval(parse(text = expr))
 
   tmp <- tempfile(fileext = ".html")
-  on.exit({
-    fs::file_delete(tmp)
-  })
+  on.exit(expr = unlink(tmp))
 
   htmltools::save_html(tags, file = tmp, background = "none")
 

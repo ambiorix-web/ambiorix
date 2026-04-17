@@ -153,7 +153,7 @@ copy_websocket_client <- function(path) {
   assert_that(not_missing(path))
 
   lib <- get_websocket_client_path()
-  fs::file_copy(lib, path)
+  file.copy(from = lib, to = path)
 }
 
 #' @rdname websocket_client

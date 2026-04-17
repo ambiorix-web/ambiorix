@@ -13,7 +13,7 @@
 #'
 #' @export
 import <- function(...) {
-  files <- fs::dir_ls(..., regexp = "\\.R$|\\.r$")
+  files <- list.files(..., pattern = "\\.R$|\\.r$", full.names = TRUE)
   sapply(files, source)
   invisible()
 }
