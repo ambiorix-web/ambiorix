@@ -23,7 +23,7 @@ assertthat::on_failure(not_missing) <- function(call, env) {
 }
 
 has_file <- function(x) {
-  fs::file_exists(x)
+  file.exists(x)
 }
 
 assertthat::on_failure(has_file) <- function(call, env) {
