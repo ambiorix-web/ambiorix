@@ -37,14 +37,21 @@ remotes::install_github("ambiorix-web/ambiorix")
 ```r
 library(ambiorix)
 
-app <- Ambiorix$new()
+app <- Ambiorix$new(port = 3000L)
 
-app$get("/", function(req, res){
-  res$send("Hello!")
+app$get("/", function(req, res) {
+  res$send("Hello, World!")
 })
 
-app$get("/about", function(req, res){
-  res$send("About page")
+app$get("/api/v1/users", function(req, res) {
+  users <- data.frame(
+    uid = 1:3,
+    firstname = c("Alice", "Bob", "Cate"),
+    lastname = c("Queen", "Jeremy", "Reece"),
+    active = c(TRUE, FALSE, TRUE)
+  )
+
+  res$json(users)
 })
 
 app$start()
