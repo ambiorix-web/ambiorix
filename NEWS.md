@@ -1,5 +1,19 @@
 # ambiorix 3.0.0
 
+**Bug Fixes**
+
+- Change behaviour of `send_file()`: Enable sending of an arbitrary file,
+  [pull 151](https://github.com/ambiorix-web/ambiorix/pull/151).
+
+**Changes**
+
+- Drop all deprecated function parameters,
+  [pull 152](https://github.com/ambiorix-web/ambiorix/pull/152).
+- Remove dependency on the `{fs}` pkg,
+  [pull 155](https://github.com/ambiorix-web/ambiorix/pull/155).
+- Refactor HTTP methods in routing,
+  [pull 144](https://github.com/ambiorix-web/ambiorix/pull/144).
+
 # ambiorix 2.2.2
 
 **New Features**
@@ -9,7 +23,7 @@
 
 **Changes**
 
-- Update browser URL to log "127.0.0.1" when the provided app host is "0.0.0.0", [pull/137](https://github.com/ambiorix-web/ambiorix/pull/137). 
+- Update browser URL to log "127.0.0.1" when the provided app host is "0.0.0.0", [pull/137](https://github.com/ambiorix-web/ambiorix/pull/137).
 - Set default response status for redirection to 302, [pull/145](https://github.com/ambiorix-web/ambiorix/pull/145).
 
 **Bug Fixes**
