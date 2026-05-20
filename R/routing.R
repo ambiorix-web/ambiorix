@@ -442,7 +442,7 @@ Routing <- R6::R6Class(
               path = path,
               fun = handler,
               method = value,
-              error = error %error% self$error
+              error = error
             )
             private$.routes <- append(private$.routes, list(r))
 
@@ -503,7 +503,10 @@ Routing <- R6::R6Class(
           )
 
           if (inherits(request$params, "error")) {
-            return(private$.routes[[i]]$error(request, res, request$params))
+            handler <- private$.routes[[i]]$error %error% self$error
+            return(
+              handler(request, res, request$params)
+            )
           }
 
           # parameter middleware
@@ -560,14 +563,11 @@ Routing <- R6::R6Class(
             }
           )
 
-          if (
-            inherits(response, "error") && !is.null(private$.routes[[i]]$error)
-          ) {
-            return(private$.routes[[i]]$error(request, res, response))
-          }
-
-          if (inherits(response, "error") && !is.null(self$error)) {
-            return(self$error(request, res, response))
+          if (inherits(response, "error")) {
+            handler <- private$.routes[[i]]$error %error% self$error
+            return(
+              handler(request, res, response)
+            )
           }
 
           if (inherits(x = response, what = c("promise", "Future", "mirai"))) {
@@ -587,7 +587,9 @@ Routing <- R6::R6Class(
                     "-",
                     "Server error"
                   )
-                  private$.routes[[i]]$error(request, res, error)
+
+                  handler <- private$.routes[[i]]$error %error% self$error
+                  handler(request, res, error)
                 }
               )
             )
