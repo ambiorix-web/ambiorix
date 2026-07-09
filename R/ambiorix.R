@@ -205,6 +205,8 @@ Ambiorix <- R6::R6Class(
       super$prepare()
       private$.routes <- super$get_routes()
 
+      private$.register_openapi_routes()
+
       if (private$n_routes() == 0L) {
         stop("No routes specified")
       }
@@ -302,6 +304,65 @@ Ambiorix <- R6::R6Class(
       options(AMBIORIX_SERIALISER = handler)
       invisible(self)
     },
+    #' @details Enable OpenAPI (Swagger) documentation.
+    #'
+    #' When enabled, two routes are registered when the app starts: an
+    #' interactive Swagger UI (`ui_path`, default `/docs`) and the OpenAPI JSON
+    #' document (`spec_path`, default `/openapi.json`). Only routes registered
+    #' with a `docs` argument (see [openapi_docs()]) appear in the document.
+    #'
+    #' @param title Title of the API.
+    #' @param version Version of the API.
+    #' @param description Optional description of the API.
+    #' @param ui_path Path at which the Swagger UI is served.
+    #' @param spec_path Path at which the OpenAPI JSON document is served.
+    #' @param ... Additional fields added to the OpenAPI `info` object.
+    #'
+    #' @examples
+    #' app <- Ambiorix$new()
+    #'
+    #' app$openapi(title = "My API", version = "1.0.0")
+    #'
+    #' app$get(
+    #'   "/",
+    #'   function(req, res) {
+    #'     res$send("Using {ambiorix}!")
+    #'   },
+    #'   docs = openapi_docs(
+    #'     summary = "Landing page",
+    #'     responses = openapi_responses(
+    #'       openapi_response(200, "The landing page")
+    #'     )
+    #'   )
+    #' )
+    #'
+    #' if (interactive())
+    #'   app$start()
+    openapi = function(
+      title = "API",
+      version = "1.0.0",
+      description = NULL,
+      ui_path = "/docs",
+      spec_path = "/openapi.json",
+      ...
+    ) {
+      assert_that(is_string(title))
+      assert_that(is_string(version))
+      assert_that(is_string(ui_path))
+      assert_that(is_string(spec_path))
+
+      info <- list(title = title, version = version, ...)
+      if (!is.null(description)) {
+        info$description <- description
+      }
+
+      private$.openapi_info <- info
+      private$.openapi_ui_path <- ui_path
+      private$.openapi_spec_path <- spec_path
+      private$.openapi_enabled <- TRUE
+
+      invisible(self)
+    },
     #' @details Stop
     #' Stop the webserver.
     stop = function() {
@@ -358,11 +419,77 @@ Ambiorix <- R6::R6Class(
     .static = list(),
     .is_running = FALSE,
     .limit = 5 * 1024 * 1024,
+    .openapi_enabled = FALSE,
+    .openapi_info = list(),
+    .openapi_ui_path = "/docs",
+    .openapi_spec_path = "/openapi.json",
     n_routes = function() {
       length(private$.routes) + length(private$.static)
     },
     .make_path = function(path) {
       paste0(private$.basepath, path)
+    },
+    .register_openapi_routes = function() {
+      if (!private$.openapi_enabled) {
+        return(invisible(self))
+      }
+
+      spec_path <- private$.openapi_spec_path
+      ui_path <- private$.openapi_ui_path
+
+      existing_paths <- vapply(
+        private$.routes,
+        function(route) paste0(route$route$basepath, route$path),
+        character(1)
+      )
+
+      for (p in c(spec_path, ui_path)) {
+        if (p %in% existing_paths) {
+          cli::cli_alert_warning(
+            "OpenAPI docs path {.val {p}} is already registered; skipping."
+          )
+        }
+      }
+
+      spec <- build_openapi(private$.routes, private$.openapi_info)
+      ui_html <- swagger_ui_html(spec_path)
+
+      spec_route <- list(
+        route = Route$new(spec_path),
+        path = spec_path,
+        fun = function(req, res) {
+          res$json(spec)
+        },
+        method = "GET",
+        error = NULL,
+        docs = NULL
+      )
+
+      ui_route <- list(
+        route = Route$new(ui_path),
+        path = ui_path,
+        fun = function(req, res) {
+          res$send(ui_html)
+        },
+        method = "GET",
+        error = NULL,
+        docs = NULL
+      )
+
+      spec_route$route$decompose()
+      spec_route$route$as_pattern()
+      spec_route$route$basepath <- "/"
+
+      ui_route$route$decompose()
+      ui_route$route$as_pattern()
+      ui_route$route$basepath <- "/"
+
+      private$.routes <- append(
+        private$.routes,
+        list(spec_route, ui_route)
+      )
+
+      invisible(self)
     }
   )
 )
