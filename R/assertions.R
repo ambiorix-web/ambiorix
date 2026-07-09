@@ -105,6 +105,40 @@ assertthat::on_failure(is_string) <- function(call, env) {
   sprintf("`%s` must be a string (character of length 1)", deparse(call$x))
 }
 
+is_flag <- function(x) {
+  is.logical(x) && length(x) == 1L && !is.na(x)
+}
+
+assertthat::on_failure(is_flag) <- function(call, env) {
+  sprintf("`%s` must be `TRUE` or `FALSE`", deparse(call$x))
+}
+
+is_openapi_status <- function(x) {
+  if (length(x) != 1L || is.na(x)) {
+    return(FALSE)
+  }
+
+  if (is.numeric(x)) {
+    return(x >= 100 && x <= 599 && x == as.integer(x))
+  }
+
+  if (is.character(x)) {
+    return(x == "default" || grepl("^[1-5](XX|[0-9]{2})$", x))
+  }
+
+  FALSE
+}
+
+assertthat::on_failure(is_openapi_status) <- function(call, env) {
+  sprintf(
+    paste0(
+      "`%s` must be an HTTP status code (100-599), ",
+      "a status range such as \"2XX\", or \"default\""
+    ),
+    deparse(call$x)
+  )
+}
+
 has_names <- function(x) {
   nms <- names(x)
   !is.null(nms) && all(nzchar(nms))
