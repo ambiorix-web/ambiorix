@@ -311,6 +311,11 @@ Ambiorix <- R6::R6Class(
     #' document (`spec_path`, default `/openapi.json`). Only routes registered
     #' with a `docs` argument (see [openapi_docs()]) appear in the document.
     #'
+    #' If `ui_path` or `spec_path` collides with an existing route, the
+    #' corresponding docs route is not registered and a warning is emitted.
+    #' The OpenAPI document is always serialised with the default serialiser,
+    #' regardless of any custom serialiser set via `serialiser()`.
+    #'
     #' @param title Title of the API.
     #' @param version Version of the API.
     #' @param description Optional description of the API.
@@ -420,6 +425,7 @@ Ambiorix <- R6::R6Class(
     .is_running = FALSE,
     .limit = 5 * 1024 * 1024,
     .openapi_enabled = FALSE,
+    .openapi_registered = FALSE,
     .openapi_info = list(),
     .openapi_ui_path = "/docs",
     .openapi_spec_path = "/openapi.json",
@@ -431,6 +437,11 @@ Ambiorix <- R6::R6Class(
     },
     .register_openapi_routes = function() {
       if (!private$.openapi_enabled) {
+        return(invisible(self))
+      }
+
+      # guard against repeated `start()` calls
+      if (private$.openapi_registered) {
         return(invisible(self))
       }
 
