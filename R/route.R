@@ -20,6 +20,10 @@ Route <- R6::R6Class(
         )
       }
 
+      # reset so repeated calls (e.g.: on server restart)
+      # do not duplicate parameters
+      self$params <- NULL
+
       pattern <- sapply(self$components, function(comp) {
         if (comp$dynamic) {
           self$params <- append(self$params, comp$name)
