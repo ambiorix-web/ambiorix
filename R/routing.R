@@ -15,8 +15,25 @@
 #' - `options()`: Respond to HTTP `OPTIONS` requests.
 #' - `all()`: Respond to every method above.
 #'
-#' @param path String. Route to listen to; use `:` to define a parameter (e.g.
-#' `"/hello/:name"`).
+#' ## Path matching
+#'
+#' Paths are treated as regular expressions; use `:` to define a parameter
+#' (e.g. `"/hello/:name"`).
+#'
+#' - Parameters match greedily, across `/`: `"/users/:res"` matches
+#'   `/users/1` as well as `/users/2/3`. Note that `req$params` captures a
+#'   single path segment, so for `/users/2/3` the value of `req$params$res`
+#'   is `"2"`.
+#' - Regular expression syntax is available for finer control, e.g.
+#'   `app$get("/users/.+", ...)` for a greedy match without a parameter, or
+#'   `app$get("/file\\.json", ...)` to match a literal dot (an unescaped `.`
+#'   matches any character).
+#' - To customise how paths are converted to patterns app-wide, see
+#'   [as_path_to_pattern()].
+#'
+#' @param path String. Route to listen to, treated as a regular expression;
+#' use `:` to define a parameter (e.g. `"/hello/:name"`). See the
+#' *Path matching* section.
 #' @param handler Function that accepts the request and response objects and
 #' returns an httpuv response (e.g. [response()]). Handlers can return the result
 #' of helper functions such as `Response$text()`, `Response$json()`, or the

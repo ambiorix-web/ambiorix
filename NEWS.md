@@ -12,11 +12,6 @@
 
 **Bug Fixes**
 
-- Dynamic route segments (e.g. `:id`) now match a single, non-empty path
-  segment (`[^/]+`) instead of greedily matching across `/`. As a result,
-  `/users/:id` no longer matches `/users/` or `/users/1/posts/2`.
-- Static route components now have regular expression metacharacters escaped,
-  so e.g. a route at `/file.json` no longer matches `/fileXjson`.
 - Route path parameters are no longer duplicated when the app is started more
   than once.
 - Middleware base paths are now matched as anchored path prefixes rather than

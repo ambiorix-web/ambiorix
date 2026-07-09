@@ -45,19 +45,6 @@ browse_ambiorix <- function(open, url) {
   lhs
 }
 
-#' Escape Regular Expression Metacharacters
-#'
-#' Escapes characters that carry a special meaning in regular
-#' expressions so a string can be matched literally.
-#'
-#' @param x Character vector to escape.
-#'
-#' @noRd
-#' @keywords internal
-regex_escape <- function(x) {
-  gsub("([][{}()*+?.\\\\^$|])", "\\\\\\1", x)
-}
-
 #' Escape HTML Special Characters
 #'
 #' @param x Character vector to escape.

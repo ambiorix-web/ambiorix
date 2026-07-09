@@ -4,8 +4,9 @@
 \alias{routing-http-methods}
 \title{Routing HTTP Methods}
 \arguments{
-\item{path}{String. Route to listen to; use \code{:} to define a parameter (e.g.
-\code{"/hello/:name"}).}
+\item{path}{String. Route to listen to, treated as a regular expression;
+use \code{:} to define a parameter (e.g. \code{"/hello/:name"}). See the
+\emph{Path matching} section.}
 
 \item{handler}{Function that accepts the request and response objects and
 returns an httpuv response (e.g. \code{\link[=response]{response()}}). Handlers can return the result
@@ -38,6 +39,24 @@ methods. Each helper shares the same signature and behaviour.
 \item \code{delete()}: Respond to HTTP \code{DELETE} requests.
 \item \code{options()}: Respond to HTTP \code{OPTIONS} requests.
 \item \code{all()}: Respond to every method above.
+}
+}
+
+\subsection{Path matching}{
+
+Paths are treated as regular expressions; use \code{:} to define a parameter
+(e.g. \code{"/hello/:name"}).
+\itemize{
+\item Parameters match greedily, across \code{/}: \code{"/users/:res"} matches
+\verb{/users/1} as well as \verb{/users/2/3}. Note that \code{req$params} captures a
+single path segment, so for \verb{/users/2/3} the value of \code{req$params$res}
+is \code{"2"}.
+\item Regular expression syntax is available for finer control, e.g.
+\code{app$get("/users/.+", ...)} for a greedy match without a parameter, or
+\code{app$get("/file\\\\.json", ...)} to match a literal dot (an unescaped \code{.}
+matches any character).
+\item To customise how paths are converted to patterns app-wide, see
+\code{\link[=as_path_to_pattern]{as_path_to_pattern()}}.
 }
 }
 }

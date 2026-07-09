@@ -2,13 +2,35 @@ test_that("Route", {
   r <- Route$new(path = "/:id")$decompose()$as_pattern()
 
   expect_true(r$dynamic)
-  expect_equal(r$pattern, "^/[^/]+$")
+  expect_equal(r$pattern, "^/[[:alnum:][:space:][:punct:]]*$")
+})
 
-  # dynamic segments match a single, non-empty path segment
-  expect_true(grepl(r$pattern, "/123"))
-  expect_true(grepl(r$pattern, "/hello-world"))
-  expect_false(grepl(r$pattern, "/"))
-  expect_false(grepl(r$pattern, "/123/posts"))
+test_that("Route params match greedily", {
+  r <- Route$new(path = "/users/:res")$decompose()$as_pattern()
+
+  expect_true(grepl(r$pattern, "/users/1"))
+  # greedy: parameters match across `/`
+  expect_true(grepl(r$pattern, "/users/2/3"))
+  # zero or more: empty values match too
+  expect_true(grepl(r$pattern, "/users/"))
+})
+
+test_that("Route paths are regular expressions", {
+  # an unescaped `.` matches any character
+  r <- Route$new(path = "/file.json")$decompose()$as_pattern()
+  expect_true(grepl(r$pattern, "/file.json"))
+  expect_true(grepl(r$pattern, "/fileXjson"))
+
+  # escape it to match a literal dot
+  r <- Route$new(path = "/file\\.json")$decompose()$as_pattern()
+  expect_true(grepl(r$pattern, "/file.json"))
+  expect_false(grepl(r$pattern, "/fileXjson"))
+
+  # raw regex for greedy matching without a parameter
+  r <- Route$new(path = "/users/.+")$decompose()$as_pattern()
+  expect_true(grepl(r$pattern, "/users/1"))
+  expect_true(grepl(r$pattern, "/users/2/3"))
+  expect_false(grepl(r$pattern, "/users/"))
 })
 
 test_that("Route params are not duplicated on repeated as_pattern calls", {
@@ -20,11 +42,4 @@ test_that("Route params are not duplicated on repeated as_pattern calls", {
   r$as_pattern()
 
   expect_equal(r$params, "id")
-})
-
-test_that("Route escapes regex metacharacters in static components", {
-  r <- Route$new(path = "/openapi.json")$decompose()$as_pattern()
-
-  expect_true(grepl(r$pattern, "/openapi.json"))
-  expect_false(grepl(r$pattern, "/openapiXjson"))
 })
