@@ -202,10 +202,10 @@ Ambiorix <- R6::R6Class(
 
       port <- get_port(host, port)
 
+      private$.register_openapi_routes()
+
       super$prepare()
       private$.routes <- super$get_routes()
-
-      private$.register_openapi_routes()
 
       if (private$n_routes() == 0L) {
         stop("No routes specified")
