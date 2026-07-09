@@ -27,14 +27,14 @@ Route <- R6::R6Class(
       pattern <- sapply(self$components, function(comp) {
         if (comp$dynamic) {
           self$params <- append(self$params, comp$name)
-          return("[[:alnum:][:space:][:punct:]]*")
+          return("[^/]+")
         }
 
-        return(comp$name)
+        return(regex_escape(comp$name))
       })
 
       pattern <- paste0(pattern, collapse = "/")
-      self$pattern <- paste0("^", parent, "/", pattern, "$")
+      self$pattern <- paste0("^", regex_escape(parent), "/", pattern, "$")
       invisible(self)
     },
     decompose = function(parent = "") {
