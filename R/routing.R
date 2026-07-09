@@ -300,7 +300,7 @@ Routing <- R6::R6Class(
           function(route) {
             route$route$as_pattern(parent)
             route$route$decompose(parent)
-            route$route$basepath <- private$.basepath
+            route$route$basepath <- paste0(parent, private$.basepath)
             route
           }
         )
@@ -327,7 +327,7 @@ Routing <- R6::R6Class(
         lapply(
           private$.params,
           function(fn) {
-            attr(fn, "basepath") <- private$.basepath
+            attr(fn, "basepath") <- paste0(parent, private$.basepath)
             return(fn)
           }
         )
@@ -565,7 +565,7 @@ Routing <- R6::R6Class(
               mid_basepath <- attr(private$.middleware[[j]], "basepath")
 
               mid_res <- NULL
-              if (grepl(mid_basepath, req$PATH_INFO)) {
+              if (startsWith(req$PATH_INFO, mid_basepath)) {
                 mid_res <- private$.middleware[[j]](request, res)
               }
 
