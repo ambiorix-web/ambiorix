@@ -23,6 +23,10 @@
 #' output of any renderer.
 #' @param error Optional handler invoked if the route raises an error; receives
 #' the request, response, and the error condition.
+#' @param docs Optional OpenAPI documentation for the route, created with
+#' [openapi_docs()]. When the app enables docs via `app$openapi()`, documented
+#' routes appear in the generated OpenAPI document. Path parameters are derived
+#' automatically from the route's `:param` tokens.
 #'
 #' @return The routing object invisibly so calls can be chained.
 #'
@@ -41,7 +45,21 @@
 #'   res$json(list(status = "ok"))
 #' })
 #'
-#' @seealso [`Routing`]
+#' app$get(
+#'   "/users/:id",
+#'   function(req, res) {
+#'     res$json(list(id = req$params$id))
+#'   },
+#'   docs = openapi_docs(
+#'     summary = "Get a user by ID",
+#'     tags = "users",
+#'     responses = openapi_responses(
+#'       openapi_response(200, "The user")
+#'     )
+#'   )
+#' )
+#'
+#' @seealso [`Routing`], [openapi_docs()]
 #'
 #' @name routing-http-methods
 NULL
@@ -432,17 +450,19 @@ Routing <- R6::R6Class(
 
       Map(
         f = function(name, value) {
-          self[[name]] <- function(path, handler, error = NULL) {
+          self[[name]] <- function(path, handler, error = NULL, docs = NULL) {
             assert_that(valid_path(path))
             assert_that(not_missing(handler))
             assert_that(is_handler(handler))
+            assert_that(is.null(docs) || is_openapi_docs(docs))
 
             r <- list(
               route = Route$new(private$.make_path(path)),
               path = path,
               fun = handler,
               method = value,
-              error = error
+              error = error,
+              docs = docs
             )
             private$.routes <- append(private$.routes, list(r))
 
