@@ -45,6 +45,46 @@ browse_ambiorix <- function(open, url) {
   lhs
 }
 
+#' Escape Regular Expression Metacharacters
+#'
+#' Escapes characters that carry a special meaning in regular
+#' expressions so a string can be matched literally.
+#'
+#' @param x Character vector to escape.
+#'
+#' @noRd
+#' @keywords internal
+regex_escape <- function(x) {
+  gsub("([][{}()*+?.\\\\^$|])", "\\\\\\1", x)
+}
+
+#' Escape HTML Special Characters
+#'
+#' @param x Character vector to escape.
+#'
+#' @noRd
+#' @keywords internal
+html_escape <- function(x) {
+  x <- gsub("&", "&amp;", x, fixed = TRUE)
+  x <- gsub("<", "&lt;", x, fixed = TRUE)
+  x <- gsub(">", "&gt;", x, fixed = TRUE)
+  x <- gsub('"', "&quot;", x, fixed = TRUE)
+  x
+}
+
+#' Named Empty List
+#'
+#' An empty list carrying (empty) names so it serialises
+#' to a JSON object (`{}`) rather than an array (`[]`).
+#'
+#' @noRd
+#' @keywords internal
+named_list <- function() {
+  out <- list()
+  names(out) <- character(0)
+  out
+}
+
 #' Remove Extensions
 #'
 #' Remove extensions from files.
