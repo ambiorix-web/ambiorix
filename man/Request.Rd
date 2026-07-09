@@ -24,190 +24,197 @@ if (interactive()) {
 }
 }
 \section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{HEADERS}}{Headers from the request.}
+  \if{html}{\out{<div class="r6-fields">}}
+  \describe{
+    \item{\code{HEADERS}}{Headers from the request.}
 
-\item{\code{HTTP_ACCEPT}}{Content types to accept.}
+    \item{\code{HTTP_ACCEPT}}{Content types to accept.}
 
-\item{\code{HTTP_ACCEPT_ENCODING}}{Encoding of the request.}
+    \item{\code{HTTP_ACCEPT_ENCODING}}{Encoding of the request.}
 
-\item{\code{HTTP_ACCEPT_LANGUAGE}}{Language of the request.}
+    \item{\code{HTTP_ACCEPT_LANGUAGE}}{Language of the request.}
 
-\item{\code{HTTP_CACHE_CONTROL}}{Directorives for the cache (case-insensitive).}
+    \item{\code{HTTP_CACHE_CONTROL}}{Directorives for the cache (case-insensitive).}
 
-\item{\code{HTTP_CONNECTION}}{Controls whether the network connection stays open after the current transaction finishes.}
+    \item{\code{HTTP_CONNECTION}}{Controls whether the network connection stays open after the current transaction finishes.}
 
-\item{\code{HTTP_COOKIE}}{Cookie data.}
+    \item{\code{HTTP_COOKIE}}{Cookie data.}
 
-\item{\code{HTTP_HOST}}{Host making the request.}
+    \item{\code{HTTP_HOST}}{Host making the request.}
 
-\item{\code{HTTP_SEC_FETCH_DEST}}{Indicates the request's destination. That is the initiator of the original fetch request, which is where (and how) the fetched data will be used.}
+    \item{\code{HTTP_SEC_FETCH_DEST}}{Indicates the request's destination. That is the initiator of the original fetch request, which is where (and how) the fetched data will be used.}
 
-\item{\code{HTTP_SEC_FETCH_MODE}}{Indicates mode of the request.}
+    \item{\code{HTTP_SEC_FETCH_MODE}}{Indicates mode of the request.}
 
-\item{\code{HTTP_SEC_FETCH_SITE}}{Indicates the relationship between a request initiator's origin and the origin of the requested resource.}
+    \item{\code{HTTP_SEC_FETCH_SITE}}{Indicates the relationship between a request initiator's origin and the origin of the requested resource.}
 
-\item{\code{HTTP_SEC_FETCH_USER}}{Only sent for requests initiated by user activation, and its value will always be \code{?1}.}
+    \item{\code{HTTP_SEC_FETCH_USER}}{Only sent for requests initiated by user activation, and its value will always be \code{?1}.}
 
-\item{\code{HTTP_UPGRADE_INSECURE_REQUESTS}}{Signals that server supports upgrade.}
+    \item{\code{HTTP_UPGRADE_INSECURE_REQUESTS}}{Signals that server supports upgrade.}
 
-\item{\code{HTTP_USER_AGENT}}{User agent.}
+    \item{\code{HTTP_USER_AGENT}}{User agent.}
 
-\item{\code{SERVER_NAME}}{Name of the server.}
+    \item{\code{SERVER_NAME}}{Name of the server.}
 
-\item{\code{httpuv.version}}{Version of httpuv.}
+    \item{\code{httpuv.version}}{Version of httpuv.}
 
-\item{\code{PATH_INFO}}{Path of the request.}
+    \item{\code{PATH_INFO}}{Path of the request.}
 
-\item{\code{QUERY_STRING}}{Query string of the request.}
+    \item{\code{QUERY_STRING}}{Query string of the request.}
 
-\item{\code{REMOTE_ADDR}}{Remote address.}
+    \item{\code{REMOTE_ADDR}}{Remote address.}
 
-\item{\code{REMOTE_PORT}}{Remote port.}
+    \item{\code{REMOTE_PORT}}{Remote port.}
 
-\item{\code{REQUEST_METHOD}}{Method of the request, e.g.: \code{GET}.}
+    \item{\code{REQUEST_METHOD}}{Method of the request, e.g.: \code{GET}.}
 
-\item{\code{rook.errors}}{Errors from rook.}
+    \item{\code{rook.errors}}{Errors from rook.}
 
-\item{\code{rook.input}}{Rook inputs.}
+    \item{\code{rook.input}}{Rook inputs.}
 
-\item{\code{rook.url_scheme}}{Rook url scheme.}
+    \item{\code{rook.url_scheme}}{Rook url scheme.}
 
-\item{\code{rook.version}}{Rook version.}
+    \item{\code{rook.version}}{Rook version.}
 
-\item{\code{SCRIPT_NAME}}{The initial portion of the request URL's "path" that corresponds to the application object, so that the application knows its virtual "location".  #' @field SERVER_NAME Server name.}
+    \item{\code{SCRIPT_NAME}}{The initial portion of the request URL's "path" that corresponds to the application object, so that the application knows its virtual "location".  #' @field SERVER_NAME Server name.}
 
-\item{\code{SERVER_PORT}}{Server port}
+    \item{\code{SERVER_PORT}}{Server port}
 
-\item{\code{CONTENT_LENGTH}}{Size of the message body.}
+    \item{\code{CONTENT_LENGTH}}{Size of the message body.}
 
-\item{\code{CONTENT_TYPE}}{Type of content of the request.}
+    \item{\code{CONTENT_TYPE}}{Type of content of the request.}
 
-\item{\code{HTTP_REFERER}}{Contains an absolute or partial address of the page that makes the request.}
+    \item{\code{HTTP_REFERER}}{Contains an absolute or partial address of the page that makes the request.}
 
-\item{\code{body}}{Request, an environment.}
+    \item{\code{body}}{Request, an environment.}
 
-\item{\code{query}}{Parsed \code{QUERY_STRING}, \code{list}.}
+    \item{\code{query}}{Parsed \code{QUERY_STRING}, \code{list}.}
 
-\item{\code{params}}{A \code{list} of parameters.}
+    \item{\code{params}}{A \code{list} of parameters.}
 
-\item{\code{cookie}}{Parsed \code{HTTP_COOKIE}.}
-}
-\if{html}{\out{</div>}}
+    \item{\code{cookie}}{Parsed \code{HTTP_COOKIE}.}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-Request-new}{\code{Request$new()}}
-\item \href{#method-Request-print}{\code{Request$print()}}
-\item \href{#method-Request-get_header}{\code{Request$get_header()}}
-\item \href{#method-Request-parse_multipart}{\code{Request$parse_multipart()}}
-\item \href{#method-Request-parse_json}{\code{Request$parse_json()}}
-\item \href{#method-Request-clone}{\code{Request$clone()}}
-}
+  \itemize{
+    \item \href{#method-Request-initialize}{\code{Request$new()}}
+    \item \href{#method-Request-print}{\code{Request$print()}}
+    \item \href{#method-Request-get_header}{\code{Request$get_header()}}
+    \item \href{#method-Request-parse_multipart}{\code{Request$parse_multipart()}}
+    \item \href{#method-Request-parse_json}{\code{Request$parse_json()}}
+    \item \href{#method-Request-clone}{\code{Request$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Request-new"></a>}}
-\if{latex}{\out{\hypertarget{method-Request-new}{}}}
-\subsection{Method \code{new()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Request$new(req)}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-Request-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-Request-initialize}{}}}
+\subsection{\code{Request$new()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Request$new(req)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{req}}{Original request (environment).}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Constructor
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{req}}{Original request (environment).}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Constructor
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Request-print"></a>}}
 \if{latex}{\out{\hypertarget{method-Request-print}{}}}
-\subsection{Method \code{print()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Request$print()}\if{html}{\out{</div>}}
+\subsection{\code{Request$print()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Request$print()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Print
+  }
 }
 
-\subsection{Details}{
-Print
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Request-get_header"></a>}}
 \if{latex}{\out{\hypertarget{method-Request-get_header}{}}}
-\subsection{Method \code{get_header()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Request$get_header(name)}\if{html}{\out{</div>}}
+\subsection{\code{Request$get_header()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Request$get_header(name)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{name}}{Name of the header}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Get Header
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Name of the header}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Get Header
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Request-parse_multipart"></a>}}
 \if{latex}{\out{\hypertarget{method-Request-parse_multipart}{}}}
-\subsection{Method \code{parse_multipart()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Request$parse_multipart()}\if{html}{\out{</div>}}
+\subsection{\code{Request$parse_multipart()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Request$parse_multipart()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Parse Multipart encoded data
+  }
 }
 
-\subsection{Details}{
-Parse Multipart encoded data
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Request-parse_json"></a>}}
 \if{latex}{\out{\hypertarget{method-Request-parse_json}{}}}
-\subsection{Method \code{parse_json()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Request$parse_json(...)}\if{html}{\out{</div>}}
+\subsection{\code{Request$parse_json()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Request$parse_json(...)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{...}}{Arguments passed to \code{\link[=parse_json]{parse_json()}}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Parse JSON encoded data
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{...}}{Arguments passed to \code{\link[=parse_json]{parse_json()}}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Parse JSON encoded data
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Request-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-Request-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Request$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{Request$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Request$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

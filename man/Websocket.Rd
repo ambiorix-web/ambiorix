@@ -59,84 +59,88 @@ if (interactive()) {
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-Websocket-new}{\code{Websocket$new()}}
-\item \href{#method-Websocket-send}{\code{Websocket$send()}}
-\item \href{#method-Websocket-print}{\code{Websocket$print()}}
-\item \href{#method-Websocket-clone}{\code{Websocket$clone()}}
-}
+  \itemize{
+    \item \href{#method-Websocket-initialize}{\code{Websocket$new()}}
+    \item \href{#method-Websocket-send}{\code{Websocket$send()}}
+    \item \href{#method-Websocket-print}{\code{Websocket$print()}}
+    \item \href{#method-Websocket-clone}{\code{Websocket$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Websocket-new"></a>}}
-\if{latex}{\out{\hypertarget{method-Websocket-new}{}}}
-\subsection{Method \code{new()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Websocket$new(ws)}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-Websocket-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-Websocket-initialize}{}}}
+\subsection{\code{Websocket$new()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Websocket$new(ws)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{ws}}{The websocket}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Constructor
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{ws}}{The websocket}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Constructor
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Websocket-send"></a>}}
 \if{latex}{\out{\hypertarget{method-Websocket-send}{}}}
-\subsection{Method \code{send()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Websocket$send(name, message)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Name, identifier, of the message.}
-
-\item{\code{message}}{Content of the message, anything that can be
+\subsection{\code{Websocket$send()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Websocket$send(name, message)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{name}}{Name, identifier, of the message.}
+      \item{\code{message}}{Content of the message, anything that can be
 serialised to JSON.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Send a message
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Send a message
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Websocket-print"></a>}}
 \if{latex}{\out{\hypertarget{method-Websocket-print}{}}}
-\subsection{Method \code{print()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Websocket$print()}\if{html}{\out{</div>}}
+\subsection{\code{Websocket$print()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Websocket$print()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Print
+  }
 }
 
-\subsection{Details}{
-Print
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Websocket-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-Websocket-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Websocket$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{Websocket$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Websocket$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

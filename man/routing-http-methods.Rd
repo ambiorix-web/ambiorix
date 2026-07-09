@@ -14,6 +14,11 @@ output of any renderer.}
 
 \item{error}{Optional handler invoked if the route raises an error; receives
 the request, response, and the error condition.}
+
+\item{docs}{Optional OpenAPI documentation for the route, created with
+\code{\link[=openapi_docs]{openapi_docs()}}. When the app enables docs via \code{app$openapi()}, documented
+routes appear in the generated OpenAPI document. Path parameters are derived
+automatically from the route's \verb{:param} tokens.}
 }
 \value{
 The routing object invisibly so calls can be chained.
@@ -51,7 +56,21 @@ app$all("/health", function(req, res) {
   res$json(list(status = "ok"))
 })
 
+app$get(
+  "/users/:id",
+  function(req, res) {
+    res$json(list(id = req$params$id))
+  },
+  docs = openapi_docs(
+    summary = "Get a user by ID",
+    tags = "users",
+    responses = openapi_responses(
+      openapi_response(200, "The user")
+    )
+  )
+)
+
 }
 \seealso{
-\code{\link{Routing}}
+\code{\link{Routing}}, \code{\link[=openapi_docs]{openapi_docs()}}
 }
