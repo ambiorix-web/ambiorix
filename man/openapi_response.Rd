@@ -12,7 +12,9 @@ openapi_response(
 )
 }
 \arguments{
-\item{status}{HTTP status code, e.g. \code{200L}.}
+\item{status}{HTTP status code, e.g. \code{200L}. Also accepts the string
+\code{"default"} or a status range such as \code{"2XX"}, as allowed by the OpenAPI
+specification.}
 
 \item{description}{Human readable description of the response.}
 

@@ -505,6 +505,11 @@ When enabled, two routes are registered when the app starts: an
 interactive Swagger UI (\code{ui_path}, default \verb{/docs}) and the OpenAPI JSON
 document (\code{spec_path}, default \verb{/openapi.json}). Only routes registered
 with a \code{docs} argument (see \code{\link[=openapi_docs]{openapi_docs()}}) appear in the document.
+
+If \code{ui_path} or \code{spec_path} collides with an existing route, the
+corresponding docs route is not registered and a warning is emitted.
+The OpenAPI document is always serialised with the default serialiser,
+regardless of any custom serialiser set via \code{serialiser()}.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
