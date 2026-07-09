@@ -447,59 +447,51 @@ Ambiorix <- R6::R6Class(
 
       spec_path <- private$.openapi_spec_path
       ui_path <- private$.openapi_ui_path
+      info <- private$.openapi_info
 
       existing_paths <- vapply(
-        private$.routes,
+        super$get_routes(),
         function(route) paste0(route$route$basepath, route$path),
         character(1)
       )
 
-      for (p in c(spec_path, ui_path)) {
-        if (p %in% existing_paths) {
-          cli::cli_alert_warning(
-            "OpenAPI docs path {.val {p}} is already registered; skipping."
+      if (spec_path %in% existing_paths) {
+        cli::cli_alert_warning(
+          paste(
+            "Route {.val {spec_path}} is already registered:",
+            "the OpenAPI document will not be served.",
+            "Use the {.code spec_path} argument of {.code app$openapi()}",
+            "to serve it at another path."
           )
-        }
+        )
+      } else {
+        self$get(spec_path, function(req, res) {
+          spec <- build_openapi(private$.routes, info)
+
+          # use the default serialiser: a user-defined serialiser
+          # may not produce a valid OpenAPI document
+          res$header_content_json()
+          res$send(default_serialiser(spec))
+        })
       }
 
-      spec <- build_openapi(private$.routes, private$.openapi_info)
-      ui_html <- swagger_ui_html(spec_path)
-
-      spec_route <- list(
-        route = Route$new(spec_path),
-        path = spec_path,
-        fun = function(req, res) {
-          res$json(spec)
-        },
-        method = "GET",
-        error = NULL,
-        docs = NULL
-      )
-
-      ui_route <- list(
-        route = Route$new(ui_path),
-        path = ui_path,
-        fun = function(req, res) {
+      if (ui_path %in% existing_paths) {
+        cli::cli_alert_warning(
+          paste(
+            "Route {.val {ui_path}} is already registered:",
+            "the OpenAPI Swagger UI will not be served.",
+            "Use the {.code ui_path} argument of {.code app$openapi()}",
+            "to serve it at another path."
+          )
+        )
+      } else {
+        ui_html <- swagger_ui_html(spec_path, title = info$title)
+        self$get(ui_path, function(req, res) {
           res$send(ui_html)
-        },
-        method = "GET",
-        error = NULL,
-        docs = NULL
-      )
+        })
+      }
 
-      spec_route$route$decompose()
-      spec_route$route$as_pattern()
-      spec_route$route$basepath <- "/"
-
-      ui_route$route$decompose()
-      ui_route$route$as_pattern()
-      ui_route$route$basepath <- "/"
-
-      private$.routes <- append(
-        private$.routes,
-        list(spec_route, ui_route)
-      )
-
+      private$.openapi_registered <- TRUE
       invisible(self)
     }
   )
