@@ -1,3 +1,28 @@
+# ambiorix 3.1.0
+
+**New Features**
+
+- Add support for OpenAPI (Swagger) documentation. Enable it with
+  `app$openapi()` and document routes via the new `docs` argument of the
+  routing methods (`app$get()`, `app$post()`, etc.) using `openapi_docs()`
+  and its companion helpers (`openapi_parameters()`, `openapi_request_body()`,
+  `openapi_responses()`, `openapi_schema_*()`). When enabled, the app serves
+  an interactive Swagger UI (default `/docs`) and the OpenAPI 3.1 document
+  (default `/openapi.json`).
+
+**Bug Fixes**
+
+- Dynamic route segments (e.g. `:id`) now match a single, non-empty path
+  segment (`[^/]+`) instead of greedily matching across `/`. As a result,
+  `/users/:id` no longer matches `/users/` or `/users/1/posts/2`.
+- Static route components now have regular expression metacharacters escaped,
+  so e.g. a route at `/file.json` no longer matches `/fileXjson`.
+- Route path parameters are no longer duplicated when the app is started more
+  than once.
+- Middleware base paths are now matched as anchored path prefixes rather than
+  anywhere in the request path.
+- Routes of nested routers now report their full base path.
+
 # ambiorix 3.0.0
 
 **Breaking Changes**
