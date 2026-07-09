@@ -96,3 +96,82 @@ assertthat::on_failure(is_renderer) <- function(call, env) {
     deparse(call$x)
   )
 }
+
+is_string <- function(x) {
+  is.character(x) && length(x) == 1L
+}
+
+assertthat::on_failure(is_string) <- function(call, env) {
+  sprintf("`%s` must be a string (character of length 1)", deparse(call$x))
+}
+
+has_names <- function(x) {
+  nms <- names(x)
+  !is.null(nms) && all(nzchar(nms))
+}
+
+assertthat::on_failure(has_names) <- function(call, env) {
+  sprintf("all elements of `%s` must be named", deparse(call$x))
+}
+
+is_openapi_schema <- function(x) {
+  inherits(x, "ambiorix_openapi_schema")
+}
+
+assertthat::on_failure(is_openapi_schema) <- function(call, env) {
+  sprintf(
+    "`%s` must be an OpenAPI schema, see `?openapi-schemas`",
+    deparse(call$x)
+  )
+}
+
+is_openapi_parameter <- function(x) {
+  inherits(x, "ambiorix_openapi_parameter")
+}
+
+assertthat::on_failure(is_openapi_parameter) <- function(call, env) {
+  sprintf("`%s` must be created with `openapi_param()`", deparse(call$x))
+}
+
+is_openapi_parameters <- function(x) {
+  inherits(x, "ambiorix_openapi_parameters")
+}
+
+assertthat::on_failure(is_openapi_parameters) <- function(call, env) {
+  sprintf("`%s` must be created with `openapi_parameters()`", deparse(call$x))
+}
+
+is_openapi_request_body <- function(x) {
+  inherits(x, "ambiorix_openapi_request_body")
+}
+
+assertthat::on_failure(is_openapi_request_body) <- function(call, env) {
+  sprintf(
+    "`%s` must be created with `openapi_request_body()`",
+    deparse(call$x)
+  )
+}
+
+is_openapi_response <- function(x) {
+  inherits(x, "ambiorix_openapi_response")
+}
+
+assertthat::on_failure(is_openapi_response) <- function(call, env) {
+  sprintf("`%s` must be created with `openapi_response()`", deparse(call$x))
+}
+
+is_openapi_responses <- function(x) {
+  inherits(x, "ambiorix_openapi_responses")
+}
+
+assertthat::on_failure(is_openapi_responses) <- function(call, env) {
+  sprintf("`%s` must be created with `openapi_responses()`", deparse(call$x))
+}
+
+is_openapi_docs <- function(x) {
+  inherits(x, "ambiorix_openapi_docs")
+}
+
+assertthat::on_failure(is_openapi_docs) <- function(call, env) {
+  sprintf("`%s` must be created with `openapi_docs()`", deparse(call$x))
+}
