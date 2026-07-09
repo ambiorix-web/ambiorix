@@ -146,8 +146,90 @@ test_that("build_openapi expands all() across verbs", {
   stop_all()
 })
 
-test_that("swagger_ui_html embeds the spec url", {
+test_that("swagger_ui_html embeds the spec url and title", {
   html <- swagger_ui_html("/openapi.json")
   expect_true(grepl("swagger-ui", html))
   expect_true(grepl("/openapi.json", html, fixed = TRUE))
+  expect_true(grepl("<title>API Documentation</title>", html, fixed = TRUE))
+
+  html <- swagger_ui_html("/openapi.json", title = "My <API>")
+  expect_true(grepl("<title>My &lt;API&gt;</title>", html, fixed = TRUE))
+})
+
+test_that("empty paths and properties serialise to JSON objects", {
+  # no documented routes: `paths` must serialise to {}
+  doc <- build_openapi(list())
+  json <- default_serialiser(doc)
+  expect_true(grepl('"paths":{}', json, fixed = TRUE))
+
+  # schema object without properties: `properties` must serialise to {}
+  schema <- openapi_schema_object()
+  json <- default_serialiser(unclass(schema))
+  expect_true(grepl('"properties":{}', json, fixed = TRUE))
+})
+
+test_that("build_openapi handles nested routers", {
+  inner <- Router$new("/v1")
+  inner$get(
+    "/users/:id",
+    function(req, res) res$json(list()),
+    docs = openapi_docs(summary = "Get a user")
+  )
+
+  outer <- Router$new("/api")
+  outer$use(inner)
+
+  app <- Ambiorix$new()
+  app$use(outer)
+
+  app$prepare()
+  routes <- app$get_routes()
+  doc <- build_openapi(routes)
+
+  expect_true("/api/v1/users/{id}" %in% names(doc$paths))
+
+  stop_all()
+})
+
+test_that("path params are not duplicated across restarts", {
+  app <- Ambiorix$new()
+
+  app$get(
+    "/users/:id",
+    function(req, res) res$json(list()),
+    docs = openapi_docs(summary = "Get a user")
+  )
+
+  # simulate two consecutive `start()` calls
+  app$prepare()
+  app$get_routes()
+  app$prepare()
+  routes <- app$get_routes()
+
+  doc <- build_openapi(routes)
+  params <- doc$paths[["/users/{id}"]]$get$parameters
+  expect_length(params, 1L)
+
+  stop_all()
+})
+
+test_that("openapi_response accepts valid statuses and rejects others", {
+  expect_equal(openapi_response(200, "OK")$status, "200")
+  expect_equal(openapi_response(201L, "Created")$status, "201")
+  expect_equal(openapi_response("404", "Not found")$status, "404")
+  expect_equal(openapi_response("default", "Fallback")$status, "default")
+  expect_equal(openapi_response("2XX", "Success")$status, "2XX")
+
+  expect_error(openapi_response("abc", "Nope"))
+  expect_error(openapi_response(99, "Nope"))
+  expect_error(openapi_response(600, "Nope"))
+  expect_error(openapi_response(NA, "Nope"))
+})
+
+test_that("openapi builders validate scalar arguments", {
+  expect_error(openapi_param("verbose", required = "yes"))
+  expect_error(openapi_param("verbose", description = 1L))
+  expect_error(openapi_request_body(openapi_schema_string(), required = "yes"))
+  expect_error(openapi_docs(summary = 1L))
+  expect_error(openapi_docs(tags = 1L))
 })
