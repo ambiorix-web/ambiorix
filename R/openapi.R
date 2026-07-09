@@ -72,6 +72,11 @@ openapi_schema_object <- function(...) {
 
   properties <- lapply(properties, unclass)
 
+  # ensure an empty `properties` serialises to `{}`, not `[]`
+  if (!length(properties)) {
+    properties <- named_list()
+  }
+
   new_openapi_schema(list(type = "object", properties = properties))
 }
 
@@ -126,6 +131,8 @@ openapi_param <- function(
   }
 
   location <- match.arg(location)
+  assert_that(is_flag(required))
+  assert_that(is.null(description) || is_string(description))
   assert_that(is_openapi_schema(schema))
 
   structure(
@@ -208,6 +215,8 @@ openapi_request_body <- function(
   assert_that(not_missing(schema))
   assert_that(is_openapi_schema(schema))
   assert_that(is_string(content_type))
+  assert_that(is_flag(required))
+  assert_that(is.null(description) || is_string(description))
 
   structure(
     list(
@@ -230,7 +239,9 @@ print.ambiorix_openapi_request_body <- function(x, ...) {
 #'
 #' Describe a single response for a route.
 #'
-#' @param status HTTP status code, e.g. `200L`.
+#' @param status HTTP status code, e.g. `200L`. Also accepts the string
+#' `"default"` or a status range such as `"2XX"`, as allowed by the OpenAPI
+#' specification.
 #' @param description Human readable description of the response.
 #' @param content_type The media type of the response body.
 #' @param schema An optional OpenAPI schema (see [openapi-schemas]) describing
@@ -253,6 +264,7 @@ openapi_response <- function(
   schema = NULL
 ) {
   assert_that(not_missing(status))
+  assert_that(is_openapi_status(status))
   assert_that(not_missing(description))
   assert_that(is_string(description))
   assert_that(is_string(content_type))
@@ -261,9 +273,13 @@ openapi_response <- function(
     assert_that(is_openapi_schema(schema))
   }
 
+  if (is.numeric(status)) {
+    status <- as.character(as.integer(status))
+  }
+
   structure(
     list(
-      status = as.character(as.integer(status)),
+      status = status,
       description = description,
       content_type = content_type,
       schema = schema
@@ -348,6 +364,10 @@ openapi_docs <- function(
   request_body = NULL,
   responses = NULL
 ) {
+  assert_that(is.null(summary) || is_string(summary))
+  assert_that(is.null(description) || is_string(description))
+  assert_that(is.null(tags) || is.character(tags))
+
   if (!is.null(parameters)) {
     assert_that(is_openapi_parameters(parameters))
   }
@@ -515,7 +535,8 @@ build_openapi <- function(routes, info = list()) {
   info$title <- info$title %error% "API"
   info$version <- info$version %error% "1.0.0"
 
-  paths <- list()
+  # named so an empty `paths` serialises to `{}`, not `[]`
+  paths <- named_list()
 
   for (route in routes) {
     if (is.null(route$docs)) {
@@ -549,18 +570,20 @@ build_openapi <- function(routes, info = list()) {
 #' Build the Swagger UI HTML page
 #'
 #' @param spec_url URL of the OpenAPI JSON document.
+#' @param title Title of the page.
 #'
 #' @return A single character string of HTML.
 #'
 #' @keywords internal
 #' @noRd
-swagger_ui_html <- function(spec_url) {
+swagger_ui_html <- function(spec_url, title = "API Documentation") {
+  title <- title %error% "API Documentation"
   sprintf(
     '<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>API Documentation</title>
+    <title>%s</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       rel="stylesheet"
@@ -580,6 +603,7 @@ swagger_ui_html <- function(spec_url) {
     </script>
   </body>
 </html>',
+    html_escape(title),
     spec_url
   )
 }
