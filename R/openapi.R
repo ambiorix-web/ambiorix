@@ -67,7 +67,10 @@ openapi_schema_object <- function(...) {
 
   if (length(properties)) {
     assert_that(has_names(properties))
-    lapply(properties, function(p) assert_that(is_openapi_schema(p)))
+
+    for (p in properties) {
+      assert_that(is_openapi_schema(p))
+    }
   }
 
   properties <- lapply(properties, unclass)
@@ -77,7 +80,12 @@ openapi_schema_object <- function(...) {
     properties <- named_list()
   }
 
-  new_openapi_schema(list(type = "object", properties = properties))
+  new_openapi_schema(
+    list(
+      type = "object",
+      properties = properties
+    )
+  )
 }
 
 #' @export
@@ -173,7 +181,10 @@ print.ambiorix_openapi_parameter <- function(x, ...) {
 #' @export
 openapi_parameters <- function(...) {
   params <- list(...)
-  lapply(params, function(p) assert_that(is_openapi_parameter(p)))
+
+  for (p in params) {
+    assert_that(is_openapi_parameter(p))
+  }
 
   structure(
     params,
@@ -311,7 +322,10 @@ print.ambiorix_openapi_response <- function(x, ...) {
 #' @export
 openapi_responses <- function(...) {
   responses <- list(...)
-  lapply(responses, function(r) assert_that(is_openapi_response(r)))
+
+  for (r in responses) {
+    assert_that(is_openapi_response(r))
+  }
 
   structure(
     responses,
