@@ -542,7 +542,7 @@ Routing <- R6::R6Class(
           )
 
           if (inherits(request$params, "error")) {
-            handler <- private$.routes[[i]]$error %error% self$error
+            handler <- private$.routes[[i]]$error %||% self$error
             return(
               handler(request, res, request$params)
             )
@@ -603,7 +603,7 @@ Routing <- R6::R6Class(
           )
 
           if (inherits(response, "error")) {
-            handler <- private$.routes[[i]]$error %error% self$error
+            handler <- private$.routes[[i]]$error %||% self$error
             return(
               handler(request, res, response)
             )
@@ -627,7 +627,7 @@ Routing <- R6::R6Class(
                     "Server error"
                   )
 
-                  handler <- private$.routes[[i]]$error %error% self$error
+                  handler <- private$.routes[[i]]$error %||% self$error
                   handler(request, res, error)
                 }
               )

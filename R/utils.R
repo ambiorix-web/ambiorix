@@ -37,7 +37,7 @@ browse_ambiorix <- function(open, url) {
   lhs
 }
 
-`%error%` <- function(lhs, rhs) {
+`%||%` <- function(lhs, rhs) {
   if (is.null(lhs)) {
     return(rhs)
   }

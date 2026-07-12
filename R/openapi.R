@@ -592,8 +592,8 @@ openapi_render_operation <- function(route) {
 #' @keywords internal
 #' @noRd
 build_openapi <- function(routes, info = list()) {
-  info$title <- info$title %error% "API"
-  info$version <- info$version %error% "1.0.0"
+  info$title <- info$title %||% "API"
+  info$version <- info$version %||% "1.0.0"
 
   # named so an empty `paths` serialises to `{}`, not `[]`
   paths <- named_list()
@@ -646,7 +646,7 @@ swagger_ui_html <- function(
   title = "API Documentation",
   assets_path = "/__swagger__"
 ) {
-  title <- title %error% "API Documentation"
+  title <- title %||% "API Documentation"
   assets_path <- sub("/+$", "", assets_path)
   sprintf(
     '<!DOCTYPE html>
