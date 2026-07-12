@@ -482,6 +482,7 @@ if(interactive())
   description = NULL,
   ui_path = "/docs",
   spec_path = "/openapi.json",
+  assets_path = "/__swagger__",
   ...
 )}
     \if{html}{\out{</div>}}
@@ -494,6 +495,8 @@ if(interactive())
       \item{\code{description}}{Optional description of the API.}
       \item{\code{ui_path}}{Path at which the Swagger UI is served.}
       \item{\code{spec_path}}{Path at which the OpenAPI JSON document is served.}
+      \item{\code{assets_path}}{Path at which the Swagger UI assets (CSS &
+JavaScript) are served.}
       \item{\code{...}}{Additional fields added to the OpenAPI \code{info} object.}
     }
     \if{html}{\out{</div>}}
@@ -506,8 +509,14 @@ interactive Swagger UI (\code{ui_path}, default \verb{/docs}) and the OpenAPI JS
 document (\code{spec_path}, default \verb{/openapi.json}). Only routes registered
 with a \code{docs} argument (see \code{\link[=openapi_docs]{openapi_docs()}}) appear in the document.
 
-If \code{ui_path} or \code{spec_path} collides with an existing route, the
-corresponding docs route is not registered and a warning is emitted.
+The Swagger UI assets (CSS & JavaScript) are bundled with ambiorix and
+served locally at \code{assets_path} (default \verb{/__swagger__}), so the docs
+work without an internet connection.
+
+If \code{ui_path} or \code{spec_path} collides with an existing route, or
+\code{assets_path} collides with an existing static directory, the
+corresponding docs route (or asset directory) is not registered and a
+warning is emitted.
 The OpenAPI document is always serialised with the default serialiser,
 regardless of any custom serialiser set via \code{serialiser()}.
   }
