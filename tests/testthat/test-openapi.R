@@ -39,11 +39,19 @@ test_that("openapi_param builds a parameter", {
   expect_true(p$required)
 })
 
-test_that("openapi_param rejects path location", {
-  expect_error(
-    openapi_param("id", location = "path"),
-    "Path parameters"
+test_that("openapi_param accepts path location and forces required", {
+  p <- openapi_param(
+    "id",
+    location = "path",
+    schema = openapi_schema_integer()
   )
+
+  expect_s3_class(p, "ambiorix_openapi_parameter")
+  expect_equal(p$location, "path")
+  expect_equal(p$schema$type, "integer")
+  # path parameters are always required, even if not requested
+  expect_true(p$required)
+  expect_true(openapi_param("id", location = "path", required = FALSE)$required)
 })
 
 test_that("openapi_docs validates its components", {
@@ -123,6 +131,78 @@ test_that("build_openapi produces a valid document", {
   # query param carried over
   query_param <- Filter(function(p) p$name == "verbose", op$parameters)[[1]]
   expect_equal(query_param$`in`, "query")
+
+  stop_all()
+})
+
+test_that("user-declared path params override the auto-generated defaults", {
+  app <- Ambiorix$new()
+
+  app$get(
+    "/tasks/:id/items/:item",
+    function(req, res) res$json(list()),
+    docs = openapi_docs(
+      summary = "Get an item of a task",
+      parameters = openapi_parameters(
+        openapi_param(
+          "id",
+          location = "path",
+          description = "Task identifier",
+          schema = openapi_schema_integer()
+        )
+      )
+    )
+  )
+
+  app$prepare()
+  routes <- app$get_routes()
+  doc <- build_openapi(routes)
+
+  params <- doc$paths[["/tasks/{id}/items/{item}"]]$get$parameters
+  expect_length(params, 2L)
+
+  # declared path param overrides the default string schema, no duplicate
+  id_params <- Filter(function(p) p$name == "id", params)
+  expect_length(id_params, 1L)
+  expect_equal(id_params[[1]]$`in`, "path")
+  expect_true(id_params[[1]]$required)
+  expect_equal(id_params[[1]]$schema$type, "integer")
+  expect_equal(id_params[[1]]$description, "Task identifier")
+
+  # undeclared path param keeps the automatic string default
+  item_param <- Filter(function(p) p$name == "item", params)[[1]]
+  expect_equal(item_param$`in`, "path")
+  expect_true(item_param$required)
+  expect_equal(item_param$schema$type, "string")
+
+  stop_all()
+})
+
+test_that("path params matching no route token warn and are dropped", {
+  app <- Ambiorix$new()
+
+  app$get(
+    "/tasks/:id",
+    function(req, res) res$json(list()),
+    docs = openapi_docs(
+      summary = "Get a task",
+      parameters = openapi_parameters(
+        openapi_param("task_id", location = "path")
+      )
+    )
+  )
+
+  app$prepare()
+  routes <- app$get_routes()
+  expect_warning(
+    doc <- build_openapi(routes),
+    "task_id"
+  )
+
+  params <- doc$paths[["/tasks/{id}"]]$get$parameters
+  expect_length(params, 1L)
+  expect_equal(params[[1]]$name, "id")
+  expect_equal(params[[1]]$schema$type, "string")
 
   stop_all()
 })
