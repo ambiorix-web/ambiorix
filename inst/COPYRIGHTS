@@ -1,0 +1,22 @@
+Bundled third-party software
+============================
+
+Swagger UI
+----------
+
+Files:     inst/swagger-ui/swagger-ui.css
+           inst/swagger-ui/swagger-ui-bundle.js
+           inst/swagger-ui/swagger-ui-bundle.js.LICENSE.txt
+Version:   5.32.8 (swagger-ui-dist)
+Copyright: SmartBear Software and the Swagger UI contributors
+License:   Apache License 2.0 (see inst/swagger-ui/LICENSE)
+Source:    https://github.com/swagger-api/swagger-ui
+
+These assets are served locally so that the OpenAPI (Swagger) documentation
+pages work without an internet connection. Licenses of third-party code
+bundled inside swagger-ui-bundle.js are listed in
+inst/swagger-ui/swagger-ui-bundle.js.LICENSE.txt.
+
+To update, bump SWAGGER_UI_VERSION in the makefile and run:
+
+    make update-swagger
