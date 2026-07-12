@@ -583,15 +583,25 @@ build_openapi <- function(routes, info = list()) {
 
 #' Build the Swagger UI HTML page
 #'
+#' The Swagger UI assets (CSS & JavaScript) are bundled with ambiorix
+#' (`inst/swagger-ui/`) and referenced relative to `assets_path`, so the
+#' page works without an internet connection.
+#'
 #' @param spec_url URL of the OpenAPI JSON document.
 #' @param title Title of the page.
+#' @param assets_path Path at which the Swagger UI assets are served.
 #'
 #' @return A single character string of HTML.
 #'
 #' @keywords internal
 #' @noRd
-swagger_ui_html <- function(spec_url, title = "API Documentation") {
+swagger_ui_html <- function(
+  spec_url,
+  title = "API Documentation",
+  assets_path = "/__swagger__"
+) {
   title <- title %error% "API Documentation"
+  assets_path <- sub("/+$", "", assets_path)
   sprintf(
     '<!DOCTYPE html>
 <html lang="en">
@@ -601,12 +611,12 @@ swagger_ui_html <- function(spec_url, title = "API Documentation") {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css"
+      href="%s/swagger-ui.css"
     />
   </head>
   <body>
     <div id="swagger-ui"></div>
-    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js" crossorigin></script>
+    <script src="%s/swagger-ui-bundle.js"></script>
     <script>
       window.onload = function () {
         window.ui = SwaggerUIBundle({
@@ -618,6 +628,8 @@ swagger_ui_html <- function(spec_url, title = "API Documentation") {
   </body>
 </html>',
     html_escape(title),
+    assets_path,
+    assets_path,
     spec_url
   )
 }

@@ -311,8 +311,14 @@ Ambiorix <- R6::R6Class(
     #' document (`spec_path`, default `/openapi.json`). Only routes registered
     #' with a `docs` argument (see [openapi_docs()]) appear in the document.
     #'
-    #' If `ui_path` or `spec_path` collides with an existing route, the
-    #' corresponding docs route is not registered and a warning is emitted.
+    #' The Swagger UI assets (CSS & JavaScript) are bundled with ambiorix and
+    #' served locally at `assets_path` (default `/__swagger__`), so the docs
+    #' work without an internet connection.
+    #'
+    #' If `ui_path` or `spec_path` collides with an existing route, or
+    #' `assets_path` collides with an existing static directory, the
+    #' corresponding docs route (or asset directory) is not registered and a
+    #' warning is emitted.
     #' The OpenAPI document is always serialised with the default serialiser,
     #' regardless of any custom serialiser set via `serialiser()`.
     #'
@@ -321,6 +327,8 @@ Ambiorix <- R6::R6Class(
     #' @param description Optional description of the API.
     #' @param ui_path Path at which the Swagger UI is served.
     #' @param spec_path Path at which the OpenAPI JSON document is served.
+    #' @param assets_path Path at which the Swagger UI assets (CSS &
+    #'   JavaScript) are served.
     #' @param ... Additional fields added to the OpenAPI `info` object.
     #'
     #' @examples
@@ -349,12 +357,14 @@ Ambiorix <- R6::R6Class(
       description = NULL,
       ui_path = "/docs",
       spec_path = "/openapi.json",
+      assets_path = "/__swagger__",
       ...
     ) {
       assert_that(is_string(title))
       assert_that(is_string(version))
       assert_that(is_string(ui_path))
       assert_that(is_string(spec_path))
+      assert_that(is_string(assets_path))
 
       info <- list(title = title, version = version, ...)
       if (!is.null(description)) {
@@ -364,6 +374,7 @@ Ambiorix <- R6::R6Class(
       private$.openapi_info <- info
       private$.openapi_ui_path <- ui_path
       private$.openapi_spec_path <- spec_path
+      private$.openapi_assets_path <- assets_path
       private$.openapi_enabled <- TRUE
 
       invisible(self)
@@ -429,6 +440,7 @@ Ambiorix <- R6::R6Class(
     .openapi_info = list(),
     .openapi_ui_path = "/docs",
     .openapi_spec_path = "/openapi.json",
+    .openapi_assets_path = "/__swagger__",
     n_routes = function() {
       length(private$.routes) + length(private$.static)
     },
@@ -447,6 +459,7 @@ Ambiorix <- R6::R6Class(
 
       spec_path <- private$.openapi_spec_path
       ui_path <- private$.openapi_ui_path
+      assets_path <- private$.openapi_assets_path
       info <- private$.openapi_info
 
       existing_paths <- vapply(
@@ -485,10 +498,31 @@ Ambiorix <- R6::R6Class(
           )
         )
       } else {
-        ui_html <- swagger_ui_html(spec_path, title = info$title)
+        ui_html <- swagger_ui_html(
+          spec_path,
+          title = info$title,
+          assets_path = assets_path
+        )
         self$get(ui_path, function(req, res) {
           res$send(ui_html)
         })
+      }
+
+      assets_uri <- sub("^/+", "", assets_path)
+      if (assets_uri %in% names(private$.static)) {
+        cli::cli_alert_warning(
+          paste(
+            "Static directory {.val {assets_path}} is already registered:",
+            "the Swagger UI assets will not be served.",
+            "Use the {.code assets_path} argument of {.code app$openapi()}",
+            "to serve them at another path."
+          )
+        )
+      } else {
+        self$static(
+          path = system.file("swagger-ui", package = "ambiorix"),
+          uri = assets_uri
+        )
       }
 
       private$.openapi_registered <- TRUE
