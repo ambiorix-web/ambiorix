@@ -42,8 +42,10 @@
 #' the request, response, and the error condition.
 #' @param docs Optional OpenAPI documentation for the route, created with
 #' [openapi_docs()]. When the app enables docs via `app$openapi()`, documented
-#' routes appear in the generated OpenAPI document. Path parameters are derived
-#' automatically from the route's `:param` tokens.
+#' routes appear in the generated OpenAPI document. Path parameters are
+#' documented automatically from the route's `:param` tokens with a string
+#' schema; declare them via [openapi_param()] with `location = "path"` to
+#' override that default.
 #'
 #' @return The routing object invisibly so calls can be chained.
 #'

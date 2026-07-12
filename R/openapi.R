@@ -96,15 +96,17 @@ print.ambiorix_openapi_schema <- function(x, ...) {
 
 #' OpenAPI Parameter
 #'
-#' Describe a single query, header, or cookie parameter. Path parameters are
-#' derived automatically from the route's `:param` tokens and must not be
-#' declared here.
+#' Describe a single query, path, header, or cookie parameter. Path parameters
+#' are documented automatically from the route's `:param` tokens with a string
+#' schema; declare one here with `location = "path"` to override that default,
+#' e.g. to document it as an integer.
 #'
-#' @param name Name of the parameter.
-#' @param location Where the parameter is passed; one of `"query"`, `"header"`,
-#' or `"cookie"`. `"path"` is not allowed: path parameters are inferred from the
-#' route.
-#' @param required Whether the parameter is required.
+#' @param name Name of the parameter. For path parameters this must match one
+#' of the route's `:param` tokens.
+#' @param location Where the parameter is passed; one of `"query"`, `"path"`,
+#' `"header"`, or `"cookie"`.
+#' @param required Whether the parameter is required. Path parameters are
+#' always required: this argument is ignored for them and forced to `TRUE`.
 #' @param description Human readable description of the parameter.
 #' @param schema An OpenAPI schema (see [openapi-schemas]) describing the
 #' parameter's type.
@@ -119,10 +121,17 @@ print.ambiorix_openapi_schema <- function(x, ...) {
 #'   schema = openapi_schema_boolean()
 #' )
 #'
+#' # override the automatic string schema of a path parameter
+#' openapi_param(
+#'   "id",
+#'   location = "path",
+#'   schema = openapi_schema_integer()
+#' )
+#'
 #' @export
 openapi_param <- function(
   name,
-  location = c("query", "header", "cookie"),
+  location = c("query", "path", "header", "cookie"),
   required = FALSE,
   description = NULL,
   schema = openapi_schema_string()
@@ -130,18 +139,16 @@ openapi_param <- function(
   assert_that(not_missing(name))
   assert_that(is_string(name))
 
-  if (identical(location, "path")) {
-    stop(
-      "Path parameters are derived automatically from the route path; ",
-      "do not declare them with `openapi_param()`.",
-      call. = FALSE
-    )
-  }
+  location <- match.arg(arg = location)
 
-  location <- match.arg(location)
   assert_that(is_flag(required))
   assert_that(is.null(description) || is_string(description))
   assert_that(is_openapi_schema(schema))
+
+  # the OpenAPI specification mandates that path parameters are required
+  if (identical(location, "path")) {
+    required <- TRUE
+  }
 
   structure(
     list(
@@ -165,8 +172,9 @@ print.ambiorix_openapi_parameter <- function(x, ...) {
 
 #' OpenAPI Parameters
 #'
-#' Collect query, header, and cookie parameters for a route. Path parameters are
-#' derived automatically from the route's `:param` tokens.
+#' Collect query, path, header, and cookie parameters for a route. Path
+#' parameters are documented automatically from the route's `:param` tokens
+#' with a string schema; declare one here to override that default.
 #'
 #' @param ... Objects created with [openapi_param()].
 #'
@@ -345,13 +353,16 @@ print.ambiorix_openapi_responses <- function(x, ...) {
 #' method (see [routing-http-methods]).
 #'
 #' Path parameters are documented automatically from the route's `:param`
-#' tokens, so only query, header, and cookie parameters need to be declared via
-#' [openapi_parameters()].
+#' tokens with a string schema, so only query, header, and cookie parameters
+#' need to be declared via [openapi_parameters()]. To override an automatic
+#' path parameter (e.g. to document it as an integer), declare it with
+#' [openapi_param()] using `location = "path"` and a name matching the route
+#' token.
 #'
 #' @param summary Short summary of what the route does.
 #' @param description Longer description of the route.
 #' @param tags Character vector of tags used to group routes.
-#' @param parameters Query, header, and cookie parameters; see
+#' @param parameters Query, path, header, and cookie parameters; see
 #' [openapi_parameters()].
 #' @param request_body The request body; see [openapi_request_body()].
 #' @param responses The responses; see [openapi_responses()].
@@ -470,10 +481,35 @@ openapi_render_operation <- function(route) {
     operation$tags <- as.list(docs$tags)
   }
 
-  # auto-derive path parameters from the route's :param tokens
+  # split user-declared parameters into path overrides and the rest
+  path_overrides <- list()
+  other_params <- list()
+  if (!is.null(docs$parameters)) {
+    for (param in docs$parameters) {
+      if (identical(param$location, "path")) {
+        path_overrides[[param$name]] <- param
+      } else {
+        other_params <- append(other_params, list(param))
+      }
+    }
+  }
+
+  # auto-derive path parameters from the route's :param tokens,
+  # letting user-declared path parameters override the defaults
   parameters <- list()
   path_params <- route$route$params
   for (pname in path_params) {
+    override <- path_overrides[[pname]]
+    path_overrides[[pname]] <- NULL
+
+    if (!is.null(override)) {
+      parameters <- append(
+        parameters,
+        list(openapi_render_parameter(override))
+      )
+      next
+    }
+
     parameters <- append(
       parameters,
       list(
@@ -487,14 +523,24 @@ openapi_render_operation <- function(route) {
     )
   }
 
+  # path parameters that match no :param token in the route are dropped
+  if (length(path_overrides)) {
+    warning(
+      "Ignoring path parameter(s) ",
+      paste0("`", names(path_overrides), "`", collapse = ", "),
+      " for path `",
+      route$path,
+      "`: no matching `:param` token in the route.",
+      call. = FALSE
+    )
+  }
+
   # query / header / cookie parameters
-  if (!is.null(docs$parameters)) {
-    for (param in docs$parameters) {
-      parameters <- append(
-        parameters,
-        list(openapi_render_parameter(param))
-      )
-    }
+  for (param in other_params) {
+    parameters <- append(
+      parameters,
+      list(openapi_render_parameter(param))
+    )
   }
 
   if (length(parameters)) {
