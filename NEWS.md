@@ -8,7 +8,10 @@
   and its companion helpers (`openapi_parameters()`, `openapi_request_body()`,
   `openapi_responses()`, `openapi_schema_*()`). When enabled, the app serves
   an interactive Swagger UI (default `/docs`) and the OpenAPI 3.1 document
-  (default `/openapi.json`).
+  (default `/openapi.json`). The Swagger UI assets are bundled with the
+  package and served locally (default `/__swagger__`, configurable via the
+  `assets_path` argument of `app$openapi()`), so the docs work without an
+  internet connection.
 
 **Bug Fixes**
 
