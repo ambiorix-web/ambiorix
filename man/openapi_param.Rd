@@ -6,20 +6,21 @@
 \usage{
 openapi_param(
   name,
-  location = c("query", "header", "cookie"),
+  location = c("query", "path", "header", "cookie"),
   required = FALSE,
   description = NULL,
   schema = openapi_schema_string()
 )
 }
 \arguments{
-\item{name}{Name of the parameter.}
+\item{name}{Name of the parameter. For path parameters this must match one
+of the route's \verb{:param} tokens.}
 
-\item{location}{Where the parameter is passed; one of \code{"query"}, \code{"header"},
-or \code{"cookie"}. \code{"path"} is not allowed: path parameters are inferred from the
-route.}
+\item{location}{Where the parameter is passed; one of \code{"query"}, \code{"path"},
+\code{"header"}, or \code{"cookie"}.}
 
-\item{required}{Whether the parameter is required.}
+\item{required}{Whether the parameter is required. Path parameters are
+always required: this argument is ignored for them and forced to \code{TRUE}.}
 
 \item{description}{Human readable description of the parameter.}
 
@@ -30,9 +31,10 @@ parameter's type.}
 An object of class \code{ambiorix_openapi_parameter}.
 }
 \description{
-Describe a single query, header, or cookie parameter. Path parameters are
-derived automatically from the route's \verb{:param} tokens and must not be
-declared here.
+Describe a single query, path, header, or cookie parameter. Path parameters
+are documented automatically from the route's \verb{:param} tokens with a string
+schema; declare one here with \code{location = "path"} to override that default,
+e.g. to document it as an integer.
 }
 \examples{
 openapi_param(
@@ -40,6 +42,13 @@ openapi_param(
   location = "query",
   description = "Return extra fields",
   schema = openapi_schema_boolean()
+)
+
+# override the automatic string schema of a path parameter
+openapi_param(
+  "id",
+  location = "path",
+  schema = openapi_schema_integer()
 )
 
 }

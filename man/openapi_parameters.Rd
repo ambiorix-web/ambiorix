@@ -13,8 +13,9 @@ openapi_parameters(...)
 An object of class \code{ambiorix_openapi_parameters}.
 }
 \description{
-Collect query, header, and cookie parameters for a route. Path parameters are
-derived automatically from the route's \verb{:param} tokens.
+Collect query, path, header, and cookie parameters for a route. Path
+parameters are documented automatically from the route's \verb{:param} tokens
+with a string schema; declare one here to override that default.
 }
 \examples{
 openapi_parameters(

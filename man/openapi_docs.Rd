@@ -20,7 +20,7 @@ openapi_docs(
 
 \item{tags}{Character vector of tags used to group routes.}
 
-\item{parameters}{Query, header, and cookie parameters; see
+\item{parameters}{Query, path, header, and cookie parameters; see
 \code{\link[=openapi_parameters]{openapi_parameters()}}.}
 
 \item{request_body}{The request body; see \code{\link[=openapi_request_body]{openapi_request_body()}}.}
@@ -36,8 +36,11 @@ method (see \link{routing-http-methods}).
 }
 \details{
 Path parameters are documented automatically from the route's \verb{:param}
-tokens, so only query, header, and cookie parameters need to be declared via
-\code{\link[=openapi_parameters]{openapi_parameters()}}.
+tokens with a string schema, so only query, header, and cookie parameters
+need to be declared via \code{\link[=openapi_parameters]{openapi_parameters()}}. To override an automatic
+path parameter (e.g. to document it as an integer), declare it with
+\code{\link[=openapi_param]{openapi_param()}} using \code{location = "path"} and a name matching the route
+token.
 }
 \examples{
 openapi_docs(
