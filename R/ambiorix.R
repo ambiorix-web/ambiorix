@@ -463,9 +463,11 @@ Ambiorix <- R6::R6Class(
       info <- private$.openapi_info
 
       existing_paths <- vapply(
-        super$get_routes(),
-        function(route) paste0(route$route$basepath, route$path),
-        character(1)
+        X = super$get_routes(),
+        FUN = function(route) {
+          paste0(route$route$basepath, route$path)
+        },
+        FUN.VALUE = character(1)
       )
 
       if (spec_path %in% existing_paths) {

@@ -76,9 +76,11 @@ test_that("openapi docs routes are registered on start", {
   private$.routes <- app$get_routes()
 
   paths <- vapply(
-    private$.routes,
-    function(route) route$path,
-    character(1)
+    X = private$.routes,
+    FUN = function(route) {
+      route$path
+    },
+    FUN.VALUE = character(1)
   )
 
   expect_true("/openapi.json" %in% paths)
@@ -136,9 +138,11 @@ test_that("openapi routes are registered only once", {
   private$.routes <- app$get_routes()
 
   paths <- vapply(
-    private$.routes,
-    function(route) route$path,
-    character(1)
+    X = private$.routes,
+    FUN = function(route) {
+      route$path
+    },
+    FUN.VALUE = character(1)
   )
 
   expect_equal(sum(paths == "/docs"), 1L)
@@ -223,9 +227,11 @@ test_that("openapi routes are skipped when they collide with user routes", {
   private$.routes <- app$get_routes()
 
   paths <- vapply(
-    private$.routes,
-    function(route) route$path,
-    character(1)
+    X = private$.routes,
+    FUN = function(route) {
+      route$path
+    },
+    FUN.VALUE = character(1)
   )
 
   # the colliding UI route was skipped, the spec route registered
