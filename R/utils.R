@@ -72,16 +72,6 @@ named_list <- function() {
   out
 }
 
-#' Remove Extensions
-#'
-#' Remove extensions from files.
-#'
-#' @noRd
-#' @keywords internal
-remove_extensions <- function(files) {
-  tools::file_path_sans_ext(files)
-}
-
 #' Checks if Package is Installed
 #'
 #' Checks if a package is installed, stops if not.
