@@ -1,7 +1,7 @@
-install: check
+install:
 	Rscript -e "devtools::install()"
 
-check: document
+check:
 	Rscript -e "devtools::check()"
 
 document: 
