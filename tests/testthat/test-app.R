@@ -147,6 +147,69 @@ test_that("openapi routes are registered only once", {
   stop_all()
 })
 
+test_that("openapi registration serves the swagger ui assets locally", {
+  app <- Ambiorix$new()
+  app$openapi(title = "My API", version = "1.0.0")
+
+  app$get(
+    "/",
+    function(req, res) res$send("home"),
+    docs = openapi_docs(summary = "Home")
+  )
+
+  private <- environment(app$openapi)$private
+  private$.register_openapi_routes()
+
+  expect_true("__swagger__" %in% names(private$.static))
+  expect_equal(
+    private$.static[["__swagger__"]],
+    system.file("swagger-ui", package = "ambiorix")
+  )
+
+  stop_all()
+})
+
+test_that("openapi assets path is configurable", {
+  app <- Ambiorix$new()
+  app$openapi(
+    title = "My API",
+    version = "1.0.0",
+    assets_path = "/swagger-assets"
+  )
+
+  app$get(
+    "/",
+    function(req, res) res$send("home"),
+    docs = openapi_docs(summary = "Home")
+  )
+
+  private <- environment(app$openapi)$private
+  private$.register_openapi_routes()
+
+  expect_true("swagger-assets" %in% names(private$.static))
+  expect_false("__swagger__" %in% names(private$.static))
+
+  expect_error(app$openapi(assets_path = 1L))
+
+  stop_all()
+})
+
+test_that("openapi assets are skipped when they collide with static dirs", {
+  app <- Ambiorix$new()
+  app$openapi(title = "My API", version = "1.0.0")
+
+  app$static(tempdir(), "__swagger__")
+
+  private <- environment(app$openapi)$private
+  expect_message(private$.register_openapi_routes(), "already registered")
+
+  # the user-defined static directory was left untouched
+  expect_equal(sum(names(private$.static) == "__swagger__"), 1L)
+  expect_equal(private$.static[["__swagger__"]], tempdir())
+
+  stop_all()
+})
+
 test_that("openapi routes are skipped when they collide with user routes", {
   app <- Ambiorix$new()
   app$openapi(title = "My API", version = "1.0.0")

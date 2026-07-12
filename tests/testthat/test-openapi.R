@@ -156,6 +156,26 @@ test_that("swagger_ui_html embeds the spec url and title", {
   expect_true(grepl("<title>My &lt;API&gt;</title>", html, fixed = TRUE))
 })
 
+test_that("swagger_ui_html references local assets, not a CDN", {
+  html <- swagger_ui_html("/openapi.json")
+  expect_true(grepl("/__swagger__/swagger-ui.css", html, fixed = TRUE))
+  expect_true(grepl("/__swagger__/swagger-ui-bundle.js", html, fixed = TRUE))
+  expect_false(grepl("cdn.jsdelivr.net", html, fixed = TRUE))
+
+  # custom assets path, trailing slashes normalised
+  html <- swagger_ui_html("/openapi.json", assets_path = "/assets/")
+  expect_true(grepl("/assets/swagger-ui.css", html, fixed = TRUE))
+  expect_true(grepl("/assets/swagger-ui-bundle.js", html, fixed = TRUE))
+})
+
+test_that("swagger ui assets are bundled with the package", {
+  dir <- system.file("swagger-ui", package = "ambiorix")
+  expect_true(dir.exists(dir))
+  expect_true(file.exists(file.path(dir, "swagger-ui.css")))
+  expect_true(file.exists(file.path(dir, "swagger-ui-bundle.js")))
+  expect_true(file.exists(file.path(dir, "LICENSE")))
+})
+
 test_that("empty paths and properties serialise to JSON objects", {
   # no documented routes: `paths` must serialise to {}
   doc <- build_openapi(list())
