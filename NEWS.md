@@ -2,24 +2,12 @@
 
 **New Features**
 
-- Add support for OpenAPI (Swagger) documentation. Enable it with
-  `app$openapi()` and document routes via the new `docs` argument of the
-  routing methods (`app$get()`, `app$post()`, etc.) using `openapi_docs()`
-  and its companion helpers (`openapi_parameters()`, `openapi_request_body()`,
-  `openapi_responses()`, `openapi_schema_*()`). When enabled, the app serves
-  an interactive Swagger UI (default `/docs`) and the OpenAPI 3.1 document
-  (default `/openapi.json`). The Swagger UI assets are bundled with the
-  package and served locally (default `/__swagger__`, configurable via the
-  `assets_path` argument of `app$openapi()`), so the docs work without an
-  internet connection.
+- Add support for OpenAPI (Swagger) documentation, [pull/163](https://github.com/ambiorix-web/ambiorix/pull/163).
 
 **Bug Fixes**
 
-- Route path parameters are no longer duplicated when the app is started more
-  than once.
-- Middleware base paths are now matched as anchored path prefixes rather than
-  anywhere in the request path.
-- Routes of nested routers now report their full base path.
+- Allow overriding of default error handler, regardless of the order
+  it's registered in, [pull/161](https://github.com/ambiorix-web/ambiorix/pull/161).
 
 # ambiorix 3.0.0
 
