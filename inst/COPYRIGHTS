@@ -7,6 +7,7 @@ Swagger UI
 Files:     inst/swagger-ui/swagger-ui.css
            inst/swagger-ui/swagger-ui-bundle.js
            inst/swagger-ui/swagger-ui-bundle.js.LICENSE.txt
+           inst/swagger-ui/NOTICE
 Version:   5.32.8 (swagger-ui-dist)
 Copyright: SmartBear Software and the Swagger UI contributors
 License:   Apache License 2.0 (see inst/swagger-ui/LICENSE)

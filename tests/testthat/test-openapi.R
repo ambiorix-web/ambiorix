@@ -254,6 +254,7 @@ test_that("swagger ui assets are bundled with the package", {
   expect_true(file.exists(file.path(dir, "swagger-ui.css")))
   expect_true(file.exists(file.path(dir, "swagger-ui-bundle.js")))
   expect_true(file.exists(file.path(dir, "LICENSE")))
+  expect_true(file.exists(file.path(dir, "NOTICE")))
 })
 
 test_that("empty paths and properties serialise to JSON objects", {
