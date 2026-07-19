@@ -1,3 +1,14 @@
+# ambiorix 3.1.0
+
+**New Features**
+
+- Add support for OpenAPI (Swagger) documentation, [pull/163](https://github.com/ambiorix-web/ambiorix/pull/163).
+
+**Bug Fixes**
+
+- Allow overriding of default error handler, regardless of the order
+  it's registered in, [pull/161](https://github.com/ambiorix-web/ambiorix/pull/161).
+
 # ambiorix 3.0.0
 
 **Breaking Changes**

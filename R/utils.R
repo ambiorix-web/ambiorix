@@ -37,7 +37,7 @@ browse_ambiorix <- function(open, url) {
   lhs
 }
 
-`%error%` <- function(lhs, rhs) {
+`%||%` <- function(lhs, rhs) {
   if (is.null(lhs)) {
     return(rhs)
   }
@@ -45,14 +45,31 @@ browse_ambiorix <- function(open, url) {
   lhs
 }
 
-#' Remove Extensions
+#' Escape HTML Special Characters
 #'
-#' Remove extensions from files.
+#' @param x Character vector to escape.
 #'
 #' @noRd
 #' @keywords internal
-remove_extensions <- function(files) {
-  tools::file_path_sans_ext(files)
+html_escape <- function(x) {
+  x <- gsub("&", "&amp;", x, fixed = TRUE)
+  x <- gsub("<", "&lt;", x, fixed = TRUE)
+  x <- gsub(">", "&gt;", x, fixed = TRUE)
+  x <- gsub('"', "&quot;", x, fixed = TRUE)
+  x
+}
+
+#' Named Empty List
+#'
+#' An empty list carrying (empty) names so it serialises
+#' to a JSON object (`{}`) rather than an array (`[]`).
+#'
+#' @noRd
+#' @keywords internal
+named_list <- function() {
+  out <- list()
+  names(out) <- character(0)
+  out
 }
 
 #' Checks if Package is Installed

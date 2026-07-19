@@ -1,6 +1,6 @@
 Package: ambiorix
 Title: Web Framework Inspired by 'Express.js'
-Version: 3.0.0
+Version: 3.1.0
 Authors@R: 
   c(
     person(given = "John",
@@ -10,7 +10,8 @@ Authors@R:
            comment = c(ORCID = "0000-0002-6637-4107")),
     person(family = "Opifex", role = c("fnd")),
     person(given = "Kennedy", family = "Mwavu", role = "cre", email = "mwavukennedy@gmail.com", comment = c(ORCID = "0009-0006-3157-7234")),
-    person(given = "Julio", family = "Collazos", role = "ctb", comment = c(ORCID = "0009-0006-5503-0997"))
+    person(given = "Julio", family = "Collazos", role = "ctb", comment = c(ORCID = "0009-0006-5503-0997")),
+    person(family = "SmartBear Software", role = c("ctb", "cph"), comment = "swagger-ui assets in inst/swagger-ui/")
   )
 Description: A web framework inspired by 'express.js' to build
   any web service from multi-page websites to 'RESTful' 
@@ -19,7 +20,6 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Imports:
     log,
     cli,
@@ -44,3 +44,4 @@ Suggests:
 URL: https://github.com/ambiorix-web/ambiorix, https://ambiorix.dev
 BugReports: https://github.com/ambiorix-web/ambiorix/issues
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

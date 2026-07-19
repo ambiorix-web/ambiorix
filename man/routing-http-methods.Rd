@@ -4,8 +4,9 @@
 \alias{routing-http-methods}
 \title{Routing HTTP Methods}
 \arguments{
-\item{path}{String. Route to listen to; use \code{:} to define a parameter (e.g.
-\code{"/hello/:name"}).}
+\item{path}{String. Route to listen to, treated as a regular expression;
+use \code{:} to define a parameter (e.g. \code{"/hello/:name"}). See the
+\emph{Path matching} section.}
 
 \item{handler}{Function that accepts the request and response objects and
 returns an httpuv response (e.g. \code{\link[=response]{response()}}). Handlers can return the result
@@ -14,6 +15,13 @@ output of any renderer.}
 
 \item{error}{Optional handler invoked if the route raises an error; receives
 the request, response, and the error condition.}
+
+\item{docs}{Optional OpenAPI documentation for the route, created with
+\code{\link[=openapi_docs]{openapi_docs()}}. When the app enables docs via \code{app$openapi()}, documented
+routes appear in the generated OpenAPI document. Path parameters are
+documented automatically from the route's \verb{:param} tokens with a string
+schema; declare them via \code{\link[=openapi_param]{openapi_param()}} with \code{location = "path"} to
+override that default.}
 }
 \value{
 The routing object invisibly so calls can be chained.
@@ -35,6 +43,24 @@ methods. Each helper shares the same signature and behaviour.
 \item \code{all()}: Respond to every method above.
 }
 }
+
+\subsection{Path matching}{
+
+Paths are treated as regular expressions; use \code{:} to define a parameter
+(e.g. \code{"/hello/:name"}).
+\itemize{
+\item Parameters match greedily, across \code{/}: \code{"/users/:res"} matches
+\verb{/users/1} as well as \verb{/users/2/3}. Note that \code{req$params} captures a
+single path segment, so for \verb{/users/2/3} the value of \code{req$params$res}
+is \code{"2"}.
+\item Regular expression syntax is available for finer control, e.g.
+\code{app$get("/users/.+", ...)} for a greedy match without a parameter, or
+\code{app$get("/file\\\\.json", ...)} to match a literal dot (an unescaped \code{.}
+matches any character).
+\item To customise how paths are converted to patterns app-wide, see
+\code{\link[=as_path_to_pattern]{as_path_to_pattern()}}.
+}
+}
 }
 \examples{
 app <- Ambiorix$new()
@@ -51,7 +77,21 @@ app$all("/health", function(req, res) {
   res$json(list(status = "ok"))
 })
 
+app$get(
+  "/users/:id",
+  function(req, res) {
+    res$json(list(id = req$params$id))
+  },
+  docs = openapi_docs(
+    summary = "Get a user by ID",
+    tags = "users",
+    responses = openapi_responses(
+      openapi_response(200, "The user")
+    )
+  )
+)
+
 }
 \seealso{
-\code{\link{Routing}}
+\code{\link{Routing}}, \code{\link[=openapi_docs]{openapi_docs()}}
 }

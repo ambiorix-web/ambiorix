@@ -27,7 +27,7 @@ handler for the single corresponding HTTP verb; see
 \examples{
 
 ## ------------------------------------------------
-## Method `Routing$param`
+## Method `Routing$param()`
 ## ------------------------------------------------
 
 app <- Ambiorix$new()
@@ -55,7 +55,7 @@ if(interactive())
  app$start()
 
 ## ------------------------------------------------
-## Method `Routing$receive`
+## Method `Routing$receive()`
 ## ------------------------------------------------
 
 app <- Ambiorix$new()
@@ -79,103 +79,103 @@ if(interactive())
 }
 \keyword{export}
 \section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{error}}{Error handler.}
+  \if{html}{\out{<div class="r6-fields">}}
+  \describe{
+    \item{\code{error}}{Error handler.}
 
-\item{\code{get}}{Register a route handler for HTTP GET requests. See
+    \item{\code{get}}{Register a route handler for HTTP GET requests. See
 \link{routing-http-methods}.}
 
-\item{\code{put}}{Register a route handler for HTTP PUT requests. See
+    \item{\code{put}}{Register a route handler for HTTP PUT requests. See
 \link{routing-http-methods}.}
 
-\item{\code{patch}}{Register a route handler for HTTP PATCH requests. See
+    \item{\code{patch}}{Register a route handler for HTTP PATCH requests. See
 \link{routing-http-methods}.}
 
-\item{\code{delete}}{Register a route handler for HTTP DELETE requests. See
+    \item{\code{delete}}{Register a route handler for HTTP DELETE requests. See
 \link{routing-http-methods}.}
 
-\item{\code{post}}{Register a route handler for HTTP POST requests. See
+    \item{\code{post}}{Register a route handler for HTTP POST requests. See
 \link{routing-http-methods}.}
 
-\item{\code{options}}{Register a route handler for HTTP OPTIONS requests. See
+    \item{\code{options}}{Register a route handler for HTTP OPTIONS requests. See
 \link{routing-http-methods}.}
 
-\item{\code{all}}{Register a route handler that responds to every HTTP verb used by
+    \item{\code{all}}{Register a route handler that responds to every HTTP verb used by
 Ambiorix. See \link{routing-http-methods}.}
-}
-\if{html}{\out{</div>}}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{basepath}}{Basepath, read-only.}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{basepath}}{Basepath, read-only.}
 
-\item{\code{websocket}}{Websocket handler.}
-}
-\if{html}{\out{</div>}}
+    \item{\code{websocket}}{Websocket handler.}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-Routing-new}{\code{Routing$new()}}
-\item \href{#method-Routing-param}{\code{Routing$param()}}
-\item \href{#method-Routing-receive}{\code{Routing$receive()}}
-\item \href{#method-Routing-print}{\code{Routing$print()}}
-\item \href{#method-Routing-engine}{\code{Routing$engine()}}
-\item \href{#method-Routing-use}{\code{Routing$use()}}
-\item \href{#method-Routing-get_routes}{\code{Routing$get_routes()}}
-\item \href{#method-Routing-get_params}{\code{Routing$get_params()}}
-\item \href{#method-Routing-get_receivers}{\code{Routing$get_receivers()}}
-\item \href{#method-Routing-get_middleware}{\code{Routing$get_middleware()}}
-\item \href{#method-Routing-prepare}{\code{Routing$prepare()}}
-\item \href{#method-Routing-clone}{\code{Routing$clone()}}
-}
+  \itemize{
+    \item \href{#method-Routing-initialize}{\code{Routing$new()}}
+    \item \href{#method-Routing-param}{\code{Routing$param()}}
+    \item \href{#method-Routing-receive}{\code{Routing$receive()}}
+    \item \href{#method-Routing-print}{\code{Routing$print()}}
+    \item \href{#method-Routing-engine}{\code{Routing$engine()}}
+    \item \href{#method-Routing-use}{\code{Routing$use()}}
+    \item \href{#method-Routing-get_routes}{\code{Routing$get_routes()}}
+    \item \href{#method-Routing-get_params}{\code{Routing$get_params()}}
+    \item \href{#method-Routing-get_receivers}{\code{Routing$get_receivers()}}
+    \item \href{#method-Routing-get_middleware}{\code{Routing$get_middleware()}}
+    \item \href{#method-Routing-prepare}{\code{Routing$prepare()}}
+    \item \href{#method-Routing-clone}{\code{Routing$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Routing-new"></a>}}
-\if{latex}{\out{\hypertarget{method-Routing-new}{}}}
-\subsection{Method \code{new()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$new(path = "")}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-Routing-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-initialize}{}}}
+\subsection{\code{Routing$new()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$new(path = "")}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{path}}{Prefix path.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Initialise
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Prefix path.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Initialise
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-param"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-param}{}}}
-\subsection{Method \code{param()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$param(name, handler)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Name of the parameter}
-
-\item{\code{handler}}{Function that accepts the request, response, parameter value and the parameter name.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-PARAM Method
-}
-
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{app <- Ambiorix$new()
+\subsection{\code{Routing$param()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$param(name, handler)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{name}}{Name of the parameter}
+      \item{\code{handler}}{Function that accepts the request, response, parameter value and the parameter name.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    PARAM Method
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{app <- Ambiorix$new()
 
 app$get("/", function(req,res){
  res$send("Hello!")
@@ -199,35 +199,33 @@ app$get("/info/:person", function(req,res){
 if(interactive())
  app$start()
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-receive"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-receive}{}}}
-\subsection{Method \code{receive()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$receive(name, handler)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Name of message.}
-
-\item{\code{handler}}{Function to run when message is received.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Receive Websocket Message
-}
-
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{app <- Ambiorix$new()
+\subsection{\code{Routing$receive()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$receive(name, handler)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{name}}{Name of message.}
+      \item{\code{handler}}{Function to run when message is received.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Receive Websocket Message
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{app <- Ambiorix$new()
 
 app$get("/", function(req, res){
  res$send("Using {ambiorix}!")
@@ -243,183 +241,189 @@ app$receive("hello", function(msg, ws){
 if(interactive())
  app$start()
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-print"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-print}{}}}
-\subsection{Method \code{print()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$print()}\if{html}{\out{</div>}}
+\subsection{\code{Routing$print()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$print()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Print
+  }
 }
 
-\subsection{Details}{
-Print
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-engine"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-engine}{}}}
-\subsection{Method \code{engine()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$engine(engine)}\if{html}{\out{</div>}}
+\subsection{\code{Routing$engine()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$engine(engine)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{engine}}{Engine function.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Engine to use for rendering templates.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{engine}}{Engine function.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Engine to use for rendering templates.
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-use"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-use}{}}}
-\subsection{Method \code{use()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$use(use)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{use}}{Either a router as returned by \link{Router}, a function to use as middleware,
+\subsection{\code{Routing$use()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$use(use)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{use}}{Either a router as returned by \link{Router}, a function to use as middleware,
 or a \code{list} of functions.
 If a function is passed, it must accept two arguments (the request, and the response):
 this function will be executed every time the server receives a request.
 \emph{Middleware may but does not have to return a response, unlike other methods such as \code{get}}
 Note that multiple routers and middlewares can be used.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Use a router or middleware
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Use a router or middleware
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-get_routes"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-get_routes}{}}}
-\subsection{Method \code{get_routes()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$get_routes(routes = list(), parent = "")}\if{html}{\out{</div>}}
+\subsection{\code{Routing$get_routes()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$get_routes(routes = list(), parent = "")}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{routes}}{Existing list of routes.}
+      \item{\code{parent}}{Parent path.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Get the routes
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{routes}}{Existing list of routes.}
-
-\item{\code{parent}}{Parent path.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Get the routes
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-get_params"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-get_params}{}}}
-\subsection{Method \code{get_params()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$get_params(params = list(), parent = "")}\if{html}{\out{</div>}}
+\subsection{\code{Routing$get_params()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$get_params(params = list(), parent = "")}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{params}}{Existing list of parameter middlewares.}
+      \item{\code{parent}}{Parent path.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Get the parameter middlewares
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{params}}{Existing list of parameter middlewares.}
-
-\item{\code{parent}}{Parent path.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Get the parameter middlewares
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-get_receivers"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-get_receivers}{}}}
-\subsection{Method \code{get_receivers()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$get_receivers(receivers = list())}\if{html}{\out{</div>}}
+\subsection{\code{Routing$get_receivers()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$get_receivers(receivers = list())}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{receivers}}{Existing list of receivers}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Get the websocket receivers
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{receivers}}{Existing list of receivers}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Get the websocket receivers
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-get_middleware"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-get_middleware}{}}}
-\subsection{Method \code{get_middleware()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$get_middleware(middlewares = list(), parent = "")}\if{html}{\out{</div>}}
+\subsection{\code{Routing$get_middleware()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$get_middleware(middlewares = list(), parent = "")}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{middlewares}}{Existing list of middleswares}
+      \item{\code{parent}}{Parent path}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Get the middleware
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{middlewares}}{Existing list of middleswares}
-
-\item{\code{parent}}{Parent path}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Get the middleware
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-prepare"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-prepare}{}}}
-\subsection{Method \code{prepare()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$prepare()}\if{html}{\out{</div>}}
+\subsection{\code{Routing$prepare()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$prepare()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Prepare routes and decomposes paths
+  }
 }
 
-\subsection{Details}{
-Prepare routes and decomposes paths
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Routing-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-Routing-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Routing$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{Routing$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

@@ -26,7 +26,7 @@ if(interactive())
 
 
 ## ------------------------------------------------
-## Method `Ambiorix$listen`
+## Method `Ambiorix$listen()`
 ## ------------------------------------------------
 
 app <- Ambiorix$new()
@@ -41,7 +41,7 @@ if(interactive())
  app$start()
 
 ## ------------------------------------------------
-## Method `Ambiorix$set_404`
+## Method `Ambiorix$set_404()`
 ## ------------------------------------------------
 
 app <- Ambiorix$new()
@@ -58,7 +58,7 @@ if(interactive())
  app$start()
 
 ## ------------------------------------------------
-## Method `Ambiorix$set_error`
+## Method `Ambiorix$set_error()`
 ## ------------------------------------------------
 
 # my custom error handler:
@@ -92,7 +92,7 @@ if (interactive()) {
 }
 
 ## ------------------------------------------------
-## Method `Ambiorix$start`
+## Method `Ambiorix$start()`
 ## ------------------------------------------------
 
 app <- Ambiorix$new()
@@ -105,7 +105,7 @@ if(interactive())
  app$start(port = 3000L)
 
 ## ------------------------------------------------
-## Method `Ambiorix$serialiser`
+## Method `Ambiorix$serialiser()`
 ## ------------------------------------------------
 
 app <- Ambiorix$new()
@@ -120,127 +120,150 @@ app$get("/", function(req, res){
 
 if(interactive())
  app$start()
+
+## ------------------------------------------------
+## Method `Ambiorix$openapi()`
+## ------------------------------------------------
+
+app <- Ambiorix$new()
+
+app$openapi(title = "My API", version = "1.0.0")
+
+app$get(
+  "/",
+  function(req, res) {
+    res$send("Using {ambiorix}!")
+  },
+  docs = openapi_docs(
+    summary = "Landing page",
+    responses = openapi_responses(
+      openapi_response(200, "The landing page")
+    )
+  )
+)
+
+if (interactive())
+  app$start()
 }
 \section{Super class}{
-\code{\link[ambiorix:Routing]{ambiorix::Routing}} -> \code{Ambiorix}
+\code{\link[ambiorix:Routing]{Routing}} -> \code{Ambiorix}
 }
 \section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{not_found}}{404 Response, must be a handler function that accepts the request and the response, by default uses \code{\link[=response_404]{response_404()}}.}
+  \if{html}{\out{<div class="r6-fields">}}
+  \describe{
+    \item{\code{not_found}}{404 Response, must be a handler function that accepts the request and the response, by default uses \code{\link[=response_404]{response_404()}}.}
 
-\item{\code{error}}{500 response when the route errors, must a handler function that accepts the request and the response, by default uses \code{\link[=response_500]{response_500()}}.}
+    \item{\code{error}}{500 response when the route errors, must a handler function that accepts the request and the response, by default uses \code{\link[=response_500]{response_500()}}.}
 
-\item{\code{on_stop}}{Callback function to run when the app stops, takes no argument.}
-}
-\if{html}{\out{</div>}}
+    \item{\code{on_stop}}{Callback function to run when the app stops, takes no argument.}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{port}}{Port to run the application.}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{port}}{Port to run the application.}
 
-\item{\code{host}}{Host to run the application.}
+    \item{\code{host}}{Host to run the application.}
 
-\item{\code{limit}}{Max body size, defaults to \code{5 * 1024 * 1024}.}
-}
-\if{html}{\out{</div>}}
+    \item{\code{limit}}{Max body size, defaults to \code{5 * 1024 * 1024}.}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-Ambiorix-new}{\code{Ambiorix$new()}}
-\item \href{#method-Ambiorix-cache_templates}{\code{Ambiorix$cache_templates()}}
-\item \href{#method-Ambiorix-listen}{\code{Ambiorix$listen()}}
-\item \href{#method-Ambiorix-set_404}{\code{Ambiorix$set_404()}}
-\item \href{#method-Ambiorix-set_error}{\code{Ambiorix$set_error()}}
-\item \href{#method-Ambiorix-static}{\code{Ambiorix$static()}}
-\item \href{#method-Ambiorix-start}{\code{Ambiorix$start()}}
-\item \href{#method-Ambiorix-serialiser}{\code{Ambiorix$serialiser()}}
-\item \href{#method-Ambiorix-stop}{\code{Ambiorix$stop()}}
-\item \href{#method-Ambiorix-print}{\code{Ambiorix$print()}}
-\item \href{#method-Ambiorix-clone}{\code{Ambiorix$clone()}}
+  \itemize{
+    \item \href{#method-Ambiorix-initialize}{\code{Ambiorix$new()}}
+    \item \href{#method-Ambiorix-cache_templates}{\code{Ambiorix$cache_templates()}}
+    \item \href{#method-Ambiorix-listen}{\code{Ambiorix$listen()}}
+    \item \href{#method-Ambiorix-set_404}{\code{Ambiorix$set_404()}}
+    \item \href{#method-Ambiorix-set_error}{\code{Ambiorix$set_error()}}
+    \item \href{#method-Ambiorix-static}{\code{Ambiorix$static()}}
+    \item \href{#method-Ambiorix-start}{\code{Ambiorix$start()}}
+    \item \href{#method-Ambiorix-serialiser}{\code{Ambiorix$serialiser()}}
+    \item \href{#method-Ambiorix-openapi}{\code{Ambiorix$openapi()}}
+    \item \href{#method-Ambiorix-stop}{\code{Ambiorix$stop()}}
+    \item \href{#method-Ambiorix-print}{\code{Ambiorix$print()}}
+    \item \href{#method-Ambiorix-clone}{\code{Ambiorix$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details><summary>Inherited methods</summary>
+\if{html}{\out{<details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="engine"><a href='../../ambiorix/html/Routing.html#method-Routing-engine'><code>ambiorix::Routing$engine()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_middleware"><a href='../../ambiorix/html/Routing.html#method-Routing-get_middleware'><code>ambiorix::Routing$get_middleware()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_params"><a href='../../ambiorix/html/Routing.html#method-Routing-get_params'><code>ambiorix::Routing$get_params()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers"><a href='../../ambiorix/html/Routing.html#method-Routing-get_receivers'><code>ambiorix::Routing$get_receivers()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_routes"><a href='../../ambiorix/html/Routing.html#method-Routing-get_routes'><code>ambiorix::Routing$get_routes()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="param"><a href='../../ambiorix/html/Routing.html#method-Routing-param'><code>ambiorix::Routing$param()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="prepare"><a href='../../ambiorix/html/Routing.html#method-Routing-prepare'><code>ambiorix::Routing$prepare()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive"><a href='../../ambiorix/html/Routing.html#method-Routing-receive'><code>ambiorix::Routing$receive()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use"><a href='../../ambiorix/html/Routing.html#method-Routing-use'><code>ambiorix::Routing$use()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="engine"><a href='../../ambiorix/html/Routing.html#method-Routing-engine'><code>Routing$engine()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_middleware"><a href='../../ambiorix/html/Routing.html#method-Routing-get_middleware'><code>Routing$get_middleware()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_params"><a href='../../ambiorix/html/Routing.html#method-Routing-get_params'><code>Routing$get_params()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers"><a href='../../ambiorix/html/Routing.html#method-Routing-get_receivers'><code>Routing$get_receivers()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_routes"><a href='../../ambiorix/html/Routing.html#method-Routing-get_routes'><code>Routing$get_routes()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="param"><a href='../../ambiorix/html/Routing.html#method-Routing-param'><code>Routing$param()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="prepare"><a href='../../ambiorix/html/Routing.html#method-Routing-prepare'><code>Routing$prepare()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive"><a href='../../ambiorix/html/Routing.html#method-Routing-receive'><code>Routing$receive()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use"><a href='../../ambiorix/html/Routing.html#method-Routing-use'><code>Routing$use()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Ambiorix-new"></a>}}
-\if{latex}{\out{\hypertarget{method-Ambiorix-new}{}}}
-\subsection{Method \code{new()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$new(
+\if{html}{\out{<a id="method-Ambiorix-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-initialize}{}}}
+\subsection{\code{Ambiorix$new()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$new(
   host = getOption("ambiorix.host", "0.0.0.0"),
   port = getOption("ambiorix.port", NULL),
   log = getOption("ambiorix.logger", TRUE)
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{host}}{A string defining the host.}
+      \item{\code{port}}{Integer defining the port, defaults to \code{ambiorix.port} option: uses a random port if \code{NULL}.}
+      \item{\code{log}}{Whether to generate a log of events.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Define the webserver.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{host}}{A string defining the host.}
-
-\item{\code{port}}{Integer defining the port, defaults to \code{ambiorix.port} option: uses a random port if \code{NULL}.}
-
-\item{\code{log}}{Whether to generate a log of events.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Define the webserver.
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ambiorix-cache_templates"></a>}}
 \if{latex}{\out{\hypertarget{method-Ambiorix-cache_templates}{}}}
-\subsection{Method \code{cache_templates()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$cache_templates()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Cache templates in memory instead of reading
+\subsection{\code{Ambiorix$cache_templates()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$cache_templates()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Cache templates in memory instead of reading
 them from disk.
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ambiorix-listen"></a>}}
 \if{latex}{\out{\hypertarget{method-Ambiorix-listen}{}}}
-\subsection{Method \code{listen()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$listen(port)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{port}}{Port number.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Specifies the port to listen on.
-}
-
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{app <- Ambiorix$new()
+\subsection{\code{Ambiorix$listen()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$listen(port)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{port}}{Port number.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Specifies the port to listen on.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{app <- Ambiorix$new()
 
 app$listen(3000L)
 
@@ -251,34 +274,33 @@ app$get("/", function(req, res){
 if(interactive())
  app$start()
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ambiorix-set_404"></a>}}
 \if{latex}{\out{\hypertarget{method-Ambiorix-set_404}{}}}
-\subsection{Method \code{set_404()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$set_404(handler)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{handler}}{Function that accepts the request and returns an object
+\subsection{\code{Ambiorix$set_404()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$set_404(handler)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{handler}}{Function that accepts the request and returns an object
 describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Sets the 404 page.
-}
-
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{app <- Ambiorix$new()
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Sets the 404 page.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{app <- Ambiorix$new()
 
 app$set_404(function(req, res){
  res$send("Nothing found here")
@@ -291,33 +313,32 @@ app$get("/", function(req, res){
 if(interactive())
  app$start()
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ambiorix-set_error"></a>}}
 \if{latex}{\out{\hypertarget{method-Ambiorix-set_error}{}}}
-\subsection{Method \code{set_error()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$set_error(handler)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{handler}}{Function that accepts a request, response and an error object.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Sets the error handler.
-}
-
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{# my custom error handler:
+\subsection{\code{Ambiorix$set_error()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$set_error(handler)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{handler}}{Function that accepts a request, response and an error object.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Sets the error handler.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{# my custom error handler:
 error_handler <- function(req, res, error) {
   if (!is.null(error)) {
     error_msg <- conditionMessage(error)
@@ -347,60 +368,57 @@ if (interactive()) {
   app$start(open = FALSE)
 }
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ambiorix-static"></a>}}
 \if{latex}{\out{\hypertarget{method-Ambiorix-static}{}}}
-\subsection{Method \code{static()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$static(path, uri = "www")}\if{html}{\out{</div>}}
+\subsection{\code{Ambiorix$static()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$static(path, uri = "www")}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{path}}{Local path to directory of assets.}
+      \item{\code{uri}}{URL path where the directory will be available.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Static directories
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{path}}{Local path to directory of assets.}
-
-\item{\code{uri}}{URL path where the directory will be available.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Static directories
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ambiorix-start"></a>}}
 \if{latex}{\out{\hypertarget{method-Ambiorix-start}{}}}
-\subsection{Method \code{start()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$start(port = NULL, host = NULL, open = interactive())}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{port}}{Integer defining the port, defaults to \code{ambiorix.port} option: uses a random port if \code{NULL}.}
-
-\item{\code{host}}{A string defining the host.}
-
-\item{\code{open}}{Whether to open the app the browser.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Start
+\subsection{\code{Ambiorix$start()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$start(port = NULL, host = NULL, open = interactive())}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{port}}{Integer defining the port, defaults to \code{ambiorix.port} option: uses a random port if \code{NULL}.}
+      \item{\code{host}}{A string defining the host.}
+      \item{\code{open}}{Whether to open the app the browser.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Start
 Start the webserver.
-}
-
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{app <- Ambiorix$new()
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{app <- Ambiorix$new()
 
 app$get("/", function(req, res){
  res$send("Using {ambiorix}!")
@@ -409,34 +427,33 @@ app$get("/", function(req, res){
 if(interactive())
  app$start(port = 3000L)
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ambiorix-serialiser"></a>}}
 \if{latex}{\out{\hypertarget{method-Ambiorix-serialiser}{}}}
-\subsection{Method \code{serialiser()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$serialiser(handler)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{handler}}{Function to use to serialise.
+\subsection{\code{Ambiorix$serialiser()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$serialiser(handler)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{handler}}{Function to use to serialise.
 This function should accept two arguments: the object to serialise and \code{...}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Define Serialiser
-}
-
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{app <- Ambiorix$new()
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Define Serialiser
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{app <- Ambiorix$new()
 
 app$serialiser(function(data, ...){
  jsonlite::toJSON(x, ..., pretty = TRUE)
@@ -449,53 +466,132 @@ app$get("/", function(req, res){
 if(interactive())
  app$start()
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Ambiorix-openapi"></a>}}
+\if{latex}{\out{\hypertarget{method-Ambiorix-openapi}{}}}
+\subsection{\code{Ambiorix$openapi()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$openapi(
+  title = "API",
+  version = "1.0.0",
+  description = NULL,
+  ui_path = "/docs",
+  spec_path = "/openapi.json",
+  assets_path = "/__swagger__",
+  ...
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{title}}{Title of the API.}
+      \item{\code{version}}{Version of the API.}
+      \item{\code{description}}{Optional description of the API.}
+      \item{\code{ui_path}}{Path at which the Swagger UI is served.}
+      \item{\code{spec_path}}{Path at which the OpenAPI JSON document is served.}
+      \item{\code{assets_path}}{Path at which the Swagger UI assets (CSS &
+JavaScript) are served.}
+      \item{\code{...}}{Additional fields added to the OpenAPI \code{info} object.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Enable OpenAPI (Swagger) documentation.
+
+When enabled, two routes are registered when the app starts: an
+interactive Swagger UI (\code{ui_path}, default \verb{/docs}) and the OpenAPI JSON
+document (\code{spec_path}, default \verb{/openapi.json}). Only routes registered
+with a \code{docs} argument (see \code{\link[=openapi_docs]{openapi_docs()}}) appear in the document.
+
+The Swagger UI assets (CSS & JavaScript) are bundled with ambiorix and
+served locally at \code{assets_path} (default \verb{/__swagger__}), so the docs
+work without an internet connection.
+
+If \code{ui_path} or \code{spec_path} collides with an existing route, or
+\code{assets_path} collides with an existing static directory, the
+corresponding docs route (or asset directory) is not registered and a
+warning is emitted.
+The OpenAPI document is always serialised with the default serialiser,
+regardless of any custom serialiser set via \code{serialiser()}.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{app <- Ambiorix$new()
+
+app$openapi(title = "My API", version = "1.0.0")
+
+app$get(
+  "/",
+  function(req, res) {
+    res$send("Using {ambiorix}!")
+  },
+  docs = openapi_docs(
+    summary = "Landing page",
+    responses = openapi_responses(
+      openapi_response(200, "The landing page")
+    )
+  )
+)
+
+if (interactive())
+  app$start()
 }
+    \if{html}{\out{</div>}}
+  }
+}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ambiorix-stop"></a>}}
 \if{latex}{\out{\hypertarget{method-Ambiorix-stop}{}}}
-\subsection{Method \code{stop()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$stop()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Stop
+\subsection{\code{Ambiorix$stop()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$stop()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Stop
 Stop the webserver.
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ambiorix-print"></a>}}
 \if{latex}{\out{\hypertarget{method-Ambiorix-print}{}}}
-\subsection{Method \code{print()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$print()}\if{html}{\out{</div>}}
+\subsection{\code{Ambiorix$print()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$print()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Print
+  }
 }
 
-\subsection{Details}{
-Print
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ambiorix-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-Ambiorix-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ambiorix$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{Ambiorix$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Ambiorix$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

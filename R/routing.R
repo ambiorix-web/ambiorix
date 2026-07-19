@@ -15,14 +15,37 @@
 #' - `options()`: Respond to HTTP `OPTIONS` requests.
 #' - `all()`: Respond to every method above.
 #'
-#' @param path String. Route to listen to; use `:` to define a parameter (e.g.
-#' `"/hello/:name"`).
+#' ## Path matching
+#'
+#' Paths are treated as regular expressions; use `:` to define a parameter
+#' (e.g. `"/hello/:name"`).
+#'
+#' - Parameters match greedily, across `/`: `"/users/:res"` matches
+#'   `/users/1` as well as `/users/2/3`. Note that `req$params` captures a
+#'   single path segment, so for `/users/2/3` the value of `req$params$res`
+#'   is `"2"`.
+#' - Regular expression syntax is available for finer control, e.g.
+#'   `app$get("/users/.+", ...)` for a greedy match without a parameter, or
+#'   `app$get("/file\\.json", ...)` to match a literal dot (an unescaped `.`
+#'   matches any character).
+#' - To customise how paths are converted to patterns app-wide, see
+#'   [as_path_to_pattern()].
+#'
+#' @param path String. Route to listen to, treated as a regular expression;
+#' use `:` to define a parameter (e.g. `"/hello/:name"`). See the
+#' *Path matching* section.
 #' @param handler Function that accepts the request and response objects and
 #' returns an httpuv response (e.g. [response()]). Handlers can return the result
 #' of helper functions such as `Response$text()`, `Response$json()`, or the
 #' output of any renderer.
 #' @param error Optional handler invoked if the route raises an error; receives
 #' the request, response, and the error condition.
+#' @param docs Optional OpenAPI documentation for the route, created with
+#' [openapi_docs()]. When the app enables docs via `app$openapi()`, documented
+#' routes appear in the generated OpenAPI document. Path parameters are
+#' documented automatically from the route's `:param` tokens with a string
+#' schema; declare them via [openapi_param()] with `location = "path"` to
+#' override that default.
 #'
 #' @return The routing object invisibly so calls can be chained.
 #'
@@ -41,7 +64,21 @@
 #'   res$json(list(status = "ok"))
 #' })
 #'
-#' @seealso [`Routing`]
+#' app$get(
+#'   "/users/:id",
+#'   function(req, res) {
+#'     res$json(list(id = req$params$id))
+#'   },
+#'   docs = openapi_docs(
+#'     summary = "Get a user by ID",
+#'     tags = "users",
+#'     responses = openapi_responses(
+#'       openapi_response(200, "The user")
+#'     )
+#'   )
+#' )
+#'
+#' @seealso [`Routing`], [openapi_docs()]
 #'
 #' @name routing-http-methods
 NULL
@@ -282,7 +319,7 @@ Routing <- R6::R6Class(
           function(route) {
             route$route$as_pattern(parent)
             route$route$decompose(parent)
-            route$route$basepath <- private$.basepath
+            route$route$basepath <- paste0(parent, private$.basepath)
             route
           }
         )
@@ -309,7 +346,7 @@ Routing <- R6::R6Class(
         lapply(
           private$.params,
           function(fn) {
-            attr(fn, "basepath") <- private$.basepath
+            attr(fn, "basepath") <- paste0(parent, private$.basepath)
             return(fn)
           }
         )
@@ -432,17 +469,19 @@ Routing <- R6::R6Class(
 
       Map(
         f = function(name, value) {
-          self[[name]] <- function(path, handler, error = NULL) {
+          self[[name]] <- function(path, handler, error = NULL, docs = NULL) {
             assert_that(valid_path(path))
             assert_that(not_missing(handler))
             assert_that(is_handler(handler))
+            assert_that(is.null(docs) || is_openapi_docs(docs))
 
             r <- list(
               route = Route$new(private$.make_path(path)),
               path = path,
               fun = handler,
               method = value,
-              error = error
+              error = error,
+              docs = docs
             )
             private$.routes <- append(private$.routes, list(r))
 
@@ -503,7 +542,7 @@ Routing <- R6::R6Class(
           )
 
           if (inherits(request$params, "error")) {
-            handler <- private$.routes[[i]]$error %error% self$error
+            handler <- private$.routes[[i]]$error %||% self$error
             return(
               handler(request, res, request$params)
             )
@@ -545,7 +584,7 @@ Routing <- R6::R6Class(
               mid_basepath <- attr(private$.middleware[[j]], "basepath")
 
               mid_res <- NULL
-              if (grepl(mid_basepath, req$PATH_INFO)) {
+              if (startsWith(req$PATH_INFO, mid_basepath)) {
                 mid_res <- private$.middleware[[j]](request, res)
               }
 
@@ -564,7 +603,7 @@ Routing <- R6::R6Class(
           )
 
           if (inherits(response, "error")) {
-            handler <- private$.routes[[i]]$error %error% self$error
+            handler <- private$.routes[[i]]$error %||% self$error
             return(
               handler(request, res, response)
             )
@@ -588,7 +627,7 @@ Routing <- R6::R6Class(
                     "Server error"
                   )
 
-                  handler <- private$.routes[[i]]$error %error% self$error
+                  handler <- private$.routes[[i]]$error %||% self$error
                   handler(request, res, error)
                 }
               )

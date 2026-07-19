@@ -202,6 +202,8 @@ Ambiorix <- R6::R6Class(
 
       port <- get_port(host, port)
 
+      private$.register_openapi_routes()
+
       super$prepare()
       private$.routes <- super$get_routes()
 
@@ -302,6 +304,81 @@ Ambiorix <- R6::R6Class(
       options(AMBIORIX_SERIALISER = handler)
       invisible(self)
     },
+    #' @details Enable OpenAPI (Swagger) documentation.
+    #'
+    #' When enabled, two routes are registered when the app starts: an
+    #' interactive Swagger UI (`ui_path`, default `/docs`) and the OpenAPI JSON
+    #' document (`spec_path`, default `/openapi.json`). Only routes registered
+    #' with a `docs` argument (see [openapi_docs()]) appear in the document.
+    #'
+    #' The Swagger UI assets (CSS & JavaScript) are bundled with ambiorix and
+    #' served locally at `assets_path` (default `/__swagger__`), so the docs
+    #' work without an internet connection.
+    #'
+    #' If `ui_path` or `spec_path` collides with an existing route, or
+    #' `assets_path` collides with an existing static directory, the
+    #' corresponding docs route (or asset directory) is not registered and a
+    #' warning is emitted.
+    #' The OpenAPI document is always serialised with the default serialiser,
+    #' regardless of any custom serialiser set via `serialiser()`.
+    #'
+    #' @param title Title of the API.
+    #' @param version Version of the API.
+    #' @param description Optional description of the API.
+    #' @param ui_path Path at which the Swagger UI is served.
+    #' @param spec_path Path at which the OpenAPI JSON document is served.
+    #' @param assets_path Path at which the Swagger UI assets (CSS &
+    #'   JavaScript) are served.
+    #' @param ... Additional fields added to the OpenAPI `info` object.
+    #'
+    #' @examples
+    #' app <- Ambiorix$new()
+    #'
+    #' app$openapi(title = "My API", version = "1.0.0")
+    #'
+    #' app$get(
+    #'   "/",
+    #'   function(req, res) {
+    #'     res$send("Using {ambiorix}!")
+    #'   },
+    #'   docs = openapi_docs(
+    #'     summary = "Landing page",
+    #'     responses = openapi_responses(
+    #'       openapi_response(200, "The landing page")
+    #'     )
+    #'   )
+    #' )
+    #'
+    #' if (interactive())
+    #'   app$start()
+    openapi = function(
+      title = "API",
+      version = "1.0.0",
+      description = NULL,
+      ui_path = "/docs",
+      spec_path = "/openapi.json",
+      assets_path = "/__swagger__",
+      ...
+    ) {
+      assert_that(is_string(title))
+      assert_that(is_string(version))
+      assert_that(is_string(ui_path))
+      assert_that(is_string(spec_path))
+      assert_that(is_string(assets_path))
+
+      info <- list(title = title, version = version, ...)
+      if (!is.null(description)) {
+        info$description <- description
+      }
+
+      private$.openapi_info <- info
+      private$.openapi_ui_path <- ui_path
+      private$.openapi_spec_path <- spec_path
+      private$.openapi_assets_path <- assets_path
+      private$.openapi_enabled <- TRUE
+
+      invisible(self)
+    },
     #' @details Stop
     #' Stop the webserver.
     stop = function() {
@@ -358,11 +435,100 @@ Ambiorix <- R6::R6Class(
     .static = list(),
     .is_running = FALSE,
     .limit = 5 * 1024 * 1024,
+    .openapi_enabled = FALSE,
+    .openapi_registered = FALSE,
+    .openapi_info = list(),
+    .openapi_ui_path = "/docs",
+    .openapi_spec_path = "/openapi.json",
+    .openapi_assets_path = "/__swagger__",
     n_routes = function() {
       length(private$.routes) + length(private$.static)
     },
     .make_path = function(path) {
       paste0(private$.basepath, path)
+    },
+    .register_openapi_routes = function() {
+      if (!private$.openapi_enabled) {
+        return(invisible(self))
+      }
+
+      # guard against repeated `start()` calls
+      if (private$.openapi_registered) {
+        return(invisible(self))
+      }
+
+      spec_path <- private$.openapi_spec_path
+      ui_path <- private$.openapi_ui_path
+      assets_path <- private$.openapi_assets_path
+      info <- private$.openapi_info
+
+      existing_paths <- vapply(
+        X = super$get_routes(),
+        FUN = function(route) {
+          paste0(route$route$basepath, route$path)
+        },
+        FUN.VALUE = character(1)
+      )
+
+      if (spec_path %in% existing_paths) {
+        cli::cli_alert_warning(
+          paste(
+            "Route {.val {spec_path}} is already registered:",
+            "the OpenAPI document will not be served.",
+            "Use the {.code spec_path} argument of {.code app$openapi()}",
+            "to serve it at another path."
+          )
+        )
+      } else {
+        self$get(spec_path, function(req, res) {
+          spec <- build_openapi(private$.routes, info)
+
+          # use the default serialiser: a user-defined serialiser
+          # may not produce a valid OpenAPI document
+          res$header_content_json()
+          res$send(default_serialiser(spec))
+        })
+      }
+
+      if (ui_path %in% existing_paths) {
+        cli::cli_alert_warning(
+          paste(
+            "Route {.val {ui_path}} is already registered:",
+            "the OpenAPI Swagger UI will not be served.",
+            "Use the {.code ui_path} argument of {.code app$openapi()}",
+            "to serve it at another path."
+          )
+        )
+      } else {
+        ui_html <- swagger_ui_html(
+          spec_path,
+          title = info$title,
+          assets_path = assets_path
+        )
+        self$get(ui_path, function(req, res) {
+          res$send(ui_html)
+        })
+      }
+
+      assets_uri <- sub("^/+", "", assets_path)
+      if (assets_uri %in% names(private$.static)) {
+        cli::cli_alert_warning(
+          paste(
+            "Static directory {.val {assets_path}} is already registered:",
+            "the Swagger UI assets will not be served.",
+            "Use the {.code assets_path} argument of {.code app$openapi()}",
+            "to serve them at another path."
+          )
+        )
+      } else {
+        self$static(
+          path = system.file("swagger-ui", package = "ambiorix"),
+          uri = assets_uri
+        )
+      }
+
+      private$.openapi_registered <- TRUE
+      invisible(self)
     }
   )
 )

@@ -1,5 +1,6 @@
 ^LICENSE\.md$
 test.R
+^dev\.R$
 ^srcjs$
 ^node_modules$
 ^package\.json$
