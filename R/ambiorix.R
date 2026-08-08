@@ -211,6 +211,8 @@ Ambiorix <- R6::R6Class(
         stop("No routes specified")
       }
 
+      private$.build_openapi()
+
       private$.receivers <- super$get_receivers()
       private$.middleware <- super$get_middleware()
       private$.params <- super$get_params()
@@ -320,16 +322,37 @@ Ambiorix <- R6::R6Class(
     #' corresponding docs route (or asset directory) is not registered and a
     #' warning is emitted.
     #' The OpenAPI document is always serialised with the default serialiser,
-    #' regardless of any custom serialiser set via `serialiser()`.
+    #' regardless of any custom serialiser set via `serialiser()`. It is built
+    #' once, when the app starts: problems with the documentation are reported
+    #' then, rather than when the document is requested.
+    #'
+    #' With `validate = TRUE` incoming requests are checked against the
+    #' documented schemas before the handler runs, and a `400` is returned if
+    #' they do not match. Query and path parameters documented with a
+    #' non-string schema are converted to their documented type. Individual
+    #' routes may opt out with `openapi_docs(validate = FALSE)`.
     #'
     #' @param title Title of the API.
     #' @param version Version of the API.
     #' @param description Optional description of the API.
+    #' @param info Additional fields added to the OpenAPI `info` object, e.g.
+    #'   `contact` or `license`.
+    #' @param servers URLs at which the API is served; either a character
+    #'   vector or a `list` of
+    #'   [server objects](https://spec.openapis.org/oas/v3.1.0#server-object).
+    #' @param tags Tags used to group routes, as a character vector. Names, if
+    #'   any, are the tag names and the values their descriptions.
+    #' @param security_schemes Named `list` of
+    #'   [security schemes](https://spec.openapis.org/oas/v3.1.0#security-scheme-object),
+    #'   e.g. `list(bearerAuth = list(type = "http", scheme = "bearer"))`.
+    #' @param security Names of the security schemes that apply to every route;
+    #'   see the `security` argument of [openapi_docs()].
+    #' @param validate Whether to validate incoming requests against the
+    #'   documented schemas.
     #' @param ui_path Path at which the Swagger UI is served.
     #' @param spec_path Path at which the OpenAPI JSON document is served.
     #' @param assets_path Path at which the Swagger UI assets (CSS &
     #'   JavaScript) are served.
-    #' @param ... Additional fields added to the OpenAPI `info` object.
     #'
     #' @examples
     #' app <- Ambiorix$new()
@@ -343,7 +366,7 @@ Ambiorix <- R6::R6Class(
     #'   },
     #'   docs = openapi_docs(
     #'     summary = "Landing page",
-    #'     responses = openapi_responses(
+    #'     responses = list(
     #'       openapi_response(200, "The landing page")
     #'     )
     #'   )
@@ -355,23 +378,44 @@ Ambiorix <- R6::R6Class(
       title = "API",
       version = "1.0.0",
       description = NULL,
+      info = list(),
+      servers = NULL,
+      tags = NULL,
+      security_schemes = NULL,
+      security = NULL,
+      validate = FALSE,
       ui_path = "/docs",
       spec_path = "/openapi.json",
-      assets_path = "/__swagger__",
-      ...
+      assets_path = "/__swagger__"
     ) {
       assert_that(is_string(title))
       assert_that(is_string(version))
+      assert_that(is.null(description) || is_string(description))
+      assert_that(is.list(info))
+      assert_that(is.null(servers) || is.character(servers) || is.list(servers))
+      assert_that(is.null(tags) || is.character(tags) || is.list(tags))
+      assert_that(is.null(security_schemes) || is.list(security_schemes))
+      assert_that(
+        is.null(security) || is.character(security) || is.list(security)
+      )
+      assert_that(is_flag(validate))
       assert_that(is_string(ui_path))
       assert_that(is_string(spec_path))
       assert_that(is_string(assets_path))
 
-      info <- list(title = title, version = version, ...)
+      info$title <- title
+      info$version <- version
+
       if (!is.null(description)) {
         info$description <- description
       }
 
       private$.openapi_info <- info
+      private$.openapi_servers <- servers
+      private$.openapi_tags <- tags
+      private$.openapi_security_schemes <- security_schemes
+      private$.openapi_security <- security
+      private$.openapi_validate <- validate
       private$.openapi_ui_path <- ui_path
       private$.openapi_spec_path <- spec_path
       private$.openapi_assets_path <- assets_path
@@ -438,6 +482,13 @@ Ambiorix <- R6::R6Class(
     .openapi_enabled = FALSE,
     .openapi_registered = FALSE,
     .openapi_info = list(),
+    .openapi_servers = NULL,
+    .openapi_tags = NULL,
+    .openapi_security_schemes = NULL,
+    .openapi_security = NULL,
+    .openapi_validate = FALSE,
+    .openapi_json = NULL,
+    .openapi_schemas = list(),
     .openapi_ui_path = "/docs",
     .openapi_spec_path = "/openapi.json",
     .openapi_assets_path = "/__swagger__",
@@ -446,6 +497,31 @@ Ambiorix <- R6::R6Class(
     },
     .make_path = function(path) {
       paste0(private$.basepath, path)
+    },
+    # the document is a pure function of the (flattened) routes, so it is
+    # built once, at startup, where its diagnostics are visible
+    .build_openapi = function() {
+      if (!private$.openapi_enabled) {
+        return(invisible(self))
+      }
+
+      spec <- build_openapi(
+        routes = private$.routes,
+        doc = list(
+          info = private$.openapi_info,
+          servers = private$.openapi_servers,
+          tags = private$.openapi_tags,
+          security_schemes = private$.openapi_security_schemes,
+          security = private$.openapi_security
+        )
+      )
+
+      # use the default serialiser: a user-defined serialiser
+      # may not produce a valid OpenAPI document
+      private$.openapi_json <- default_serialiser(spec)
+      private$.openapi_schemas <- openapi_named_schemas(private$.routes)
+
+      invisible(self)
     },
     .register_openapi_routes = function() {
       if (!private$.openapi_enabled) {
@@ -481,12 +557,8 @@ Ambiorix <- R6::R6Class(
         )
       } else {
         self$get(spec_path, function(req, res) {
-          spec <- build_openapi(private$.routes, info)
-
-          # use the default serialiser: a user-defined serialiser
-          # may not produce a valid OpenAPI document
           res$header_content_json()
-          res$send(default_serialiser(spec))
+          res$send(private$.openapi_json %||% "{}")
         })
       }
 
