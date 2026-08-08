@@ -159,20 +159,34 @@ assertthat::on_failure(is_openapi_schema) <- function(call, env) {
   )
 }
 
+is_openapi_schema_list <- function(x) {
+  all(vapply(X = x, FUN = is_openapi_schema, FUN.VALUE = logical(1)))
+}
+
+assertthat::on_failure(is_openapi_schema_list) <- function(call, env) {
+  sprintf(
+    "every element of `%s` must be an OpenAPI schema, see `?openapi-schemas`",
+    deparse(call$x)
+  )
+}
+
+is_openapi_component_name <- function(x) {
+  grepl("^[A-Za-z0-9._-]+$", x)
+}
+
+assertthat::on_failure(is_openapi_component_name) <- function(call, env) {
+  sprintf(
+    "`%s` may only contain letters, digits, `.`, `_`, and `-`",
+    deparse(call$x)
+  )
+}
+
 is_openapi_parameter <- function(x) {
   inherits(x, "ambiorix_openapi_parameter")
 }
 
 assertthat::on_failure(is_openapi_parameter) <- function(call, env) {
   sprintf("`%s` must be created with `openapi_param()`", deparse(call$x))
-}
-
-is_openapi_parameters <- function(x) {
-  inherits(x, "ambiorix_openapi_parameters")
-}
-
-assertthat::on_failure(is_openapi_parameters) <- function(call, env) {
-  sprintf("`%s` must be created with `openapi_parameters()`", deparse(call$x))
 }
 
 is_openapi_request_body <- function(x) {
@@ -192,14 +206,6 @@ is_openapi_response <- function(x) {
 
 assertthat::on_failure(is_openapi_response) <- function(call, env) {
   sprintf("`%s` must be created with `openapi_response()`", deparse(call$x))
-}
-
-is_openapi_responses <- function(x) {
-  inherits(x, "ambiorix_openapi_responses")
-}
-
-assertthat::on_failure(is_openapi_responses) <- function(call, env) {
-  sprintf("`%s` must be created with `openapi_responses()`", deparse(call$x))
 }
 
 is_openapi_docs <- function(x) {
