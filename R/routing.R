@@ -42,10 +42,11 @@
 #' the request, response, and the error condition.
 #' @param docs Optional OpenAPI documentation for the route, created with
 #' [openapi_docs()]. When the app enables docs via `app$openapi()`, documented
-#' routes appear in the generated OpenAPI document. Path parameters are
-#' documented automatically from the route's `:param` tokens with a string
-#' schema; declare them via [openapi_param()] with `location = "path"` to
-#' override that default.
+#' routes appear in the generated OpenAPI document, and, if validation is
+#' enabled, incoming requests are checked against the documented schemas. Path
+#' parameters are documented automatically from the route's `:param` tokens
+#' with a string schema; declare them via [openapi_param()] with
+#' `location = "path"` to override that default.
 #'
 #' @return The routing object invisibly so calls can be chained.
 #'
@@ -72,7 +73,7 @@
 #'   docs = openapi_docs(
 #'     summary = "Get a user by ID",
 #'     tags = "users",
-#'     responses = openapi_responses(
+#'     responses = list(
 #'       openapi_response(200, "The user")
 #'     )
 #'   )
@@ -456,6 +457,37 @@ Routing <- R6::R6Class(
     .is_running = FALSE,
     .wss_custom = NULL,
     .routers = list(),
+    # returns a `400` response when the request does not match the route's
+    # documentation, and `NULL` otherwise
+    .validate_request = function(request, res, route) {
+      if (is.null(route$docs) || !is_openapi_docs(route$docs)) {
+        return(NULL)
+      }
+
+      # `openapi_docs(validate =)` overrides the app wide setting
+      enabled <- route$docs$validate %||% private$.openapi_validate %||% FALSE
+
+      if (!isTRUE(enabled)) {
+        return(NULL)
+      }
+
+      details <- openapi_validate_request(
+        request = request,
+        docs = route$docs,
+        schemas = private$.openapi_schemas %||% list()
+      )
+
+      if (!length(details)) {
+        return(NULL)
+      }
+
+      res$set_status(400L)$json(
+        list(
+          error = "Invalid request",
+          details = details
+        )
+      )
+    },
     .register_http_methods = function() {
       http_methods = list(
         get = "GET",
@@ -592,6 +624,18 @@ Routing <- R6::R6Class(
                 return(mid_res)
               }
             }
+          }
+
+          # validate the request against its documentation: after the
+          # middleware, so that e.g. authentication runs first
+          invalid <- private$.validate_request(
+            request,
+            res,
+            private$.routes[[i]]
+          )
+
+          if (is_response(invalid)) {
+            return(invalid)
           }
 
           # get response
