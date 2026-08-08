@@ -68,7 +68,7 @@ html_escape <- function(x) {
 #' @keywords internal
 named_list <- function() {
   out <- list()
-  names(out) <- character(0)
+  names(out) <- character()
   out
 }
 
