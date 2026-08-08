@@ -136,7 +136,7 @@ app$get(
   },
   docs = openapi_docs(
     summary = "Landing page",
-    responses = openapi_responses(
+    responses = list(
       openapi_response(200, "The landing page")
     )
   )
@@ -480,10 +480,15 @@ if(interactive())
   title = "API",
   version = "1.0.0",
   description = NULL,
+  info = list(),
+  servers = NULL,
+  tags = NULL,
+  security_schemes = NULL,
+  security = NULL,
+  validate = FALSE,
   ui_path = "/docs",
   spec_path = "/openapi.json",
-  assets_path = "/__swagger__",
-  ...
+  assets_path = "/__swagger__"
 )}
     \if{html}{\out{</div>}}
   }
@@ -493,11 +498,24 @@ if(interactive())
       \item{\code{title}}{Title of the API.}
       \item{\code{version}}{Version of the API.}
       \item{\code{description}}{Optional description of the API.}
+      \item{\code{info}}{Additional fields added to the OpenAPI \code{info} object, e.g.
+\code{contact} or \code{license}.}
+      \item{\code{servers}}{URLs at which the API is served; either a character
+vector or a \code{list} of
+\href{https://spec.openapis.org/oas/v3.1.0#server-object}{server objects}.}
+      \item{\code{tags}}{Tags used to group routes, as a character vector. Names, if
+any, are the tag names and the values their descriptions.}
+      \item{\code{security_schemes}}{Named \code{list} of
+\href{https://spec.openapis.org/oas/v3.1.0#security-scheme-object}{security schemes},
+e.g. \code{list(bearerAuth = list(type = "http", scheme = "bearer"))}.}
+      \item{\code{security}}{Names of the security schemes that apply to every route;
+see the \code{security} argument of \code{\link[=openapi_docs]{openapi_docs()}}.}
+      \item{\code{validate}}{Whether to validate incoming requests against the
+documented schemas.}
       \item{\code{ui_path}}{Path at which the Swagger UI is served.}
       \item{\code{spec_path}}{Path at which the OpenAPI JSON document is served.}
       \item{\code{assets_path}}{Path at which the Swagger UI assets (CSS &
 JavaScript) are served.}
-      \item{\code{...}}{Additional fields added to the OpenAPI \code{info} object.}
     }
     \if{html}{\out{</div>}}
   }
@@ -518,7 +536,15 @@ If \code{ui_path} or \code{spec_path} collides with an existing route, or
 corresponding docs route (or asset directory) is not registered and a
 warning is emitted.
 The OpenAPI document is always serialised with the default serialiser,
-regardless of any custom serialiser set via \code{serialiser()}.
+regardless of any custom serialiser set via \code{serialiser()}. It is built
+once, when the app starts: problems with the documentation are reported
+then, rather than when the document is requested.
+
+With \code{validate = TRUE} incoming requests are checked against the
+documented schemas before the handler runs, and a \code{400} is returned if
+they do not match. Query and path parameters documented with a
+non-string schema are converted to their documented type. Individual
+routes may opt out with \code{openapi_docs(validate = FALSE)}.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
@@ -533,7 +559,7 @@ app$get(
   },
   docs = openapi_docs(
     summary = "Landing page",
-    responses = openapi_responses(
+    responses = list(
       openapi_response(200, "The landing page")
     )
   )

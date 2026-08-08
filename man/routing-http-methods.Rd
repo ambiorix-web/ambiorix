@@ -18,10 +18,11 @@ the request, response, and the error condition.}
 
 \item{docs}{Optional OpenAPI documentation for the route, created with
 \code{\link[=openapi_docs]{openapi_docs()}}. When the app enables docs via \code{app$openapi()}, documented
-routes appear in the generated OpenAPI document. Path parameters are
-documented automatically from the route's \verb{:param} tokens with a string
-schema; declare them via \code{\link[=openapi_param]{openapi_param()}} with \code{location = "path"} to
-override that default.}
+routes appear in the generated OpenAPI document, and, if validation is
+enabled, incoming requests are checked against the documented schemas. Path
+parameters are documented automatically from the route's \verb{:param} tokens
+with a string schema; declare them via \code{\link[=openapi_param]{openapi_param()}} with
+\code{location = "path"} to override that default.}
 }
 \value{
 The routing object invisibly so calls can be chained.
@@ -85,7 +86,7 @@ app$get(
   docs = openapi_docs(
     summary = "Get a user by ID",
     tags = "users",
-    responses = openapi_responses(
+    responses = list(
       openapi_response(200, "The user")
     )
   )
