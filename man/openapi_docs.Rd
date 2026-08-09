@@ -19,34 +19,71 @@ openapi_docs(
 )
 }
 \arguments{
-\item{summary}{Short summary of what the route does.}
+\item{summary}{String /// Optional. \cr
+Short summary of what the route does; shown as the title of
+the operation in the Swagger UI. \cr
+Defaults to \code{NULL}.}
 
-\item{description}{Longer description of the route.}
+\item{description}{String /// Optional. \cr
+Longer description of the route, shown when the operation
+is expanded. \cr
+Defaults to \code{NULL}.}
 
-\item{tags}{Character vector of tags used to group routes.}
+\item{tags}{Character vector /// Optional. \cr
+Tags used to group routes in the UI. Describe the tags
+themselves with the \code{tags} argument of \code{app$openapi()}. \cr
+Defaults to \code{NULL}.}
 
-\item{parameters}{A \code{list} of parameters created with \code{\link[=openapi_param]{openapi_param()}}. A
-single parameter may be passed on its own.}
+\item{parameters}{List of OpenAPI parameters /// Optional. \cr
+Query, path, header, and cookie parameters, each created
+with \code{\link[=openapi_param]{openapi_param()}}. A single parameter may be passed
+on its own, without wrapping it in a \code{list()}. \cr
+Defaults to \code{NULL}.}
 
-\item{request_body}{The request body; see \code{\link[=openapi_request_body]{openapi_request_body()}}.}
+\item{request_body}{OpenAPI request body /// Optional. \cr
+The body the route accepts, created with
+\code{\link[=openapi_request_body]{openapi_request_body()}}. \cr
+Defaults to \code{NULL}.}
 
-\item{responses}{A \code{list} of responses created with \code{\link[=openapi_response]{openapi_response()}}. A
-single response may be passed on its own.}
+\item{responses}{List of OpenAPI responses /// Optional. \cr
+The responses the route may return, each created with
+\code{\link[=openapi_response]{openapi_response()}}. A single response may be passed on
+its own, without wrapping it in a \code{list()}. \cr
+Defaults to \code{NULL}. Note that the OpenAPI specification
+requires every operation to document at least one response.}
 
-\item{operation_id}{Unique identifier for the operation, used by client
-generators. Must be unique across the whole document.}
+\item{operation_id}{String /// Optional. \cr
+Unique identifier for the operation, used by client
+generators to name the method they generate. Must be
+unique across the whole document; duplicates abort the
+build when the app starts. \cr
+Defaults to \code{NULL}. On a route registered with \code{all()},
+which answers several methods, the HTTP method is
+appended to keep each operation unique, e.g.
+\code{"listUsers_get"}.}
 
-\item{deprecated}{Whether the route is deprecated.}
+\item{deprecated}{Logical /// Optional. \cr
+Whether the route is deprecated. Either \code{FALSE} (default)
+or \code{TRUE}, which strikes the operation through in the UI.
+The route still works.}
 
-\item{security}{Names of the security schemes (see the \code{security_schemes}
-argument of \code{app$openapi()}) that apply to this route. A \code{list} is passed
-through as-is, for schemes that take scopes.}
+\item{security}{Character vector or List /// Optional. \cr
+Names of the security schemes that apply to this route; see
+the \code{security_schemes} argument of \code{app$openapi()}. A \code{list}
+is passed through as-is, for schemes that take scopes, e.g.
+\code{list(list(oauth = c("read:users")))}. \cr
+Defaults to \code{NULL}, which inherits the app-wide \code{security}.
+Pass \code{list()} to declare that this route needs no
+authentication.}
 
-\item{validate}{Whether to validate incoming requests against the
-documented schemas. \code{NULL}, the default, inherits the app-wide setting;
-see the \code{validate} argument of \code{app$openapi()}.}
+\item{validate}{Logical /// Optional. \cr
+Whether to validate incoming requests against the documented
+schemas; see the Validation section. \cr
+Defaults to \code{NULL}, which inherits the app-wide setting from
+the \code{validate} argument of \code{app$openapi()}.}
 
-\item{...}{Additional fields of the
+\item{...}{Key=Value pairs /// Optional. \cr
+Additional fields of the
 \href{https://spec.openapis.org/oas/v3.1.0#operation-object}{operation object},
 e.g. \code{externalDocs}.}
 }
@@ -55,7 +92,8 @@ An object of class \code{ambiorix_openapi_docs}.
 }
 \description{
 Document a single route. Pass the result to the \code{docs} argument of a routing
-method (see \link{routing-http-methods}).
+method (see \link{routing-http-methods}). A route without \code{docs} does not appear
+in the generated document at all.
 }
 \details{
 Path parameters are documented automatically from the route's \verb{:param}
@@ -63,7 +101,25 @@ tokens with a string schema, so only query, header, and cookie parameters
 need to be declared. To override an automatic path parameter (e.g. to
 document it as an integer), declare it with \code{\link[=openapi_param]{openapi_param()}} using
 \code{location = "path"} and a name matching the route token.
+
+The object is inert: nothing is rendered or checked when it is created. The
+document is built once, when the app starts, which is when problems such as
+two different schemas sharing a name are reported.
 }
+\section{Validation}{
+
+
+Validation is off by default and turned on app-wide with
+\code{app$openapi(validate = TRUE)}. When it is on, query and path parameters and
+a JSON request body are checked against the schemas documented here before
+the handler runs, and a \code{400} is returned when they do not match. Header and
+cookie parameters are never checked.
+
+The \code{validate} argument below overrides that app-wide setting for this one
+route, in either direction: \code{FALSE} opts a route out of validation, \code{TRUE}
+opts a single route in while the rest of the app stays unchecked.
+}
+
 \examples{
 openapi_docs(
   summary = "Get a user by ID",
@@ -74,7 +130,40 @@ openapi_docs(
   )
 )
 
+# a fuller route: a query parameter, a body, a security scheme, and
+# validation turned on for this route alone
+openapi_docs(
+  summary = "Create a user",
+  operation_id = "createUser",
+  tags = "users",
+  parameters = openapi_param(
+    name = "dry_run",
+    description = "Validate the payload without saving it",
+    schema = openapi_schema_boolean()
+  ),
+  request_body = openapi_request_body(
+    schema = openapi_schema_object(
+      properties = list(
+        name = openapi_schema_string(minLength = 1L),
+        email = openapi_schema_string(format = "email")
+      ),
+      required = c("name", "email")
+    )
+  ),
+  responses = list(
+    openapi_response(201, "The created user"),
+    openapi_response(400, "Invalid payload")
+  ),
+  security = "bearerAuth",
+  validate = TRUE
+)
+
+# a single parameter or response need not be wrapped in a `list()`
+openapi_docs(responses = openapi_response(204, "Deleted"))
+
 }
 \seealso{
-\link{routing-http-methods}
+\link{routing-http-methods} for the \code{docs} argument this is passed to,
+and \code{\link[=openapi_param]{openapi_param()}}, \code{\link[=openapi_request_body]{openapi_request_body()}}, \code{\link[=openapi_response]{openapi_response()}},
+\link{openapi-schemas} for its own arguments.
 }

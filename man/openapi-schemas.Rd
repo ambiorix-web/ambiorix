@@ -29,27 +29,40 @@ openapi_schema_object(properties = list(), required = NULL, ...)
 openapi_schema_ref(name, schema = NULL)
 }
 \arguments{
-\item{type}{The schema type, e.g. \code{"string"}. Only needed with
-\code{openapi_schema()}; the other constructors set it for you.}
+\item{type}{String or Character vector /// Optional. \cr
+The schema type, e.g. \code{"string"}. Only needed with
+\code{openapi_schema()}; the other constructors set it for you. A
+vector documents a value that may be any of several types, e.g.
+\code{c("string", "null")}. \cr
+Defaults to \code{NULL}, a schema that accepts any type.}
 
-\item{...}{Additional JSON Schema keywords, see the Keywords section.}
+\item{...}{Key=Value pairs /// Optional. \cr
+Additional JSON Schema keywords, see the Keywords section.}
 
-\item{items}{An OpenAPI schema describing the type of every element in
-the array.}
+\item{items}{OpenAPI schema /// Required. \cr
+A schema describing the type of every element in the array.}
 
-\item{properties}{A named \code{list} of OpenAPI schemas describing the
-properties of an object.}
+\item{properties}{Named list of OpenAPI schemas /// Optional. \cr
+The properties of the object, named after the property. \cr
+Defaults to \code{list()}, an object that accepts anything.}
 
-\item{required}{Properties of the object that must be present. Either a
-character vector of property names, or \code{TRUE} to mark every declared
-property as required. Note that with \code{TRUE} a property added later
-silently becomes required too.}
+\item{required}{Character vector or Logical /// Optional. \cr
+Properties of the object that must be present. Either a
+character vector of property names, which must all be
+declared in \code{properties}, or \code{TRUE} to mark every declared
+property as required. \cr
+Defaults to \code{NULL}. Note that with \code{TRUE} a property added
+later silently becomes required too.}
 
-\item{name}{Name under which the schema is placed in the document's
-\code{components}.}
+\item{name}{String /// Required. \cr
+Name under which the schema is placed in the document's
+\code{components}. May contain only letters, digits, \code{.}, \verb{_}, and
+\code{-}.}
 
-\item{schema}{The OpenAPI schema to name. If \code{NULL}, the result is a bare
-reference to a schema named elsewhere.}
+\item{schema}{OpenAPI schema /// Optional. \cr
+The schema to name. \cr
+Defaults to \code{NULL}, which makes the result a bare reference to
+a schema named elsewhere in the document.}
 }
 \value{
 An object of class \code{ambiorix_openapi_schema}; a \code{list} that mirrors
@@ -62,6 +75,31 @@ used to describe request bodies, responses, and parameters.
 \details{
 A schema is a plain R object: define it once and reuse it everywhere.
 }
+\section{Constructors}{
+
+\itemize{
+\item \code{openapi_schema_string()}, \code{openapi_schema_integer()},
+\code{openapi_schema_number()}, \code{openapi_schema_boolean()}: a scalar of that
+type. These are thin wrappers that set \code{type} and pass everything else
+through.
+\item \code{openapi_schema_array(items)}: an array in which every element matches
+\code{items}, itself a schema.
+\item \code{openapi_schema_object(properties, required)}: an object with the named
+\code{properties}, each a schema. An object with no properties is valid, if
+permissive: it accepts any object.
+\item \code{openapi_schema_ref(name, schema)}: names a schema. The schema is emitted
+once, under the document's \code{components}, and every use of it becomes a
+\verb{$ref} pointing there. Called with only a \code{name}, it is instead a bare
+reference to a schema defined elsewhere in the document.
+\item \code{openapi_schema()}: the escape hatch, for a type the wrappers do not
+cover (e.g. \code{"null"}), several types at once, or a schema built purely
+from composition keywords.
+}
+
+Two different schemas sharing one \code{name} is an error, reported when the app
+starts rather than when the document is served.
+}
+
 \section{Keywords}{
 
 
@@ -104,4 +142,12 @@ openapi_schema_ref(
 # a bare reference to a schema named elsewhere
 openapi_schema_ref("User")
 
+# the escape hatch: a type the wrappers do not cover, and a value that
+# may be a string or absent
+openapi_schema(type = c("string", "null"))
+
+}
+\seealso{
+\code{\link[=openapi_param]{openapi_param()}}, \code{\link[=openapi_response]{openapi_response()}}, \code{\link[=openapi_request_body]{openapi_request_body()}},
+and \code{\link[=openapi_docs]{openapi_docs()}}, which schemas are passed to.
 }

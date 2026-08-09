@@ -12,19 +12,39 @@ openapi_request_body(
 )
 }
 \arguments{
-\item{schema}{An OpenAPI schema (see \link{openapi-schemas}) describing the body.}
+\item{schema}{OpenAPI schema /// Required. \cr
+An OpenAPI schema (see \link{openapi-schemas}) describing the body.
+Name it with \code{\link[=openapi_schema_ref]{openapi_schema_ref()}} to have it emitted once
+under the document's \code{components} and referenced wherever it
+is used.}
 
-\item{description}{Human readable description of the body.}
+\item{description}{String /// Optional. \cr
+Human readable description of the body. \cr
+Defaults to \code{NULL}.}
 
-\item{required}{Whether the body is required.}
+\item{required}{Logical /// Optional. \cr
+Whether the body is required. Either \code{TRUE} (default) or
+\code{FALSE}. \cr
+When \code{TRUE} and validation is enabled, a request that
+arrives without a body is rejected.}
 
-\item{content_type}{The media type of the body.}
+\item{content_type}{String /// Optional. \cr
+Media type of the body. \cr
+Defaults to \code{"application/json"}. Media types that are
+not JSON are documented but never validated.}
 }
 \value{
 An object of class \code{ambiorix_openapi_request_body}.
 }
 \description{
-Describe the body accepted by a route.
+Describe the body accepted by a route. Pass the result to the
+\code{request_body} argument of \code{\link[=openapi_docs]{openapi_docs()}}.
+}
+\details{
+With validation enabled the body is checked against \code{schema} before the
+handler runs, and a \code{400} is returned if it does not match. Only JSON bodies
+are checked: a \code{content_type} that does not contain \code{"json"} is documented
+but passed through to the handler unvalidated.
 }
 \examples{
 openapi_request_body(
@@ -34,4 +54,27 @@ openapi_request_body(
   )
 )
 
+# name the schema to reuse it across routes: it lands in `components`
+# and is referenced with `$ref` instead of being repeated
+openapi_request_body(
+  schema = openapi_schema_ref(
+    "NewUser",
+    openapi_schema_object(
+      properties = list(name = openapi_schema_string()),
+      required = "name"
+    )
+  ),
+  description = "The user to create"
+)
+
+# documented, but not validated: the body is not JSON
+openapi_request_body(
+  schema = openapi_schema_string(format = "binary"),
+  content_type = "application/octet-stream"
+)
+
+}
+\seealso{
+\code{\link[=openapi_docs]{openapi_docs()}}, which the body is passed to, and \link{openapi-schemas}
+for the \code{schema} argument.
 }

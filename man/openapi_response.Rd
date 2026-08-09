@@ -13,25 +13,46 @@ openapi_response(
 )
 }
 \arguments{
-\item{status}{HTTP status code, e.g. \code{200L}. Also accepts the string
-\code{"default"} or a status range such as \code{"2XX"}, as allowed by the OpenAPI
-specification.}
+\item{status}{Integer or String /// Required. \cr
+HTTP status code, e.g. \code{200L}. Also accepts the string
+\code{"default"}, which describes every status not documented
+explicitly, or a status range such as \code{"2XX"}, as allowed by
+the OpenAPI specification.}
 
-\item{description}{Human readable description of the response.}
+\item{description}{String /// Required. \cr
+Human readable description of the response. Required by
+the OpenAPI specification, which is why, unlike elsewhere
+in this family, it has no default.}
 
-\item{schema}{An optional OpenAPI schema (see \link{openapi-schemas}) describing
-the response body.}
+\item{schema}{OpenAPI schema /// Optional. \cr
+An OpenAPI schema (see \link{openapi-schemas}) describing the
+response body. \cr
+Defaults to \code{NULL}, for a response with no body, e.g. a \code{204}.}
 
-\item{headers}{An optional named \code{list} of OpenAPI schemas describing the
-headers sent with the response.}
+\item{headers}{Named list of OpenAPI schemas /// Optional. \cr
+The headers sent with the response, named after the header
+and described with a schema, e.g.
+\code{list(Location = openapi_schema_string())}. Note that these
+are schemas, not \code{\link[=openapi_param]{openapi_param()}} objects. \cr
+Defaults to \code{NULL}.}
 
-\item{content_type}{The media type of the response body.}
+\item{content_type}{String /// Optional. \cr
+Media type of the response body. \cr
+Defaults to \code{"application/json"}. Ignored when \code{schema}
+is \code{NULL}.}
 }
 \value{
 An object of class \code{ambiorix_openapi_response}.
 }
 \description{
-Describe a single response for a route.
+Describe a single response for a route. Pass one, or a \code{list} of them, to
+the \code{responses} argument of \code{\link[=openapi_docs]{openapi_docs()}}.
+}
+\details{
+Responses are documentation only: ambiorix never checks what a handler
+actually sends, so describing a \code{404} here does not make one happen. Every
+documented route should describe at least its success response, since the
+OpenAPI specification requires a non-empty \code{responses} object.
 }
 \examples{
 openapi_response(
@@ -48,4 +69,16 @@ openapi_response(
   headers = list(Location = openapi_schema_string())
 )
 
+# a response with no body
+openapi_response(204, "Deleted")
+
+# a range and a catch-all, rather than a single code
+openapi_response("4XX", "Something was wrong with the request")
+
+openapi_response("default", "Unexpected error")
+
+}
+\seealso{
+\code{\link[=openapi_docs]{openapi_docs()}}, which responses are passed to, and
+\link{openapi-schemas} for the \code{schema} and \code{headers} arguments.
 }

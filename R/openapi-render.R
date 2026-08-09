@@ -20,6 +20,23 @@ as_openapi <- function(x, ctx, ...) {
   UseMethod("as_openapi")
 }
 
+#' Refuse to Render an Unknown Object
+#'
+#' The fallback method. Reached when something that is not an OpenAPI object
+#' finds its way into a document, e.g. a bare `list()` passed where
+#' `openapi_response()` was expected.
+#'
+#' @param x Object to render.
+#' @param ctx Build context.
+#' @param ... Unused.
+#'
+#' @return Never returns; always stops.
+#'
+#' @examples
+#' try(as_openapi(list(a = 1), new_openapi_ctx()))
+#'
+#' @keywords internal
+#' @noRd
 #' @export
 as_openapi.default <- function(x, ctx, ...) {
   stop(
@@ -36,7 +53,18 @@ as_openapi.default <- function(x, ctx, ...) {
 #' build. An environment so that nested nodes can register themselves as they
 #' are rendered.
 #'
-#' @return An environment.
+#' @return An environment with four bindings: `schemas`, the named schemas met
+#'         so far, keyed by name; `refs`, every name referenced, used to spot
+#'         references to schemas that are never defined; `notes`, warnings; and
+#'         `errors`, which abort the build.
+#'
+#' @examples
+#' ctx <- new_openapi_ctx()
+#'
+#' # rendering a named schema registers it and yields a reference
+#' as_openapi(openapi_schema_ref("User", openapi_schema_object()), ctx)
+#'
+#' names(ctx$schemas)
 #'
 #' @keywords internal
 #' @noRd
@@ -51,7 +79,16 @@ new_openapi_ctx <- function() {
 
 #' Path of a Schema in the Document's Components
 #'
+#' The JSON pointer a `$ref` uses to reach a named schema. Every named schema
+#' is emitted under `components/schemas`, so the pointer is derived from the
+#' name alone.
+#'
 #' @param name Name of the schema.
+#'
+#' @return A single character string.
+#'
+#' @examples
+#' openapi_ref_path("User")
 #'
 #' @keywords internal
 #' @noRd
@@ -59,6 +96,36 @@ openapi_ref_path <- function(name) {
   paste0("#/components/schemas/", name)
 }
 
+#' Render a Schema, Registering It If It Is Named
+#'
+#' An anonymous schema is rendered inline. A named one is registered on `ctx`
+#' and replaced by a `$ref`, so it appears once in the document however many
+#' routes use it. A bare reference registers nothing: the schema is defined
+#' wherever it was named with a body.
+#'
+#' Two different bodies under one name is an error rather than a silent
+#' last-one-wins, and is recorded on `ctx` so the build can report every
+#' problem at once instead of stopping at the first.
+#'
+#' @param x An OpenAPI schema.
+#' @param ctx Build context.
+#' @param ... Unused.
+#'
+#' @return A `list`: the rendered keywords, or `list("$ref" = ...)`.
+#'
+#' @examples
+#' ctx <- new_openapi_ctx()
+#'
+#' # anonymous: rendered inline
+#' as_openapi(openapi_schema_string(maxLength = 10L), ctx)
+#'
+#' # named: registered on `ctx`, replaced by a reference
+#' as_openapi(openapi_schema_ref("User", openapi_schema_object()), ctx)
+#'
+#' ctx$schemas
+#'
+#' @keywords internal
+#' @noRd
 #' @export
 as_openapi.ambiorix_openapi_schema <- function(x, ctx, ...) {
   name <- attr(x, "openapi_name")
@@ -101,8 +168,25 @@ as_openapi.ambiorix_openapi_schema <- function(x, ctx, ...) {
 #' [as.list()]: the serialiser unboxes length one vectors, so `"title"` would
 #' otherwise be emitted where `["title"]` is required.
 #'
+#' Keywords whose value is `NULL` are dropped rather than emitted as JSON
+#' `null`, which the specification would read as a meaningful value.
+#'
 #' @param x An OpenAPI schema.
 #' @param ctx Build context.
+#'
+#' @return A `list` of rendered keywords.
+#'
+#' @examples
+#' ctx <- new_openapi_ctx()
+#'
+#' # `required` is wrapped, so a single name still emits `["id"]`
+#' openapi_render_keywords(
+#'   openapi_schema_object(
+#'     properties = list(id = openapi_schema_integer()),
+#'     required = "id"
+#'   ),
+#'   ctx
+#' )
 #'
 #' @keywords internal
 #' @noRd
@@ -136,6 +220,21 @@ openapi_render_keywords <- function(x, ctx) {
 #' @param x Value to render.
 #' @param ctx Build context.
 #'
+#' @return `x` with every schema inside it replaced by its rendered form.
+#'         Values that are not schemas are returned untouched.
+#'
+#' @examples
+#' ctx <- new_openapi_ctx()
+#'
+#' # the schema nested under `oneOf` is rendered, not just copied
+#' openapi_render_value(
+#'   list(oneOf = list(openapi_schema_string(), openapi_schema_integer())),
+#'   ctx
+#' )
+#'
+#' # anything that is not a schema passes straight through
+#' openapi_render_value(list(example = "hello"), ctx)
+#'
 #' @keywords internal
 #' @noRd
 openapi_render_value <- function(x, ctx) {
@@ -150,6 +249,30 @@ openapi_render_value <- function(x, ctx) {
   lapply(X = x, FUN = openapi_render_value, ctx = ctx)
 }
 
+#' Render a Parameter Into a Parameter Object
+#'
+#' `location` becomes `in`, which cannot be an R argument name because it is
+#' reserved.
+#'
+#' @param x An OpenAPI parameter.
+#' @param ctx Build context.
+#' @param ... Unused.
+#'
+#' @return A `list`: an OpenAPI
+#'         [parameter object](https://spec.openapis.org/oas/v3.1.0#parameter-object).
+#'
+#' @examples
+#' as_openapi(
+#'   openapi_param(
+#'     name = "verbose",
+#'     description = "Return extra fields",
+#'     schema = openapi_schema_boolean()
+#'   ),
+#'   new_openapi_ctx()
+#' )
+#'
+#' @keywords internal
+#' @noRd
 #' @export
 as_openapi.ambiorix_openapi_parameter <- function(x, ctx, ...) {
   out <- list(
@@ -171,6 +294,31 @@ as_openapi.ambiorix_openapi_parameter <- function(x, ctx, ...) {
   out
 }
 
+#' Render a Request Body Into a Request Body Object
+#'
+#' The flat `schema`/`content_type` pair is nested into the `content` map the
+#' specification uses, keyed by media type.
+#'
+#' @param x An OpenAPI request body.
+#' @param ctx Build context.
+#' @param ... Unused.
+#'
+#' @return A `list`: an OpenAPI
+#'         [request body object](https://spec.openapis.org/oas/v3.1.0#request-body-object).
+#'
+#' @examples
+#' as_openapi(
+#'   openapi_request_body(
+#'     schema = openapi_schema_object(
+#'       properties = list(name = openapi_schema_string())
+#'     ),
+#'     description = "The user to create"
+#'   ),
+#'   new_openapi_ctx()
+#' )
+#'
+#' @keywords internal
+#' @noRd
 #' @export
 as_openapi.ambiorix_openapi_request_body <- function(x, ctx, ...) {
   content <- list()
@@ -188,6 +336,38 @@ as_openapi.ambiorix_openapi_request_body <- function(x, ctx, ...) {
   out
 }
 
+#' Render a Response Into a Response Object
+#'
+#' `status` is not part of the result: it is the key the response is stored
+#' under in the operation's `responses` map, which the caller supplies.
+#'
+#' A response with no schema emits no `content` at all, rather than an empty
+#' one, which is how a body-less response such as a `204` is described.
+#'
+#' @param x An OpenAPI response.
+#' @param ctx Build context.
+#' @param ... Unused.
+#'
+#' @return A `list`: an OpenAPI
+#'         [response object](https://spec.openapis.org/oas/v3.1.0#response-object).
+#'
+#' @examples
+#' ctx <- new_openapi_ctx()
+#'
+#' as_openapi(
+#'   openapi_response(
+#'     201,
+#'     "The created user",
+#'     headers = list(Location = openapi_schema_string())
+#'   ),
+#'   ctx
+#' )
+#'
+#' # no schema, so no `content`
+#' as_openapi(openapi_response(204, "Deleted"), ctx)
+#'
+#' @keywords internal
+#' @noRd
 #' @export
 as_openapi.ambiorix_openapi_response <- function(x, ctx, ...) {
   out <- list(description = x$description)
@@ -210,10 +390,38 @@ as_openapi.ambiorix_openapi_response <- function(x, ctx, ...) {
 
 #' Render a Route's Documentation Into an Operation Object
 #'
+#' The top of the render: everything a route documents ends up here, nested
+#' under the path and HTTP method by `build_openapi()`.
+#'
+#' Fields that were not set are left out rather than emitted as `null`, with
+#' one exception: the specification requires a non-empty `responses`, so a
+#' route that documents none gets a placeholder `default`.
+#'
 #' @param x The route's docs.
 #' @param ctx Build context.
 #' @param path The route's full path, used to derive path parameters.
+#' @param ... Unused.
 #'
+#' @return A `list`: an OpenAPI
+#'         [operation object](https://spec.openapis.org/oas/v3.1.0#operation-object).
+#'
+#' @examples
+#' ctx <- new_openapi_ctx()
+#'
+#' as_openapi(
+#'   openapi_docs(
+#'     summary = "Get a user by ID",
+#'     responses = openapi_response(200, "The user")
+#'   ),
+#'   ctx,
+#'   path = "/users/:id"
+#' )
+#'
+#' # a route documenting no responses still gets a `default` one
+#' as_openapi(openapi_docs(summary = "Ping"), ctx)
+#'
+#' @keywords internal
+#' @noRd
 #' @export
 as_openapi.ambiorix_openapi_docs <- function(x, ctx, path = "", ...) {
   operation <- list()
@@ -277,9 +485,39 @@ as_openapi.ambiorix_openapi_docs <- function(x, ctx, path = "", ...) {
 #' Path parameters are derived from the route's `:param` tokens; a declared
 #' parameter with `location = "path"` overrides the default for its token.
 #'
+#' Path parameters come out first, in the order the tokens appear in the
+#' route, followed by the query, header, and cookie parameters in the order
+#' they were declared. A declared path parameter whose name matches no token
+#' is dropped with a note: it would document a parameter that can never be
+#' sent.
+#'
 #' @param parameters Declared parameters.
 #' @param ctx Build context.
 #' @param path The route's full path.
+#'
+#' @return A `list` of rendered parameter objects, possibly empty.
+#'
+#' @examples
+#' ctx <- new_openapi_ctx()
+#'
+#' # `:id` is documented automatically, as a string
+#' openapi_render_parameters(NULL, ctx, "/users/:id")
+#'
+#' # declaring it overrides that default
+#' openapi_render_parameters(
+#'   list(openapi_param("id", location = "path", schema = openapi_schema_integer())),
+#'   ctx,
+#'   "/users/:id"
+#' )
+#'
+#' # a path parameter matching no token is dropped, with a warning
+#' openapi_render_parameters(
+#'   list(openapi_param("nope", location = "path")),
+#'   ctx,
+#'   "/users/:id"
+#' )
+#'
+#' ctx$notes
 #'
 #' @keywords internal
 #' @noRd
@@ -341,9 +579,20 @@ openapi_render_parameters <- function(parameters, ctx, path) {
 
 #' Convert an Ambiorix Path to an OpenAPI Path
 #'
-#' Turns `/users/:id` into `/users/{id}`.
+#' Turns `/users/:id` into `/users/{id}`: ambiorix marks path parameters with
+#' a leading `:`, the specification wraps them in braces.
 #'
 #' @param path A route path.
+#'
+#' @return A single character string.
+#'
+#' @examples
+#' openapi_path("/users/:id")
+#'
+#' openapi_path("/users/:id/posts/:post_id")
+#'
+#' # a path with no parameters is unchanged
+#' openapi_path("/health")
 #'
 #' @keywords internal
 #' @noRd
@@ -360,6 +609,11 @@ openapi_path <- function(path) {
 #'
 #' @return Character vector, possibly empty.
 #'
+#' @examples
+#' openapi_path_params("/users/:id/posts/:post_id")
+#'
+#' openapi_path_params("/health")
+#'
 #' @keywords internal
 #' @noRd
 openapi_path_params <- function(path) {
@@ -372,7 +626,25 @@ openapi_path_params <- function(path) {
 #' A character vector names the schemes that must *all* be satisfied; a list
 #' is passed through as-is, for schemes that take scopes.
 #'
+#' Each scheme is rendered with an empty scope array, which is what the
+#' specification wants for schemes that do not use scopes. Pass a `list` to
+#' supply scopes yourself.
+#'
 #' @param security Character vector or `list`.
+#'
+#' @return A `list`: an OpenAPI
+#'         [security requirement](https://spec.openapis.org/oas/v3.1.0#security-requirement-object)
+#'         array. Empty when `security` is `list()`, which declares that no
+#'         authentication is needed.
+#'
+#' @examples
+#' openapi_render_security("bearerAuth")
+#'
+#' # several schemes that must all be satisfied
+#' openapi_render_security(c("bearerAuth", "apiKey"))
+#'
+#' # a list passes through, for schemes that take scopes
+#' openapi_render_security(list(list(oauth = c("read:users"))))
 #'
 #' @keywords internal
 #' @noRd
@@ -393,7 +665,24 @@ openapi_render_security <- function(security) {
 
 #' Render the Document's Servers
 #'
+#' A character vector is the shorthand: each URL becomes a server object with
+#' nothing but a `url`. A `list` is passed through, for servers that also need
+#' a `description` or `variables`.
+#'
 #' @param servers Character vector of URLs, or a `list` of server objects.
+#'
+#' @return A `list` of
+#'         [server objects](https://spec.openapis.org/oas/v3.1.0#server-object).
+#'
+#' @examples
+#' openapi_render_servers("https://api.example.com")
+#'
+#' openapi_render_servers(
+#'   list(
+#'     list(url = "https://api.example.com", description = "Production"),
+#'     list(url = "http://localhost:3000", description = "Local")
+#'   )
+#' )
 #'
 #' @keywords internal
 #' @noRd
@@ -407,9 +696,22 @@ openapi_render_servers <- function(servers) {
 
 #' Render the Document's Tags
 #'
-#' A named character vector maps tag names to their descriptions.
+#' A named character vector maps tag names to their descriptions; an unnamed
+#' element is a tag with no description. Names may be mixed with unnamed
+#' elements in one vector.
 #'
 #' @param tags Character vector, optionally named, or a `list` of tag objects.
+#'
+#' @return A `list` of
+#'         [tag objects](https://spec.openapis.org/oas/v3.1.0#tag-object).
+#'
+#' @examples
+#' openapi_render_tags(c("users", "posts"))
+#'
+#' openapi_render_tags(c(users = "Everything about users"))
+#'
+#' # named and unnamed together
+#' openapi_render_tags(c(users = "Everything about users", "posts"))
 #'
 #' @keywords internal
 #' @noRd
@@ -443,6 +745,38 @@ openapi_render_tags <- function(tags) {
 #' `security_schemes`, and `security`.
 #'
 #' @return A list representing an OpenAPI 3.1.0 document.
+#'
+#' @examples
+#' routes <- list(
+#'   list(
+#'     route = Route$new("/users/:id"),
+#'     path = "/users/:id",
+#'     method = "GET",
+#'     docs = openapi_docs(
+#'       summary = "Get a user by ID",
+#'       responses = openapi_response(
+#'         200,
+#'         "The user",
+#'         schema = openapi_schema_ref(
+#'           "User",
+#'           openapi_schema_object(
+#'             properties = list(id = openapi_schema_integer()),
+#'             required = "id"
+#'           )
+#'         )
+#'       )
+#'     )
+#'   ),
+#'   # undocumented routes are skipped
+#'   list(route = Route$new("/health"), path = "/health", method = "GET")
+#' )
+#'
+#' doc <- build_openapi(routes, list(info = list(title = "My API")))
+#'
+#' names(doc$paths)
+#'
+#' # the named schema was hoisted into `components`
+#' names(doc$components$schemas)
 #'
 #' @keywords internal
 #' @noRd
@@ -555,7 +889,24 @@ build_openapi <- function(routes, doc = list()) {
 
 #' Emit the Diagnostics Collected While Building a Document
 #'
+#' Notes are warnings: the document is still built, minus whatever could not
+#' be made sense of. Errors abort the build, and every one collected is
+#' reported at once rather than stopping at the first.
+#'
 #' @param ctx Build context.
+#'
+#' @return `NULL`, invisibly. Stops if `ctx` holds any errors.
+#'
+#' @examples
+#' ctx <- new_openapi_ctx()
+#' ctx$notes <- "Reference(s) to undefined schema(s): `User`."
+#'
+#' # notes only: warns, carries on
+#' openapi_report(ctx)
+#'
+#' ctx$errors <- "Two different schemas are named User."
+#'
+#' try(openapi_report(ctx))
 #'
 #' @keywords internal
 #' @noRd
@@ -578,11 +929,32 @@ openapi_report <- function(ctx) {
 #' Named Schemas of a Document, Keyed by Name
 #'
 #' Retains the schema objects themselves, which request validation needs to
-#' resolve `$ref`s.
+#' resolve `$ref`s. This is why it is separate from the `components` the
+#' renderer builds: those have already been flattened into plain `list`s.
 #'
-#' @param routes A list of routes.
+#' Walks the whole docs object rather than looking in known places, so a named
+#' schema nested inside `oneOf`, `items`, or a property is found too. The
+#' first definition of a name wins; a bare reference never defines anything.
 #'
-#' @return A named `list` of OpenAPI schemas.
+#' @param routes A list of routes, as stored in `Routing`'s private `.routes`.
+#'
+#' @return A named `list` of OpenAPI schemas, keyed by name.
+#'
+#' @examples
+#' routes <- list(
+#'   list(
+#'     docs = openapi_docs(
+#'       request_body = openapi_request_body(
+#'         schema = openapi_schema_array(
+#'           # nested two levels deep, and still found
+#'           openapi_schema_ref("User", openapi_schema_object())
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#'
+#' names(openapi_named_schemas(routes))
 #'
 #' @keywords internal
 #' @noRd

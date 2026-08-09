@@ -5,6 +5,28 @@
 #'
 #' A schema is a plain R object: define it once and reuse it everywhere.
 #'
+#' @section Constructors:
+#'
+#' - `openapi_schema_string()`, `openapi_schema_integer()`,
+#'   `openapi_schema_number()`, `openapi_schema_boolean()`: a scalar of that
+#'   type. These are thin wrappers that set `type` and pass everything else
+#'   through.
+#' - `openapi_schema_array(items)`: an array in which every element matches
+#'   `items`, itself a schema.
+#' - `openapi_schema_object(properties, required)`: an object with the named
+#'   `properties`, each a schema. An object with no properties is valid, if
+#'   permissive: it accepts any object.
+#' - `openapi_schema_ref(name, schema)`: names a schema. The schema is emitted
+#'   once, under the document's `components`, and every use of it becomes a
+#'   `$ref` pointing there. Called with only a `name`, it is instead a bare
+#'   reference to a schema defined elsewhere in the document.
+#' - `openapi_schema()`: the escape hatch, for a type the wrappers do not
+#'   cover (e.g. `"null"`), several types at once, or a schema built purely
+#'   from composition keywords.
+#'
+#' Two different schemas sharing one `name` is an error, reported when the app
+#' starts rather than when the document is served.
+#'
 #' @section Keywords:
 #'
 #' Every constructor passes `...` straight into the schema, so any
@@ -21,21 +43,40 @@
 #' reading the document, so unknown names emit a warning. Extension
 #' keywords (`x-*`) are always allowed.
 #'
-#' @param type The schema type, e.g. `"string"`. Only needed with
-#' `openapi_schema()`; the other constructors set it for you.
-#' @param items An OpenAPI schema describing the type of every element in
-#' the array.
-#' @param properties A named `list` of OpenAPI schemas describing the
-#' properties of an object.
-#' @param required Properties of the object that must be present. Either a
-#' character vector of property names, or `TRUE` to mark every declared
-#' property as required. Note that with `TRUE` a property added later
-#' silently becomes required too.
-#' @param name Name under which the schema is placed in the document's
-#' `components`.
-#' @param schema The OpenAPI schema to name. If `NULL`, the result is a bare
-#' reference to a schema named elsewhere.
-#' @param ... Additional JSON Schema keywords, see the Keywords section.
+#' @param type String or Character vector /// Optional. \cr
+#'             The schema type, e.g. `"string"`. Only needed with
+#'             `openapi_schema()`; the other constructors set it for you. A
+#'             vector documents a value that may be any of several types, e.g.
+#'             `c("string", "null")`. \cr
+#'             Defaults to `NULL`, a schema that accepts any type.
+#'
+#' @param items OpenAPI schema /// Required. \cr
+#'              A schema describing the type of every element in the array.
+#'
+#' @param properties Named list of OpenAPI schemas /// Optional. \cr
+#'                   The properties of the object, named after the property. \cr
+#'                   Defaults to `list()`, an object that accepts anything.
+#'
+#' @param required Character vector or Logical /// Optional. \cr
+#'                 Properties of the object that must be present. Either a
+#'                 character vector of property names, which must all be
+#'                 declared in `properties`, or `TRUE` to mark every declared
+#'                 property as required. \cr
+#'                 Defaults to `NULL`. Note that with `TRUE` a property added
+#'                 later silently becomes required too.
+#'
+#' @param name String /// Required. \cr
+#'             Name under which the schema is placed in the document's
+#'             `components`. May contain only letters, digits, `.`, `_`, and
+#'             `-`.
+#'
+#' @param schema OpenAPI schema /// Optional. \cr
+#'               The schema to name. \cr
+#'               Defaults to `NULL`, which makes the result a bare reference to
+#'               a schema named elsewhere in the document.
+#'
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Additional JSON Schema keywords, see the Keywords section.
 #'
 #' @return An object of class `ambiorix_openapi_schema`; a `list` that mirrors
 #' an OpenAPI schema object.
@@ -65,9 +106,29 @@
 #' # a bare reference to a schema named elsewhere
 #' openapi_schema_ref("User")
 #'
+#' # the escape hatch: a type the wrappers do not cover, and a value that
+#' # may be a string or absent
+#' openapi_schema(type = c("string", "null"))
+#'
+#' @seealso [openapi_param()], [openapi_response()], [openapi_request_body()],
+#' and [openapi_docs()], which schemas are passed to.
+#'
 #' @name openapi-schemas
 NULL
 
+#' Give a List the OpenAPI Schema Class
+#'
+#' The single place the class is attached, so every schema is built the same
+#' way. Deliberately does no checking: the exported constructors validate
+#' their arguments before calling this.
+#'
+#' @param x A `list` of JSON Schema keywords.
+#'
+#' @return An object of class `ambiorix_openapi_schema`.
+#'
+#' @examples
+#' new_openapi_schema(list(type = "string", maxLength = 10L))
+#'
 #' @keywords internal
 #' @noRd
 new_openapi_schema <- function(x) {
@@ -185,6 +246,7 @@ openapi_schema_ref <- function(name, schema = NULL) {
   schema
 }
 
+#' @rdname openapi-print
 #' @export
 print.ambiorix_openapi_schema <- function(x, ...) {
   name <- attr(x, "openapi_name")
@@ -209,11 +271,33 @@ print.ambiorix_openapi_schema <- function(x, ...) {
 
 #' Resolve the Required Property Names of an Object Schema
 #'
-#' @param required `TRUE`, or a character vector of property names.
-#' @param properties Names of the declared properties.
-#' @param check Whether to check `required` against `properties`.
+#' Turns the two forms `openapi_schema_object(required = )` accepts into the
+#' character vector the specification wants, and rejects names that no
+#' declared property matches: a typo there would silently require a property
+#' that can never be present.
 #'
-#' @return Character vector, possibly empty.
+#' @param required `TRUE`, `FALSE`, `NULL`, or a character vector of property
+#'                 names.
+#' @param properties Names of the declared properties.
+#' @param check Whether to check `required` against `properties`. `FALSE` when
+#'              a composition keyword may introduce properties that are not
+#'              declared locally, in which case the names cannot be known.
+#'
+#' @return Character vector, possibly empty. Stops when `check` is `TRUE` and
+#'         `required` names a property that was not declared.
+#'
+#' @examples
+#' openapi_required_names(c("id", "name"), properties = c("id", "name", "age"))
+#'
+#' # `TRUE` means "every declared property"
+#' openapi_required_names(TRUE, properties = c("id", "name"))
+#'
+#' openapi_required_names(NULL, properties = "id")
+#'
+#' # a name no property matches is an error, unless checking is off
+#' try(openapi_required_names("nmae", properties = "name"))
+#'
+#' openapi_required_names("nmae", properties = "name", check = FALSE)
 #'
 #' @keywords internal
 #' @noRd
@@ -260,7 +344,21 @@ openapi_required_names <- function(required, properties, check = TRUE) {
 #' Unknown keywords are ignored by anything reading the document, so a
 #' typo would otherwise go unnoticed.
 #'
+#' Extension keywords (`x-*`) are always allowed, since the specification
+#' reserves them for exactly this.
+#'
 #' @param x Character vector of keyword names.
+#'
+#' @return `NULL`, invisibly. Called for the warning it emits.
+#'
+#' @examples
+#' warn_unknown_keywords(c("type", "format"))
+#'
+#' # warns: `maxLenght` is a typo, and would be silently ignored
+#' warn_unknown_keywords("maxLenght")
+#'
+#' # extension keywords never warn
+#' warn_unknown_keywords("x-internal")
 #'
 #' @keywords internal
 #' @noRd
@@ -283,8 +381,12 @@ warn_unknown_keywords <- function(x) {
 
 #' Keywords Whose Value Is an Array
 #'
-#' These are wrapped with [as.list()] when rendered so that a single
-#' element still serialises to a JSON array.
+#' These are wrapped with [as.list()] by `openapi_render_keywords()` so that a
+#' single element still serialises to a JSON array: the serialiser unboxes
+#' length one vectors, so `required = "id"` would otherwise emit `"id"` where
+#' `["id"]` is required.
+#'
+#' @format Character vector of keyword names.
 #'
 #' @keywords internal
 #' @noRd
@@ -300,13 +402,23 @@ OPENAPI_ARRAY_KEYWORDS <- c(
 
 #' Keywords Introducing Properties That Are Not Declared Locally
 #'
+#' When an object schema uses one of these, `openapi_schema_object()` cannot
+#' know the full set of property names, so it stops checking `required`
+#' against them; see `openapi_required_names()`.
+#'
+#' @format Character vector of keyword names.
+#'
 #' @keywords internal
 #' @noRd
 OPENAPI_COMPOSITION_KEYWORDS <- c("allOf", "anyOf", "oneOf", "not", "$ref")
 
 #' Known JSON Schema & OpenAPI Keywords
 #'
-#' Used to warn about typos, see `warn_unknown_keywords()`.
+#' Used to warn about typos, see `warn_unknown_keywords()`. Not a validation
+#' list: anything here is passed through untouched, whether or not it makes
+#' sense for the schema's type.
+#'
+#' @format Character vector of keyword names.
 #'
 #' @keywords internal
 #' @noRd

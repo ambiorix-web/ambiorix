@@ -66,3 +66,7 @@ openapi_param(
 )
 
 }
+\seealso{
+\code{\link[=openapi_docs]{openapi_docs()}}, which parameters are passed to, \link{openapi-schemas}
+for the \code{schema} argument, and \link{routing-http-methods}.
+}

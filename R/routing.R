@@ -40,13 +40,15 @@
 #' output of any renderer.
 #' @param error Optional handler invoked if the route raises an error; receives
 #' the request, response, and the error condition.
-#' @param docs Optional OpenAPI documentation for the route, created with
-#' [openapi_docs()]. When the app enables docs via `app$openapi()`, documented
-#' routes appear in the generated OpenAPI document, and, if validation is
-#' enabled, incoming requests are checked against the documented schemas. Path
-#' parameters are documented automatically from the route's `:param` tokens
-#' with a string schema; declare them via [openapi_param()] with
-#' `location = "path"` to override that default.
+#' @param docs OpenAPI docs /// Optional. \cr
+#' Documentation for the route, created with [openapi_docs()]. When the app
+#' enables docs via `app$openapi()`, documented routes appear in the generated
+#' OpenAPI document, and, if validation is enabled, incoming requests are
+#' checked against the documented schemas before the handler runs. \cr
+#' Path parameters are documented automatically from the route's `:param`
+#' tokens with a string schema; declare them via [openapi_param()] with
+#' `location = "path"` to override that default. \cr
+#' Defaults to `NULL`, which leaves the route out of the document entirely.
 #'
 #' @return The routing object invisibly so calls can be chained.
 #'
@@ -457,8 +459,20 @@ Routing <- R6::R6Class(
     .is_running = FALSE,
     .wss_custom = NULL,
     .routers = list(),
-    # returns a `400` response when the request does not match the route's
-    # documentation, and `NULL` otherwise
+    # Validate a Request Against Its Route's Documentation
+    #
+    # Runs before the handler. Returns a `400` response listing what is wrong
+    # when the request does not match the route's documentation, and `NULL`
+    # otherwise, which lets the caller treat "no response" as "carry on".
+    #
+    # A no-op for a route registered without `docs`, or with validation off.
+    # Validation is off unless it was turned on app-wide with
+    # `app$openapi(validate = TRUE)`; `openapi_docs(validate =)` overrides that
+    # per route, in either direction.
+    #
+    # `.openapi_validate` and `.openapi_schemas` live on `Ambiorix`, not here:
+    # a `Router` is validated by the app it is mounted on, so both are read
+    # through `%||%` fallbacks and are absent on a standalone `Router`.
     .validate_request = function(request, res, route) {
       if (is.null(route$docs) || !is_openapi_docs(route$docs)) {
         return(NULL)
