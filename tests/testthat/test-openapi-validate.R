@@ -280,13 +280,15 @@ test_that("the request body is validated", {
   request <- mock_request(body = '{"title":"hello"}')
   expect_length(openapi_validate_request(request, docs), 0L)
 
+  # a required body that is absent altogether
   request <- mock_request(body = "{}")
   problems <- openapi_validate_request(request, docs)
-  expect_equal(paths(problems), "title")
-
-  # a required body that is absent altogether
-  problems <- openapi_validate_request(mock_request(), docs)
   expect_match(messages(problems), "a request body is required")
+
+  # a required body parameter:
+  request <- mock_request(body = '{"description":"some description"}')
+  problems <- openapi_validate_request(request, docs)
+  expect_equal(paths(problems), "title")
 })
 
 test_that("header and cookie parameters are not checked", {
