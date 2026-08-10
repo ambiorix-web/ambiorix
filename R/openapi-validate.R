@@ -45,11 +45,12 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
     }
 
     is_query <- identical(param$location, "query")
-    value <- if (is_query) {
-      request$query[[param$name]]
-    } else {
-      request$params[[param$name]]
-    }
+    is_path <- identical(param$location, "path")
+    value <- switch(
+      EXPR = param$location,
+      query = request$query[[param$name]],
+      path = request$params[[param$name]]
+    )
 
     if (is.null(value)) {
       if (param$required) {
@@ -78,7 +79,9 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
 
     if (is_query) {
       request$query[[param$name]] <- converted
-    } else {
+    }
+
+    if (is_path) {
       request$params[[param$name]] <- converted
     }
 
@@ -96,7 +99,13 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
   }
 
   # only JSON bodies are understood
-  if (!grepl("json", docs$request_body$content_type, fixed = TRUE)) {
+  is_json <- grepl(
+    pattern = "json",
+    x = docs$request_body$content_type,
+    fixed = TRUE
+  )
+
+  if (!is_json) {
     return(details)
   }
 
