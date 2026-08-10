@@ -100,9 +100,9 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
     return(details)
   }
 
-  body <- openapi_parse_body(request)
+  body <- request$parse_json()
 
-  if (is.null(body)) {
+  if (!length(body)) {
     if (docs$request_body$required) {
       details <- append(
         details,
@@ -120,51 +120,6 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
       openapi_validate(body, docs$request_body$schema, schemas)
     )
   )
-}
-
-#' Parse a Request Body for Validation
-#'
-#' Parsed with options that keep the shape of the JSON: a one element array
-#' would otherwise be indistinguishable from a scalar, and an array of objects
-#' would become a data frame.
-#'
-#' This is deliberately not shared with [parse_json()]: handlers must keep
-#' seeing exactly what they see without validation.
-#'
-#' The body is rewound after reading, so the handler still sees it. A body
-#' that is not valid JSON yields `NULL` rather than an error: the schema check
-#' then reports it as a missing body, which is the more useful message.
-#'
-#' @param request The [Request].
-#'
-#' @return The parsed body, or `NULL` when there is none.
-#'
-#' @examples
-#' \dontrun{
-#' # `request` is the live Request object a handler receives
-#' openapi_parse_body(request)
-#' }
-#'
-#' @keywords internal
-#' @noRd
-openapi_parse_body <- function(request) {
-  on.exit(request$rook.input$rewind())
-  body <- request$rook.input$read()
-
-  if (identical(body, raw())) {
-    return(NULL)
-  }
-
-  parsed <- tryCatch(
-    yyjsonr::read_json_raw(body, opts = openapi_parse_opts()),
-    error = function(error) error
-  )
-
-  if (inherits(parsed, "error")) {
-    return(NULL)
-  }
-
-  parsed
 }
 
 #' Parser Options That Preserve the Shape of the JSON

@@ -503,7 +503,7 @@ Routing <- R6::R6Class(
       )
     },
     .register_http_methods = function() {
-      http_methods = list(
+      http_methods <- list(
         get = "GET",
         put = "PUT",
         patch = "PATCH",
