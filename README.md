@@ -34,6 +34,8 @@ remotes::install_github("ambiorix-web/ambiorix")
 
 ## Example
 
+A minimal server:
+
 ```r
 library(ambiorix)
 
@@ -43,19 +45,43 @@ app$get("/", function(req, res) {
   res$send("Hello, World!")
 })
 
-app$get("/api/v1/users", function(req, res) {
-  users <- data.frame(
-    uid = 1:3,
-    firstname = c("Alice", "Bob", "Cate"),
-    lastname = c("Queen", "Jeremy", "Reece"),
-    active = c(TRUE, FALSE, TRUE)
-  )
+app$start()
+```
 
-  res$json(users)
+Run it, then open <http://localhost:3000>
+
+Websites and APIs use the same syntax, so one app can serve both:
+
+```r
+library(ambiorix)
+
+app <- Ambiorix$new(port = 3000L)
+
+# middleware runs on every request
+app$use(function(req, res) {
+  req$received_at <- Sys.time()
+})
+
+# serves index.html from the same directory
+app$get("/", function(req, res) {
+  res$send_file("index.html")
+})
+
+# path parameters
+app$get("/users/:id", function(req, res) {
+  res$json(list(id = req$params$id))
+})
+
+# POST with a JSON body
+app$post("/users", function(req, res) {
+  body <- parse_json(req)
+  res$json(list(created = body))
 })
 
 app$start()
 ```
+
+See the [docs](https://ambiorix.dev/docs/) for more.
 
 ## Middlewares
 
