@@ -131,38 +131,6 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
   )
 }
 
-#' Parser Options That Preserve the Shape of the JSON
-#'
-#' yyjsonr helpfully simplifies JSON into R structures; validation needs the
-#' opposite. Every option here turns one of those simplifications off, so that
-#' what is checked is what was sent:
-#'
-#' - `length1_array_asis`: marks a one element array `AsIs`, so `[1]` can be
-#'   told from `1`. See `openapi_is_type()`.
-#' - `arr_of_objs_to_df`: keeps `[{...}, {...}]` a list of objects rather than
-#'   a data frame.
-#' - `obj_of_arrs_to_df`: keeps `{"a": [...]}` an object.
-#' - `arr_of_arrs_to_matrix`: keeps nested arrays nested.
-#'
-#' @return A yyjsonr options object, see [yyjsonr::opts_read_json()].
-#'
-#' @examples
-#' yyjsonr::read_json_str("[1]", opts = openapi_parse_opts())
-#'
-#' # without the options, the array of one is indistinguishable from a scalar
-#' yyjsonr::read_json_str("[1]")
-#'
-#' @keywords internal
-#' @noRd
-openapi_parse_opts <- function() {
-  yyjsonr::opts_read_json(
-    length1_array_asis = TRUE,
-    arr_of_objs_to_df = FALSE,
-    obj_of_arrs_to_df = FALSE,
-    arr_of_arrs_to_matrix = FALSE
-  )
-}
-
 #' A Single Problem With a Request
 #'
 #' The shape reported back to the client in the `400`. Kept as a constructor
@@ -772,9 +740,10 @@ openapi_resolve_schema <- function(schema, schemas) {
 
 #' Does a Value Have the Given JSON Type?
 #'
-#' The parser cannot always tell a JSON scalar from a one element array, so
-#' bodies are parsed with `length1_array_asis`: an array of one is marked
-#' `AsIs` and a scalar is not.
+#' The default JSON parser collapses a one element array to a scalar, so those
+#' two cannot be told apart after [parse_json()]. When a value is marked
+#' `AsIs` (for example by a custom parser with `length1_array_asis`), it is
+#' treated as an array rather than a scalar.
 #'
 #' The other awkward case is `integer`, which JSON does not have: `1` and `1.0`
 #' both parse to a number, so an integer is a number that equals its own
@@ -795,7 +764,7 @@ openapi_resolve_schema <- function(schema, schemas) {
 #'
 #' openapi_is_type(1.5, "integer")
 #'
-#' # a one element array is marked `AsIs` by the parser, so it is not a scalar
+#' # AsIs marks a one element array so it is not a scalar
 #' openapi_is_type(I(1L), "array")
 #'
 #' openapi_is_type(I(1L), "integer")
