@@ -74,7 +74,7 @@ app$get("/users/:id", function(req, res) {
 
 # POST with a JSON body
 app$post("/users", function(req, res) {
-  body <- parse_json(req)
+  body <- req$parse_json()
   res$json(list(created = body))
 })
 
