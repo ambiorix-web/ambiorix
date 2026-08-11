@@ -3,7 +3,8 @@
 #' Checks the request body and the query and path parameters against the
 #' schemas the route documents. Parameters arrive as strings, so those
 #' documented with another type are converted before they are checked, and the
-#' converted value is written back onto the request.
+#' converted value is written back onto the request. Request body is
+#' parsed and stored on `request$payload`.
 #'
 #' Header and cookie parameters are not checked: ambiorix does not know
 #' which of them a handler cares about.
@@ -109,9 +110,10 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
     return(details)
   }
 
-  body <- request$parse_json()
+  payload <- request$parse_json()
+  request$payload <- payload
 
-  if (!length(body)) {
+  if (!length(payload)) {
     if (docs$request_body$required) {
       details <- append(
         details,
@@ -126,7 +128,7 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
     details,
     openapi_detail_list(
       "body",
-      openapi_validate(body, docs$request_body$schema, schemas)
+      openapi_validate(payload, docs$request_body$schema, schemas)
     )
   )
 }
