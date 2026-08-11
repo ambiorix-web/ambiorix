@@ -53,14 +53,15 @@
 #' @return The routing object invisibly so calls can be chained.
 #'
 #' @examples
-#' app <- Ambiorix$new()
+#' app <- Ambiorix$new(port = 3000L)
 #'
 #' app$get("/", function(req, res) {
 #'   res$text("Hello, world!")
 #' })
 #'
 #' app$post("/echo", function(req, res) {
-#'   res$json(list(received = req$body))
+#'   body <- req$parse_json()
+#'   res$json(list(received = body))
 #' })
 #'
 #' app$all("/health", function(req, res) {
@@ -80,6 +81,10 @@
 #'     )
 #'   )
 #' )
+#'
+#' if (interactive()) {
+#'   app$start()
+#' }
 #'
 #' @seealso [`Routing`], [openapi_docs()]
 #'
