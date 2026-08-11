@@ -100,11 +100,7 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
   }
 
   # only JSON bodies are understood
-  is_json <- grepl(
-    pattern = "json",
-    x = docs$request_body$content_type,
-    fixed = TRUE
-  )
+  is_json <- identical(docs$request_body$content_type, "application/json")
 
   if (!is_json) {
     return(details)
