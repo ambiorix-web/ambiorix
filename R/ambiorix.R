@@ -340,8 +340,9 @@ Ambiorix <- R6::R6Class(
     #' With `validate = TRUE` incoming requests are checked against the
     #' documented schemas before the handler runs, and a `400` is returned if
     #' they do not match. Query and path parameters documented with a
-    #' non-string schema are converted to their documented type. Individual
-    #' routes may opt out with `openapi_docs(validate = FALSE)`.
+    #' non-string schema are converted to their documented type. A valid
+    #' request body is stored on `req$payload`. Individual routes may opt
+    #' out of request validation with `openapi_docs(..., validate = FALSE)`.
     #'
     #' @param title String /// Optional. \cr
     #'   Title of the API. \cr

@@ -88,6 +88,9 @@ if (interactive()) {
 
     \item{\code{body}}{Request, an environment.}
 
+    \item{\code{payload}}{Parsed request body set by OpenAPI validation when
+\code{app$openapi(..., validate = TRUE)}. Defaults to \code{NULL}.}
+
     \item{\code{query}}{Parsed \code{QUERY_STRING}, \code{list}.}
 
     \item{\code{params}}{A \code{list} of parameters.}

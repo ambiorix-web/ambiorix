@@ -548,6 +548,7 @@ test_that("the request body is validated", {
   )
 
   req <- mock_request(body = '{"title":"hello"}')
+  rook_body <- req$body
 
   expect_length(
     openapi_validate_request(
@@ -556,6 +557,8 @@ test_that("the request body is validated", {
     ),
     0L
   )
+  expect_identical(req$payload, list(title = "hello"))
+  expect_identical(req$body, rook_body)
 
   req <- mock_request(body = "{}")
   problems <- openapi_validate_request(
@@ -564,6 +567,8 @@ test_that("the request body is validated", {
   )
 
   expect_match(messages(problems), "a request body is required")
+  expect_true(is.list(req$payload))
+  expect_length(req$payload, 0L)
 
   req <- mock_request(body = '{"description":"some description"}')
   problems <- openapi_validate_request(
@@ -572,6 +577,7 @@ test_that("the request body is validated", {
   )
 
   expect_equal(paths(problems), "title")
+  expect_identical(req$payload, list(description = "some description"))
 })
 
 test_that("header and cookie parameters are not checked", {

@@ -33,6 +33,8 @@
 #' @field CONTENT_TYPE Type of content of the request.
 #' @field HTTP_REFERER Contains an absolute or partial address of the page that makes the request.
 #' @field body Request, an environment.
+#' @field payload Parsed request body set by OpenAPI validation when
+#'   `app$openapi(..., validate = TRUE)`. Defaults to `NULL`.
 #' @field query Parsed `QUERY_STRING`, `list`.
 #' @field params A `list` of parameters.
 #' @field cookie Parsed `HTTP_COOKIE`.
@@ -87,6 +89,7 @@ Request <- R6::R6Class(
     CONTENT_TYPE = NULL,
     HTTP_REFERER = NULL,
     body = NULL,
+    payload = NULL,
     query = list(),
     params = list(),
     cookie = list(),

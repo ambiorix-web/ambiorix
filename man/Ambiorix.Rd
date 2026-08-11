@@ -631,8 +631,9 @@ then, rather than when the document is requested.
 With \code{validate = TRUE} incoming requests are checked against the
 documented schemas before the handler runs, and a \code{400} is returned if
 they do not match. Query and path parameters documented with a
-non-string schema are converted to their documented type. Individual
-routes may opt out with \code{openapi_docs(validate = FALSE)}.
+non-string schema are converted to their documented type. A valid
+request body is stored on \code{req$payload}. Individual routes may opt
+out of request validation with \code{openapi_docs(..., validate = FALSE)}.
   }
   \subsection{Returns}{
     The \code{Ambiorix} object invisibly, so calls can be chained.
