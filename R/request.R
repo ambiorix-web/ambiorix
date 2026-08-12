@@ -188,6 +188,11 @@ Request <- R6::R6Class(
     parse_multipart = function() {
       parse_multipart(self)
     },
+    #' @details Parse `application/x-www-form-urlencoded` data
+    #' @param ... Arguments passed to [parse_form_urlencoded()].
+    parse_form_urlencoded = function(...) {
+      parse_form_urlencoded(self, ...)
+    },
     #' @details Parse JSON encoded data
     #' @param ... Arguments passed to [parse_json()].
     parse_json = function(...) {
