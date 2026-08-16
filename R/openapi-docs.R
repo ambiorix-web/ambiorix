@@ -5,6 +5,11 @@
 #' schema; declare one here with `location = "path"` to override that default,
 #' e.g. to document it as an integer.
 #'
+#' With validation on, a query parameter documented with
+#' [openapi_schema_array()] holds every occurrence of its name, so `?tag=r`
+#' and `?tag=r&tag=api` both reach the handler as an array on
+#' `request$query`.
+#'
 #' @param name String /// Required. \cr
 #'             Name of the parameter. For path parameters this must match one
 #'             of the route's `:param` tokens.
@@ -154,9 +159,15 @@ print.ambiorix_openapi_parameter <- function(x, ...) {
 #' `request_body` argument of [openapi_docs()].
 #'
 #' With validation enabled the body is checked against `schema` before the
-#' handler runs, and a `400` is returned if it does not match. Only JSON bodies
-#' are checked: a `content_type` that does not contain `"json"` is documented
-#' but passed through to the handler unvalidated.
+#' handler runs, and a `400` is returned if it does not match. JSON,
+#' form-urlencoded, and multipart bodies are checked. Other media types are
+#' documented but passed through to the handler unvalidated.
+#'
+#' A form field sent more than once, as a multiple select is, holds every
+#' value it was sent with. `request$payload$tags` is the whole selection,
+#' not its first choice. Document such a property with
+#' [openapi_schema_array()] to have one choice be an array too, and to have
+#' each choice checked against `items`.
 #'
 #' @param schema OpenAPI schema /// Required. \cr
 #'               An OpenAPI schema (see [openapi-schemas]) describing the body.
@@ -176,8 +187,9 @@ print.ambiorix_openapi_parameter <- function(x, ...) {
 #'
 #' @param content_type String /// Optional. \cr
 #'                     Media type of the body. \cr
-#'                     Defaults to `"application/json"`. Media types that are
-#'                     not JSON are documented but never validated.
+#'                     Defaults to `"application/json"`. JSON, form-urlencoded,
+#'                     and multipart bodies are validated; other media types
+#'                     are documented only.
 #'
 #' @return An object of class `ambiorix_openapi_request_body`.
 #'
@@ -377,9 +389,9 @@ print.ambiorix_openapi_response <- function(x, ...) {
 #'
 #' Validation is off by default and turned on app-wide with
 #' `app$openapi(validate = TRUE)`. When it is on, query and path parameters and
-#' a JSON request body are checked against the schemas documented here before
-#' the handler runs, and a `400` is returned when they do not match. Header and
-#' cookie parameters are never checked.
+#' a JSON, form-urlencoded, or multipart request body are checked against the
+#' schemas documented here before the handler runs, and a `400` is returned
+#' when they do not match. Header and cookie parameters are never checked.
 #'
 #' The `validate` argument below overrides that app-wide setting for this one
 #' route, in either direction: `FALSE` opts a route out of validation, `TRUE`

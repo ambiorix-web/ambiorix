@@ -30,8 +30,9 @@ arrives without a body is rejected.}
 
 \item{content_type}{String /// Optional. \cr
 Media type of the body. \cr
-Defaults to \code{"application/json"}. Media types that are
-not JSON are documented but never validated.}
+Defaults to \code{"application/json"}. JSON, form-urlencoded,
+and multipart bodies are validated; other media types
+are documented only.}
 }
 \value{
 An object of class \code{ambiorix_openapi_request_body}.
@@ -42,9 +43,15 @@ Describe the body accepted by a route. Pass the result to the
 }
 \details{
 With validation enabled the body is checked against \code{schema} before the
-handler runs, and a \code{400} is returned if it does not match. Only JSON bodies
-are checked: a \code{content_type} that does not contain \code{"json"} is documented
-but passed through to the handler unvalidated.
+handler runs, and a \code{400} is returned if it does not match. JSON,
+form-urlencoded, and multipart bodies are checked. Other media types are
+documented but passed through to the handler unvalidated.
+
+A form field sent more than once, as a multiple select is, holds every
+value it was sent with. \code{request$payload$tags} is the whole selection,
+not its first choice. Document such a property with
+\code{\link[=openapi_schema_array]{openapi_schema_array()}} to have one choice be an array too, and to have
+each choice checked against \code{items}.
 }
 \examples{
 openapi_request_body(

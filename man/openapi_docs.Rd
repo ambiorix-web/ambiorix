@@ -111,9 +111,9 @@ two different schemas sharing a name are reported.
 
 Validation is off by default and turned on app-wide with
 \code{app$openapi(validate = TRUE)}. When it is on, query and path parameters and
-a JSON request body are checked against the schemas documented here before
-the handler runs, and a \code{400} is returned when they do not match. Header and
-cookie parameters are never checked.
+a JSON, form-urlencoded, or multipart request body are checked against the
+schemas documented here before the handler runs, and a \code{400} is returned
+when they do not match. Header and cookie parameters are never checked.
 
 The \code{validate} argument below overrides that app-wide setting for this one
 route, in either direction: \code{FALSE} opts a route out of validation, \code{TRUE}

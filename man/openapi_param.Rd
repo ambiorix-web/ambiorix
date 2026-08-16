@@ -50,6 +50,12 @@ are documented automatically from the route's \verb{:param} tokens with a string
 schema; declare one here with \code{location = "path"} to override that default,
 e.g. to document it as an integer.
 }
+\details{
+With validation on, a query parameter documented with
+\code{\link[=openapi_schema_array]{openapi_schema_array()}} holds every occurrence of its name, so \code{?tag=r}
+and \code{?tag=r&tag=api} both reach the handler as an array on
+\code{request$query}.
+}
 \examples{
 openapi_param(
   name = "verbose",
