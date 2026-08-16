@@ -6,6 +6,18 @@
 #' converted value is written back onto the request. Request body is
 #' parsed and stored on `request$payload`.
 #'
+#' Supported body media types: `application/json`,
+#' `application/x-www-form-urlencoded`, and `multipart/form-data`. Other
+#' types are documented only and skipped here.
+#'
+#' A form field, like a query parameter, can arrive more than once: a
+#' multiple select posts one occurrence per choice. Both are parsed into a
+#' flat list that repeats the name, which `[[` cannot read past, so every
+#' occurrence of a name is gathered by `openapi_field()` and the name is
+#' left holding a single value: the scalar it was sent as, or an array of
+#' every occurrence. A field documented as an array is always an array,
+#' even when it arrived once.
+#'
 #' Header and cookie parameters are not checked: ambiorix does not know
 #' which of them a handler cares about.
 #'
@@ -45,12 +57,16 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
       next
     }
 
-    is_query <- identical(param$location, "query")
-    is_path <- identical(param$location, "path")
-    value <- switch(
+    source <- switch(
       EXPR = param$location,
-      query = request$query[[param$name]],
-      path = request$params[[param$name]]
+      query = request$query,
+      path = request$params
+    )
+
+    value <- openapi_field(
+      values = openapi_occurrences(x = source, name = param$name),
+      schema = param$schema,
+      schemas = schemas
     )
 
     if (is.null(value)) {
@@ -66,51 +82,53 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
       next
     }
 
-    converted <- openapi_convert(value, param$schema, schemas)
+    source <- openapi_set_field(x = source, name = param$name, value = value)
 
-    if (inherits(converted, "ambiorix_openapi_conversion_error")) {
-      details <- append(
-        details,
-        list(
-          openapi_detail(param$location, param$name, converted$message)
-        )
-      )
-      next
-    }
-
-    if (is_query) {
-      request$query[[param$name]] <- converted
-    }
-
-    if (is_path) {
-      request$params[[param$name]] <- converted
-    }
+    switch(
+      EXPR = param$location,
+      query = {
+        request$query <- source
+      },
+      path = {
+        request$params <- source
+      }
+    )
 
     details <- append(
       details,
       openapi_detail_list(
         param$location,
-        openapi_validate(converted, param$schema, schemas, param$name)
+        openapi_validate(value, param$schema, schemas, param$name)
       )
     )
   }
 
-  if (is.null(docs$request_body)) {
+  body <- docs$request_body
+
+  if (is.null(body)) {
     return(details)
   }
 
-  # only JSON bodies are understood
-  is_json <- identical(docs$request_body$content_type, "application/json")
-
-  if (!is_json) {
+  payload <- switch(
+    EXPR = body$content_type,
+    "application/json" = request$parse_json(),
+    "application/x-www-form-urlencoded" = openapi_form(
+      request$parse_form_urlencoded(),
+      body$schema,
+      schemas
+    ),
+    "multipart/form-data" = openapi_form(
+      request$parse_multipart(),
+      body$schema,
+      schemas
+    ),
     return(details)
-  }
+  )
 
-  payload <- request$parse_json()
   request$payload <- payload
 
   if (!length(payload)) {
-    if (docs$request_body$required) {
+    if (body$required) {
       details <- append(
         details,
         list(openapi_detail("body", "", "a request body is required"))
@@ -124,9 +142,285 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
     details,
     openapi_detail_list(
       "body",
-      openapi_validate(payload, docs$request_body$schema, schemas)
+      openapi_validate(payload, body$schema, schemas)
     )
   )
+}
+
+#' Reshape a Parsed Form Into an Object
+#'
+#' A form body is parsed into a flat list that repeats a name once per
+#' occurrence, which is not an object: `payload[["tags"]]` would read the
+#' first `tags` and never know of the rest. Each name is gathered into one
+#' value here, so what comes back is an ordinary object that
+#' `openapi_validate()` walks like any other, and that a handler can read
+#' with `[[`.
+#'
+#' Undocumented fields are shaped too, only without conversion: the schema
+#' decides types, not whether a field survives, so
+#' `additionalProperties = FALSE` still has something to complain about.
+#'
+#' @param payload Named list /// Required. \cr
+#'                The parsed body, from [parse_form_urlencoded()] or
+#'                [parse_multipart()]. One element per occurrence, so a name
+#'                may repeat.
+#'
+#' @param schema OpenAPI schema /// Required. \cr
+#'               The request body schema, whose `properties` shape the
+#'               fields.
+#'
+#' @param schemas Named list of OpenAPI schemas /// Optional. \cr
+#'                The document's schemas, used to resolve references. \cr
+#'                Defaults to `list()`.
+#'
+#' @return A named list, one element per distinct field name.
+#'
+#' @examples
+#' openapi_form(
+#'   payload = list(name = "Ada", tag = "r", tag = "api"),
+#'   schema = openapi_schema_object(
+#'     properties = list(
+#'       name = openapi_schema_string(),
+#'       tag = openapi_schema_array(openapi_schema_string())
+#'     )
+#'   )
+#' )
+#'
+#' @keywords internal
+#' @noRd
+openapi_form <- function(payload, schema, schemas = list()) {
+  properties <- openapi_resolve_schema(schema, schemas)$properties
+  fields <- list()
+
+  for (name in unique(names(payload))) {
+    value <- openapi_field(
+      openapi_occurrences(payload, name),
+      properties[[name]],
+      schemas
+    )
+
+    if (is.null(value)) {
+      next
+    }
+
+    fields[[name]] <- value
+  }
+
+  fields
+}
+
+#' Every Occurrence of a Name
+#'
+#' `x[[name]]` stops at the first match, which loses the rest of a repeated
+#' form field or query parameter. This keeps them all.
+#'
+#' @param x Named list /// Required. \cr
+#'          A parsed form body, query, or path parameter list.
+#'
+#' @param name String /// Required. \cr
+#'             The field name to gather.
+#'
+#' @return An unnamed `list`, empty when the name is absent.
+#'
+#' @examples
+#' openapi_occurrences(
+#'   x = list(tag = "a", n = "1", tag = "b"),
+#'   name = "tag"
+#' )
+#'
+#' openapi_occurrences(
+#'   x = list(n = "1"),
+#'   name = "tag"
+#' )
+#'
+#' @keywords internal
+#' @noRd
+openapi_occurrences <- function(x, name) {
+  nms <- names(x)
+
+  if (is.null(nms)) {
+    return(list())
+  }
+
+  unname(x[nms == name])
+}
+
+#' The Value of a Field, Shaped by Its Schema
+#'
+#' Query parameters and form fields both arrive as strings, one entry per
+#' occurrence, and both are turned into a single value here.
+#'
+#' Blank occurrences are dropped first: an empty text input or a bare
+#' `?limit=` says nothing, and a field left with nothing is absent, which is
+#' what makes `required` the one place emptiness is reported.
+#'
+#' What is left is a scalar, unless the schema documents an array or more
+#' than one occurrence arrived. Documenting an array is therefore enough to
+#' get one from a single choice, and sending a field twice where the schema
+#' documents a scalar is left as an array on purpose: the type check then
+#' reports it, rather than a silent first-wins.
+#'
+#' Conversion is per element and best effort. A value that will not convert
+#' is kept as the string it was, so the type check reports it once instead of
+#' twice.
+#'
+#' @param values List /// Required. \cr
+#'               Every occurrence of one field, from
+#'               `openapi_occurrences()`.
+#'
+#' @param schema OpenAPI schema /// Required. \cr
+#'               The field's schema. `NULL` for a field the document does
+#'               not describe, which is then shaped but not converted.
+#'
+#' @param schemas Named list of OpenAPI schemas /// Optional. \cr
+#'                The document's schemas, used to resolve references. \cr
+#'                Defaults to `list()`.
+#'
+#' @return The field's value, or `NULL` when it has no usable occurrence.
+#'
+#' @examples
+#' openapi_field(
+#'   values = list("36"),
+#'   schema = openapi_schema_integer()
+#' )
+#'
+#' # documented as an array: one occurrence is still an array
+#' openapi_field(
+#'   values = list("a"),
+#'   schema = openapi_schema_array(openapi_schema_string())
+#' )
+#'
+#' openapi_field(
+#'   values = list("1", "2"),
+#'   schema = openapi_schema_array(openapi_schema_integer())
+#' )
+#'
+#' # blank occurrences are dropped
+#' openapi_field(
+#'   values = list(""),
+#'   schema = openapi_schema_string()
+#' )
+#'
+#' @keywords internal
+#' @noRd
+openapi_field <- function(values, schema, schemas = list()) {
+  # an empty text input posts `""`, and a query parameter with no value at
+  # all parses to `NA_character_`.
+  is_blank <- function(value) {
+    if (is.null(value)) {
+      return(TRUE)
+    }
+
+    if (!is.character(value) || length(value) != 1L) {
+      return(FALSE)
+    }
+
+    is.na(value) || !nzchar(value)
+  }
+
+  values <- values[
+    !vapply(X = values, FUN = is_blank, FUN.VALUE = logical(1))
+  ]
+
+  if (!length(values)) {
+    return(NULL)
+  }
+
+  schema <- openapi_resolve_schema(schema, schemas)
+  is_array <- identical(schema$type, "array")
+
+  if (!is_array && length(values) == 1L) {
+    return(openapi_convert(values[[1]], schema, schemas))
+  }
+
+  field <- lapply(
+    X = unname(values),
+    FUN = openapi_convert,
+    schema = if (is_array) schema$items else schema,
+    schemas = schemas
+  )
+
+  openapi_array(elements = field)
+}
+
+#' Rebuild Converted Occurrences as an Array
+#'
+#' Scalars of one type become a vector, which is what an R handler wants of
+#' a multiple select. Anything else, file parts especially, stays a list. A
+#' single element is marked `AsIs` so it reads as an array of one rather
+#' than as a scalar.
+#'
+#' @param elements List /// Required. \cr
+#'                 The converted occurrences of one field, unnamed.
+#'
+#' @return An array value.
+#'
+#' @examples
+#' openapi_array(elements = list("a", "b"))
+#'
+#' openapi_array(elements = list("a"))
+#'
+#' # mixed types cannot be a vector
+#' openapi_array(elements = list("a", 1L))
+#'
+#' @keywords internal
+#' @noRd
+openapi_array <- function(elements) {
+  scalars <- vapply(
+    X = elements,
+    FUN = function(element) is.atomic(element) && length(element) == 1L,
+    FUN.VALUE = logical(1)
+  )
+  types <- vapply(X = elements, FUN = typeof, FUN.VALUE = character(1))
+
+  if (!all(scalars) || length(unique(types)) > 1L) {
+    return(elements)
+  }
+
+  values <- unlist(elements, recursive = FALSE, use.names = FALSE)
+
+  if (length(values) == 1L) {
+    return(I(values))
+  }
+
+  values
+}
+
+#' Write a Field Back, Collapsing Its Occurrences
+#'
+#' The shaped value replaces the first occurrence and any others are
+#' dropped, so `request$query[[name]]` reads what was validated instead of
+#' the raw first string.
+#'
+#' @param x Named list /// Required. \cr
+#'          A parsed query or path parameter list.
+#'
+#' @param name String /// Required. \cr
+#'             The field name to write.
+#'
+#' @param value Object /// Required. \cr
+#'              The field's value, from `openapi_field()`.
+#'
+#' @return `x`, with one entry for `name`.
+#'
+#' @examples
+#' openapi_set_field(
+#'   x = list(tag = "a", n = "1", tag = "b"),
+#'   name = "tag",
+#'   value = c("a", "b")
+#' )
+#'
+#' @keywords internal
+#' @noRd
+openapi_set_field <- function(x, name, value) {
+  at <- which(names(x) == name)
+  x[[at[[1]]]] <- value
+
+  if (length(at) == 1L) {
+    return(x)
+  }
+
+  x[-at[-1L]]
 }
 
 #' A Single Problem With a Request
@@ -194,7 +488,8 @@ openapi_detail_list <- function(location, problems) {
 #' A wrong type short-circuits: every keyword check assumes the type is right,
 #' so reporting *must be an integer* alongside *must be at least 1 character
 #' long* would only be noise. Schemas that are empty, or that could not be
-#' resolved, accept anything.
+#' resolved, accept anything. A multipart file part (`filename` in its names)
+#' documented with `format: binary` or `byte` is accepted as-is.
 #'
 #' @param value Value to check.
 #' @param schema An OpenAPI schema.
@@ -228,6 +523,16 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
   schema <- openapi_resolve_schema(schema, schemas)
 
   if (is.null(schema) || !length(unclass(schema))) {
+    return(list())
+  }
+
+  # multipart file part documented as string + format binary/byte
+  is_file_part <- is.list(value) &&
+    "filename" %in% names(value) &&
+    !is.null(schema$format) &&
+    schema$format %in% c("binary", "byte")
+
+  if (is_file_part) {
     return(list())
   }
 
@@ -591,17 +896,20 @@ openapi_check_object <- function(value, schema, schemas, path) {
 #' integer, not `"10"`.
 #'
 #' Anything not worth converting is returned untouched: a string schema, a
-#' union of types, an unresolvable reference, or a value that is not a single
-#' string. A conversion that cannot succeed is a validation problem rather
-#' than an error, so it comes back as a condition-like object the caller turns
-#' into a message.
+#' union of types, an unresolvable reference, a multipart file part, or any
+#' other value that is not a single string.
+#'
+#' A conversion that cannot succeed is not an error either. The value is
+#' returned as the string it was, and the type check that follows reports it:
+#' `"abc"` documented as an integer is *must be an integer* whether the
+#' conversion or the check is what noticed, and only one of them should say
+#' so.
 #'
 #' @param value The value, a string.
 #' @param schema The parameter's schema.
 #' @param schemas Named list of schemas, used to resolve references.
 #'
-#' @return The converted value, or an object of class
-#' `ambiorix_openapi_conversion_error`.
+#' @return The converted value, or `value` itself.
 #'
 #' @examples
 #' openapi_convert("10", openapi_schema_integer())
@@ -613,7 +921,7 @@ openapi_check_object <- function(value, schema, schemas, path) {
 #' # strings are left alone
 #' openapi_convert("10", openapi_schema_string())
 #'
-#' # not convertible: reported rather than thrown
+#' # not convertible: left for the type check to report
 #' openapi_convert("abc", openapi_schema_integer())
 #'
 #' @keywords internal
@@ -643,10 +951,7 @@ openapi_convert <- function(value, schema, schemas = list()) {
     return(converted)
   }
 
-  structure(
-    list(message = sprintf("must be %s", openapi_type_label(type))),
-    class = "ambiorix_openapi_conversion_error"
-  )
+  value
 }
 
 #' Read a Query String Boolean
