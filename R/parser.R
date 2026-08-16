@@ -2,8 +2,11 @@
 #'
 #' Parses multipart form data, including file uploads, and returns the parsed fields as a list.
 #'
-#' @param req The request object.
-#' @param ... Additional parameters passed to the parser function.
+#' @param req Request /// Required. \cr
+#'            The [Request] whose body is parsed.
+#'
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Additional parameters passed to the parser function.
 #'
 #' @details
 #' If a field is a file upload it is returned as a named list with:
@@ -280,8 +283,11 @@ parse_multipart <- function(req, ...) {
 #' @description
 #' This function parses `application/x-www-form-urlencoded` data, typically used in form submissions.
 #'
-#' @param req The request object.
-#' @param ... Additional parameters passed to the parser function.
+#' @param req Request /// Required. \cr
+#'            The [Request] whose body is parsed.
+#'
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Additional parameters passed to the parser function.
 #'
 #' @return A list of parsed form fields, with each key representing a form field name and each value
 #' representing the form field's value.
@@ -330,8 +336,11 @@ parse_form_urlencoded <- function(req, ...) {
 #' @description
 #' This function parses JSON data from the request body.
 #'
-#' @param req The request object.
-#' @param ... Additional parameters passed to the parser function.
+#' @param req Request /// Required. \cr
+#'            The [Request] whose body is parsed.
+#'
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Additional parameters passed to the parser function.
 #'
 #' @return An R object (e.g., list or data frame) parsed from the JSON data.
 #'

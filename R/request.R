@@ -94,7 +94,10 @@ Request <- R6::R6Class(
     params = list(),
     cookie = list(),
     #' @details Constructor
-    #' @param req Original request (environment).
+    #'
+    #' @param req Environment /// Required. \cr
+    #'   The original request.
+    #'
     initialize = function(req) {
       self$HEADERS <- as.list(req$HEADERS)
       self$HTTP_ACCEPT <- req$HTTP_ACCEPT
@@ -179,7 +182,10 @@ Request <- R6::R6Class(
       cli::cli_end()
     },
     #' @details Get Header
-    #' @param name Name of the header
+    #'
+    #' @param name String /// Required. \cr
+    #'   Name of the header.
+    #'
     get_header = function(name) {
       assert_that(not_missing(name))
       req$HEADERS[[name]]
@@ -189,12 +195,18 @@ Request <- R6::R6Class(
       parse_multipart(self)
     },
     #' @details Parse `application/x-www-form-urlencoded` data
-    #' @param ... Arguments passed to [parse_form_urlencoded()].
+    #'
+    #' @param ... Key=Value pairs /// Optional. \cr
+    #'   Arguments passed to [parse_form_urlencoded()].
+    #'
     parse_form_urlencoded = function(...) {
       parse_form_urlencoded(self, ...)
     },
     #' @details Parse JSON encoded data
-    #' @param ... Arguments passed to [parse_json()].
+    #'
+    #' @param ... Key=Value pairs /// Optional. \cr
+    #'   Arguments passed to [parse_json()].
+    #'
     parse_json = function(...) {
       parse_json(self, ...)
     }
@@ -215,8 +227,12 @@ Request <- R6::R6Class(
 #'
 #' Set the query's parameters.
 #'
-#' @param path Corresponds the requests' `PATH_INFO`
-#' @param route See `Route`
+#' @param path String /// Required. \cr
+#'             Corresponds to the request's `PATH_INFO`.
+#'
+#' @param route Route /// Optional. \cr
+#'              The matched route, see `Route`. \cr
+#'              Defaults to `NULL`, which yields no parameters.
 #'
 #' @return Parameter list
 #' @keywords internal
@@ -254,9 +270,17 @@ set_params <- function(path, route = NULL) {
 #'
 #' Mock a request, used for tests.
 #'
-#' @param cookie Cookie string.
-#' @param query Query string.
-#' @param path Path string.
+#' @param cookie String /// Optional. \cr
+#'               Cookie string. \cr
+#'               Defaults to `""`.
+#'
+#' @param query String /// Optional. \cr
+#'              Query string. \cr
+#'              Defaults to `""`.
+#'
+#' @param path String /// Optional. \cr
+#'             Path string. \cr
+#'             Defaults to `"/"`.
 #'
 #' @examples
 #' mockRequest()

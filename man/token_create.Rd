@@ -7,7 +7,9 @@
 token_create(n = 16L)
 }
 \arguments{
-\item{n}{Number of bytes.}
+\item{n}{Integer /// Optional. \cr
+Number of bytes. \cr
+Defaults to \code{16L}.}
 }
 \value{
 Length 1 character vector.

@@ -21,10 +21,15 @@
 #' Header and cookie parameters are not checked: ambiorix does not know
 #' which of them a handler cares about.
 #'
-#' @param request The [Request].
-#' @param docs The route's docs, see [openapi_docs()].
-#' @param schemas Named list of the document's schemas, used to resolve
-#' references.
+#' @param request Request /// Required. \cr
+#'                The [Request] to check.
+#'
+#' @param docs OpenAPI docs /// Required. \cr
+#'             The route's docs, see [openapi_docs()].
+#'
+#' @param schemas Named list of OpenAPI schemas /// Optional. \cr
+#'                The document's schemas, used to resolve references. \cr
+#'                Defaults to `list()`.
 #'
 #' @return A `list` of problems, empty when the request is valid. Each is a
 #'         `list(location, path, message)`, see `openapi_detail()`.
@@ -429,9 +434,14 @@ openapi_set_field <- function(x, name, value) {
 #' rather than an inline `list()` so the three field names are spelled in one
 #' place.
 #'
-#' @param location Where the problem is: `"body"`, `"query"`, or `"path"`.
-#' @param path Path to the offending value, e.g. `"tags[2]"`.
-#' @param message What is wrong with it, phrased to follow the path, e.g.
+#' @param location String /// Required. \cr
+#'                 Where the problem is: `"body"`, `"query"`, or `"path"`.
+#'
+#' @param path String /// Required. \cr
+#'             Path to the offending value, e.g. `"tags[2]"`.
+#'
+#' @param message String /// Required. \cr
+#'                What is wrong with it, phrased to follow the path, e.g.
 #'                `"is required"`.
 #'
 #' @return A `list` of `location`, `path`, and `message`.
@@ -453,8 +463,11 @@ openapi_detail <- function(location, path, message) {
 #' where the value came from; the caller does. This adds that missing field to
 #' a whole batch at once.
 #'
-#' @param location Where the problems are: `"body"`, `"query"`, or `"path"`.
-#' @param problems A `list` of `list(path, message)`.
+#' @param location String /// Required. \cr
+#'                 Where the problems are: `"body"`, `"query"`, or `"path"`.
+#'
+#' @param problems List /// Required. \cr
+#'                 The problems, each a `list(path, message)`.
 #'
 #' @return A `list` of details, see `openapi_detail()`.
 #'
@@ -491,11 +504,20 @@ openapi_detail_list <- function(location, problems) {
 #' resolved, accept anything. A multipart file part (`filename` in its names)
 #' documented with `format: binary` or `byte` is accepted as-is.
 #'
-#' @param value Value to check.
-#' @param schema An OpenAPI schema.
-#' @param schemas Named list of schemas, used to resolve references.
-#' @param path Path to `value`, used in the messages. Empty at the top of a
-#'             body, and grown by `openapi_child_path()` on the way down.
+#' @param value Object /// Required. \cr
+#'              The value to check.
+#'
+#' @param schema OpenAPI schema /// Required. \cr
+#'               The schema it is checked against.
+#'
+#' @param schemas Named list of OpenAPI schemas /// Optional. \cr
+#'                The document's schemas, used to resolve references. \cr
+#'                Defaults to `list()`.
+#'
+#' @param path String /// Optional. \cr
+#'             Path to `value`, used in the messages. Empty at the top of a
+#'             body, and grown by `openapi_child_path()` on the way down. \cr
+#'             Defaults to `""`.
 #'
 #' @return A `list` of `list(path, message)`, empty when the value is valid.
 #'
@@ -598,9 +620,14 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
 #' Keywords the schema does not set are skipped, so an empty schema yields
 #' nothing.
 #'
-#' @param value A number.
-#' @param schema The schema it is checked against.
-#' @param path Path to `value`, used in the messages.
+#' @param value Numeric /// Required. \cr
+#'              The number to check.
+#'
+#' @param schema OpenAPI schema /// Required. \cr
+#'               The schema it is checked against.
+#'
+#' @param path String /// Required. \cr
+#'             Path to `value`, used in the messages.
 #'
 #' @return A `list` of `list(path, message)`, empty when `value` is valid.
 #'
@@ -655,9 +682,14 @@ openapi_check_number <- function(value, schema, path) {
 #' annotation rather than a constraint, so `format = "email"` documents the
 #' intent without rejecting anything; use `pattern` to actually enforce it.
 #'
-#' @param value A string.
-#' @param schema The schema it is checked against.
-#' @param path Path to `value`, used in the messages.
+#' @param value String /// Required. \cr
+#'              The string to check.
+#'
+#' @param schema OpenAPI schema /// Required. \cr
+#'               The schema it is checked against.
+#'
+#' @param path String /// Required. \cr
+#'             Path to `value`, used in the messages.
 #'
 #' @return A `list` of `list(path, message)`, empty when `value` is valid.
 #'
@@ -709,10 +741,17 @@ openapi_check_string <- function(value, schema, path) {
 #' An array with no `items` has unconstrained elements and only its own
 #' keywords are checked.
 #'
-#' @param value An array.
-#' @param schema The schema it is checked against.
-#' @param schemas Named list of schemas, used to resolve references.
-#' @param path Path to `value`, used in the messages.
+#' @param value Array /// Required. \cr
+#'              The array to check.
+#'
+#' @param schema OpenAPI schema /// Required. \cr
+#'               The schema it is checked against.
+#'
+#' @param schemas Named list of OpenAPI schemas /// Required. \cr
+#'                The document's schemas, used to resolve references.
+#'
+#' @param path String /// Required. \cr
+#'             Path to `value`, used in the messages.
 #'
 #' @return A `list` of `list(path, message)`, empty when `value` is valid.
 #'
@@ -800,10 +839,17 @@ openapi_check_array <- function(value, schema, schemas, path) {
 #' Undeclared properties are allowed by default, which is what the
 #' specification says: set `additionalProperties = FALSE` to reject them.
 #'
-#' @param value An object.
-#' @param schema The schema it is checked against.
-#' @param schemas Named list of schemas, used to resolve references.
-#' @param path Path to `value`, used in the messages. Property names are
+#' @param value Named list /// Required. \cr
+#'              The object to check.
+#'
+#' @param schema OpenAPI schema /// Required. \cr
+#'               The schema it is checked against.
+#'
+#' @param schemas Named list of OpenAPI schemas /// Required. \cr
+#'                The document's schemas, used to resolve references.
+#'
+#' @param path String /// Required. \cr
+#'             Path to `value`, used in the messages. Property names are
 #'             appended with a `.`, e.g. `"user.name"`.
 #'
 #' @return A `list` of `list(path, message)`, empty when `value` is valid.
@@ -905,9 +951,15 @@ openapi_check_object <- function(value, schema, schemas, path) {
 #' conversion or the check is what noticed, and only one of them should say
 #' so.
 #'
-#' @param value The value, a string.
-#' @param schema The parameter's schema.
-#' @param schemas Named list of schemas, used to resolve references.
+#' @param value String /// Required. \cr
+#'              The value to convert.
+#'
+#' @param schema OpenAPI schema /// Required. \cr
+#'               The field's schema.
+#'
+#' @param schemas Named list of OpenAPI schemas /// Optional. \cr
+#'                The document's schemas, used to resolve references. \cr
+#'                Defaults to `list()`.
 #'
 #' @return The converted value, or `value` itself.
 #'
@@ -961,7 +1013,8 @@ openapi_convert <- function(value, schema, schemas = list()) {
 #' would actually send are accepted: JSON's `true`/`false`, R's
 #' `TRUE`/`FALSE`, and `1`/`0`.
 #'
-#' @param x A single string.
+#' @param x String /// Required. \cr
+#'          The spelling to read.
 #'
 #' @return `TRUE`, `FALSE`, or `NA` when `x` is none of the accepted
 #'         spellings.
@@ -998,8 +1051,11 @@ openapi_as_logical <- function(x) {
 #' constraints" rather than an error: a dangling reference is already reported
 #' as a note when the document is built.
 #'
-#' @param schema An OpenAPI schema, possibly a bare reference.
-#' @param schemas Named list of schemas.
+#' @param schema OpenAPI schema /// Required. \cr
+#'               The schema to resolve, possibly a bare reference.
+#'
+#' @param schemas Named list of OpenAPI schemas /// Required. \cr
+#'                The document's schemas, keyed by name.
 #'
 #' @return The resolved schema, `NULL` when it cannot be found, or `schema`
 #'         itself when it is not a reference.
@@ -1054,8 +1110,11 @@ openapi_resolve_schema <- function(schema, schemas) {
 #'
 #' Types that are not part of the specification are not checked, and pass.
 #'
-#' @param value Value to check.
-#' @param type A JSON type, e.g. `"string"`.
+#' @param value Object /// Required. \cr
+#'              The value to check.
+#'
+#' @param type String /// Required. \cr
+#'             A JSON type, e.g. `"string"`.
 #'
 #' @return `TRUE` or `FALSE`.
 #'
@@ -1114,7 +1173,8 @@ openapi_is_type <- function(value, type) {
 #' *must be integer*. Several types are joined with "or", for a schema that
 #' documents a union. An unknown type is used as-is.
 #'
-#' @param type Character vector of JSON types.
+#' @param type Character vector /// Required. \cr
+#'             The JSON types to name.
 #'
 #' @return A single character string.
 #'
@@ -1146,7 +1206,8 @@ openapi_type_label <- function(type) {
 #' This flattens all three to a plain list, so that iterating an array is the
 #' same regardless of how it arrived.
 #'
-#' @param x A parsed JSON array.
+#' @param x Array /// Required. \cr
+#'          A parsed JSON array.
 #'
 #' @return A `list`.
 #'
@@ -1179,7 +1240,8 @@ openapi_elements <- function(x) {
 #' anything built from the result, so it is dropped before the `enum` check
 #' compares a value against the allowed set.
 #'
-#' @param x A parsed JSON value.
+#' @param x Object /// Required. \cr
+#'          A parsed JSON value.
 #'
 #' @return `x`, without its `AsIs` class.
 #'
@@ -1205,8 +1267,11 @@ openapi_scalar <- function(x) {
 #' top of a request body: the first level of properties is reported as `name`
 #' rather than `.name`.
 #'
-#' @param path Path to the parent, possibly `""`.
-#' @param name Name of the property.
+#' @param path String /// Required. \cr
+#'             Path to the parent, possibly `""`.
+#'
+#' @param name String /// Required. \cr
+#'             Name of the property.
 #'
 #' @return A single character string.
 #'

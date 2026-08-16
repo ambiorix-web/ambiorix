@@ -7,9 +7,11 @@
 parse_form_urlencoded(req, ...)
 }
 \arguments{
-\item{req}{The request object.}
+\item{req}{Request /// Required. \cr
+The \link{Request} whose body is parsed.}
 
-\item{...}{Additional parameters passed to the parser function.}
+\item{...}{Key=Value pairs /// Optional. \cr
+Additional parameters passed to the parser function.}
 }
 \value{
 A list of parsed form fields, with each key representing a form field name and each value

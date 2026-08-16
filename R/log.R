@@ -13,12 +13,22 @@ logPredicate <- function(log) {
 #'
 #' Returns a new logger using the `log` package.
 #'
-#' @param prefix String to prefix all log messages.
-#' @param write Whether to write the log to the `file`.
-#' @param file Name of the file to dump the logs to,
-#' only used if `write` is `TRUE`.
-#' @param sep Separator between `prefix` and other
-#' flags and messages.
+#' @param prefix String /// Optional. \cr
+#'               String to prefix all log messages. \cr
+#'               Defaults to `">"`.
+#'
+#' @param write Logical /// Optional. \cr
+#'              Whether to write the log to the `file`. Either `FALSE`
+#'              (default) or `TRUE`.
+#'
+#' @param file String /// Optional. \cr
+#'             Name of the file to dump the logs to, only used if `write` is
+#'             `TRUE`. \cr
+#'             Defaults to `"ambiorix.log"`.
+#'
+#' @param sep String /// Optional. \cr
+#'            Separator between `prefix` and other flags and messages. \cr
+#'            Defaults to `""`.
 #'
 #' @examples
 #' log <- new_log()
@@ -45,8 +55,8 @@ new_log <- function(
 #'
 #' Customise the internal logs used by Ambiorix.
 #'
-#' @param log An object of class `Logger`, see
-#' [log::Logger].
+#' @param log Logger /// Required. \cr
+#'            An object of class `Logger`, see [log::Logger].
 #'
 #' @name set_log
 #' @return The `log` object.

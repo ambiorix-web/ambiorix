@@ -123,7 +123,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{req}}{Original request (environment).}
+      \item{\code{req}}{Environment /// Required. \cr
+The original request.}
     }
     \if{html}{\out{</div>}}
   }
@@ -158,7 +159,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{Name of the header}
+      \item{\code{name}}{String /// Required. \cr
+Name of the header.}
     }
     \if{html}{\out{</div>}}
   }
@@ -193,7 +195,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{...}}{Arguments passed to \code{\link[=parse_form_urlencoded]{parse_form_urlencoded()}}.}
+      \item{\code{...}}{Key=Value pairs /// Optional. \cr
+Arguments passed to \code{\link[=parse_form_urlencoded]{parse_form_urlencoded()}}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -214,7 +217,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{...}}{Arguments passed to \code{\link[=parse_json]{parse_json()}}.}
+      \item{\code{...}}{Key=Value pairs /// Optional. \cr
+Arguments passed to \code{\link[=parse_json]{parse_json()}}.}
     }
     \if{html}{\out{</div>}}
   }

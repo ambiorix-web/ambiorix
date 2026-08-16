@@ -122,7 +122,8 @@ assertthat::on_failure(is_flag) <- function(call, env) {
 #'
 #' Paired with an `assertthat::on_failure()` message naming all three forms.
 #'
-#' @param x Value to check.
+#' @param x Object /// Required. \cr
+#'          The value to check.
 #'
 #' @return `TRUE` or `FALSE`.
 #'
@@ -173,7 +174,8 @@ assertthat::on_failure(is_openapi_status) <- function(call, env) {
 #'
 #' Paired with an `assertthat::on_failure()` message.
 #'
-#' @param x A `list` or vector.
+#' @param x List or Vector /// Required. \cr
+#'          The object whose elements are checked.
 #'
 #' @return `TRUE` or `FALSE`.
 #'
@@ -204,7 +206,8 @@ assertthat::on_failure(has_names) <- function(call, env) {
 #' Paired with an `assertthat::on_failure()` message pointing at
 #' `?openapi-schemas`.
 #'
-#' @param x Value to check.
+#' @param x Object /// Required. \cr
+#'          The value to check.
 #'
 #' @return `TRUE` or `FALSE`.
 #'
@@ -238,7 +241,8 @@ assertthat::on_failure(is_openapi_schema) <- function(call, env) {
 #' Paired with an `assertthat::on_failure()` message pointing at
 #' `?openapi-schemas`.
 #'
-#' @param x A `list`.
+#' @param x List /// Required. \cr
+#'          The schemas to check, e.g. an object's `properties`.
 #'
 #' @return `TRUE` or `FALSE`.
 #'
@@ -272,7 +276,8 @@ assertthat::on_failure(is_openapi_schema_list) <- function(call, env) {
 #' Paired with an `assertthat::on_failure()` message listing the allowed
 #' characters.
 #'
-#' @param x A string.
+#' @param x String /// Required. \cr
+#'          The component name to check.
 #'
 #' @return `TRUE` or `FALSE`.
 #'
@@ -305,7 +310,8 @@ assertthat::on_failure(is_openapi_component_name) <- function(call, env) {
 #'
 #' Paired with an `assertthat::on_failure()` message naming the constructor.
 #'
-#' @param x Value to check.
+#' @param x Object /// Required. \cr
+#'          The value to check.
 #'
 #' @return `TRUE` or `FALSE`.
 #'
@@ -330,7 +336,8 @@ assertthat::on_failure(is_openapi_parameter) <- function(call, env) {
 #'
 #' Paired with an `assertthat::on_failure()` message naming the constructor.
 #'
-#' @param x Value to check.
+#' @param x Object /// Required. \cr
+#'          The value to check.
 #'
 #' @return `TRUE` or `FALSE`.
 #'
@@ -360,7 +367,8 @@ assertthat::on_failure(is_openapi_request_body) <- function(call, env) {
 #'
 #' Paired with an `assertthat::on_failure()` message naming the constructor.
 #'
-#' @param x Value to check.
+#' @param x Object /// Required. \cr
+#'          The value to check.
 #'
 #' @return `TRUE` or `FALSE`.
 #'
@@ -387,7 +395,8 @@ assertthat::on_failure(is_openapi_response) <- function(call, env) {
 #'
 #' Paired with an `assertthat::on_failure()` message naming the constructor.
 #'
-#' @param x Value to check.
+#' @param x Object /// Required. \cr
+#'          The value to check.
 #'
 #' @return `TRUE` or `FALSE`.
 #'

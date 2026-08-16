@@ -4,27 +4,35 @@
 \alias{routing-http-methods}
 \title{Routing HTTP Methods}
 \arguments{
-\item{path}{String. Route to listen to, treated as a regular expression;
-use \code{:} to define a parameter (e.g. \code{"/hello/:name"}). See the
+\item{path}{String /// Required. \cr
+Route to listen to, treated as a regular expression; use \code{:}
+to define a parameter (e.g. \code{"/hello/:name"}). See the
 \emph{Path matching} section.}
 
-\item{handler}{Function that accepts the request and response objects and
-returns an httpuv response (e.g. \code{\link[=response]{response()}}). Handlers can return the result
-of helper functions such as \code{Response$text()}, \code{Response$json()}, or the
-output of any renderer.}
+\item{handler}{Function /// Required. \cr
+A function that accepts the request and response objects
+and returns an httpuv response (e.g. \code{\link[=response]{response()}}).
+Handlers can return the result of helper functions such as
+\code{Response$text()}, \code{Response$json()}, or the output of any
+renderer.}
 
-\item{error}{Optional handler invoked if the route raises an error; receives
-the request, response, and the error condition.}
+\item{error}{Function /// Optional. \cr
+A handler invoked if the route raises an error; receives the
+request, response, and the error condition. \cr
+Defaults to \code{NULL}, the app's error handler.}
 
 \item{docs}{OpenAPI docs /// Optional. \cr
-Documentation for the route, created with \code{\link[=openapi_docs]{openapi_docs()}}. When the app
-enables docs via \code{app$openapi()}, documented routes appear in the generated
-OpenAPI document, and, if validation is enabled, incoming requests are
-checked against the documented schemas before the handler runs. \cr
-Path parameters are documented automatically from the route's \verb{:param}
-tokens with a string schema; declare them via \code{\link[=openapi_param]{openapi_param()}} with
-\code{location = "path"} to override that default. \cr
-Defaults to \code{NULL}, which leaves the route out of the document entirely.}
+Documentation for the route, created with \code{\link[=openapi_docs]{openapi_docs()}}.
+When the app enables docs via \code{app$openapi()}, documented
+routes appear in the generated OpenAPI document, and, if
+validation is enabled, incoming requests are checked against
+the documented schemas before the handler runs. \cr
+Path parameters are documented automatically from the route's
+\verb{:param} tokens with a string schema; declare them via
+\code{\link[=openapi_param]{openapi_param()}} with \code{location = "path"} to override that
+default. \cr
+Defaults to \code{NULL}, which leaves the route out of the
+document entirely.}
 }
 \value{
 The routing object invisibly so calls can be chained.

@@ -122,7 +122,8 @@ NULL
 #' way. Deliberately does no checking: the exported constructors validate
 #' their arguments before calling this.
 #'
-#' @param x A `list` of JSON Schema keywords.
+#' @param x Named list /// Required. \cr
+#'          The JSON Schema keywords.
 #'
 #' @return An object of class `ambiorix_openapi_schema`.
 #'
@@ -276,12 +277,18 @@ print.ambiorix_openapi_schema <- function(x, ...) {
 #' declared property matches: a typo there would silently require a property
 #' that can never be present.
 #'
-#' @param required `TRUE`, `FALSE`, `NULL`, or a character vector of property
-#'                 names.
-#' @param properties Names of the declared properties.
-#' @param check Whether to check `required` against `properties`. `FALSE` when
-#'              a composition keyword may introduce properties that are not
-#'              declared locally, in which case the names cannot be known.
+#' @param required Logical or Character vector /// Required. \cr
+#'                 `TRUE`, `FALSE`, `NULL`, or the property names that are
+#'                 required.
+#'
+#' @param properties Character vector /// Required. \cr
+#'                   Names of the declared properties.
+#'
+#' @param check Logical /// Required. \cr
+#'              Whether to check `required` against `properties`. `FALSE`
+#'              when a composition keyword may introduce properties that are
+#'              not declared locally, in which case the names cannot be
+#'              known.
 #'
 #' @return Character vector, possibly empty. Stops when `check` is `TRUE` and
 #'         `required` names a property that was not declared.
@@ -347,7 +354,8 @@ openapi_required_names <- function(required, properties, check = TRUE) {
 #' Extension keywords (`x-*`) are always allowed, since the specification
 #' reserves them for exactly this.
 #'
-#' @param x Character vector of keyword names.
+#' @param x Character vector /// Required. \cr
+#'          The keyword names to check.
 #'
 #' @return `NULL`, invisibly. Called for the warning it emits.
 #'

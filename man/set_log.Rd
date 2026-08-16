@@ -14,8 +14,8 @@ set_log_success(log)
 set_log_error(log)
 }
 \arguments{
-\item{log}{An object of class \code{Logger}, see
-\link[log:Logger]{log::Logger}.}
+\item{log}{Logger /// Required. \cr
+An object of class \code{Logger}, see \link[log:Logger]{log::Logger}.}
 }
 \value{
 The \code{log} object.

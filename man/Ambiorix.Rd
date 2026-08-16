@@ -264,9 +264,15 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{host}}{A string defining the host.}
-      \item{\code{port}}{Integer defining the port, defaults to \code{ambiorix.port} option: uses a random port if \code{NULL}.}
-      \item{\code{log}}{Whether to generate a log of events.}
+      \item{\code{host}}{String /// Optional. \cr
+The host to bind to. \cr
+Defaults to the \code{ambiorix.host} option, \code{"0.0.0.0"}.}
+      \item{\code{port}}{Integer /// Optional. \cr
+The port to listen on. \cr
+Defaults to the \code{ambiorix.port} option; a random port when \code{NULL}.}
+      \item{\code{log}}{Logical /// Optional. \cr
+Whether to generate a log of events. \cr
+Defaults to the \code{ambiorix.logger} option, \code{TRUE}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -302,7 +308,8 @@ them from disk.
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{port}}{Port number.}
+      \item{\code{port}}{Integer /// Required. \cr
+The port number.}
     }
     \if{html}{\out{</div>}}
   }
@@ -338,8 +345,9 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+      \item{\code{handler}}{Function /// Required. \cr
+A function that accepts the request and returns an object describing
+an httpuv response, e.g. \code{\link[=response]{response()}}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -377,7 +385,8 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{handler}}{Function that accepts a request, response and an error object.}
+      \item{\code{handler}}{Function /// Required. \cr
+A function that accepts a request, a response, and an error object.}
     }
     \if{html}{\out{</div>}}
   }
@@ -432,8 +441,11 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{path}}{Local path to directory of assets.}
-      \item{\code{uri}}{URL path where the directory will be available.}
+      \item{\code{path}}{String /// Required. \cr
+Local path to the directory of assets.}
+      \item{\code{uri}}{String /// Optional. \cr
+URL path where the directory will be available. \cr
+Defaults to \code{"www"}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -454,9 +466,15 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{port}}{Integer defining the port, defaults to \code{ambiorix.port} option: uses a random port if \code{NULL}.}
-      \item{\code{host}}{A string defining the host.}
-      \item{\code{open}}{Whether to open the app the browser.}
+      \item{\code{port}}{Integer /// Optional. \cr
+The port to listen on. \cr
+Defaults to \code{NULL}, the port the app was created with.}
+      \item{\code{host}}{String /// Optional. \cr
+The host to bind to. \cr
+Defaults to \code{NULL}, the host the app was created with.}
+      \item{\code{open}}{Logical /// Optional. \cr
+Whether to open the app in the browser. \cr
+Defaults to \code{\link[=interactive]{interactive()}}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -496,8 +514,9 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{handler}}{Function to use to serialise.
-This function should accept two arguments: the object to serialise and \code{...}.}
+      \item{\code{handler}}{Function /// Required. \cr
+The function to serialise with. It should accept two arguments: the
+object to serialise, and \code{...}.}
     }
     \if{html}{\out{</div>}}
   }

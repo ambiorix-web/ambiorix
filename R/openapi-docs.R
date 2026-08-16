@@ -599,8 +599,11 @@ print.ambiorix_openapi_docs <- function(x, ...) {
 #' iterating an unwrapped one would walk its fields rather than treat it as a
 #' single element; `predicate` is what tells the two cases apart.
 #'
-#' @param x A `list` of objects, or a single object.
-#' @param predicate Class check for a single object, e.g.
+#' @param x List or Object /// Required. \cr
+#'          A `list` of objects, or a single object.
+#'
+#' @param predicate Function /// Required. \cr
+#'                  Class check for a single object, e.g.
 #'                  `is_openapi_response`.
 #'
 #' @return A `list`, or `NULL` when `x` is `NULL`.
@@ -633,12 +636,17 @@ as_openapi_list <- function(x, predicate) {
 #' Reports the index of the offending element: `assert_that()` on the list as
 #' a whole cannot say which one is wrong.
 #'
-#' @param x A `list`.
-#' @param predicate Class check applied to every element, e.g.
+#' @param x List /// Required. \cr
+#'          The elements to check.
+#'
+#' @param predicate Function /// Required. \cr
+#'                  Class check applied to every element, e.g.
 #'                  `is_openapi_response`.
-#' @param constructor Name of the function elements must be created with, used
-#'                    in the error message. Written without the parentheses,
-#'                    e.g. `"openapi_response"`.
+#'
+#' @param constructor String /// Required. \cr
+#'                    Name of the function elements must be created with,
+#'                    used in the error message. Written without the
+#'                    parentheses, e.g. `"openapi_response"`.
 #'
 #' @return `x`, invisibly. Stops with the offending index otherwise.
 #'

@@ -46,9 +46,18 @@ Ambiorix <- R6::R6Class(
     on_stop = NULL,
     #' @details Define the webserver.
     #'
-    #' @param host A string defining the host.
-    #' @param port Integer defining the port, defaults to `ambiorix.port` option: uses a random port if `NULL`.
-    #' @param log Whether to generate a log of events.
+    #' @param host String /// Optional. \cr
+    #'   The host to bind to. \cr
+    #'   Defaults to the `ambiorix.host` option, `"0.0.0.0"`.
+    #'
+    #' @param port Integer /// Optional. \cr
+    #'   The port to listen on. \cr
+    #'   Defaults to the `ambiorix.port` option; a random port when `NULL`.
+    #'
+    #' @param log Logical /// Optional. \cr
+    #'   Whether to generate a log of events. \cr
+    #'   Defaults to the `ambiorix.logger` option, `TRUE`.
+    #'
     initialize = function(
       host = getOption("ambiorix.host", "0.0.0.0"),
       port = getOption("ambiorix.port", NULL),
@@ -81,7 +90,9 @@ Ambiorix <- R6::R6Class(
       invisible(self)
     },
     #' @details Specifies the port to listen on.
-    #' @param port Port number.
+    #'
+    #' @param port Integer /// Required. \cr
+    #'   The port number.
     #'
     #' @examples
     #' app <- Ambiorix$new()
@@ -100,8 +111,10 @@ Ambiorix <- R6::R6Class(
       invisible(self)
     },
     #' @details Sets the 404 page.
-    #' @param handler Function that accepts the request and returns an object
-    #' describing an httpuv response, e.g.: [response()].
+    #'
+    #' @param handler Function /// Required. \cr
+    #'   A function that accepts the request and returns an object describing
+    #'   an httpuv response, e.g. [response()].
     #'
     #' @examples
     #' app <- Ambiorix$new()
@@ -123,7 +136,9 @@ Ambiorix <- R6::R6Class(
       invisible(self)
     },
     #' @details Sets the error handler.
-    #' @param handler Function that accepts a request, response and an error object.
+    #'
+    #' @param handler Function /// Required. \cr
+    #'   A function that accepts a request, a response, and an error object.
     #'
     #' @examples
     #' # my custom error handler:
@@ -163,8 +178,13 @@ Ambiorix <- R6::R6Class(
     },
     #' @details Static directories
     #'
-    #' @param path Local path to directory of assets.
-    #' @param uri URL path where the directory will be available.
+    #' @param path String /// Required. \cr
+    #'   Local path to the directory of assets.
+    #'
+    #' @param uri String /// Optional. \cr
+    #'   URL path where the directory will be available. \cr
+    #'   Defaults to `"www"`.
+    #'
     static = function(path, uri = "www") {
       assert_that(not_missing(uri))
       assert_that(not_missing(path))
@@ -181,9 +201,18 @@ Ambiorix <- R6::R6Class(
     #' where the docs routes are registered and the OpenAPI document is built,
     #' so any problem with the documentation is reported here rather than when
     #' the document is first requested.
-    #' @param host A string defining the host.
-    #' @param port Integer defining the port, defaults to `ambiorix.port` option: uses a random port if `NULL`.
-    #' @param open Whether to open the app the browser.
+    #' @param host String /// Optional. \cr
+    #'   The host to bind to. \cr
+    #'   Defaults to `NULL`, the host the app was created with.
+    #'
+    #' @param port Integer /// Optional. \cr
+    #'   The port to listen on. \cr
+    #'   Defaults to `NULL`, the port the app was created with.
+    #'
+    #' @param open Logical /// Optional. \cr
+    #'   Whether to open the app in the browser. \cr
+    #'   Defaults to [interactive()].
+    #'
     #'
     #' @examples
     #' app <- Ambiorix$new()
@@ -296,8 +325,10 @@ Ambiorix <- R6::R6Class(
       invisible(self)
     },
     #' @details Define Serialiser
-    #' @param handler Function to use to serialise.
-    #' This function should accept two arguments: the object to serialise and `...`.
+    #'
+    #' @param handler Function /// Required. \cr
+    #'   The function to serialise with. It should accept two arguments: the
+    #'   object to serialise, and `...`.
     #'
     #' @examples
     #' app <- Ambiorix$new()

@@ -8,9 +8,14 @@
 #' together with any diagnostics. It lives and dies within a single
 #' `build_openapi()` call.
 #'
-#' @param x Object to render.
-#' @param ctx Build context, see `new_openapi_ctx()`.
-#' @param ... Passed to methods.
+#' @param x Object /// Required. \cr
+#'          The object to render.
+#'
+#' @param ctx Build context /// Required. \cr
+#'            The accumulator created by `new_openapi_ctx()`.
+#'
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Passed to methods.
 #'
 #' @return A `list`.
 #'
@@ -26,9 +31,14 @@ as_openapi <- function(x, ctx, ...) {
 #' finds its way into a document, e.g. a bare `list()` passed where
 #' `openapi_response()` was expected.
 #'
-#' @param x Object to render.
-#' @param ctx Build context.
-#' @param ... Unused.
+#' @param x Object /// Required. \cr
+#'          The object to render.
+#'
+#' @param ctx Build context /// Required. \cr
+#'            The accumulator created by `new_openapi_ctx()`.
+#'
+#' @param ... Ignored /// Optional. \cr
+#'            Not used, present for compatibility with the generic.
 #'
 #' @return Never returns; always stops.
 #'
@@ -83,7 +93,8 @@ new_openapi_ctx <- function() {
 #' is emitted under `components/schemas`, so the pointer is derived from the
 #' name alone.
 #'
-#' @param name Name of the schema.
+#' @param name String /// Required. \cr
+#'             Name of the schema.
 #'
 #' @return A single character string.
 #'
@@ -107,9 +118,14 @@ openapi_ref_path <- function(name) {
 #' last-one-wins, and is recorded on `ctx` so the build can report every
 #' problem at once instead of stopping at the first.
 #'
-#' @param x An OpenAPI schema.
-#' @param ctx Build context.
-#' @param ... Unused.
+#' @param x OpenAPI schema /// Required. \cr
+#'          The schema to render.
+#'
+#' @param ctx Build context /// Required. \cr
+#'            The accumulator created by `new_openapi_ctx()`.
+#'
+#' @param ... Ignored /// Optional. \cr
+#'            Not used, present for compatibility with the generic.
 #'
 #' @return A `list`: the rendered keywords, or `list("$ref" = ...)`.
 #'
@@ -171,8 +187,11 @@ as_openapi.ambiorix_openapi_schema <- function(x, ctx, ...) {
 #' Keywords whose value is `NULL` are dropped rather than emitted as JSON
 #' `null`, which the specification would read as a meaningful value.
 #'
-#' @param x An OpenAPI schema.
-#' @param ctx Build context.
+#' @param x OpenAPI schema /// Required. \cr
+#'          The schema whose keywords are rendered.
+#'
+#' @param ctx Build context /// Required. \cr
+#'            The accumulator created by `new_openapi_ctx()`.
 #'
 #' @return A `list` of rendered keywords.
 #'
@@ -217,8 +236,11 @@ openapi_render_keywords <- function(x, ctx) {
 #' `additionalProperties`, `not`, `patternProperties` and friends all carry
 #' schemas too.
 #'
-#' @param x Value to render.
-#' @param ctx Build context.
+#' @param x Object /// Required. \cr
+#'          The value to render.
+#'
+#' @param ctx Build context /// Required. \cr
+#'            The accumulator created by `new_openapi_ctx()`.
 #'
 #' @return `x` with every schema inside it replaced by its rendered form.
 #'         Values that are not schemas are returned untouched.
@@ -254,9 +276,14 @@ openapi_render_value <- function(x, ctx) {
 #' `location` becomes `in`, which cannot be an R argument name because it is
 #' reserved.
 #'
-#' @param x An OpenAPI parameter.
-#' @param ctx Build context.
-#' @param ... Unused.
+#' @param x OpenAPI parameter /// Required. \cr
+#'          The parameter to render.
+#'
+#' @param ctx Build context /// Required. \cr
+#'            The accumulator created by `new_openapi_ctx()`.
+#'
+#' @param ... Ignored /// Optional. \cr
+#'            Not used, present for compatibility with the generic.
 #'
 #' @return A `list`: an OpenAPI
 #'         [parameter object](https://spec.openapis.org/oas/v3.1.0#parameter-object).
@@ -299,9 +326,14 @@ as_openapi.ambiorix_openapi_parameter <- function(x, ctx, ...) {
 #' The flat `schema`/`content_type` pair is nested into the `content` map the
 #' specification uses, keyed by media type.
 #'
-#' @param x An OpenAPI request body.
-#' @param ctx Build context.
-#' @param ... Unused.
+#' @param x OpenAPI request body /// Required. \cr
+#'          The request body to render.
+#'
+#' @param ctx Build context /// Required. \cr
+#'            The accumulator created by `new_openapi_ctx()`.
+#'
+#' @param ... Ignored /// Optional. \cr
+#'            Not used, present for compatibility with the generic.
 #'
 #' @return A `list`: an OpenAPI
 #'         [request body object](https://spec.openapis.org/oas/v3.1.0#request-body-object).
@@ -344,9 +376,14 @@ as_openapi.ambiorix_openapi_request_body <- function(x, ctx, ...) {
 #' A response with no schema emits no `content` at all, rather than an empty
 #' one, which is how a body-less response such as a `204` is described.
 #'
-#' @param x An OpenAPI response.
-#' @param ctx Build context.
-#' @param ... Unused.
+#' @param x OpenAPI response /// Required. \cr
+#'          The response to render.
+#'
+#' @param ctx Build context /// Required. \cr
+#'            The accumulator created by `new_openapi_ctx()`.
+#'
+#' @param ... Ignored /// Optional. \cr
+#'            Not used, present for compatibility with the generic.
 #'
 #' @return A `list`: an OpenAPI
 #'         [response object](https://spec.openapis.org/oas/v3.1.0#response-object).
@@ -397,10 +434,17 @@ as_openapi.ambiorix_openapi_response <- function(x, ctx, ...) {
 #' one exception: the specification requires a non-empty `responses`, so a
 #' route that documents none gets a placeholder `default`.
 #'
-#' @param x The route's docs.
-#' @param ctx Build context.
-#' @param path The route's full path, used to derive path parameters.
-#' @param ... Unused.
+#' @param x OpenAPI docs /// Required. \cr
+#'          The route's docs.
+#'
+#' @param ctx Build context /// Required. \cr
+#'            The accumulator created by `new_openapi_ctx()`.
+#'
+#' @param path String /// Required. \cr
+#'             The route's full path, used to derive path parameters.
+#'
+#' @param ... Ignored /// Optional. \cr
+#'            Not used, present for compatibility with the generic.
 #'
 #' @return A `list`: an OpenAPI
 #'         [operation object](https://spec.openapis.org/oas/v3.1.0#operation-object).
@@ -491,9 +535,14 @@ as_openapi.ambiorix_openapi_docs <- function(x, ctx, path = "", ...) {
 #' is dropped with a note: it would document a parameter that can never be
 #' sent.
 #'
-#' @param parameters Declared parameters.
-#' @param ctx Build context.
-#' @param path The route's full path.
+#' @param parameters List of OpenAPI parameters /// Required. \cr
+#'                   The parameters declared on the route.
+#'
+#' @param ctx Build context /// Required. \cr
+#'            The accumulator created by `new_openapi_ctx()`.
+#'
+#' @param path String /// Required. \cr
+#'             The route's full path.
 #'
 #' @return A `list` of rendered parameter objects, possibly empty.
 #'
@@ -582,7 +631,8 @@ openapi_render_parameters <- function(parameters, ctx, path) {
 #' Turns `/users/:id` into `/users/{id}`: ambiorix marks path parameters with
 #' a leading `:`, the specification wraps them in braces.
 #'
-#' @param path A route path.
+#' @param path String /// Required. \cr
+#'             A route path.
 #'
 #' @return A single character string.
 #'
@@ -605,7 +655,8 @@ openapi_path <- function(path) {
 #' Derived from the path itself rather than from `Route$params`, which is not
 #' populated when a custom path to pattern converter is in use.
 #'
-#' @param path A route path.
+#' @param path String /// Required. \cr
+#'             A route path.
 #'
 #' @return Character vector, possibly empty.
 #'
@@ -630,7 +681,9 @@ openapi_path_params <- function(path) {
 #' specification wants for schemes that do not use scopes. Pass a `list` to
 #' supply scopes yourself.
 #'
-#' @param security Character vector or `list`.
+#' @param security Character vector or List /// Required. \cr
+#'                 Names of the security schemes that apply, or a `list`
+#'                 supplying scopes.
 #'
 #' @return A `list`: an OpenAPI
 #'         [security requirement](https://spec.openapis.org/oas/v3.1.0#security-requirement-object)
@@ -669,7 +722,9 @@ openapi_render_security <- function(security) {
 #' nothing but a `url`. A `list` is passed through, for servers that also need
 #' a `description` or `variables`.
 #'
-#' @param servers Character vector of URLs, or a `list` of server objects.
+#' @param servers Character vector or List /// Required. \cr
+#'                URLs at which the API is served, or a `list` of server
+#'                objects.
 #'
 #' @return A `list` of
 #'         [server objects](https://spec.openapis.org/oas/v3.1.0#server-object).
@@ -700,7 +755,9 @@ openapi_render_servers <- function(servers) {
 #' element is a tag with no description. Names may be mixed with unnamed
 #' elements in one vector.
 #'
-#' @param tags Character vector, optionally named, or a `list` of tag objects.
+#' @param tags Character vector or List /// Required. \cr
+#'             Tag names, optionally named with their descriptions, or a
+#'             `list` of tag objects.
 #'
 #' @return A `list` of
 #'         [tag objects](https://spec.openapis.org/oas/v3.1.0#tag-object).
@@ -740,9 +797,12 @@ openapi_render_tags <- function(tags) {
 #' Diagnostics are emitted here rather than when the document is served: this
 #' runs at startup, where the developer will see them.
 #'
-#' @param routes A list of routes as stored in `Routing`'s private `.routes`.
-#' @param doc A list of document level fields: `info`, `servers`, `tags`,
-#' `security_schemes`, and `security`.
+#' @param routes List /// Required. \cr
+#'               The routes, as stored in `Routing`'s private `.routes`.
+#'
+#' @param doc Named list /// Required. \cr
+#'            The document level fields: `info`, `servers`, `tags`,
+#'            `security_schemes`, and `security`.
 #'
 #' @return A list representing an OpenAPI 3.1.0 document.
 #'
@@ -893,7 +953,8 @@ build_openapi <- function(routes, doc = list()) {
 #' be made sense of. Errors abort the build, and every one collected is
 #' reported at once rather than stopping at the first.
 #'
-#' @param ctx Build context.
+#' @param ctx Build context /// Required. \cr
+#'            The accumulator created by `new_openapi_ctx()`.
 #'
 #' @return `NULL`, invisibly. Stops if `ctx` holds any errors.
 #'
@@ -936,7 +997,8 @@ openapi_report <- function(ctx) {
 #' schema nested inside `oneOf`, `items`, or a property is found too. The
 #' first definition of a name wins; a bare reference never defines anything.
 #'
-#' @param routes A list of routes, as stored in `Routing`'s private `.routes`.
+#' @param routes List /// Required. \cr
+#'               The routes, as stored in `Routing`'s private `.routes`.
 #'
 #' @return A named `list` of OpenAPI schemas, keyed by name.
 #'

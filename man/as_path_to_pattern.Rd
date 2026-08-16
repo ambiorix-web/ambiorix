@@ -7,8 +7,9 @@
 as_path_to_pattern(path)
 }
 \arguments{
-\item{path}{A function that accepts a character vector of length 1
-and returns another character vector of length 1.}
+\item{path}{Function /// Required. \cr
+A function that accepts a character vector of length 1 and
+returns another character vector of length 1.}
 }
 \value{
 Object of class "pathToPattern".

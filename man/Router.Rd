@@ -87,7 +87,8 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{path}}{The base path of the router.}
+      \item{\code{path}}{String /// Required. \cr
+The base path of the router.}
     }
     \if{html}{\out{</div>}}
   }
