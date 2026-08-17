@@ -121,7 +121,11 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
   payload <- tryCatch(
     expr = switch(
       EXPR = body$content_type,
-      "application/json" = request$parse_json(),
+      "application/json" = openapi_shape(
+        request$parse_json(),
+        body$schema,
+        schemas
+      ),
       "application/x-www-form-urlencoded" = openapi_form(
         request$parse_form_urlencoded(),
         body$schema,
@@ -242,6 +246,113 @@ openapi_form <- function(payload, schema, schemas = list()) {
   }
 
   fields
+}
+
+#' Reshape a Parsed JSON Body Against Its Schema
+#'
+#' The counterpart to `openapi_form()`, for the one media type that arrives
+#' already typed. What it fixes is arrays: R's JSON parsers collapse a one
+#' element array to the element itself, so `["a"]` and `"a"` reach validation as
+#' the same value, as do `[{"a":1}]` and `{"a":1}`, and a field documented as an
+#' array would be reported as not being one. The documentation is the source of
+#' truth here, exactly as it is for a form field that arrived once: a value
+#' documented as an array is an array, whatever the wire made of it.
+#'
+#' An array of objects that share their keys is simplified further still, into a
+#' data frame, which is an object again as far as a schema is concerned. Where
+#' one is documented as an array it is read back a row at a time, so a handler
+#' receives the array of objects it documented.
+#'
+#' Only promotion happens. A value that is already an array is left alone, so a
+#' scalar documented as one is never quietly rebuilt into something the schema
+#' would have rejected.
+#'
+#' Elements are walked only when they could hold arrays of their own, so an
+#' array of scalars keeps the vector shape a handler wants.
+#'
+#' @param value Object /// Required. \cr
+#'              The parsed body, from [parse_json()], or any value within it.
+#'
+#' @param schema OpenAPI schema /// Required. \cr
+#'               The schema `value` is documented with.
+#'
+#' @param schemas Named list of OpenAPI schemas /// Optional. \cr
+#'                The document's schemas, used to resolve references. \cr
+#'                Defaults to `list()`.
+#'
+#' @return `value`, with every documented array shaped as one.
+#'
+#' @examples
+#' schema <- openapi_schema_object(
+#'   properties = list(
+#'     title = openapi_schema_string(),
+#'     tags = openapi_schema_array(items = openapi_schema_string())
+#'   )
+#' )
+#'
+#' openapi_shape(list(title = "a", tags = "web"), schema)
+#'
+#' openapi_shape(list(title = "a", tags = c("web", "api")), schema)
+#'
+#' @keywords internal
+#' @noRd
+openapi_shape <- function(value, schema, schemas = list()) {
+  schema <- openapi_resolve_schema(schema, schemas)
+
+  if (is.null(schema) || is.null(value)) {
+    return(value)
+  }
+
+  if (identical(schema$type, "array")) {
+    if (is.data.frame(value)) {
+      frame <- value
+      value <- lapply(
+        X = seq_len(nrow(frame)),
+        FUN = function(i) lapply(X = frame, FUN = function(column) column[[i]])
+      )
+    }
+
+    if (!openapi_is_type(value, "array")) {
+      value <- if (is.atomic(value)) I(value) else list(value)
+    }
+
+    items <- openapi_resolve_schema(schema$items, schemas)
+
+    if (is.null(items)) {
+      return(value)
+    }
+
+    if (!identical(items$type, "array") && !length(items$properties)) {
+      return(value)
+    }
+
+    return(
+      lapply(
+        X = openapi_elements(value),
+        FUN = openapi_shape,
+        schema = items,
+        schemas = schemas
+      )
+    )
+  }
+
+  if (!openapi_is_type(value, "object")) {
+    return(value)
+  }
+
+  for (name in names(schema$properties)) {
+    if (is.null(value[[name]])) {
+      next
+    }
+
+    value[[name]] <- openapi_shape(
+      value[[name]],
+      schema$properties[[name]],
+      schemas
+    )
+  }
+
+  value
 }
 
 #' Every Occurrence of a Name
