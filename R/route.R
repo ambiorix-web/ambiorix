@@ -85,8 +85,9 @@ Route <- R6::R6Class(
 #' Identify a function as a path to pattern function;
 #' a function that accepts a path and returns a matching pattern.
 #'
-#' @param path A function that accepts a character vector of length 1
-#' and returns another character vector of length 1.
+#' @param path Function /// Required. \cr
+#'             A function that accepts a character vector of length 1 and
+#'             returns another character vector of length 1.
 #'
 #' @examples
 #' fn <- function(path) {

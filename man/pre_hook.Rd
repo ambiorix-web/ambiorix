@@ -7,9 +7,11 @@
 pre_hook(content, data)
 }
 \arguments{
-\item{content}{File content, a character vector.}
+\item{content}{Character vector /// Required. \cr
+The file content.}
 
-\item{data}{A list of data passed to \code{glue::glue_data}.}
+\item{data}{Named list /// Required. \cr
+The data passed to \code{\link[glue:glue_data]{glue::glue_data()}}.}
 }
 \value{
 A response pre-hook.

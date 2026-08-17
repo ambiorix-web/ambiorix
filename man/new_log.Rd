@@ -7,15 +7,22 @@
 new_log(prefix = ">", write = FALSE, file = "ambiorix.log", sep = "")
 }
 \arguments{
-\item{prefix}{String to prefix all log messages.}
+\item{prefix}{String /// Optional. \cr
+String to prefix all log messages. \cr
+Defaults to \code{">"}.}
 
-\item{write}{Whether to write the log to the \code{file}.}
+\item{write}{Logical /// Optional. \cr
+Whether to write the log to the \code{file}. Either \code{FALSE}
+(default) or \code{TRUE}.}
 
-\item{file}{Name of the file to dump the logs to,
-only used if \code{write} is \code{TRUE}.}
+\item{file}{String /// Optional. \cr
+Name of the file to dump the logs to, only used if \code{write} is
+\code{TRUE}. \cr
+Defaults to \code{"ambiorix.log"}.}
 
-\item{sep}{Separator between \code{prefix} and other
-flags and messages.}
+\item{sep}{String /// Optional. \cr
+Separator between \code{prefix} and other flags and messages. \cr
+Defaults to \code{""}.}
 }
 \value{
 An R& of class \code{log::Logger}.

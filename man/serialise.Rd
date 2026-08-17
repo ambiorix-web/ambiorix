@@ -7,9 +7,11 @@
 serialise(data, ...)
 }
 \arguments{
-\item{data}{Data to serialise.}
+\item{data}{Object /// Required. \cr
+The data to serialise.}
 
-\item{...}{Passed to serialiser.}
+\item{...}{Key=Value pairs /// Optional. \cr
+Passed to the serialiser.}
 }
 \value{
 JSON string.

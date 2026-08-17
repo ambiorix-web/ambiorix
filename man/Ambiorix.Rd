@@ -10,6 +10,14 @@ add routes, routers, and run the application.
 \description{
 Web server.
 }
+\section{OpenAPI}{
+
+\code{app$openapi()} enables OpenAPI (Swagger) documentation: routes registered
+with a \code{docs} argument (see \code{\link[=openapi_docs]{openapi_docs()}}) are collected into an OpenAPI
+document, served alongside an interactive UI, and used to validate
+incoming requests.
+}
+
 \examples{
 app <- Ambiorix$new()
 
@@ -136,14 +144,56 @@ app$get(
   },
   docs = openapi_docs(
     summary = "Landing page",
-    responses = openapi_responses(
+    responses = list(
       openapi_response(200, "The landing page")
     )
   )
 )
 
-if (interactive())
+if (interactive()) {
   app$start()
+}
+
+# a fuller document: servers, described tags, a security scheme applied
+# to every route, and rejected requests answered in the app's own shape
+app <- Ambiorix$new()
+
+app$openapi(
+  title = "My API",
+  version = "2.0.0",
+  description = "An API built with ambiorix",
+  servers = c("https://api.example.com", "http://localhost:3000"),
+  tags = c(users = "Everything about users"),
+  security_schemes = list(
+    bearerAuth = list(type = "http", scheme = "bearer")
+  ),
+  security = "bearerAuth",
+  on_invalid = function(req, res, details) {
+    res$set_status(422L)$json(list(ok = FALSE, problems = details))
+  }
+)
+
+app$get(
+  "/users/:id",
+  function(req, res) {
+    # `id` is an integer here, not a string: validation converted it
+    res$json(list(id = req$params$id))
+  },
+  docs = openapi_docs(
+    summary = "Get a user by ID",
+    tags = "users",
+    parameters = openapi_param(
+      "id",
+      location = "path",
+      schema = openapi_schema_integer()
+    ),
+    responses = openapi_response(200, "The user")
+  )
+)
+
+if (interactive()) {
+  app$start()
+}
 }
 \section{Super class}{
 \code{\link[ambiorix:Routing]{Routing}} -> \code{Ambiorix}
@@ -216,9 +266,15 @@ if (interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{host}}{A string defining the host.}
-      \item{\code{port}}{Integer defining the port, defaults to \code{ambiorix.port} option: uses a random port if \code{NULL}.}
-      \item{\code{log}}{Whether to generate a log of events.}
+      \item{\code{host}}{String /// Optional. \cr
+The host to bind to. \cr
+Defaults to the \code{ambiorix.host} option, \code{"0.0.0.0"}.}
+      \item{\code{port}}{Integer /// Optional. \cr
+The port to listen on. \cr
+Defaults to the \code{ambiorix.port} option; a random port when \code{NULL}.}
+      \item{\code{log}}{Logical /// Optional. \cr
+Whether to generate a log of events. \cr
+Defaults to the \code{ambiorix.logger} option, \code{TRUE}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -254,7 +310,8 @@ them from disk.
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{port}}{Port number.}
+      \item{\code{port}}{Integer /// Required. \cr
+The port number.}
     }
     \if{html}{\out{</div>}}
   }
@@ -290,8 +347,9 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{handler}}{Function that accepts the request and returns an object
-describing an httpuv response, e.g.: \code{\link[=response]{response()}}.}
+      \item{\code{handler}}{Function /// Required. \cr
+A function that accepts the request and returns an object describing
+an httpuv response, e.g. \code{\link[=response]{response()}}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -329,7 +387,8 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{handler}}{Function that accepts a request, response and an error object.}
+      \item{\code{handler}}{Function /// Required. \cr
+A function that accepts a request, a response, and an error object.}
     }
     \if{html}{\out{</div>}}
   }
@@ -384,8 +443,11 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{path}}{Local path to directory of assets.}
-      \item{\code{uri}}{URL path where the directory will be available.}
+      \item{\code{path}}{String /// Required. \cr
+Local path to the directory of assets.}
+      \item{\code{uri}}{String /// Optional. \cr
+URL path where the directory will be available. \cr
+Defaults to \code{"www"}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -406,15 +468,26 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{port}}{Integer defining the port, defaults to \code{ambiorix.port} option: uses a random port if \code{NULL}.}
-      \item{\code{host}}{A string defining the host.}
-      \item{\code{open}}{Whether to open the app the browser.}
+      \item{\code{port}}{Integer /// Optional. \cr
+The port to listen on. \cr
+Defaults to \code{NULL}, the port the app was created with.}
+      \item{\code{host}}{String /// Optional. \cr
+The host to bind to. \cr
+Defaults to \code{NULL}, the host the app was created with.}
+      \item{\code{open}}{Logical /// Optional. \cr
+Whether to open the app in the browser. \cr
+Defaults to \code{\link[=interactive]{interactive()}}.}
     }
     \if{html}{\out{</div>}}
   }
   \subsection{Details}{
     Start
 Start the webserver.
+
+When OpenAPI documentation is enabled with \code{openapi()}, this is also
+where the docs routes are registered and the OpenAPI document is built,
+so any problem with the documentation is reported here rather than when
+the document is first requested.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
@@ -443,8 +516,9 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{handler}}{Function to use to serialise.
-This function should accept two arguments: the object to serialise and \code{...}.}
+      \item{\code{handler}}{Function /// Required. \cr
+The function to serialise with. It should accept two arguments: the
+object to serialise, and \code{...}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -480,24 +554,87 @@ if(interactive())
   title = "API",
   version = "1.0.0",
   description = NULL,
+  info = list(),
+  servers = NULL,
+  tags = NULL,
+  security_schemes = NULL,
+  security = NULL,
+  validate = TRUE,
+  on_invalid = NULL,
   ui_path = "/docs",
   spec_path = "/openapi.json",
-  assets_path = "/__swagger__",
-  ...
+  assets_path = "/__swagger__"
 )}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{title}}{Title of the API.}
-      \item{\code{version}}{Version of the API.}
-      \item{\code{description}}{Optional description of the API.}
-      \item{\code{ui_path}}{Path at which the Swagger UI is served.}
-      \item{\code{spec_path}}{Path at which the OpenAPI JSON document is served.}
-      \item{\code{assets_path}}{Path at which the Swagger UI assets (CSS &
-JavaScript) are served.}
-      \item{\code{...}}{Additional fields added to the OpenAPI \code{info} object.}
+      \item{\code{title}}{String /// Optional. \cr
+Title of the API. \cr
+Defaults to \code{"API"}.}
+      \item{\code{version}}{String /// Optional. \cr
+Version of the API, as you version it; unrelated to the version of the
+OpenAPI specification, which is always 3.1.0. \cr
+Defaults to \code{"1.0.0"}.}
+      \item{\code{description}}{String /// Optional. \cr
+Description of the API, shown under the title in the UI. \cr
+Defaults to \code{NULL}.}
+      \item{\code{info}}{Named list /// Optional. \cr
+Additional fields added to the OpenAPI
+\href{https://spec.openapis.org/oas/v3.1.0#info-object}{info object}, e.g.
+\code{contact} or \code{license}. \cr
+Defaults to \code{list()}. \code{title}, \code{version}, and \code{description} are set
+from the arguments above and override anything given here.}
+      \item{\code{servers}}{Character vector or List /// Optional. \cr
+URLs at which the API is served. A \code{list} of
+\href{https://spec.openapis.org/oas/v3.1.0#server-object}{server objects}
+instead of a character vector allows each to carry a \code{description} or
+\code{variables}. \cr
+Defaults to \code{NULL}, which the specification reads as a server at \code{/},
+i.e. the host the document was served from.}
+      \item{\code{tags}}{Character vector or List /// Optional. \cr
+Tags used to group routes. Names, if any, are the tag names and the
+values their descriptions; an unnamed element is a tag with no
+description. \cr
+Defaults to \code{NULL}. Declaring tags here is optional: a tag used by a
+route appears in the UI either way, this is how it gets a description
+and a fixed order.}
+      \item{\code{security_schemes}}{Named list /// Optional. \cr
+The \href{https://spec.openapis.org/oas/v3.1.0#security-scheme-object}{security schemes}
+the API supports, named so that routes can refer to them, e.g.
+\code{list(bearerAuth = list(type = "http", scheme = "bearer"))}. \cr
+Defaults to \code{NULL}. Declaring a scheme only documents it: ambiorix does
+not authenticate anything.}
+      \item{\code{security}}{Character vector or List /// Optional. \cr
+Names of the security schemes that apply to every route; see the
+\code{security} argument of \code{\link[=openapi_docs]{openapi_docs()}}, which overrides this per
+route. \cr
+Defaults to \code{NULL}, no authentication.}
+      \item{\code{validate}}{Logical /// Optional. \cr
+Whether to validate incoming requests against the documented schemas.
+Either \code{TRUE} (default) or \code{FALSE}. \cr
+Individual routes override this with the \code{validate} argument of
+\code{\link[=openapi_docs]{openapi_docs()}}.}
+      \item{\code{on_invalid}}{Function /// Optional. \cr
+A function that accepts the request, the response, and \code{details}, a
+\code{list} of the problems found, each a
+\code{list(location, path, message)}. It must return the response to send.
+\cr
+Defaults to \code{NULL}: a \code{400} whose body is
+\code{list(error = "Invalid request", details = details)}. A handler of
+your own may prefer the more precise \code{422}; note that httpuv renders
+it as \verb{422 Dunno}, since its reason phrases stop at RFC 2616.}
+      \item{\code{ui_path}}{String /// Optional. \cr
+Path at which the Swagger UI is served. \cr
+Defaults to \code{"/docs"}.}
+      \item{\code{spec_path}}{String /// Optional. \cr
+Path at which the OpenAPI JSON document is served. \cr
+Defaults to \code{"/openapi.json"}.}
+      \item{\code{assets_path}}{String /// Optional. \cr
+Path at which the Swagger UI assets (CSS & JavaScript) are served. \cr
+Defaults to \code{"/__swagger__"}. Worth changing only if it collides with
+a static directory of your own.}
     }
     \if{html}{\out{</div>}}
   }
@@ -518,7 +655,24 @@ If \code{ui_path} or \code{spec_path} collides with an existing route, or
 corresponding docs route (or asset directory) is not registered and a
 warning is emitted.
 The OpenAPI document is always serialised with the default serialiser,
-regardless of any custom serialiser set via \code{serialiser()}.
+regardless of any custom serialiser set via \code{serialiser()}. It is built
+once, when the app starts: problems with the documentation are reported
+then, rather than when the document is requested.
+
+Incoming requests are checked against the documented schemas before
+the handler runs, and a \code{400} is returned if they do not match. Query
+and path parameters documented with a non-string schema are converted
+to their documented type. A valid request body is stored on
+\code{req$payload}. Only documented routes are checked; individual routes
+opt out with \code{openapi_docs(..., validate = FALSE)}, and the whole app
+with \code{validate = FALSE} here.
+
+\code{on_invalid} decides what a rejected request is answered with, for
+apps whose errors have a shape of their own, or that would rather
+re-render a form than send JSON.
+  }
+  \subsection{Returns}{
+    The \code{Ambiorix} object invisibly, so calls can be chained.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
@@ -533,14 +687,56 @@ app$get(
   },
   docs = openapi_docs(
     summary = "Landing page",
-    responses = openapi_responses(
+    responses = list(
       openapi_response(200, "The landing page")
     )
   )
 )
 
-if (interactive())
+if (interactive()) {
   app$start()
+}
+
+# a fuller document: servers, described tags, a security scheme applied
+# to every route, and rejected requests answered in the app's own shape
+app <- Ambiorix$new()
+
+app$openapi(
+  title = "My API",
+  version = "2.0.0",
+  description = "An API built with ambiorix",
+  servers = c("https://api.example.com", "http://localhost:3000"),
+  tags = c(users = "Everything about users"),
+  security_schemes = list(
+    bearerAuth = list(type = "http", scheme = "bearer")
+  ),
+  security = "bearerAuth",
+  on_invalid = function(req, res, details) {
+    res$set_status(422L)$json(list(ok = FALSE, problems = details))
+  }
+)
+
+app$get(
+  "/users/:id",
+  function(req, res) {
+    # `id` is an integer here, not a string: validation converted it
+    res$json(list(id = req$params$id))
+  },
+  docs = openapi_docs(
+    summary = "Get a user by ID",
+    tags = "users",
+    parameters = openapi_param(
+      "id",
+      location = "path",
+      schema = openapi_schema_integer()
+    ),
+    responses = openapi_response(200, "The user")
+  )
+)
+
+if (interactive()) {
+  app$start()
+}
 }
     \if{html}{\out{</div>}}
   }

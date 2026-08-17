@@ -2,8 +2,11 @@
 #'
 #' Browses the application, if RStudio available uses pane.
 #'
-#' @param open Whether to open the app.
-#' @param url URL to browse.
+#' @param open Logical /// Required. \cr
+#'             Whether to open the app. Either `TRUE` or `FALSE`.
+#'
+#' @param url String /// Required. \cr
+#'            URL to browse.
 #'
 #' @noRd
 #' @keywords internal
@@ -47,7 +50,8 @@ browse_ambiorix <- function(open, url) {
 
 #' Escape HTML Special Characters
 #'
-#' @param x Character vector to escape.
+#' @param x Character vector /// Required. \cr
+#'          The text to escape.
 #'
 #' @noRd
 #' @keywords internal
@@ -68,7 +72,7 @@ html_escape <- function(x) {
 #' @keywords internal
 named_list <- function() {
   out <- list()
-  names(out) <- character(0)
+  names(out) <- character()
   out
 }
 
@@ -76,7 +80,8 @@ named_list <- function() {
 #'
 #' Checks if a package is installed, stops if not.
 #'
-#' @param pkg Package to check.
+#' @param pkg String /// Required. \cr
+#'            Name of the package to check.
 #'
 #' @noRd
 #' @keywords internal
@@ -93,8 +98,13 @@ check_installed <- function(pkg) {
 #' Determines the appropriate port for the server, following a
 #' specific order of precedence.
 #'
-#' @param host String. The host address to bind to when selecting a random port.
-#' @param port Integer. An optional input port, provided by the user.
+#' @param host String /// Required. \cr
+#'             The host address to bind to when selecting a random port.
+#'
+#' @param port Integer /// Optional. \cr
+#'             An input port, provided by the user. \cr
+#'             Defaults to `NULL`, a random port.
+#'
 #' @details The port to use is resolved in the following order of precedence:
 #' 1. Forced Port Option: Typically used by Belgic, the load balancer. If
 #'   the `ambiorix.port.force` R option is specified, this port is returned.
@@ -143,7 +153,8 @@ get_port <- function(host, port = NULL) {
 #'
 #' Avoids EOF warnings.
 #'
-#' @param ... Passed to [readLines()]:
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Passed to [readLines()].
 #'
 #' @keywords internal
 #' @noRd
@@ -153,7 +164,8 @@ read_lines <- function(...) {
 
 #' Read file from disk or cache
 #'
-#' @param path Path to file.
+#' @param path String /// Required. \cr
+#'             Path to the file.
 #'
 #' @keywords internal
 #' @noRd

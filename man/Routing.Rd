@@ -144,7 +144,9 @@ Ambiorix. See \link{routing-http-methods}.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{path}}{Prefix path.}
+      \item{\code{path}}{String /// Optional. \cr
+Prefix path. \cr
+Defaults to \code{""}, no prefix.}
     }
     \if{html}{\out{</div>}}
   }
@@ -165,8 +167,11 @@ Ambiorix. See \link{routing-http-methods}.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{Name of the parameter}
-      \item{\code{handler}}{Function that accepts the request, response, parameter value and the parameter name.}
+      \item{\code{name}}{String /// Required. \cr
+Name of the parameter.}
+      \item{\code{handler}}{Function /// Required. \cr
+A function that accepts the request, response, parameter value, and
+the parameter name.}
     }
     \if{html}{\out{</div>}}
   }
@@ -215,8 +220,10 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{Name of message.}
-      \item{\code{handler}}{Function to run when message is received.}
+      \item{\code{name}}{String /// Required. \cr
+Name of the message.}
+      \item{\code{handler}}{Function /// Required. \cr
+A function to run when the message is received.}
     }
     \if{html}{\out{</div>}}
   }
@@ -271,7 +278,8 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{engine}}{Engine function.}
+      \item{\code{engine}}{Function /// Required. \cr
+The engine to render templates with.}
     }
     \if{html}{\out{</div>}}
   }
@@ -292,10 +300,12 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{use}}{Either a router as returned by \link{Router}, a function to use as middleware,
-or a \code{list} of functions.
-If a function is passed, it must accept two arguments (the request, and the response):
-this function will be executed every time the server receives a request.
+      \item{\code{use}}{Router, Function, or List /// Required. \cr
+Either a router as returned by \link{Router}, a function to use as
+middleware, or a \code{list} of functions. \cr
+If a function is passed, it must accept two arguments (the request,
+and the response): this function will be executed every time the
+server receives a request.
 \emph{Middleware may but does not have to return a response, unlike other methods such as \code{get}}
 Note that multiple routers and middlewares can be used.}
     }
@@ -318,8 +328,12 @@ Note that multiple routers and middlewares can be used.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{routes}}{Existing list of routes.}
-      \item{\code{parent}}{Parent path.}
+      \item{\code{routes}}{List /// Optional. \cr
+Existing list of routes. \cr
+Defaults to \code{list()}.}
+      \item{\code{parent}}{String /// Optional. \cr
+Parent path. \cr
+Defaults to \code{""}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -340,8 +354,12 @@ Note that multiple routers and middlewares can be used.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{params}}{Existing list of parameter middlewares.}
-      \item{\code{parent}}{Parent path.}
+      \item{\code{params}}{List /// Optional. \cr
+Existing list of parameter middlewares. \cr
+Defaults to \code{list()}.}
+      \item{\code{parent}}{String /// Optional. \cr
+Parent path. \cr
+Defaults to \code{""}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -362,7 +380,9 @@ Note that multiple routers and middlewares can be used.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{receivers}}{Existing list of receivers}
+      \item{\code{receivers}}{List /// Optional. \cr
+Existing list of receivers. \cr
+Defaults to \code{list()}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -383,8 +403,12 @@ Note that multiple routers and middlewares can be used.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{middlewares}}{Existing list of middleswares}
-      \item{\code{parent}}{Parent path}
+      \item{\code{middlewares}}{List /// Optional. \cr
+Existing list of middlewares. \cr
+Defaults to \code{list()}.}
+      \item{\code{parent}}{String /// Optional. \cr
+Parent path. \cr
+Defaults to \code{""}.}
     }
     \if{html}{\out{</div>}}
   }

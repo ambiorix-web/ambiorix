@@ -49,7 +49,10 @@ Router <- R6::R6Class(
   public = list(
     error = NULL,
     #' @details Define the base route.
-    #' @param path The base path of the router.
+    #'
+    #' @param path String /// Required. \cr
+    #'   The base path of the router.
+    #'
     initialize = function(path) {
       assert_that(not_missing(path))
       super$initialize(path)

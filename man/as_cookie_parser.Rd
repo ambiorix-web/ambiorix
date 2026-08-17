@@ -7,12 +7,12 @@
 as_cookie_parser(fn)
 }
 \arguments{
-\item{fn}{A function that accepts a single argument,
-\code{req} the \link{Request} and returns the parsed cookie string,
-generally a \code{list}.
+\item{fn}{Function /// Required. \cr
+A function that accepts a single argument, \code{req} the \link{Request},
+and returns the parsed cookie string, generally a \code{list}. \cr
 Note that the original cookie string is available on the
-\link{Request} at the \code{HTTP_COOKIE} field, get it with:
-\code{req$HTTP_COOKIE}}
+\link{Request} at the \code{HTTP_COOKIE} field, get it with
+\code{req$HTTP_COOKIE}.}
 }
 \value{
 Object of class "cookieParser".

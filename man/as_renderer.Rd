@@ -7,9 +7,9 @@
 as_renderer(fn)
 }
 \arguments{
-\item{fn}{A function that accepts two arguments,
-the full path to the \code{file} to render, and the
-\code{data} to render.}
+\item{fn}{Function /// Required. \cr
+A function that accepts two arguments: the full path to the
+\code{file} to render, and the \code{data} to render.}
 }
 \value{
 A renderer function.

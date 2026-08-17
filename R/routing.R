@@ -31,33 +31,48 @@
 #' - To customise how paths are converted to patterns app-wide, see
 #'   [as_path_to_pattern()].
 #'
-#' @param path String. Route to listen to, treated as a regular expression;
-#' use `:` to define a parameter (e.g. `"/hello/:name"`). See the
-#' *Path matching* section.
-#' @param handler Function that accepts the request and response objects and
-#' returns an httpuv response (e.g. [response()]). Handlers can return the result
-#' of helper functions such as `Response$text()`, `Response$json()`, or the
-#' output of any renderer.
-#' @param error Optional handler invoked if the route raises an error; receives
-#' the request, response, and the error condition.
-#' @param docs Optional OpenAPI documentation for the route, created with
-#' [openapi_docs()]. When the app enables docs via `app$openapi()`, documented
-#' routes appear in the generated OpenAPI document. Path parameters are
-#' documented automatically from the route's `:param` tokens with a string
-#' schema; declare them via [openapi_param()] with `location = "path"` to
-#' override that default.
+#' @param path String /// Required. \cr
+#'             Route to listen to, treated as a regular expression; use `:`
+#'             to define a parameter (e.g. `"/hello/:name"`). See the
+#'             *Path matching* section.
+#'
+#' @param handler Function /// Required. \cr
+#'                A function that accepts the request and response objects
+#'                and returns an httpuv response (e.g. [response()]).
+#'                Handlers can return the result of helper functions such as
+#'                `Response$text()`, `Response$json()`, or the output of any
+#'                renderer.
+#'
+#' @param error Function /// Optional. \cr
+#'              A handler invoked if the route raises an error; receives the
+#'              request, response, and the error condition. \cr
+#'              Defaults to `NULL`, the app's error handler.
+#'
+#' @param docs OpenAPI docs /// Optional. \cr
+#'             Documentation for the route, created with [openapi_docs()].
+#'             When the app enables docs via `app$openapi()`, documented
+#'             routes appear in the generated OpenAPI document, and, if
+#'             validation is enabled, incoming requests are checked against
+#'             the documented schemas before the handler runs. \cr
+#'             Path parameters are documented automatically from the route's
+#'             `:param` tokens with a string schema; declare them via
+#'             [openapi_param()] with `location = "path"` to override that
+#'             default. \cr
+#'             Defaults to `NULL`, which leaves the route out of the
+#'             document entirely.
 #'
 #' @return The routing object invisibly so calls can be chained.
 #'
 #' @examples
-#' app <- Ambiorix$new()
+#' app <- Ambiorix$new(port = 3000L)
 #'
 #' app$get("/", function(req, res) {
 #'   res$text("Hello, world!")
 #' })
 #'
 #' app$post("/echo", function(req, res) {
-#'   res$json(list(received = req$body))
+#'   body <- req$parse_json()
+#'   res$json(list(received = body))
 #' })
 #'
 #' app$all("/health", function(req, res) {
@@ -72,11 +87,15 @@
 #'   docs = openapi_docs(
 #'     summary = "Get a user by ID",
 #'     tags = "users",
-#'     responses = openapi_responses(
+#'     responses = list(
 #'       openapi_response(200, "The user")
 #'     )
 #'   )
 #' )
+#'
+#' if (interactive()) {
+#'   app$start()
+#' }
 #'
 #' @seealso [`Routing`], [openapi_docs()]
 #'
@@ -131,7 +150,11 @@ Routing <- R6::R6Class(
     options = NULL,
     all = NULL,
     #' @details Initialise
-    #' @param path Prefix path.
+    #'
+    #' @param path String /// Optional. \cr
+    #'   Prefix path. \cr
+    #'   Defaults to `""`, no prefix.
+    #'
     initialize = function(path = "") {
       private$.basepath <- path
       private$.is_router <- path != ""
@@ -139,8 +162,12 @@ Routing <- R6::R6Class(
     },
     #' @details PARAM Method
     #'
-    #' @param name Name of the parameter
-    #' @param handler Function that accepts the request, response, parameter value and the parameter name.
+    #' @param name String /// Required. \cr
+    #'   Name of the parameter.
+    #'
+    #' @param handler Function /// Required. \cr
+    #'   A function that accepts the request, response, parameter value, and
+    #'   the parameter name.
     #'
     #' @examples
     #' app <- Ambiorix$new()
@@ -179,8 +206,12 @@ Routing <- R6::R6Class(
       invisible(self)
     },
     #' @details Receive Websocket Message
-    #' @param name Name of message.
-    #' @param handler Function to run when message is received.
+    #'
+    #' @param name String /// Required. \cr
+    #'   Name of the message.
+    #'
+    #' @param handler Function /// Required. \cr
+    #'   A function to run when the message is received.
     #'
     #' @examples
     #' app <- Ambiorix$new()
@@ -212,7 +243,10 @@ Routing <- R6::R6Class(
       cli::cli_li("routes: {.val {private$n_routes()}}")
     },
     #' @details Engine to use for rendering templates.
-    #' @param engine Engine function.
+    #'
+    #' @param engine Function /// Required. \cr
+    #'   The engine to render templates with.
+    #'
     engine = function(engine) {
       if (!is_renderer_obj(engine)) {
         engine <- as_renderer(engine)
@@ -222,10 +256,13 @@ Routing <- R6::R6Class(
       invisible(self)
     },
     #' @details Use a router or middleware
-    #' @param use Either a router as returned by [Router], a function to use as middleware,
-    #' or a `list` of functions.
-    #' If a function is passed, it must accept two arguments (the request, and the response):
-    #' this function will be executed every time the server receives a request.
+    #'
+    #' @param use Router, Function, or List /// Required. \cr
+    #'   Either a router as returned by [Router], a function to use as
+    #'   middleware, or a `list` of functions. \cr
+    #'   If a function is passed, it must accept two arguments (the request,
+    #'   and the response): this function will be executed every time the
+    #'   server receives a request.
     #' _Middleware may but does not have to return a response, unlike other methods such as `get`_
     #' Note that multiple routers and middlewares can be used.
     use = function(use) {
@@ -309,8 +346,15 @@ Routing <- R6::R6Class(
       invisible(self)
     },
     #' @details Get the routes
-    #' @param routes Existing list of routes.
-    #' @param parent Parent path.
+    #'
+    #' @param routes List /// Optional. \cr
+    #'   Existing list of routes. \cr
+    #'   Defaults to `list()`.
+    #'
+    #' @param parent String /// Optional. \cr
+    #'   Parent path. \cr
+    #'   Defaults to `""`.
+    #'
     get_routes = function(routes = list(), parent = "") {
       routes <- append(
         routes,
@@ -338,8 +382,15 @@ Routing <- R6::R6Class(
       return(routes)
     },
     #' @details Get the parameter middlewares
-    #' @param params Existing list of parameter middlewares.
-    #' @param parent Parent path.
+    #'
+    #' @param params List /// Optional. \cr
+    #'   Existing list of parameter middlewares. \cr
+    #'   Defaults to `list()`.
+    #'
+    #' @param parent String /// Optional. \cr
+    #'   Parent path. \cr
+    #'   Defaults to `""`.
+    #'
     get_params = function(params = list(), parent = "") {
       params <- append(
         params,
@@ -365,7 +416,11 @@ Routing <- R6::R6Class(
       return(params)
     },
     #' @details Get the websocket receivers
-    #' @param receivers Existing list of receivers
+    #'
+    #' @param receivers List /// Optional. \cr
+    #'   Existing list of receivers. \cr
+    #'   Defaults to `list()`.
+    #'
     get_receivers = function(receivers = list()) {
       receivers <- append(receivers, private$.receivers)
 
@@ -380,8 +435,15 @@ Routing <- R6::R6Class(
       return(receivers)
     },
     #' @details Get the middleware
-    #' @param middlewares Existing list of middleswares
-    #' @param parent Parent path
+    #'
+    #' @param middlewares List /// Optional. \cr
+    #'   Existing list of middlewares. \cr
+    #'   Defaults to `list()`.
+    #'
+    #' @param parent String /// Optional. \cr
+    #'   Parent path. \cr
+    #'   Defaults to `""`.
+    #'
     get_middleware = function(middlewares = list(), parent = "") {
       middlewares <- append(
         middlewares,
@@ -456,8 +518,48 @@ Routing <- R6::R6Class(
     .is_running = FALSE,
     .wss_custom = NULL,
     .routers = list(),
+    # Validate a Request Against Its Route's Documentation
+    #
+    # Runs before the handler. Returns a response listing what is wrong when
+    # the request does not match the route's documentation, and `NULL`
+    # otherwise, which lets the caller treat "no response" as "carry on".
+    #
+    # A no-op for a route registered without `docs`, or with validation off.
+    # Validation is on for every documented route once `app$openapi()` is
+    # called; `openapi_docs(validate =)` overrides that per route, in either
+    # direction.
+    #
+    # The `.openapi_*` fields live on `Ambiorix`, not here: a `Router` is
+    # validated by the app it is mounted on, so they are read through `%||%`
+    # fallbacks and are absent on a standalone `Router`.
+    .validate_request = function(request, res, route) {
+      if (is.null(route$docs) || !is_openapi_docs(route$docs)) {
+        return(NULL)
+      }
+
+      # `openapi_docs(validate =)` overrides the app wide setting
+      enabled <- route$docs$validate %||% private$.openapi_validate %||% FALSE
+
+      if (!isTRUE(enabled)) {
+        return(NULL)
+      }
+
+      details <- openapi_validate_request(
+        request = request,
+        docs = route$docs,
+        schemas = private$.openapi_schemas %||% list()
+      )
+
+      if (!length(details)) {
+        return(NULL)
+      }
+
+      on_invalid <- private$.openapi_on_invalid %||% openapi_invalid_response
+
+      on_invalid(request, res, details)
+    },
     .register_http_methods = function() {
-      http_methods = list(
+      http_methods <- list(
         get = "GET",
         put = "PUT",
         patch = "PATCH",
@@ -592,6 +694,18 @@ Routing <- R6::R6Class(
                 return(mid_res)
               }
             }
+          }
+
+          # validate the request against its documentation: after the
+          # middleware, so that e.g. authentication runs first
+          invalid <- private$.validate_request(
+            request,
+            res,
+            private$.routes[[i]]
+          )
+
+          if (is_response(invalid)) {
+            return(invalid)
           }
 
           # get response

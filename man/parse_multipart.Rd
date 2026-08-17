@@ -7,9 +7,11 @@
 parse_multipart(req, ...)
 }
 \arguments{
-\item{req}{The request object.}
+\item{req}{Request /// Required. \cr
+The \link{Request} whose body is parsed.}
 
-\item{...}{Additional parameters passed to the parser function.}
+\item{...}{Key=Value pairs /// Optional. \cr
+Additional parameters passed to the parser function.}
 }
 \value{
 Named list.
@@ -84,6 +86,22 @@ if (interactive()) {
       tags$input(id = "email", name = "email", value = "john@mail.com"),
       tags$label(`for` = "framework", "Framework"),
       tags$input(id = "framework", name = "framework", value = "ambiorix"),
+      tags$label(`for` = "js-framework", "JS Framework"),
+      tags$select(
+        id = "js-framework",
+        name = "js-framework",
+        multiple = NA,
+        tags$option(
+          value = "js",
+          selected = NA,
+          "JavaScript"
+        ),
+        tags$option(
+          value = "node",
+          selected = NA,
+          "Node.js"
+        )
+      ),
       tags$label(`for` = "file", "Upload CSV file"),
       tags$input(type = "file", id = "file", name = "file", accept = ".csv"),
       tags$label(`for` = "file2", "Upload xlsx file"),
@@ -105,7 +123,7 @@ if (interactive()) {
   }
 
   home_post <- function(req, res) {
-    body <- parse_json(req)
+    body <- req$parse_json()
     # print(body)
 
     response <- list(
@@ -116,12 +134,14 @@ if (interactive()) {
   }
 
   url_form_encoded_post <- function(req, res) {
-    body <- parse_form_urlencoded(req)
+    body <- req$parse_form_urlencoded()
     # print(body)
 
     list_items <- lapply(
-      X = names(body),
-      FUN = function(nm) {
+      X = seq_along(body),
+      FUN = function(idx) {
+        nm <- names(body)[[idx]]
+
         tags$li(
           nm,
           ":",
@@ -141,12 +161,13 @@ if (interactive()) {
   }
 
   multipart_form_data_post <- function(req, res) {
-    body <- parse_multipart(req)
+    body <- req$parse_multipart()
 
     list_items <- lapply(
-      X = names(body),
-      FUN = function(nm) {
-        field <- body[[nm]]
+      X = seq_along(body),
+      FUN = function(idx) {
+        nm <- names(body)[[idx]]
+        field <- body[[idx]]
 
         # if 'field' is a file, parse it & print on console:
         is_file <- "filename" \%in\% names(field)
@@ -171,10 +192,20 @@ if (interactive()) {
           # print(readxl::read_xlsx(path = file_path))
         }
 
+        out <- ""
+
+        if (is_file) {
+          out <- "printed on console"
+        }
+
+        if (!is_file) {
+          out <- paste(field, collapse = ", ")
+        }
+
         tags$li(
           nm,
           ":",
-          if (is_file) "printed on console" else field
+          out
         )
       }
     )
@@ -205,15 +236,13 @@ if (interactive()) {
     res$send(html)
   }
 
-  app <- Ambiorix$new(port = 5000L)
-
-  app$
-    get("/", home_get)$
-    post("/", home_post)$
-    get("/about", about_get)$
-    get("/contact", contact_get)$
-    post("/url-form-encoded", url_form_encoded_post)$
-    post("/multipart-form-data", multipart_form_data_post)
+  app <- Ambiorix$new(port = 3000L)
+  app$get("/", home_get)
+  app$post("/", home_post)
+  app$get("/about", about_get)
+  app$get("/contact", contact_get)
+  app$post("url-form-encoded", url_form_encoded_post)
+  app$post("/multipart-form-data", multipart_form_data_post)
 
   app$start()
 }
