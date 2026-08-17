@@ -43,7 +43,7 @@ Describe the body accepted by a route. Pass the result to the
 }
 \details{
 With validation enabled the body is checked against \code{schema} before the
-handler runs, and a \code{400} is returned if it does not match. JSON,
+handler runs, and a \code{422} is returned if it does not match. JSON,
 form-urlencoded, and multipart bodies are checked. Other media types are
 documented but passed through to the handler unvalidated.
 

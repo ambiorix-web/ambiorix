@@ -109,13 +109,15 @@ two different schemas sharing a name are reported.
 \section{Validation}{
 
 
-Validation is off by default and turned on app-wide with
-\code{app$openapi(validate = TRUE)}. When it is on, query and path parameters and
-a JSON, form-urlencoded, or multipart request body are checked against the
-schemas documented here before the handler runs, and a \code{400} is returned
-when they do not match. Header and cookie parameters are never checked.
+Validation is on for every documented route once \code{app$openapi()} is
+called, and turned off app-wide with \code{app$openapi(validate = FALSE)}. When
+it is on, query and path parameters and a JSON, form-urlencoded, or
+multipart request body are checked against the schemas documented here
+before the handler runs, and a \code{422} is returned when they do not match;
+see \code{app$openapi(on_invalid =)} to answer with a response of your own.
+Header and cookie parameters are never checked.
 
-The \code{validate} argument below overrides that app-wide setting for this one
+The \code{validate} argument below overrides the app-wide setting for this one
 route, in either direction: \code{FALSE} opts a route out of validation, \code{TRUE}
 opts a single route in while the rest of the app stays unchecked.
 }
@@ -152,7 +154,7 @@ openapi_docs(
   ),
   responses = list(
     openapi_response(201, "The created user"),
-    openapi_response(400, "Invalid payload")
+    openapi_response(422, "Invalid payload")
   ),
   security = "bearerAuth",
   validate = TRUE

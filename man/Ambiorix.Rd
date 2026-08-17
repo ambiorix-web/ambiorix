@@ -14,8 +14,8 @@ Web server.
 
 \code{app$openapi()} enables OpenAPI (Swagger) documentation: routes registered
 with a \code{docs} argument (see \code{\link[=openapi_docs]{openapi_docs()}}) are collected into an OpenAPI
-document, served alongside an interactive UI, and optionally used to
-validate incoming requests.
+document, served alongside an interactive UI, and used to validate
+incoming requests.
 }
 
 \examples{
@@ -155,7 +155,7 @@ if (interactive()) {
 }
 
 # a fuller document: servers, described tags, a security scheme applied
-# to every route, and validation of incoming requests
+# to every route, and rejected requests answered in the app's own shape
 app <- Ambiorix$new()
 
 app$openapi(
@@ -168,7 +168,9 @@ app$openapi(
     bearerAuth = list(type = "http", scheme = "bearer")
   ),
   security = "bearerAuth",
-  validate = TRUE
+  on_invalid = function(req, res, details) {
+    res$set_status(422L)$json(list(ok = FALSE, problems = details))
+  }
 )
 
 app$get(
@@ -557,7 +559,8 @@ if(interactive())
   tags = NULL,
   security_schemes = NULL,
   security = NULL,
-  validate = FALSE,
+  validate = TRUE,
+  on_invalid = NULL,
   ui_path = "/docs",
   spec_path = "/openapi.json",
   assets_path = "/__swagger__"
@@ -610,9 +613,16 @@ route. \cr
 Defaults to \code{NULL}, no authentication.}
       \item{\code{validate}}{Logical /// Optional. \cr
 Whether to validate incoming requests against the documented schemas.
-Either \code{FALSE} (default) or \code{TRUE}. \cr
+Either \code{TRUE} (default) or \code{FALSE}. \cr
 Individual routes override this with the \code{validate} argument of
 \code{\link[=openapi_docs]{openapi_docs()}}.}
+      \item{\code{on_invalid}}{Function /// Optional. \cr
+A function that accepts the request, the response, and \code{details}, a
+\code{list} of the problems found, each a
+\code{list(location, path, message)}. It must return the response to send.
+\cr
+Defaults to \code{NULL}: a \code{422} whose body is
+\code{list(error = "Invalid request", details = details)}.}
       \item{\code{ui_path}}{String /// Optional. \cr
 Path at which the Swagger UI is served. \cr
 Defaults to \code{"/docs"}.}
@@ -647,12 +657,17 @@ regardless of any custom serialiser set via \code{serialiser()}. It is built
 once, when the app starts: problems with the documentation are reported
 then, rather than when the document is requested.
 
-With \code{validate = TRUE} incoming requests are checked against the
-documented schemas before the handler runs, and a \code{400} is returned if
-they do not match. Query and path parameters documented with a
-non-string schema are converted to their documented type. A valid
-request body is stored on \code{req$payload}. Individual routes may opt
-out of request validation with \code{openapi_docs(..., validate = FALSE)}.
+Incoming requests are checked against the documented schemas before
+the handler runs, and a \code{422} is returned if they do not match. Query
+and path parameters documented with a non-string schema are converted
+to their documented type. A valid request body is stored on
+\code{req$payload}. Only documented routes are checked; individual routes
+opt out with \code{openapi_docs(..., validate = FALSE)}, and the whole app
+with \code{validate = FALSE} here.
+
+\code{on_invalid} decides what a rejected request is answered with, for
+apps whose errors have a shape of their own, or that would rather
+re-render a form than send JSON.
   }
   \subsection{Returns}{
     The \code{Ambiorix} object invisibly, so calls can be chained.
@@ -681,7 +696,7 @@ if (interactive()) {
 }
 
 # a fuller document: servers, described tags, a security scheme applied
-# to every route, and validation of incoming requests
+# to every route, and rejected requests answered in the app's own shape
 app <- Ambiorix$new()
 
 app$openapi(
@@ -694,7 +709,9 @@ app$openapi(
     bearerAuth = list(type = "http", scheme = "bearer")
   ),
   security = "bearerAuth",
-  validate = TRUE
+  on_invalid = function(req, res, details) {
+    res$set_status(422L)$json(list(ok = FALSE, problems = details))
+  }
 )
 
 app$get(
