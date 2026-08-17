@@ -966,11 +966,8 @@ test_that("header and cookie parameters are not checked", {
   )
 })
 
-test_that("validation is opt-in and can be overridden per route", {
-  app <- Ambiorix$new()
-  private <- environment(app$openapi)$private
-
-  docs <- openapi_docs(
+docs_with_body <- function() {
+  openapi_docs(
     request_body = openapi_request_body(
       schema = openapi_schema_object(
         properties = list(
@@ -980,8 +977,13 @@ test_that("validation is opt-in and can be overridden per route", {
       )
     )
   )
+}
 
-  route <- list(docs = docs)
+test_that("validation can be overridden per route", {
+  app <- Ambiorix$new()
+  private <- environment(app$openapi)$private
+
+  route <- list(docs = docs_with_body())
   req <- mock_request(body = "{}")
   res <- Response$new()
 
@@ -991,7 +993,7 @@ test_that("validation is opt-in and can be overridden per route", {
   invalid <- private$.validate_request(req, res, route)
 
   expect_true(is_response(invalid))
-  expect_equal(invalid$status, 400L)
+  expect_equal(invalid$status, 422L)
 
   route$docs$validate <- FALSE
   expect_null(private$.validate_request(req, res, route))
@@ -1001,6 +1003,51 @@ test_that("validation is opt-in and can be overridden per route", {
   expect_true(is_response(private$.validate_request(req, res, route)))
 
   expect_null(private$.validate_request(req, res, list(docs = NULL)))
+
+  stop_all()
+})
+
+test_that("enabling the docs enables validation", {
+  app <- Ambiorix$new()
+  private <- environment(app$openapi)$private
+
+  route <- list(docs = docs_with_body())
+  req <- mock_request(body = "{}")
+  res <- Response$new()
+
+  app$openapi()
+  expect_true(is_response(private$.validate_request(req, res, route)))
+
+  app$openapi(validate = FALSE)
+  expect_null(private$.validate_request(req, res, route))
+
+  stop_all()
+})
+
+test_that("`on_invalid` answers for a rejected request", {
+  app <- Ambiorix$new()
+  private <- environment(app$openapi)$private
+
+  seen <- NULL
+  app$openapi(
+    on_invalid = function(req, res, details) {
+      seen <<- details
+      res$set_status(400L)$json(list(ok = FALSE))
+    }
+  )
+
+  route <- list(docs = docs_with_body())
+  req <- mock_request(body = '{"other": 1}')
+  res <- Response$new()
+
+  invalid <- private$.validate_request(req, res, route)
+
+  expect_true(is_response(invalid))
+  expect_equal(invalid$status, 400L)
+  expect_equal(paths(seen), "title")
+  expect_equal(messages(seen), "is required")
+
+  expect_error(app$openapi(on_invalid = function(req, res) NULL))
 
   stop_all()
 })
