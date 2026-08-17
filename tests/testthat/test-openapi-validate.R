@@ -939,6 +939,51 @@ test_that("non-JSON non-form bodies are not validated", {
   expect_null(req$payload)
 })
 
+test_that("a JSON body the parser cannot read is reported, not thrown", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          title = openapi_schema_string()
+        ),
+        required = "title"
+      )
+    )
+  )
+
+  req <- mock_request(body = '{"title": ')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_length(problems, 1L)
+  expect_equal(problems[[1]]$location, "body")
+  expect_equal(paths(problems), "")
+  expect_equal(messages(problems), "could not be parsed as application/json")
+  expect_null(req$payload)
+})
+
+test_that("a multipart body without a boundary is reported, not thrown", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          title = openapi_schema_string()
+        )
+      ),
+      content_type = "multipart/form-data"
+    )
+  )
+
+  req <- mock_request(
+    body = "garbage",
+    content_type = "multipart/form-data"
+  )
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_length(problems, 1L)
+  expect_equal(messages(problems), "could not be parsed as multipart/form-data")
+  expect_null(req$payload)
+})
+
 test_that("header and cookie parameters are not checked", {
   docs <- openapi_docs(
     parameters = list(
@@ -1048,6 +1093,35 @@ test_that("`on_invalid` answers for a rejected request", {
   expect_equal(messages(seen), "is required")
 
   expect_error(app$openapi(on_invalid = function(req, res) NULL))
+
+  stop_all()
+})
+
+test_that("an unparseable body is answered like any other invalid request", {
+  app <- Ambiorix$new()
+  private <- environment(app$openapi)$private
+
+  route <- list(docs = docs_with_body())
+  req <- mock_request(body = '{"title": ')
+  res <- Response$new()
+
+  app$openapi()
+  invalid <- private$.validate_request(req, res, route)
+
+  expect_true(is_response(invalid))
+  expect_equal(invalid$status, 400L)
+
+  seen <- NULL
+  app$openapi(
+    on_invalid = function(req, res, details) {
+      seen <<- details
+      res$set_status(422L)$json(list(ok = FALSE))
+    }
+  )
+  invalid <- private$.validate_request(req, res, route)
+
+  expect_equal(invalid$status, 422L)
+  expect_equal(messages(seen), "could not be parsed as application/json")
 
   stop_all()
 })
