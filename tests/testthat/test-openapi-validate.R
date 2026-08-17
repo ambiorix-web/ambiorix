@@ -993,7 +993,7 @@ test_that("validation can be overridden per route", {
   invalid <- private$.validate_request(req, res, route)
 
   expect_true(is_response(invalid))
-  expect_equal(invalid$status, 422L)
+  expect_equal(invalid$status, 400L)
 
   route$docs$validate <- FALSE
   expect_null(private$.validate_request(req, res, route))
@@ -1032,7 +1032,7 @@ test_that("`on_invalid` answers for a rejected request", {
   app$openapi(
     on_invalid = function(req, res, details) {
       seen <<- details
-      res$set_status(400L)$json(list(ok = FALSE))
+      res$set_status(422L)$json(list(ok = FALSE))
     }
   )
 
@@ -1043,7 +1043,7 @@ test_that("`on_invalid` answers for a rejected request", {
   invalid <- private$.validate_request(req, res, route)
 
   expect_true(is_response(invalid))
-  expect_equal(invalid$status, 400L)
+  expect_equal(invalid$status, 422L)
   expect_equal(paths(seen), "title")
   expect_equal(messages(seen), "is required")
 
