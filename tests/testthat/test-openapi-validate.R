@@ -616,6 +616,116 @@ test_that("the request body is validated", {
   expect_identical(req$payload, list(description = "some description"))
 })
 
+test_that("a JSON array documented as one is an array however it arrived", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          tags = openapi_schema_array(items = openapi_schema_string())
+        )
+      )
+    )
+  )
+
+  for (body in c('{"tags":["a"]}', '{"tags":"a"}')) {
+    req <- mock_request(body = body)
+
+    expect_length(
+      openapi_validate_request(request = req, docs = docs),
+      0L
+    )
+    expect_true(openapi_is_type(req$payload$tags, "array"))
+    expect_length(as.list(req$payload$tags), 1L)
+  }
+
+  req <- mock_request(body = '{"tags":["a","b"]}')
+
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$payload$tags, c("a", "b"))
+
+  req <- mock_request(body = '{"tags":[1]}')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), "tags[1]")
+  expect_equal(messages(problems), "must be a string")
+})
+
+test_that("a nested JSON array of one is an array", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          task = openapi_schema_object(
+            properties = list(
+              tags = openapi_schema_array(items = openapi_schema_string())
+            )
+          )
+        )
+      )
+    )
+  )
+
+  req <- mock_request(body = '{"task":{"tags":["a"]}}')
+
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_true(openapi_is_type(req$payload$task$tags, "array"))
+})
+
+test_that("a JSON array of objects is read back a row at a time", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_array(
+        items = openapi_schema_object(
+          properties = list(
+            name = openapi_schema_string(),
+            langs = openapi_schema_array(items = openapi_schema_string())
+          ),
+          required = "name"
+        )
+      )
+    )
+  )
+
+  req <- mock_request(body = '[{"name":"a"},{"name":"b"}]')
+
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_true(openapi_is_type(req$payload, "array"))
+  expect_length(req$payload, 2L)
+  expect_identical(req$payload[[2]]$name, "b")
+
+  req <- mock_request(body = '[{"name":"a","langs":["r"]}]')
+
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_length(req$payload, 1L)
+  expect_true(openapi_is_type(req$payload[[1]]$langs, "array"))
+
+  req <- mock_request(body = '[{"name":1},{"name":2}]')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), c("[1].name", "[2].name"))
+})
+
+test_that("a documented array of one still counts toward minItems", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          tags = openapi_schema_array(
+            items = openapi_schema_string(),
+            minItems = 2L
+          )
+        )
+      )
+    )
+  )
+
+  req <- mock_request(body = '{"tags":["a"]}')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), "tags")
+  expect_match(messages(problems), "at least 2")
+})
+
 test_that("form-urlencoded bodies are validated and typed", {
   docs <- openapi_docs(
     request_body = openapi_request_body(
