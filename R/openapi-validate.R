@@ -433,8 +433,22 @@ openapi_set_field <- function(x, name, value) {
 #' What a request that does not match its documentation is answered with,
 #' unless the app supplies its own with `app$openapi(on_invalid =)`.
 #'
-#' `422` rather than `400`: the request parsed, it just says something the
-#' documentation does not allow.
+#' `400` rather than the more precise `422`, for a reason that is entirely
+#' cosmetic. httpuv fills the status line's reason phrase from a table that
+#' was never extended past the codes in RFC 2616, and returns the string
+#' `"Dunno"` for anything it does not hold; `422` arrived in RFC 4918 and is
+#' not in that table, so the response reaches the client as
+#' `HTTP/1.1 422 Dunno`. See `getStatusDescription()` in
+#' <https://github.com/rstudio/httpuv/blob/c758c542f9e3216264f332d7d9e6675adb79798a/src/webapplication.cpp#L32>.
+#' Nothing can be done about it from here either: the response `list` httpuv
+#' takes from R carries `status`, `headers`, and `body`, with no slot for a
+#' reason phrase to override.
+#'
+#' On the merits `422` is the better answer, since the request parsed and only
+#' its contents are wrong, and `400` is otherwise the answer for a request that
+#' could not be understood at all. An app that would rather be precise than
+#' tidy on the wire passes `app$openapi(on_invalid =)`: no client reads the
+#' reason phrase, and HTTP/2 drops it altogether.
 #'
 #' @param req Request /// Required. \cr
 #'            The [Request] that was checked.
@@ -450,7 +464,7 @@ openapi_set_field <- function(x, name, value) {
 #' @keywords internal
 #' @noRd
 openapi_invalid_response <- function(req, res, details) {
-  res$set_status(422L)$json(
+  res$set_status(400L)$json(
     list(
       error = "Invalid request",
       details = details
@@ -460,7 +474,7 @@ openapi_invalid_response <- function(req, res, details) {
 
 #' A Single Problem With a Request
 #'
-#' The shape reported back to the client in the `422`. Kept as a constructor
+#' The shape reported back to the client in the `400`. Kept as a constructor
 #' rather than an inline `list()` so the three field names are spelled in one
 #' place.
 #'

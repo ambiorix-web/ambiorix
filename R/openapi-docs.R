@@ -159,7 +159,7 @@ print.ambiorix_openapi_parameter <- function(x, ...) {
 #' `request_body` argument of [openapi_docs()].
 #'
 #' With validation enabled the body is checked against `schema` before the
-#' handler runs, and a `422` is returned if it does not match. JSON,
+#' handler runs, and a `400` is returned if it does not match. JSON,
 #' form-urlencoded, and multipart bodies are checked. Other media types are
 #' documented but passed through to the handler unvalidated.
 #'
@@ -391,7 +391,7 @@ print.ambiorix_openapi_response <- function(x, ...) {
 #' called, and turned off app-wide with `app$openapi(validate = FALSE)`. When
 #' it is on, query and path parameters and a JSON, form-urlencoded, or
 #' multipart request body are checked against the schemas documented here
-#' before the handler runs, and a `422` is returned when they do not match;
+#' before the handler runs, and a `400` is returned when they do not match;
 #' see `app$openapi(on_invalid =)` to answer with a response of your own.
 #' Header and cookie parameters are never checked.
 #'
@@ -501,7 +501,7 @@ print.ambiorix_openapi_response <- function(x, ...) {
 #'   ),
 #'   responses = list(
 #'     openapi_response(201, "The created user"),
-#'     openapi_response(422, "Invalid payload")
+#'     openapi_response(400, "Invalid payload")
 #'   ),
 #'   security = "bearerAuth",
 #'   validate = TRUE

@@ -621,8 +621,10 @@ A function that accepts the request, the response, and \code{details}, a
 \code{list} of the problems found, each a
 \code{list(location, path, message)}. It must return the response to send.
 \cr
-Defaults to \code{NULL}: a \code{422} whose body is
-\code{list(error = "Invalid request", details = details)}.}
+Defaults to \code{NULL}: a \code{400} whose body is
+\code{list(error = "Invalid request", details = details)}. A handler of
+your own may prefer the more precise \code{422}; note that httpuv renders
+it as \verb{422 Dunno}, since its reason phrases stop at RFC 2616.}
       \item{\code{ui_path}}{String /// Optional. \cr
 Path at which the Swagger UI is served. \cr
 Defaults to \code{"/docs"}.}
@@ -658,7 +660,7 @@ once, when the app starts: problems with the documentation are reported
 then, rather than when the document is requested.
 
 Incoming requests are checked against the documented schemas before
-the handler runs, and a \code{422} is returned if they do not match. Query
+the handler runs, and a \code{400} is returned if they do not match. Query
 and path parameters documented with a non-string schema are converted
 to their documented type. A valid request body is stored on
 \code{req$payload}. Only documented routes are checked; individual routes

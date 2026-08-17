@@ -113,7 +113,7 @@ Validation is on for every documented route once \code{app$openapi()} is
 called, and turned off app-wide with \code{app$openapi(validate = FALSE)}. When
 it is on, query and path parameters and a JSON, form-urlencoded, or
 multipart request body are checked against the schemas documented here
-before the handler runs, and a \code{422} is returned when they do not match;
+before the handler runs, and a \code{400} is returned when they do not match;
 see \code{app$openapi(on_invalid =)} to answer with a response of your own.
 Header and cookie parameters are never checked.
 
@@ -154,7 +154,7 @@ openapi_docs(
   ),
   responses = list(
     openapi_response(201, "The created user"),
-    openapi_response(422, "Invalid payload")
+    openapi_response(400, "Invalid payload")
   ),
   security = "bearerAuth",
   validate = TRUE
