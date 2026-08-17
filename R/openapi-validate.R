@@ -10,6 +10,10 @@
 #' `application/x-www-form-urlencoded`, and `multipart/form-data`. Other
 #' types are documented only and skipped here.
 #'
+#' A body the parser cannot read at all is a problem like any other, rather
+#' than an error: it is reported as `could not be parsed as <media type>`, and
+#' the parser's own message is logged for whoever wrote the app.
+#'
 #' A form field, like a query parameter, can arrive more than once: a
 #' multiple select posts one occurrence per choice. Both are parsed into a
 #' flat list that repeats the name, which `[[` cannot read past, so every
@@ -114,21 +118,47 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
     return(details)
   }
 
-  payload <- switch(
-    EXPR = body$content_type,
-    "application/json" = request$parse_json(),
-    "application/x-www-form-urlencoded" = openapi_form(
-      request$parse_form_urlencoded(),
-      body$schema,
-      schemas
+  payload <- tryCatch(
+    expr = switch(
+      EXPR = body$content_type,
+      "application/json" = request$parse_json(),
+      "application/x-www-form-urlencoded" = openapi_form(
+        request$parse_form_urlencoded(),
+        body$schema,
+        schemas
+      ),
+      "multipart/form-data" = openapi_form(
+        request$parse_multipart(),
+        body$schema,
+        schemas
+      ),
+      # otherwise, media type not supported. just return:
+      return(details)
     ),
-    "multipart/form-data" = openapi_form(
-      request$parse_multipart(),
-      body$schema,
-      schemas
-    ),
-    return(details)
+    error = function(error) {
+      .globals$errorLog$log(
+        "Could not parse request body:",
+        conditionMessage(error)
+      )
+
+      error
+    }
   )
+
+  if (inherits(payload, "error")) {
+    return(
+      append(
+        details,
+        list(
+          openapi_detail(
+            "body",
+            "",
+            sprintf("could not be parsed as %s", body$content_type)
+          )
+        )
+      )
+    )
+  }
 
   request$payload <- payload
 
