@@ -520,18 +520,18 @@ Routing <- R6::R6Class(
     .routers = list(),
     # Validate a Request Against Its Route's Documentation
     #
-    # Runs before the handler. Returns a `400` response listing what is wrong
-    # when the request does not match the route's documentation, and `NULL`
+    # Runs before the handler. Returns a response listing what is wrong when
+    # the request does not match the route's documentation, and `NULL`
     # otherwise, which lets the caller treat "no response" as "carry on".
     #
     # A no-op for a route registered without `docs`, or with validation off.
-    # Validation is off unless it was turned on app-wide with
-    # `app$openapi(validate = TRUE)`; `openapi_docs(validate =)` overrides that
-    # per route, in either direction.
+    # Validation is on for every documented route once `app$openapi()` is
+    # called; `openapi_docs(validate =)` overrides that per route, in either
+    # direction.
     #
-    # `.openapi_validate` and `.openapi_schemas` live on `Ambiorix`, not here:
-    # a `Router` is validated by the app it is mounted on, so both are read
-    # through `%||%` fallbacks and are absent on a standalone `Router`.
+    # The `.openapi_*` fields live on `Ambiorix`, not here: a `Router` is
+    # validated by the app it is mounted on, so they are read through `%||%`
+    # fallbacks and are absent on a standalone `Router`.
     .validate_request = function(request, res, route) {
       if (is.null(route$docs) || !is_openapi_docs(route$docs)) {
         return(NULL)
@@ -554,12 +554,9 @@ Routing <- R6::R6Class(
         return(NULL)
       }
 
-      res$set_status(400L)$json(
-        list(
-          error = "Invalid request",
-          details = details
-        )
-      )
+      on_invalid <- private$.openapi_on_invalid %||% openapi_invalid_response
+
+      on_invalid(request, res, details)
     },
     .register_http_methods = function() {
       http_methods <- list(

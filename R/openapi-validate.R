@@ -428,9 +428,39 @@ openapi_set_field <- function(x, name, value) {
   x[-at[-1L]]
 }
 
+#' The Response Sent for an Invalid Request
+#'
+#' What a request that does not match its documentation is answered with,
+#' unless the app supplies its own with `app$openapi(on_invalid =)`.
+#'
+#' `422` rather than `400`: the request parsed, it just says something the
+#' documentation does not allow.
+#'
+#' @param req Request /// Required. \cr
+#'            The [Request] that was checked.
+#'
+#' @param res Response /// Required. \cr
+#'            The [Response] to send.
+#'
+#' @param details List /// Required. \cr
+#'                The problems found, see `openapi_detail()`.
+#'
+#' @return A response.
+#'
+#' @keywords internal
+#' @noRd
+openapi_invalid_response <- function(req, res, details) {
+  res$set_status(422L)$json(
+    list(
+      error = "Invalid request",
+      details = details
+    )
+  )
+}
+
 #' A Single Problem With a Request
 #'
-#' The shape reported back to the client in the `400`. Kept as a constructor
+#' The shape reported back to the client in the `422`. Kept as a constructor
 #' rather than an inline `list()` so the three field names are spelled in one
 #' place.
 #'

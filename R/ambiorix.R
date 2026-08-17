@@ -12,8 +12,8 @@
 #' @section OpenAPI:
 #' `app$openapi()` enables OpenAPI (Swagger) documentation: routes registered
 #' with a `docs` argument (see [openapi_docs()]) are collected into an OpenAPI
-#' document, served alongside an interactive UI, and optionally used to
-#' validate incoming requests.
+#' document, served alongside an interactive UI, and used to validate
+#' incoming requests.
 #'
 #' @importFrom assertthat assert_that
 #' @importFrom utils browseURL
@@ -368,12 +368,17 @@ Ambiorix <- R6::R6Class(
     #' once, when the app starts: problems with the documentation are reported
     #' then, rather than when the document is requested.
     #'
-    #' With `validate = TRUE` incoming requests are checked against the
-    #' documented schemas before the handler runs, and a `400` is returned if
-    #' they do not match. Query and path parameters documented with a
-    #' non-string schema are converted to their documented type. A valid
-    #' request body is stored on `req$payload`. Individual routes may opt
-    #' out of request validation with `openapi_docs(..., validate = FALSE)`.
+    #' Incoming requests are checked against the documented schemas before
+    #' the handler runs, and a `422` is returned if they do not match. Query
+    #' and path parameters documented with a non-string schema are converted
+    #' to their documented type. A valid request body is stored on
+    #' `req$payload`. Only documented routes are checked; individual routes
+    #' opt out with `openapi_docs(..., validate = FALSE)`, and the whole app
+    #' with `validate = FALSE` here.
+    #'
+    #' `on_invalid` decides what a rejected request is answered with, for
+    #' apps whose errors have a shape of their own, or that would rather
+    #' re-render a form than send JSON.
     #'
     #' @param title String /// Optional. \cr
     #'   Title of the API. \cr
@@ -426,9 +431,17 @@ Ambiorix <- R6::R6Class(
     #'
     #' @param validate Logical /// Optional. \cr
     #'   Whether to validate incoming requests against the documented schemas.
-    #'   Either `FALSE` (default) or `TRUE`. \cr
+    #'   Either `TRUE` (default) or `FALSE`. \cr
     #'   Individual routes override this with the `validate` argument of
     #'   [openapi_docs()].
+    #'
+    #' @param on_invalid Function /// Optional. \cr
+    #'   A function that accepts the request, the response, and `details`, a
+    #'   `list` of the problems found, each a
+    #'   `list(location, path, message)`. It must return the response to send.
+    #'   \cr
+    #'   Defaults to `NULL`: a `422` whose body is
+    #'   `list(error = "Invalid request", details = details)`.
     #'
     #' @param ui_path String /// Optional. \cr
     #'   Path at which the Swagger UI is served. \cr
@@ -468,7 +481,7 @@ Ambiorix <- R6::R6Class(
     #' }
     #'
     #' # a fuller document: servers, described tags, a security scheme applied
-    #' # to every route, and validation of incoming requests
+    #' # to every route, and rejected requests answered in the app's own shape
     #' app <- Ambiorix$new()
     #'
     #' app$openapi(
@@ -481,7 +494,9 @@ Ambiorix <- R6::R6Class(
     #'     bearerAuth = list(type = "http", scheme = "bearer")
     #'   ),
     #'   security = "bearerAuth",
-    #'   validate = TRUE
+    #'   on_invalid = function(req, res, details) {
+    #'     res$set_status(422L)$json(list(ok = FALSE, problems = details))
+    #'   }
     #' )
     #'
     #' app$get(
@@ -514,7 +529,8 @@ Ambiorix <- R6::R6Class(
       tags = NULL,
       security_schemes = NULL,
       security = NULL,
-      validate = FALSE,
+      validate = TRUE,
+      on_invalid = NULL,
       ui_path = "/docs",
       spec_path = "/openapi.json",
       assets_path = "/__swagger__"
@@ -530,6 +546,11 @@ Ambiorix <- R6::R6Class(
         is.null(security) || is.character(security) || is.list(security)
       )
       assert_that(is_flag(validate))
+      assert_that(
+        is.null(on_invalid) ||
+          (is.function(on_invalid) && length(formalArgs(on_invalid)) == 3L),
+        msg = "`on_invalid` must be a function that accepts: `req`, `res` and `details`"
+      )
       assert_that(is_string(ui_path))
       assert_that(is_string(spec_path))
       assert_that(is_string(assets_path))
@@ -547,6 +568,7 @@ Ambiorix <- R6::R6Class(
       private$.openapi_security_schemes <- security_schemes
       private$.openapi_security <- security
       private$.openapi_validate <- validate
+      private$.openapi_on_invalid <- on_invalid
       private$.openapi_ui_path <- ui_path
       private$.openapi_spec_path <- spec_path
       private$.openapi_assets_path <- assets_path
@@ -618,6 +640,7 @@ Ambiorix <- R6::R6Class(
     .openapi_security_schemes = NULL,
     .openapi_security = NULL,
     .openapi_validate = FALSE,
+    .openapi_on_invalid = NULL,
     .openapi_json = NULL,
     .openapi_schemas = list(),
     .openapi_ui_path = "/docs",
