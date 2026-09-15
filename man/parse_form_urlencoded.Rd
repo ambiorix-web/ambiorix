@@ -14,10 +14,7 @@ The \link{Request} whose body is parsed.}
 Additional parameters passed to the parser function.}
 }
 \value{
-A list of parsed form fields, with each key representing a form field name and each value
-representing the form field's value.
-
-Named list
+Named list, or \code{NULL} when the request has no body.
 }
 \description{
 This function parses \code{application/x-www-form-urlencoded} data, typically used in form submissions.

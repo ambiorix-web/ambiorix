@@ -14,7 +14,7 @@ The \link{Request} whose body is parsed.}
 Additional parameters passed to the parser function.}
 }
 \value{
-Named list.
+Named list, or \code{NULL} when the request has no body.
 }
 \description{
 Parses multipart form data, including file uploads, and returns the parsed fields as a list.

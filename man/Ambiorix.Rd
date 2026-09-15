@@ -663,7 +663,9 @@ Incoming requests are checked against the documented schemas before
 the handler runs, and a \code{400} is returned if they do not match. Query
 and path parameters documented with a non-string schema are converted
 to their documented type. A valid request body is stored on
-\code{req$payload}. Only documented routes are checked; individual routes
+\code{req$payload} exactly as \code{\link[=parse_json]{parse_json()}} returns it: validation and
+handlers share one parser, default or overridden.
+Only documented routes are checked; individual routes
 opt out with \code{openapi_docs(..., validate = FALSE)}, and the whole app
 with \code{validate = FALSE} here.
 

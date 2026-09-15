@@ -14,18 +14,44 @@ The \link{Request} whose body is parsed.}
 Additional parameters passed to the parser function.}
 }
 \value{
-An R object (e.g., list or data frame) parsed from the JSON data.
-
-Named list
+The parsed body: a named list for an object, an unnamed list or
+an atomic vector for an array, a scalar otherwise. \code{NULL} when
+the request has no body.
 }
 \description{
 This function parses JSON data from the request body.
 }
 \details{
+\subsection{Parsed Shapes}{
+
+By default, \code{parse_json()} uses \code{\link[yyjsonr:read_json_raw]{yyjsonr::read_json_raw()}} with
+\code{obj_of_arrs_to_df}, \code{arr_of_objs_to_df}, and \code{arr_of_arrs_to_matrix}
+turned off, so a body keeps the structure it was sent with: an object is
+a named list, an array of objects is an unnamed list of named lists, and
+neither becomes a data frame or matrix. The same JSON shape always parses
+to the same R shape, whatever values it holds.
+
+\code{length1_array_asis} is turned on for the same reason: \verb{["a"]} is read as
+\code{I("a")}, marked \code{AsIs}, where \code{"a"} is a plain string, so an array of
+one stays an array. The marker is invisible to \code{==}, \code{\%in\%}, \code{[[} and
+arithmetic, and both \code{\link[yyjsonr:write_json_str]{yyjsonr::write_json_str()}} and
+\code{\link[jsonlite:toJSON]{jsonlite::toJSON()}} write the value back as \verb{["a"]}; \code{identical()} and
+\code{inherits()} do see it.
+
+A request with no body at all parses to \code{NULL}, before the parser is
+called. Nothing on the wire is \code{NULL}, so an absent body cannot be
+confused with \code{{}}, a named empty list, or \verb{[]}, an empty list. A body
+of \code{null} is the one exception: it is the same value.
+
+Pass any of those options per call to read the body differently:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{body <- req$parse_json(arr_of_objs_to_df = TRUE)
+}\if{html}{\out{</div>}}
+}
+
 \subsection{Overriding Default Parser}{
 
-By default, \code{parse_json()} uses \code{\link[yyjsonr:read_json_raw]{yyjsonr::read_json_raw()}} for JSON parsing.
-You can override this globally by setting the \code{AMBIORIX_JSON_PARSER} option:
+You can override the parser globally by setting the \code{AMBIORIX_JSON_PARSER} option:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{my_json_parser <- function(body, ...) \{
   txt <- rawToChar(body)
@@ -39,6 +65,17 @@ Your custom parser \emph{MUST} accept the following parameters:
 \item \code{body}: Raw vector containing the JSON data.
 \item \code{...}: Additional optional parameters.
 }
+}
+
+\subsection{Validated Routes}{
+
+On a route validated with \code{app$openapi()}, the body is parsed with this
+same parser — default or override — and stored on \code{req$payload}, so a
+handler sees exactly what \code{parse_json()} would return, and validation
+checks the structure the client actually sent. An override must keep an
+array of one apart from a scalar for that to hold: return it marked
+\code{AsIs}, as the default does, or as a list, as
+\code{jsonlite::fromJSON(simplifyVector = FALSE)} does.
 }
 }
 \examples{

@@ -372,7 +372,9 @@ Ambiorix <- R6::R6Class(
     #' the handler runs, and a `400` is returned if they do not match. Query
     #' and path parameters documented with a non-string schema are converted
     #' to their documented type. A valid request body is stored on
-    #' `req$payload`. Only documented routes are checked; individual routes
+    #' `req$payload` exactly as [parse_json()] returns it: validation and
+    #' handlers share one parser, default or overridden.
+    #' Only documented routes are checked; individual routes
     #' opt out with `openapi_docs(..., validate = FALSE)`, and the whole app
     #' with `validate = FALSE` here.
     #'
