@@ -20,7 +20,34 @@
 
 **New Features**
 
-- Add support for OpenAPI (Swagger) documentation, [pull/163](https://github.com/ambiorix-web/ambiorix/pull/163).
+- Add support for OpenAPI (Swagger) documentation,
+  [pull/163](https://github.com/ambiorix-web/ambiorix/pull/163):
+  - `app$openapi()` enables it. Routes registered with a `docs` argument are
+    collected into an OpenAPI 3.1 document served at `/openapi.json`, with
+    the Swagger UI at `/docs`. `title`, `version`, `description`, `info`,
+    `servers`, `tags`, `security_schemes`, and `security` fill the
+    document's top level. The Swagger UI assets are bundled with the
+    package, so the pages work without an internet connection.
+  - `openapi_docs()` documents a route, with `openapi_param()`,
+    `openapi_request_body()`, and `openapi_response()` for its parameters,
+    body, and responses. Path parameters are documented automatically from
+    the route's `:param` tokens.
+  - Schemas are built with `openapi_schema_string()`,
+    `openapi_schema_integer()`, `openapi_schema_number()`,
+    `openapi_schema_boolean()`, `openapi_schema_array()`,
+    `openapi_schema_object()`, and `openapi_schema()`, and named with
+    `openapi_schema_ref()`, which places a schema in the document's
+    `components` and references it with `$ref` wherever it is used.
+  - Documented routes are validated. Query and path parameters and JSON,
+    form-urlencoded, and multipart bodies are checked against the
+    documented schemas before the handler runs; parameters are converted to
+    their documented type, and the parsed body is stored on `req$payload`.
+    A request that does not match is answered with a `400` listing what is
+    wrong. `app$openapi(on_invalid =)` replaces that response,
+    `app$openapi(validate = FALSE)` turns validation off app-wide, and
+    `openapi_docs(validate =)` overrides it per route.
+- Add `req$parse_form_urlencoded()`, next to `req$parse_json()` and
+  `req$parse_multipart()`.
 
 **Bug Fixes**
 
