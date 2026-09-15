@@ -3,7 +3,7 @@ test_that("parse_json works correctly", {
   req <- mockRequest()
   req$rook.input <- list(read = function() raw(), rewind = function() NULL)
   result <- parse_json(req)
-  expect_equal(result, list())
+  expect_null(result)
 
   # JSON object
   json_data <- '{"name": "John", "age": 30, "active": true}'
@@ -23,7 +23,7 @@ test_that("parse_json works correctly", {
   )
   expect_error(parse_json(req))
 
-  # JSON array
+  # JSON array of objects keeps its wire structure, no data frame collapse
   json_array <- '[{"id": 1}, {"id": 2}]'
   req <- mockRequest()
   req$rook.input <- list(
@@ -31,8 +31,21 @@ test_that("parse_json works correctly", {
     rewind = function() NULL
   )
   result <- parse_json(req)
-  expected <- data.frame(id = 1:2)
+  expected <- list(list(id = 1L), list(id = 2L))
   expect_equal(result, expected)
+
+  # collapsing is available per call
+  result <- parse_json(req, arr_of_objs_to_df = TRUE)
+  expect_equal(result, data.frame(id = 1:2))
+
+  # an array of one is marked, so it is not a scalar
+  req <- mockRequest()
+  req$rook.input <- list(
+    read = function() charToRaw('{"tags":["a"],"title":"a"}'),
+    rewind = function() NULL
+  )
+  result <- parse_json(req)
+  expect_identical(result, list(tags = I("a"), title = "a"))
 
   # empty JSON object
   req <- mockRequest()
@@ -80,7 +93,7 @@ test_that("parse_form_urlencoded works correctly", {
   req <- mockRequest()
   req$rook.input <- list(read = function() raw(), rewind = function() NULL)
   result <- parse_form_urlencoded(req)
-  expect_equal(result, list())
+  expect_null(result)
 
   # simple form data
   form_data <- "name=John&age=30&active=true"
@@ -154,7 +167,7 @@ test_that("parse_multipart works correctly", {
   req$rook.input <- list(read = function() raw(), rewind = function() NULL)
   req$CONTENT_TYPE <- "multipart/form-data; boundary=----WebKitFormBoundary"
   result <- parse_multipart(req)
-  expect_equal(result, list())
+  expect_null(result)
 
   # simple multipart data with text fields
   boundary <- "----WebKitFormBoundary7MA4YWxkTrZu0gW"

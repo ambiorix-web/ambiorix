@@ -116,6 +116,7 @@ test_that("an array is not a scalar", {
     0L
   )
 
+  # a scalar is not an array...
   expect_length(
     openapi_validate(
       value = body$title,
@@ -126,6 +127,7 @@ test_that("an array is not a scalar", {
     1L
   )
 
+  # ...and an array of two is not a scalar
   expect_length(
     openapi_validate(
       value = body$tags,
@@ -134,6 +136,26 @@ test_that("an array is not a scalar", {
     1L
   )
 
+  expect_length(
+    openapi_validate(
+      value = list("a"),
+      schema = openapi_schema_array(
+        items = openapi_schema_string()
+      )
+    ),
+    0L
+  )
+
+  # a list is an array, never a scalar
+  expect_length(
+    openapi_validate(
+      value = list("a"),
+      schema = openapi_schema_string()
+    ),
+    1L
+  )
+
+  # so is an array of one, as the parser marks it
   expect_length(
     openapi_validate(
       value = I("a"),
@@ -596,15 +618,28 @@ test_that("the request body is validated", {
   expect_identical(req$payload, list(title = "hello"))
   expect_identical(req$body, rook_body)
 
+  # `{}` was sent: an object missing its required property, not a missing
+  # body
   req <- mock_request(body = "{}")
   problems <- openapi_validate_request(
     request = req,
     docs = docs
   )
 
-  expect_match(messages(problems), "a request body is required")
+  expect_equal(paths(problems), "title")
+  expect_equal(messages(problems), "is required")
   expect_true(is.list(req$payload))
   expect_length(req$payload, 0L)
+
+  # a body of no bytes at all is the missing one
+  req <- mock_request()
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs
+  )
+
+  expect_equal(messages(problems), "a request body is required")
+  expect_null(req$payload)
 
   req <- mock_request(body = '{"description":"some description"}')
   problems <- openapi_validate_request(
@@ -616,7 +651,35 @@ test_that("the request body is validated", {
   expect_identical(req$payload, list(description = "some description"))
 })
 
-test_that("a JSON array documented as one is an array however it arrived", {
+test_that("an empty body is absent, an empty value is checked", {
+  schema <- openapi_schema_array(
+    items = openapi_schema_integer(),
+    minItems = 1L
+  )
+
+  # `[]` is an array with too few items, not a missing body
+  docs <- openapi_docs(request_body = openapi_request_body(schema = schema))
+  req <- mock_request(body = "[]")
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_match(messages(problems), "at least 1 item")
+
+  # an optional body may be absent...
+  optional <- openapi_docs(
+    request_body = openapi_request_body(schema = schema, required = FALSE)
+  )
+  req <- mock_request()
+
+  expect_length(openapi_validate_request(request = req, docs = optional), 0L)
+
+  # ...but what is sent is still checked
+  req <- mock_request(body = "[]")
+  problems <- openapi_validate_request(request = req, docs = optional)
+
+  expect_match(messages(problems), "at least 1 item")
+})
+
+test_that("a JSON array of one is an array, a scalar is not", {
   docs <- openapi_docs(
     request_body = openapi_request_body(
       schema = openapi_schema_object(
@@ -627,21 +690,30 @@ test_that("a JSON array documented as one is an array however it arrived", {
     )
   )
 
-  for (body in c('{"tags":["a"]}', '{"tags":"a"}')) {
-    req <- mock_request(body = body)
+  req <- mock_request(body = '{"tags":["a"]}')
 
-    expect_length(
-      openapi_validate_request(request = req, docs = docs),
-      0L
-    )
-    expect_true(openapi_is_type(req$payload$tags, "array"))
-    expect_length(as.list(req$payload$tags), 1L)
-  }
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_true(openapi_is_type(req$payload$tags, "array"))
+  expect_identical(req$payload$tags, I("a"))
+
+  # a scalar is not an array of one
+  req <- mock_request(body = '{"tags":"a"}')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), "tags")
+  expect_equal(messages(problems), "must be an array")
 
   req <- mock_request(body = '{"tags":["a","b"]}')
 
   expect_length(openapi_validate_request(request = req, docs = docs), 0L)
   expect_identical(req$payload$tags, c("a", "b"))
+
+  # an object is not an array
+  req <- mock_request(body = '{"tags":{"a":1}}')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), "tags")
+  expect_equal(messages(problems), "must be an array")
 
   req <- mock_request(body = '{"tags":[1]}')
   problems <- openapi_validate_request(request = req, docs = docs)
@@ -671,7 +743,7 @@ test_that("a nested JSON array of one is an array", {
   expect_true(openapi_is_type(req$payload$task$tags, "array"))
 })
 
-test_that("a JSON array of objects is read back a row at a time", {
+test_that("a JSON array of objects is an array of objects", {
   docs <- openapi_docs(
     request_body = openapi_request_body(
       schema = openapi_schema_array(
@@ -689,20 +761,99 @@ test_that("a JSON array of objects is read back a row at a time", {
   req <- mock_request(body = '[{"name":"a"},{"name":"b"}]')
 
   expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  # the payload keeps the wire structure: a list of objects
   expect_true(openapi_is_type(req$payload, "array"))
-  expect_length(req$payload, 2L)
-  expect_identical(req$payload[[2]]$name, "b")
+  expect_identical(req$payload, list(list(name = "a"), list(name = "b")))
 
   req <- mock_request(body = '[{"name":"a","langs":["r"]}]')
 
   expect_length(openapi_validate_request(request = req, docs = docs), 0L)
-  expect_length(req$payload, 1L)
   expect_true(openapi_is_type(req$payload[[1]]$langs, "array"))
 
   req <- mock_request(body = '[{"name":1},{"name":2}]')
   problems <- openapi_validate_request(request = req, docs = docs)
 
   expect_equal(paths(problems), c("[1].name", "[2].name"))
+})
+
+test_that("a JSON body keeps the shape it was sent with", {
+  # an object of arrays is an object, and only an object
+  body <- '{"a":[1,2],"b":[3,4]}'
+
+  as_object <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          a = openapi_schema_array(items = openapi_schema_integer()),
+          b = openapi_schema_array(items = openapi_schema_integer())
+        )
+      )
+    )
+  )
+  req <- mock_request(body = body)
+  expect_length(openapi_validate_request(request = req, docs = as_object), 0L)
+  expect_identical(req$payload$a, c(1L, 2L))
+
+  # the same body documented as an array of objects is a type problem: the
+  # client did not send an array
+  as_array <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_array(
+        items = openapi_schema_object(
+          properties = list(
+            a = openapi_schema_integer(),
+            b = openapi_schema_integer()
+          )
+        )
+      )
+    )
+  )
+  req <- mock_request(body = body)
+  problems <- openapi_validate_request(request = req, docs = as_array)
+  expect_equal(messages(problems), "must be an array")
+
+  # an array of arrays stays a list of arrays, one element per inner array
+  arrays_docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_array(
+        items = openapi_schema_array(items = openapi_schema_integer()),
+        minItems = 2L
+      )
+    )
+  )
+
+  req <- mock_request(body = "[[1,2],[3,4]]")
+  expect_length(openapi_validate_request(request = req, docs = arrays_docs), 0L)
+  expect_identical(req$payload, list(c(1L, 2L), c(3L, 4L)))
+
+  req <- mock_request(body = "[[1,2]]")
+  problems <- openapi_validate_request(request = req, docs = arrays_docs)
+  expect_match(messages(problems), "at least 2 item")
+
+  # an element without a property simply lacks it; nothing invents a hole
+  # to validate...
+  optional <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_array(
+        items = openapi_schema_object(
+          properties = list(
+            title = openapi_schema_string(),
+            done = openapi_schema_boolean()
+          ),
+          required = "title"
+        )
+      )
+    )
+  )
+
+  req <- mock_request(body = '[{"title":"a"},{"title":"b","done":true}]')
+  expect_length(openapi_validate_request(request = req, docs = optional), 0L)
+
+  # ...so a required property an element is missing is still reported
+  req <- mock_request(body = '[{"title":"a"},{"done":true}]')
+  problems <- openapi_validate_request(request = req, docs = optional)
+  expect_equal(paths(problems), "[2].title")
+  expect_equal(messages(problems), "is required")
 })
 
 test_that("a documented array of one still counts toward minItems", {
