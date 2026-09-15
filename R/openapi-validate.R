@@ -10,6 +10,10 @@
 #' `application/x-www-form-urlencoded`, and `multipart/form-data`. Other
 #' types are documented only and skipped here.
 #'
+#' A request with no body parses to `NULL`, see [parse_json()], which is
+#' what `required` reports. `{}` and `[]` are values, and are checked
+#' against the schema like any other.
+#'
 #' A body the parser cannot read at all is a problem like any other, rather
 #' than an error: it is reported as `could not be parsed as <media type>`, and
 #' the parser's own message is logged for whoever wrote the app.
@@ -18,9 +22,8 @@
 #' multiple select posts one occurrence per choice. Both are parsed into a
 #' flat list that repeats the name, which `[[` cannot read past, so every
 #' occurrence of a name is gathered by `openapi_field()` and the name is
-#' left holding a single value: the scalar it was sent as, or an array of
-#' every occurrence. A field documented as an array is always an array,
-#' even when it arrived once.
+#' left holding a single value: the scalar it was sent as, an array of one
+#' where the schema documents an array, or an array of every occurrence.
 #'
 #' Header and cookie parameters are not checked: ambiorix does not know
 #' which of them a handler cares about.
@@ -121,21 +124,9 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
   payload <- tryCatch(
     expr = switch(
       EXPR = body$content_type,
-      "application/json" = openapi_shape(
-        request$parse_json(),
-        body$schema,
-        schemas
-      ),
-      "application/x-www-form-urlencoded" = openapi_form(
-        request$parse_form_urlencoded(),
-        body$schema,
-        schemas
-      ),
-      "multipart/form-data" = openapi_form(
-        request$parse_multipart(),
-        body$schema,
-        schemas
-      ),
+      "application/json" = request$parse_json(),
+      "application/x-www-form-urlencoded" = request$parse_form_urlencoded(),
+      "multipart/form-data" = request$parse_multipart(),
       # otherwise, media type not supported. just return:
       return(details)
     ),
@@ -164,9 +155,7 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
     )
   }
 
-  request$payload <- payload
-
-  if (!length(payload)) {
+  if (is.null(payload)) {
     if (body$required) {
       details <- append(
         details,
@@ -176,6 +165,12 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
 
     return(details)
   }
+
+  if (!identical(body$content_type, "application/json")) {
+    payload <- openapi_form(payload, body$schema, schemas)
+  }
+
+  request$payload <- payload
 
   append(
     details,
@@ -229,7 +224,10 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
 #' @noRd
 openapi_form <- function(payload, schema, schemas = list()) {
   properties <- openapi_resolve_schema(schema, schemas)$properties
-  fields <- list()
+
+  # named even when every field is blank: a form body is an object, `{}`,
+  # never `[]`
+  fields <- structure(list(), names = character())
 
   for (name in unique(names(payload))) {
     value <- openapi_field(
@@ -246,113 +244,6 @@ openapi_form <- function(payload, schema, schemas = list()) {
   }
 
   fields
-}
-
-#' Reshape a Parsed JSON Body Against Its Schema
-#'
-#' The counterpart to `openapi_form()`, for the one media type that arrives
-#' already typed. What it fixes is arrays: R's JSON parsers collapse a one
-#' element array to the element itself, so `["a"]` and `"a"` reach validation as
-#' the same value, as do `[{"a":1}]` and `{"a":1}`, and a field documented as an
-#' array would be reported as not being one. The documentation is the source of
-#' truth here, exactly as it is for a form field that arrived once: a value
-#' documented as an array is an array, whatever the wire made of it.
-#'
-#' An array of objects that share their keys is simplified further still, into a
-#' data frame, which is an object again as far as a schema is concerned. Where
-#' one is documented as an array it is read back a row at a time, so a handler
-#' receives the array of objects it documented.
-#'
-#' Only promotion happens. A value that is already an array is left alone, so a
-#' scalar documented as one is never quietly rebuilt into something the schema
-#' would have rejected.
-#'
-#' Elements are walked only when they could hold arrays of their own, so an
-#' array of scalars keeps the vector shape a handler wants.
-#'
-#' @param value Object /// Required. \cr
-#'              The parsed body, from [parse_json()], or any value within it.
-#'
-#' @param schema OpenAPI schema /// Required. \cr
-#'               The schema `value` is documented with.
-#'
-#' @param schemas Named list of OpenAPI schemas /// Optional. \cr
-#'                The document's schemas, used to resolve references. \cr
-#'                Defaults to `list()`.
-#'
-#' @return `value`, with every documented array shaped as one.
-#'
-#' @examples
-#' schema <- openapi_schema_object(
-#'   properties = list(
-#'     title = openapi_schema_string(),
-#'     tags = openapi_schema_array(items = openapi_schema_string())
-#'   )
-#' )
-#'
-#' openapi_shape(list(title = "a", tags = "web"), schema)
-#'
-#' openapi_shape(list(title = "a", tags = c("web", "api")), schema)
-#'
-#' @keywords internal
-#' @noRd
-openapi_shape <- function(value, schema, schemas = list()) {
-  schema <- openapi_resolve_schema(schema, schemas)
-
-  if (is.null(schema) || is.null(value)) {
-    return(value)
-  }
-
-  if (identical(schema$type, "array")) {
-    if (is.data.frame(value)) {
-      frame <- value
-      value <- lapply(
-        X = seq_len(nrow(frame)),
-        FUN = function(i) lapply(X = frame, FUN = function(column) column[[i]])
-      )
-    }
-
-    if (!openapi_is_type(value, "array")) {
-      value <- if (is.atomic(value)) I(value) else list(value)
-    }
-
-    items <- openapi_resolve_schema(schema$items, schemas)
-
-    if (is.null(items)) {
-      return(value)
-    }
-
-    if (!identical(items$type, "array") && !length(items$properties)) {
-      return(value)
-    }
-
-    return(
-      lapply(
-        X = openapi_elements(value),
-        FUN = openapi_shape,
-        schema = items,
-        schemas = schemas
-      )
-    )
-  }
-
-  if (!openapi_is_type(value, "object")) {
-    return(value)
-  }
-
-  for (name in names(schema$properties)) {
-    if (is.null(value[[name]])) {
-      next
-    }
-
-    value[[name]] <- openapi_shape(
-      value[[name]],
-      schema$properties[[name]],
-      schemas
-    )
-  }
-
-  value
 }
 
 #' Every Occurrence of a Name
@@ -400,11 +291,20 @@ openapi_occurrences <- function(x, name) {
 #' `?limit=` says nothing, and a field left with nothing is absent, which is
 #' what makes `required` the one place emptiness is reported.
 #'
-#' What is left is a scalar, unless the schema documents an array or more
-#' than one occurrence arrived. Documenting an array is therefore enough to
-#' get one from a single choice, and sending a field twice where the schema
-#' documents a scalar is left as an array on purpose: the type check then
-#' reports it, rather than a silent first-wins.
+#' A single occurrence stays the value it converted to, unless the schema
+#' documents an array. The wire cannot say whether `?tag=a` is one choice
+#' or an array of one, so the documentation decides: the value is marked
+#' `AsIs`, which `openapi_is_type()` reads as an array, exactly as
+#' [parse_json()] marks `["a"]`. A lone file part documented as an array is
+#' wrapped into a list of one instead: a named list marked `AsIs` would
+#' still read as an object.
+#'
+#' More than one occurrence becomes an array: an atomic vector when every
+#' element converted to a scalar of one type, which is what an R handler
+#' wants of a multiple select, and a list otherwise — file parts especially.
+#' Sending a field twice where the schema documents a scalar is left as an
+#' array on purpose: the type check then reports it, rather than a silent
+#' first-wins.
 #'
 #' Conversion is per element and best effort. A value that will not convert
 #' is kept as the string it was, so the type check reports it once instead of
@@ -430,7 +330,7 @@ openapi_occurrences <- function(x, name) {
 #'   schema = openapi_schema_integer()
 #' )
 #'
-#' # documented as an array: one occurrence is still an array
+#' # documented as an array: a single choice is an array of one
 #' openapi_field(
 #'   values = list("a"),
 #'   schema = openapi_schema_array(openapi_schema_string())
@@ -475,43 +375,23 @@ openapi_field <- function(values, schema, schemas = list()) {
   schema <- openapi_resolve_schema(schema, schemas)
   is_array <- identical(schema$type, "array")
 
-  if (!is_array && length(values) == 1L) {
-    return(openapi_convert(values[[1]], schema, schemas))
-  }
-
-  field <- lapply(
+  elements <- lapply(
     X = unname(values),
     FUN = openapi_convert,
     schema = if (is_array) schema$items else schema,
     schemas = schemas
   )
 
-  openapi_array(elements = field)
-}
+  if (length(elements) == 1L) {
+    element <- elements[[1]]
 
-#' Rebuild Converted Occurrences as an Array
-#'
-#' Scalars of one type become a vector, which is what an R handler wants of
-#' a multiple select. Anything else, file parts especially, stays a list. A
-#' single element is marked `AsIs` so it reads as an array of one rather
-#' than as a scalar.
-#'
-#' @param elements List /// Required. \cr
-#'                 The converted occurrences of one field, unnamed.
-#'
-#' @return An array value.
-#'
-#' @examples
-#' openapi_array(elements = list("a", "b"))
-#'
-#' openapi_array(elements = list("a"))
-#'
-#' # mixed types cannot be a vector
-#' openapi_array(elements = list("a", 1L))
-#'
-#' @keywords internal
-#' @noRd
-openapi_array <- function(elements) {
+    if (!is_array) {
+      return(element)
+    }
+
+    return(if (is.list(element)) list(element) else I(element))
+  }
+
   scalars <- vapply(
     X = elements,
     FUN = function(element) is.atomic(element) && length(element) == 1L,
@@ -519,17 +399,11 @@ openapi_array <- function(elements) {
   )
   types <- vapply(X = elements, FUN = typeof, FUN.VALUE = character(1))
 
-  if (!all(scalars) || length(unique(types)) > 1L) {
-    return(elements)
+  if (all(scalars) && length(unique(types)) == 1L) {
+    return(unlist(elements, recursive = FALSE, use.names = FALSE))
   }
 
-  values <- unlist(elements, recursive = FALSE, use.names = FALSE)
-
-  if (length(values) == 1L) {
-    return(I(values))
-  }
-
-  values
+  elements
 }
 
 #' Write a Field Back, Collapsing Its Occurrences
@@ -763,17 +637,23 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
     }
   }
 
-  if (!is.null(schema$enum)) {
+  # enum and the numeric keywords compare scalars; an array's elements meet
+  # those of their own items schema, one at a time
+  scalar <- is.atomic(value) &&
+    length(value) == 1L &&
+    !inherits(value, "AsIs")
+
+  if (!is.null(schema$enum) && scalar) {
     allowed <- unlist(schema$enum, use.names = FALSE)
 
-    if (!openapi_scalar(value) %in% allowed) {
+    if (!value %in% allowed) {
       fail(
         sprintf("must be one of %s", paste0(allowed, collapse = ", "))
       )
     }
   }
 
-  if (is.numeric(value) && length(value) == 1L) {
+  if (scalar && is.numeric(value)) {
     problems <- c(problems, openapi_check_number(value, schema, path))
   }
 
@@ -943,7 +823,7 @@ openapi_check_string <- function(value, schema, path) {
 #' @examples
 #' schema <- openapi_schema_array(openapi_schema_string(), minItems = 2L)
 #'
-#' openapi_check_array(list("web", "api"), schema, list(), "tags")
+#' openapi_check_array(c("web", "api"), schema, list(), "tags")
 #'
 #' # too short
 #' openapi_check_array(list("web"), schema, list(), "tags")
@@ -962,9 +842,8 @@ openapi_check_string <- function(value, schema, path) {
 #' @noRd
 openapi_check_array <- function(value, schema, schemas, path) {
   problems <- list()
-  elements <- openapi_elements(value)
 
-  if (!is.null(schema$minItems) && length(elements) < schema$minItems) {
+  if (!is.null(schema$minItems) && length(value) < schema$minItems) {
     problems <- append(
       problems,
       list(
@@ -976,7 +855,7 @@ openapi_check_array <- function(value, schema, schemas, path) {
     )
   }
 
-  if (!is.null(schema$maxItems) && length(elements) > schema$maxItems) {
+  if (!is.null(schema$maxItems) && length(value) > schema$maxItems) {
     problems <- append(
       problems,
       list(
@@ -988,7 +867,7 @@ openapi_check_array <- function(value, schema, schemas, path) {
     )
   }
 
-  if (isTRUE(schema$uniqueItems) && anyDuplicated(elements)) {
+  if (isTRUE(schema$uniqueItems) && anyDuplicated(value)) {
     problems <- append(
       problems,
       list(list(path = path, message = "must not contain duplicates"))
@@ -999,11 +878,11 @@ openapi_check_array <- function(value, schema, schemas, path) {
     return(problems)
   }
 
-  for (i in seq_along(elements)) {
+  for (i in seq_along(value)) {
     problems <- c(
       problems,
       openapi_validate(
-        elements[[i]],
+        value[[i]],
         schema$items,
         schemas,
         sprintf("%s[%s]", path, i)
@@ -1284,14 +1163,15 @@ openapi_resolve_schema <- function(schema, schemas) {
 
 #' Does a Value Have the Given JSON Type?
 #'
-#' The default JSON parser collapses a one element array to a scalar, so those
-#' two cannot be told apart after [parse_json()]. When a value is marked
-#' `AsIs` (for example by a custom parser with `length1_array_asis`), it is
-#' treated as an array rather than a scalar.
+#' A one element array is told apart from a scalar by the `AsIs` marker:
+#' [parse_json()] reads `["a"]` as `I("a")` and `"a"` as a plain string, and
+#' `openapi_field()` marks a lone query or form occurrence the same way when
+#' the schema documents an array. A value marked `AsIs` is an array, never a
+#' scalar.
 #'
-#' The other awkward case is `integer`, which JSON does not have: `1` and `1.0`
-#' both parse to a number, so an integer is a number that equals its own
-#' truncation.
+#' The other awkward case is `integer`, which JSON does not have: `1` and
+#' `1.0` both parse to a number, so an integer is a number that equals its
+#' own truncation.
 #'
 #' Types that are not part of the specification are not checked, and pass.
 #'
@@ -1311,10 +1191,17 @@ openapi_resolve_schema <- function(schema, schemas) {
 #'
 #' openapi_is_type(1.5, "integer")
 #'
-#' # AsIs marks a one element array so it is not a scalar
-#' openapi_is_type(I(1L), "array")
+#' # AsIs marks an array of one, which is then not a scalar
+#' openapi_is_type("a", "array")
 #'
-#' openapi_is_type(I(1L), "integer")
+#' openapi_is_type(I("a"), "array")
+#'
+#' openapi_is_type(I("a"), "string")
+#'
+#' openapi_is_type(c("a", "b"), "array")
+#'
+#' # a list is an array, never a scalar
+#' openapi_is_type(list(1L), "integer")
 #'
 #' openapi_is_type(list(id = 1L), "object")
 #'
@@ -1329,7 +1216,8 @@ openapi_is_type <- function(value, type) {
     return(FALSE)
   }
 
-  scalar <- !inherits(value, "AsIs") && length(value) == 1L && !is.list(value)
+  is_asis <- inherits(value, "AsIs")
+  scalar <- !is_asis && length(value) == 1L && !is.list(value)
 
   switch(
     EXPR = type,
@@ -1341,12 +1229,10 @@ openapi_is_type <- function(value, type) {
       value == trunc(value),
     number = scalar && is.numeric(value),
     boolean = scalar && is.logical(value) && !is.na(value),
-    array = inherits(value, "AsIs") ||
-      (is.list(value) && is.null(names(value))) ||
-      (is.atomic(value) && length(value) != 1L),
-    object = is.list(value) &&
-      !inherits(value, "AsIs") &&
-      !is.null(names(value)),
+    array = is_asis ||
+      (is.atomic(value) && length(value) != 1L) ||
+      (is.list(value) && is.null(names(value))),
+    object = is.list(value) && !is.null(names(value)),
     # unknown types are not checked
     TRUE
   )
@@ -1382,68 +1268,6 @@ openapi_type_label <- function(type) {
   )
 
   paste0(labels[type] %||% type, collapse = " or ")
-}
-
-#' Elements of an Array
-#'
-#' A parsed JSON array reaches validation in three shapes: an atomic vector, a
-#' list, or either of those marked `AsIs` because it held a single element.
-#' This flattens all three to a plain list, so that iterating an array is the
-#' same regardless of how it arrived.
-#'
-#' @param x Array /// Required. \cr
-#'          A parsed JSON array.
-#'
-#' @return A `list`.
-#'
-#' @examples
-#' openapi_elements(c("web", "api"))
-#'
-#' openapi_elements(list("web", "api"))
-#'
-#' # a one element array, as the parser marks it
-#' openapi_elements(I("web"))
-#'
-#' @keywords internal
-#' @noRd
-openapi_elements <- function(x) {
-  if (inherits(x, "AsIs")) {
-    x <- unclass(x)
-  }
-
-  if (is.list(x)) {
-    return(x)
-  }
-
-  as.list(x)
-}
-
-#' Strip the AsIs Marker From a Value
-#'
-#' The counterpart to `openapi_elements()`, for comparisons rather than
-#' iteration. `I("a") %in% c("a")` is `TRUE`, but the marker leaks into
-#' anything built from the result, so it is dropped before the `enum` check
-#' compares a value against the allowed set.
-#'
-#' @param x Object /// Required. \cr
-#'          A parsed JSON value.
-#'
-#' @return `x`, without its `AsIs` class.
-#'
-#' @examples
-#' openapi_scalar(I("todo"))
-#'
-#' # anything else is untouched
-#' openapi_scalar("todo")
-#'
-#' @keywords internal
-#' @noRd
-openapi_scalar <- function(x) {
-  if (inherits(x, "AsIs")) {
-    return(unclass(x))
-  }
-
-  x
 }
 
 #' Path to a Property of an Object
