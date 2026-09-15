@@ -1,4 +1,22 @@
-# ambiorix 3.1.0
+# ambiorix 4.0.0
+
+**Breaking Changes**
+
+- `parse_json()` no longer collapses JSON into data frames or matrices:
+  `obj_of_arrs_to_df`, `arr_of_objs_to_df`, and `arr_of_arrs_to_matrix` are
+  now off by default, so a body keeps the structure it was sent with — an
+  array of objects is a list of named lists, never a data frame. The same
+  JSON shape now always parses to the same R shape, whatever values it
+  holds; previously the R type of a parsed body depended on whether the
+  values happened to collapse. An array of one is read marked `AsIs`, so
+  `["a"]` and `"a"` stay apart: `I("a")` compares and serialises like the
+  string, and is written back as `["a"]`. Restore the old reading per call
+  with `req$parse_json(arr_of_objs_to_df = TRUE)`, or globally with
+  `options(AMBIORIX_JSON_PARSER = ...)`.
+- `parse_json()`, `parse_form_urlencoded()` and `parse_multipart()` return
+  `NULL` for a request with no body, where they returned `list()`. Nothing
+  on the wire is `NULL`, so an absent body is now told apart from `{}` and
+  `[]`.
 
 **New Features**
 
