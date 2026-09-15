@@ -233,13 +233,13 @@
 #'   app$start()
 #' }
 #' @seealso [parse_form_urlencoded()], [parse_json()]
-#' @return Named list.
+#' @return Named list, or `NULL` when the request has no body.
 #' @export
 parse_multipart <- function(req, ...) {
   on.exit(req$rook.input$rewind())
   body <- req$rook.input$read()
   if (identical(body, raw())) {
-    return(list())
+    return(NULL)
   }
 
   default <- function(body, content_type, ...) {
@@ -289,9 +289,6 @@ parse_multipart <- function(req, ...) {
 #' @param ... Key=Value pairs /// Optional. \cr
 #'            Additional parameters passed to the parser function.
 #'
-#' @return A list of parsed form fields, with each key representing a form field name and each value
-#' representing the form field's value.
-#'
 #' @details
 #'
 #' ### Overriding Default Parser
@@ -309,13 +306,13 @@ parse_multipart <- function(req, ...) {
 #'
 #' @inherit parse_multipart examples
 #' @seealso [parse_multipart()], [parse_json()]
-#' @return Named list
+#' @return Named list, or `NULL` when the request has no body.
 #' @export
 parse_form_urlencoded <- function(req, ...) {
   on.exit(req$rook.input$rewind())
   body <- req$rook.input$read()
   if (identical(body, raw())) {
-    return(list())
+    return(NULL)
   }
 
   default <- function(body, ...) {
@@ -342,14 +339,42 @@ parse_form_urlencoded <- function(req, ...) {
 #' @param ... Key=Value pairs /// Optional. \cr
 #'            Additional parameters passed to the parser function.
 #'
-#' @return An R object (e.g., list or data frame) parsed from the JSON data.
+#' @return The parsed body: a named list for an object, an unnamed list or
+#'         an atomic vector for an array, a scalar otherwise. `NULL` when
+#'         the request has no body.
 #'
 #' @details
 #'
+#' ### Parsed Shapes
+#'
+#' By default, `parse_json()` uses [yyjsonr::read_json_raw()] with
+#' `obj_of_arrs_to_df`, `arr_of_objs_to_df`, and `arr_of_arrs_to_matrix`
+#' turned off, so a body keeps the structure it was sent with: an object is
+#' a named list, an array of objects is an unnamed list of named lists, and
+#' neither becomes a data frame or matrix. The same JSON shape always parses
+#' to the same R shape, whatever values it holds.
+#'
+#' `length1_array_asis` is turned on for the same reason: `["a"]` is read as
+#' `I("a")`, marked `AsIs`, where `"a"` is a plain string, so an array of
+#' one stays an array. The marker is invisible to `==`, `%in%`, `[[` and
+#' arithmetic, and both [yyjsonr::write_json_str()] and
+#' [jsonlite::toJSON()] write the value back as `["a"]`; `identical()` and
+#' `inherits()` do see it.
+#'
+#' A request with no body at all parses to `NULL`, before the parser is
+#' called. Nothing on the wire is `NULL`, so an absent body cannot be
+#' confused with `{}`, a named empty list, or `[]`, an empty list. A body
+#' of `null` is the one exception: it is the same value.
+#'
+#' Pass any of those options per call to read the body differently:
+#'
+#' ```r
+#' body <- req$parse_json(arr_of_objs_to_df = TRUE)
+#' ```
+#'
 #' ### Overriding Default Parser
 #'
-#' By default, `parse_json()` uses [yyjsonr::read_json_raw()] for JSON parsing.
-#' You can override this globally by setting the `AMBIORIX_JSON_PARSER` option:
+#' You can override the parser globally by setting the `AMBIORIX_JSON_PARSER` option:
 #'
 #' ```r
 #' my_json_parser <- function(body, ...) {
@@ -363,20 +388,53 @@ parse_form_urlencoded <- function(req, ...) {
 #' 1. `body`: Raw vector containing the JSON data.
 #' 2. `...`: Additional optional parameters.
 #'
+#' ### Validated Routes
+#'
+#' On a route validated with `app$openapi()`, the body is parsed with this
+#' same parser — default or override — and stored on `req$payload`, so a
+#' handler sees exactly what `parse_json()` would return, and validation
+#' checks the structure the client actually sent. An override must keep an
+#' array of one apart from a scalar for that to hold: return it marked
+#' `AsIs`, as the default does, or as a list, as
+#' `jsonlite::fromJSON(simplifyVector = FALSE)` does.
+#'
 #' @inherit parse_multipart examples
 #' @seealso [parse_multipart()], [parse_form_urlencoded()]
-#' @return Named list
 #' @export
 parse_json <- function(req, ...) {
   on.exit(req$rook.input$rewind())
   body <- req$rook.input$read()
   if (identical(body, raw())) {
-    return(list())
+    return(NULL)
   }
 
-  parser <- getOption(
-    x = "AMBIORIX_JSON_PARSER",
-    default = yyjsonr::read_json_raw
-  )
+  default <- function(body, ...) {
+    dots <- list(...)
+
+    # `yyjsonr::read_json_raw()` accepts both `opts` & `...` but
+    # `...` should override `opts`.
+    # ensure that happens and use `opts` only:
+    opts <- dots$opts
+    if (is.null(opts)) {
+      opts <- list()
+    }
+
+    dots$opts <- NULL
+    opts[names(dots)] <- dots
+
+    defaults <- list(
+      obj_of_arrs_to_df = FALSE,
+      arr_of_objs_to_df = FALSE,
+      arr_of_arrs_to_matrix = FALSE,
+      length1_array_asis = TRUE
+    )
+    for (option in setdiff(x = names(defaults), y = names(opts))) {
+      opts[[option]] <- defaults[[option]]
+    }
+
+    yyjsonr::read_json_raw(body, opts = opts)
+  }
+
+  parser <- getOption(x = "AMBIORIX_JSON_PARSER", default = default)
   parser(body, ...)
 }
