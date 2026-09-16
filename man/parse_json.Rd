@@ -75,6 +75,11 @@ Your custom parser \emph{MUST} accept the following parameters:
 \item \code{body}: Raw vector containing the JSON data.
 \item \code{...}: Additional optional parameters.
 }
+
+The same parser, default or override, reads websocket messages: a
+message received by \code{app$receive()} has the shape \code{parse_json()} would
+give it as a body. A text frame is handed over as its bytes, a binary
+frame as is.
 }
 
 \subsection{Validated Routes}{

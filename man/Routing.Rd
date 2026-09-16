@@ -223,7 +223,10 @@ if(interactive())
       \item{\code{name}}{String /// Required. \cr
 Name of the message.}
       \item{\code{handler}}{Function /// Required. \cr
-A function to run when the message is received.}
+A function to run when the message is received. Its first argument
+is the message, parsed the way \code{req$parse_json()} parses a request
+body, see \code{\link[=parse_json]{parse_json()}}; the second, if it takes one, is the
+\link{Websocket} to answer on.}
     }
     \if{html}{\out{</div>}}
   }
