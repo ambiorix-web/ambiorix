@@ -204,6 +204,10 @@ task_schema <- openapi_schema_ref(
 
 task_list_schema <- openapi_schema_array(items = task_schema)
 
+# request bodies: `additionalProperties = FALSE` rejects any field that is
+# not listed in `properties` with a 400, so a typo like `{"titel": "x"}` is
+# reported to the client instead of silently ignored, and handlers can
+# trust that the body holds nothing but the documented fields.
 new_task_schema <- openapi_schema_ref(
   name = "NewTask",
   schema = openapi_schema_object(
@@ -212,7 +216,8 @@ new_task_schema <- openapi_schema_ref(
       done = openapi_schema_boolean(default = FALSE),
       tags = openapi_schema_array(items = openapi_schema_string())
     ),
-    required = "title"
+    required = "title",
+    additionalProperties = FALSE
   )
 )
 
@@ -223,7 +228,8 @@ task_update_schema <- openapi_schema_ref(
       title = openapi_schema_string(minLength = 1L),
       done = openapi_schema_boolean(),
       tags = openapi_schema_array(items = openapi_schema_string())
-    )
+    ),
+    additionalProperties = FALSE
   )
 )
 
@@ -461,6 +467,9 @@ app$post(
 app$put(
   path = "/tasks/:id",
   handler = function(req, res) {
+    # `TaskUpdate` sets `additionalProperties = FALSE`, so `body` holds
+    # only `title`, `done` and `tags`, all optional: it is safe to spread
+    # it into `update_task()` as is
     body <- req$payload
 
     body$id <- req$params$id
