@@ -21,3 +21,4 @@ docker/
 ^test\.html$
 ^\.vscode$
 ^\.lintr$
+^TODO\.md$
