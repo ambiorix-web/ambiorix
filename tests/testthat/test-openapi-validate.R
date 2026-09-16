@@ -353,6 +353,30 @@ test_that("string, number, and array keywords are checked", {
   )
 })
 
+test_that("keywords are read exactly, never by prefix", {
+  # `$` would partial-match `pattern` to `patternProperties`
+  schema <- openapi_schema(
+    type = c("string", "object"),
+    patternProperties = list("^x-" = openapi_schema_string())
+  )
+
+  expect_length(openapi_validate(value = "hello", schema = schema), 0L)
+
+  expect_match(
+    messages(
+      openapi_validate(
+        value = "hello",
+        schema = openapi_schema(
+          type = c("string", "object"),
+          pattern = "^z",
+          patternProperties = list("^x-" = openapi_schema_string())
+        )
+      )
+    ),
+    "must match the pattern \\^z"
+  )
+})
+
 test_that("additionalProperties = FALSE rejects unknown properties", {
   schema <- openapi_schema_object(
     properties = list(

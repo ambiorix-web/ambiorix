@@ -373,12 +373,12 @@ openapi_field <- function(values, schema, schemas = list()) {
   }
 
   schema <- openapi_resolve_schema(schema, schemas)
-  is_array <- identical(schema$type, "array")
+  is_array <- identical(schema[["type"]], "array")
 
   elements <- lapply(
     X = unname(values),
     FUN = openapi_convert,
-    schema = if (is_array) schema$items else schema,
+    schema = if (is_array) schema[["items"]] else schema,
     schemas = schemas
   )
 
@@ -607,11 +607,14 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
     return(list())
   }
 
+  # keywords are read with `[[` here and in the check helpers: `$` partial
+  # matches, and `pattern` is a prefix of `patternProperties`
+
   # multipart file part documented as string + format binary/byte
   is_file_part <- is.list(value) &&
     "filename" %in% names(value) &&
-    !is.null(schema$format) &&
-    schema$format %in% c("binary", "byte")
+    !is.null(schema[["format"]]) &&
+    schema[["format"]] %in% c("binary", "byte")
 
   if (is_file_part) {
     return(list())
@@ -622,15 +625,15 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
     problems[[length(problems) + 1L]] <<- list(path = path, message = message)
   }
 
-  if (!is.null(schema$type)) {
+  if (!is.null(schema[["type"]])) {
     matches <- vapply(
-      X = schema$type,
+      X = schema[["type"]],
       FUN = function(type) openapi_is_type(value, type),
       FUN.VALUE = logical(1)
     )
 
     if (!any(matches)) {
-      fail(sprintf("must be %s", openapi_type_label(schema$type)))
+      fail(sprintf("must be %s", openapi_type_label(schema[["type"]])))
 
       # every other check assumes the type is right
       return(problems)
@@ -643,8 +646,8 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
     length(value) == 1L &&
     !inherits(value, "AsIs")
 
-  if (!is.null(schema$enum) && scalar) {
-    allowed <- unlist(schema$enum, use.names = FALSE)
+  if (!is.null(schema[["enum"]]) && scalar) {
+    allowed <- unlist(schema[["enum"]], use.names = FALSE)
 
     if (!value %in% allowed) {
       fail(
@@ -718,24 +721,24 @@ openapi_check_number <- function(value, schema, path) {
     problems[[length(problems) + 1L]] <<- list(path = path, message = message)
   }
 
-  if (!is.null(schema$minimum) && value < schema$minimum) {
-    fail(sprintf("must be greater than or equal to %s", schema$minimum))
+  if (!is.null(schema[["minimum"]]) && value < schema[["minimum"]]) {
+    fail(sprintf("must be greater than or equal to %s", schema[["minimum"]]))
   }
 
-  if (!is.null(schema$maximum) && value > schema$maximum) {
-    fail(sprintf("must be less than or equal to %s", schema$maximum))
+  if (!is.null(schema[["maximum"]]) && value > schema[["maximum"]]) {
+    fail(sprintf("must be less than or equal to %s", schema[["maximum"]]))
   }
 
-  if (!is.null(schema$exclusiveMinimum) && value <= schema$exclusiveMinimum) {
-    fail(sprintf("must be greater than %s", schema$exclusiveMinimum))
+  if (!is.null(schema[["exclusiveMinimum"]]) && value <= schema[["exclusiveMinimum"]]) {
+    fail(sprintf("must be greater than %s", schema[["exclusiveMinimum"]]))
   }
 
-  if (!is.null(schema$exclusiveMaximum) && value >= schema$exclusiveMaximum) {
-    fail(sprintf("must be less than %s", schema$exclusiveMaximum))
+  if (!is.null(schema[["exclusiveMaximum"]]) && value >= schema[["exclusiveMaximum"]]) {
+    fail(sprintf("must be less than %s", schema[["exclusiveMaximum"]]))
   }
 
-  if (!is.null(schema$multipleOf) && value %% schema$multipleOf != 0) {
-    fail(sprintf("must be a multiple of %s", schema$multipleOf))
+  if (!is.null(schema[["multipleOf"]]) && value %% schema[["multipleOf"]] != 0) {
+    fail(sprintf("must be a multiple of %s", schema[["multipleOf"]]))
   }
 
   problems
@@ -780,16 +783,16 @@ openapi_check_string <- function(value, schema, path) {
     problems[[length(problems) + 1L]] <<- list(path = path, message = message)
   }
 
-  if (!is.null(schema$minLength) && nchar(value) < schema$minLength) {
-    fail(sprintf("must be at least %s character(s) long", schema$minLength))
+  if (!is.null(schema[["minLength"]]) && nchar(value) < schema[["minLength"]]) {
+    fail(sprintf("must be at least %s character(s) long", schema[["minLength"]]))
   }
 
-  if (!is.null(schema$maxLength) && nchar(value) > schema$maxLength) {
-    fail(sprintf("must be at most %s character(s) long", schema$maxLength))
+  if (!is.null(schema[["maxLength"]]) && nchar(value) > schema[["maxLength"]]) {
+    fail(sprintf("must be at most %s character(s) long", schema[["maxLength"]]))
   }
 
-  if (!is.null(schema$pattern) && !grepl(schema$pattern, value)) {
-    fail(sprintf("must match the pattern %s", schema$pattern))
+  if (!is.null(schema[["pattern"]]) && !grepl(schema[["pattern"]], value)) {
+    fail(sprintf("must match the pattern %s", schema[["pattern"]]))
   }
 
   problems
@@ -843,38 +846,38 @@ openapi_check_string <- function(value, schema, path) {
 openapi_check_array <- function(value, schema, schemas, path) {
   problems <- list()
 
-  if (!is.null(schema$minItems) && length(value) < schema$minItems) {
+  if (!is.null(schema[["minItems"]]) && length(value) < schema[["minItems"]]) {
     problems <- append(
       problems,
       list(
         list(
           path = path,
-          message = sprintf("must have at least %s item(s)", schema$minItems)
+          message = sprintf("must have at least %s item(s)", schema[["minItems"]])
         )
       )
     )
   }
 
-  if (!is.null(schema$maxItems) && length(value) > schema$maxItems) {
+  if (!is.null(schema[["maxItems"]]) && length(value) > schema[["maxItems"]]) {
     problems <- append(
       problems,
       list(
         list(
           path = path,
-          message = sprintf("must have at most %s item(s)", schema$maxItems)
+          message = sprintf("must have at most %s item(s)", schema[["maxItems"]])
         )
       )
     )
   }
 
-  if (isTRUE(schema$uniqueItems) && anyDuplicated(value)) {
+  if (isTRUE(schema[["uniqueItems"]]) && anyDuplicated(value)) {
     problems <- append(
       problems,
       list(list(path = path, message = "must not contain duplicates"))
     )
   }
 
-  if (is.null(schema$items)) {
+  if (is.null(schema[["items"]])) {
     return(problems)
   }
 
@@ -883,7 +886,7 @@ openapi_check_array <- function(value, schema, schemas, path) {
       problems,
       openapi_validate(
         value[[i]],
-        schema$items,
+        schema[["items"]],
         schemas,
         sprintf("%s[%s]", path, i)
       )
@@ -949,7 +952,7 @@ openapi_check_array <- function(value, schema, schemas, path) {
 openapi_check_object <- function(value, schema, schemas, path) {
   problems <- list()
 
-  for (name in schema$required) {
+  for (name in schema[["required"]]) {
     if (!is.null(value[[name]])) {
       next
     }
@@ -962,8 +965,8 @@ openapi_check_object <- function(value, schema, schemas, path) {
     )
   }
 
-  if (identical(schema$additionalProperties, FALSE)) {
-    unknown <- setdiff(names(value), names(schema$properties))
+  if (identical(schema[["additionalProperties"]], FALSE)) {
+    unknown <- setdiff(names(value), names(schema[["properties"]]))
 
     for (name in unknown) {
       problems <- append(
@@ -978,7 +981,7 @@ openapi_check_object <- function(value, schema, schemas, path) {
     }
   }
 
-  for (name in names(schema$properties)) {
+  for (name in names(schema[["properties"]])) {
     if (is.null(value[[name]])) {
       next
     }
@@ -987,7 +990,7 @@ openapi_check_object <- function(value, schema, schemas, path) {
       problems,
       openapi_validate(
         value[[name]],
-        schema$properties[[name]],
+        schema[["properties"]][[name]],
         schemas,
         openapi_child_path(path, name)
       )
@@ -1049,7 +1052,7 @@ openapi_convert <- function(value, schema, schemas = list()) {
     return(value)
   }
 
-  type <- schema$type
+  type <- schema[["type"]]
 
   if (is.null(type) || length(type) != 1L) {
     return(value)
