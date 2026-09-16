@@ -19,6 +19,13 @@
   past 2^53 are rounded; pass `int64 = "string"` for the old reading, or
   `int64 = "bit64"` with the bit64 package attached for exact 64-bit
   integers.
+- Websocket messages are parsed by the same parser as request bodies, so
+  the two changes above apply to the message an `app$receive()` handler
+  gets: an array of objects is a list of named lists, not a data frame,
+  and a large integer is a number, not a string. A parser set with
+  `options(AMBIORIX_JSON_PARSER = ...)` now reads messages too, the way
+  `AMBIORIX_SERIALISER` already wrote them. A binary frame is parsed as
+  well, where it errored.
 - `parse_json()`, `parse_form_urlencoded()` and `parse_multipart()` return
   `NULL` for a request with no body, where they returned `list()`. Nothing
   on the wire is `NULL`, so an absent body is now told apart from `{}` and
