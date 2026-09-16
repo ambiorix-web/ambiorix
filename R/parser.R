@@ -398,6 +398,11 @@ parse_form_urlencoded <- function(req, ...) {
 #' 1. `body`: Raw vector containing the JSON data.
 #' 2. `...`: Additional optional parameters.
 #'
+#' The same parser, default or override, reads websocket messages: a
+#' message received by `app$receive()` has the shape `parse_json()` would
+#' give it as a body. A text frame is handed over as its bytes, a binary
+#' frame as is.
+#'
 #' ### Validated Routes
 #'
 #' On a route validated with `app$openapi()`, the body is parsed with this
@@ -418,34 +423,61 @@ parse_json <- function(req, ...) {
     return(NULL)
   }
 
-  default <- function(body, ...) {
-    dots <- list(...)
+  get_json_parser()(body, ...)
+}
 
-    # `yyjsonr::read_json_raw()` accepts both `opts` & `...` but
-    # `...` should override `opts`.
-    # ensure that happens and use `opts` only:
-    opts <- dots$opts
-    if (is.null(opts)) {
-      opts <- list()
-    }
+#' Default JSON Parser
+#'
+#' Reads JSON with [yyjsonr::read_json_raw()] and the defaults described
+#' under Parsed Shapes in [parse_json()]. Shared by request bodies and
+#' websocket messages, so both read the same way.
+#'
+#' @param body Raw vector /// Required. \cr
+#'             The JSON bytes.
+#'
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Named options passed to [yyjsonr::read_json_raw()], either
+#'            directly or as `opts = list(...)`. Both spellings are merged
+#'            and filled in with the defaults.
+#'
+#' @return The parsed value.
+#'
+#' @noRd
+#' @keywords internal
+default_json_parser <- function(body, ...) {
+  dots <- list(...)
 
-    dots$opts <- NULL
-    opts[names(dots)] <- dots
-
-    defaults <- list(
-      obj_of_arrs_to_df = FALSE,
-      arr_of_objs_to_df = FALSE,
-      arr_of_arrs_to_matrix = FALSE,
-      length1_array_asis = TRUE,
-      int64 = "double"
-    )
-    for (option in setdiff(x = names(defaults), y = names(opts))) {
-      opts[[option]] <- defaults[[option]]
-    }
-
-    yyjsonr::read_json_raw(body, opts = opts)
+  # `yyjsonr::read_json_raw()` accepts both `opts` & `...` but
+  # `...` should override `opts`.
+  # ensure that happens and use `opts` only:
+  opts <- dots$opts
+  if (is.null(opts)) {
+    opts <- list()
   }
 
-  parser <- getOption(x = "AMBIORIX_JSON_PARSER", default = default)
-  parser(body, ...)
+  dots$opts <- NULL
+  opts[names(dots)] <- dots
+
+  defaults <- list(
+    obj_of_arrs_to_df = FALSE,
+    arr_of_objs_to_df = FALSE,
+    arr_of_arrs_to_matrix = FALSE,
+    length1_array_asis = TRUE,
+    int64 = "double"
+  )
+  for (option in setdiff(x = names(defaults), y = names(opts))) {
+    opts[[option]] <- defaults[[option]]
+  }
+
+  yyjsonr::read_json_raw(body, opts = opts)
+}
+
+#' Retrieve JSON Parser
+#'
+#' The parser set with the `AMBIORIX_JSON_PARSER` option, or the default.
+#'
+#' @noRd
+#' @keywords internal
+get_json_parser <- function() {
+  getOption(x = "AMBIORIX_JSON_PARSER", default = default_json_parser)
 }

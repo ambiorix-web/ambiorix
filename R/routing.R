@@ -211,7 +211,10 @@ Routing <- R6::R6Class(
     #'   Name of the message.
     #'
     #' @param handler Function /// Required. \cr
-    #'   A function to run when the message is received.
+    #'   A function to run when the message is received. Its first argument
+    #'   is the message, parsed the way `req$parse_json()` parses a request
+    #'   body, see [parse_json()]; the second, if it takes one, is the
+    #'   [Websocket] to answer on.
     #'
     #' @examples
     #' app <- Ambiorix$new()
@@ -785,7 +788,13 @@ Routing <- R6::R6Class(
           return(NULL)
         }
 
-        message <- yyjsonr::read_json_str(message)
+        # a text frame is a string, a binary frame is raw. the parser
+        # takes raw, so a message reads the way a request body does
+        if (is.character(message)) {
+          message <- charToRaw(message)
+        }
+
+        message <- get_json_parser()(message)
 
         for (i in seq_along(private$.receivers)) {
           if (private$.receivers[[i]]$is_handler(message)) {
