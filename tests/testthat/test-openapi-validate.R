@@ -470,6 +470,17 @@ test_that("parameters are converted to their documented type", {
     ),
     FALSE
   )
+
+  # only JSON's spellings are booleans
+  for (value in c("TRUE", "True", "T", "1", "0", "yes")) {
+    expect_identical(
+      openapi_convert(
+        value = value,
+        schema = openapi_schema_boolean()
+      ),
+      value
+    )
+  }
   expect_identical(
     openapi_convert(
       value = "abc",

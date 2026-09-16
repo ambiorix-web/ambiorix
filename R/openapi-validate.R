@@ -729,15 +729,23 @@ openapi_check_number <- function(value, schema, path) {
     fail(sprintf("must be less than or equal to %s", schema[["maximum"]]))
   }
 
-  if (!is.null(schema[["exclusiveMinimum"]]) && value <= schema[["exclusiveMinimum"]]) {
+  if (
+    !is.null(schema[["exclusiveMinimum"]]) &&
+      value <= schema[["exclusiveMinimum"]]
+  ) {
     fail(sprintf("must be greater than %s", schema[["exclusiveMinimum"]]))
   }
 
-  if (!is.null(schema[["exclusiveMaximum"]]) && value >= schema[["exclusiveMaximum"]]) {
+  if (
+    !is.null(schema[["exclusiveMaximum"]]) &&
+      value >= schema[["exclusiveMaximum"]]
+  ) {
     fail(sprintf("must be less than %s", schema[["exclusiveMaximum"]]))
   }
 
-  if (!is.null(schema[["multipleOf"]]) && value %% schema[["multipleOf"]] != 0) {
+  if (
+    !is.null(schema[["multipleOf"]]) && value %% schema[["multipleOf"]] != 0
+  ) {
     fail(sprintf("must be a multiple of %s", schema[["multipleOf"]]))
   }
 
@@ -784,7 +792,12 @@ openapi_check_string <- function(value, schema, path) {
   }
 
   if (!is.null(schema[["minLength"]]) && nchar(value) < schema[["minLength"]]) {
-    fail(sprintf("must be at least %s character(s) long", schema[["minLength"]]))
+    fail(
+      sprintf(
+        "must be at least %s character(s) long",
+        schema[["minLength"]]
+      )
+    )
   }
 
   if (!is.null(schema[["maxLength"]]) && nchar(value) > schema[["maxLength"]]) {
@@ -852,7 +865,10 @@ openapi_check_array <- function(value, schema, schemas, path) {
       list(
         list(
           path = path,
-          message = sprintf("must have at least %s item(s)", schema[["minItems"]])
+          message = sprintf(
+            "must have at least %s item(s)",
+            schema[["minItems"]]
+          )
         )
       )
     )
@@ -864,7 +880,10 @@ openapi_check_array <- function(value, schema, schemas, path) {
       list(
         list(
           path = path,
-          message = sprintf("must have at most %s item(s)", schema[["maxItems"]])
+          message = sprintf(
+            "must have at most %s item(s)",
+            schema[["maxItems"]]
+          )
         )
       )
     )
@@ -1059,10 +1078,15 @@ openapi_convert <- function(value, schema, schemas = list()) {
   }
 
   converted <- switch(
-    type,
+    EXPR = type,
     integer = suppressWarnings(as.integer(value)),
     number = suppressWarnings(as.numeric(value)),
-    boolean = openapi_as_logical(value),
+    boolean = switch(
+      EXPR = value,
+      true = TRUE,
+      false = FALSE,
+      NA
+    ),
     value
   )
 
@@ -1071,41 +1095,6 @@ openapi_convert <- function(value, schema, schemas = list()) {
   }
 
   value
-}
-
-#' Read a Query String Boolean
-#'
-#' Deliberately stricter than [as.logical()], which accepts `"T"` and `"yes"`
-#' and quietly returns `NA` for anything else. Only the spellings a client
-#' would actually send are accepted: JSON's `true`/`false`, R's
-#' `TRUE`/`FALSE`, and `1`/`0`.
-#'
-#' @param x String /// Required. \cr
-#'          The spelling to read.
-#'
-#' @return `TRUE`, `FALSE`, or `NA` when `x` is none of the accepted
-#'         spellings.
-#'
-#' @examples
-#' openapi_as_logical("true")
-#'
-#' openapi_as_logical("0")
-#'
-#' # not an accepted spelling
-#' openapi_as_logical("yes")
-#'
-#' @keywords internal
-#' @noRd
-openapi_as_logical <- function(x) {
-  if (x %in% c("true", "TRUE", "1")) {
-    return(TRUE)
-  }
-
-  if (x %in% c("false", "FALSE", "0")) {
-    return(FALSE)
-  }
-
-  NA
 }
 
 #' Resolve a Reference to a Named Schema
