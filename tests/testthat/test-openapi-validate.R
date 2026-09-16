@@ -497,6 +497,55 @@ test_that("parameters are converted to their documented type", {
     ),
     "abc"
   )
+
+  # only JSON's spellings are numbers: no truncation, no R-isms
+  for (value in c("1.5", "1.0", "1e3", "Inf", "0x10", " 7 ", "+5", "007")) {
+    expect_identical(
+      openapi_convert(
+        value = value,
+        schema = openapi_schema_integer()
+      ),
+      value
+    )
+  }
+  for (value in c("Inf", "NaN", "0x10", " 7 ", "+5", ".5", "1.", "1,5")) {
+    expect_identical(
+      openapi_convert(
+        value = value,
+        schema = openapi_schema_number()
+      ),
+      value
+    )
+  }
+  expect_identical(
+    openapi_convert(
+      value = "1e3",
+      schema = openapi_schema_number()
+    ),
+    1000
+  )
+  expect_identical(
+    openapi_convert(
+      value = "-0",
+      schema = openapi_schema_integer()
+    ),
+    0L
+  )
+
+  # past R's integer range: a whole double, not NA, and no warning
+  expect_silent(
+    converted <- openapi_convert(
+      value = "3000000000",
+      schema = openapi_schema_integer()
+    )
+  )
+  expect_identical(converted, 3e9)
+  expect_silent(
+    openapi_convert(
+      value = "-2147483648",
+      schema = openapi_schema_integer()
+    )
+  )
   expect_identical(
     openapi_convert(
       value = "maybe",
@@ -560,6 +609,24 @@ test_that("query and path parameters are validated and converted", {
   )
 
   expect_match(messages(problems), "less than or equal to 10")
+})
+
+test_that("a decimal is not an integer parameter", {
+  docs <- openapi_docs(
+    parameters = openapi_param(
+      name = "limit",
+      location = "query",
+      schema = openapi_schema_integer()
+    )
+  )
+
+  req <- mock_request(query = list(limit = "1.5"))
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), "limit")
+  expect_match(messages(problems), "must be an integer")
+  # not truncated to 1
+  expect_identical(req$query$limit, "1.5")
 })
 
 test_that("repeated query parameters follow the parameter schema", {

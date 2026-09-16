@@ -1031,11 +1031,21 @@ openapi_check_object <- function(value, schema, schemas, path) {
 #' union of types, an unresolvable reference, a multipart file part, or any
 #' other value that is not a single string.
 #'
+#' Each type accepts the spelling JSON gives it and nothing else: `10` is an
+#' integer, `1.5` and `1e3` are numbers, `true` and `false` are booleans.
+#' What R's own coercion would also take is not a value on the wire: `1.5`
+#' is not an integer, and `Inf`, `0x10`, `TRUE`, `1`, and a padded `" 7 "`
+#' are nothing at all.
+#'
 #' A conversion that cannot succeed is not an error either. The value is
 #' returned as the string it was, and the type check that follows reports it:
 #' `"abc"` documented as an integer is *must be an integer* whether the
 #' conversion or the check is what noticed, and only one of them should say
 #' so.
+#'
+#' An integer past R's range is converted all the same, to a whole double:
+#' `openapi_is_type()` counts it as an integer, and a double is the only
+#' type that holds a 64-bit id.
 #'
 #' @param value String /// Required. \cr
 #'              The value to convert.
@@ -1061,6 +1071,10 @@ openapi_check_object <- function(value, schema, schemas, path) {
 #'
 #' # not convertible: left for the type check to report
 #' openapi_convert("abc", openapi_schema_integer())
+#' openapi_convert("1.5", openapi_schema_integer())
+#'
+#' # too big for an R integer: a whole double
+#' openapi_convert("3000000000", openapi_schema_integer())
 #'
 #' @keywords internal
 #' @noRd
@@ -1077,10 +1091,33 @@ openapi_convert <- function(value, schema, schemas = list()) {
     return(value)
   }
 
+  # each type accepts its JSON spelling and nothing else. `as.numeric()`
+  # cannot warn on a string the number grammar has matched, and a whole
+  # number is narrowed to an integer only when it fits one, so an id past
+  # 2^31 reaches the handler as a whole double rather than as NA
   converted <- switch(
     EXPR = type,
-    integer = suppressWarnings(as.integer(value)),
-    number = suppressWarnings(as.numeric(value)),
+    integer = if (grepl(pattern = "^-?(0|[1-9][0-9]*)$", x = value)) {
+      number <- as.numeric(value)
+
+      if (abs(number) <= .Machine$integer.max) {
+        as.integer(number)
+      } else {
+        number
+      }
+    } else {
+      NA
+    },
+    number = if (
+      grepl(
+        pattern = "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?([eE][+-]?[0-9]+)?$",
+        x = value
+      )
+    ) {
+      as.numeric(value)
+    } else {
+      NA
+    },
     boolean = switch(
       EXPR = value,
       true = TRUE,
