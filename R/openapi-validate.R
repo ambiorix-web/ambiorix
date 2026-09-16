@@ -1127,7 +1127,7 @@ openapi_convert <- function(value, schema, schemas = list()) {
     value
   )
 
-  if (!is.null(converted) && !is.na(converted)) {
+  if (!is.na(converted)) {
     return(converted)
   }
 
