@@ -13,6 +13,12 @@
   string, and is written back as `["a"]`. Restore the old reading per call
   with `req$parse_json(arr_of_objs_to_df = TRUE)`, or globally with
   `options(AMBIORIX_JSON_PARSER = ...)`.
+- `parse_json()` reads an integer too large for R's integer type as a
+  double, where it read it as a string: `{"id": 3000000000}` is now
+  numeric, and can be documented and validated as an integer. Whole numbers
+  past 2^53 are rounded; pass `int64 = "string"` for the old reading, or
+  `int64 = "bit64"` with the bit64 package attached for exact 64-bit
+  integers.
 - `parse_json()`, `parse_form_urlencoded()` and `parse_multipart()` return
   `NULL` for a request with no body, where they returned `list()`. Nothing
   on the wire is `NULL`, so an absent body is now told apart from `{}` and
