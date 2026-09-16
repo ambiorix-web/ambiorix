@@ -212,6 +212,20 @@ as_openapi.ambiorix_openapi_schema <- function(x, ctx, ...) {
 openapi_render_keywords <- function(x, ctx) {
   out <- list()
 
+  # keywords whose value is an array. the serialiser unboxes length one
+  # vectors, so `required = "id"` would emit `"id"` where `["id"]` is
+  # required: these are wrapped with `as.list()` so one element is still
+  # an array
+  array_keywords <- c(
+    "allOf",
+    "anyOf",
+    "enum",
+    "examples",
+    "oneOf",
+    "prefixItems",
+    "required"
+  )
+
   for (keyword in names(x)) {
     value <- openapi_render_value(x[[keyword]], ctx)
 
@@ -219,7 +233,7 @@ openapi_render_keywords <- function(x, ctx) {
       next
     }
 
-    if (keyword %in% OPENAPI_ARRAY_KEYWORDS) {
+    if (keyword %in% array_keywords) {
       value <- as.list(value)
     }
 

@@ -198,12 +198,15 @@ openapi_schema_object <- function(properties = list(), required = NULL, ...) {
   }
 
   keywords <- list(...)
+
+  # these keywords may introduce properties that are not declared locally,
+  # in which case the required names cannot be checked
+  external_keywords <- c("allOf", "anyOf", "oneOf", "not", "$ref")
+
   required <- openapi_required_names(
     required = required,
     properties = names(properties),
-    # composition keywords may introduce properties that are not
-    # declared locally, in which case we cannot check the names
-    check = !any(names(keywords) %in% OPENAPI_COMPOSITION_KEYWORDS)
+    check = !any(names(keywords) %in% external_keywords)
   )
 
   out <- list(type = "object")
@@ -371,7 +374,70 @@ openapi_required_names <- function(required, properties, check = TRUE) {
 #' @keywords internal
 #' @noRd
 warn_unknown_keywords <- function(x) {
-  unknown <- x[!x %in% OPENAPI_KEYWORDS & !grepl("^x-", x)]
+  # not a validation list: anything here is passed through untouched,
+  # whether or not it makes sense for the schema's type
+  known <- c(
+    # core
+    "$ref",
+    "$comment",
+    "type",
+    "enum",
+    "const",
+    "default",
+    "format",
+    "title",
+    "description",
+    "example",
+    "examples",
+    "deprecated",
+    "readOnly",
+    "writeOnly",
+    # composition & conditionals
+    "allOf",
+    "anyOf",
+    "oneOf",
+    "not",
+    "if",
+    "then",
+    "else",
+    # objects
+    "properties",
+    "patternProperties",
+    "additionalProperties",
+    "required",
+    "propertyNames",
+    "minProperties",
+    "maxProperties",
+    "dependentRequired",
+    "dependentSchemas",
+    # arrays
+    "items",
+    "prefixItems",
+    "contains",
+    "minItems",
+    "maxItems",
+    "minContains",
+    "maxContains",
+    "uniqueItems",
+    # numbers
+    "minimum",
+    "maximum",
+    "exclusiveMinimum",
+    "exclusiveMaximum",
+    "multipleOf",
+    # strings
+    "minLength",
+    "maxLength",
+    "pattern",
+    "contentEncoding",
+    "contentMediaType",
+    # openapi extras
+    "discriminator",
+    "externalDocs",
+    "xml"
+  )
+
+  unknown <- x[!x %in% known & !grepl("^x-", x)]
 
   if (!length(unknown)) {
     return(invisible(NULL))
@@ -386,107 +452,3 @@ warn_unknown_keywords <- function(x) {
 
   invisible(NULL)
 }
-
-#' Keywords Whose Value Is an Array
-#'
-#' These are wrapped with [as.list()] by `openapi_render_keywords()` so that a
-#' single element still serialises to a JSON array: the serialiser unboxes
-#' length one vectors, so `required = "id"` would otherwise emit `"id"` where
-#' `["id"]` is required.
-#'
-#' @format Character vector of keyword names.
-#'
-#' @keywords internal
-#' @noRd
-OPENAPI_ARRAY_KEYWORDS <- c(
-  "allOf",
-  "anyOf",
-  "enum",
-  "examples",
-  "oneOf",
-  "prefixItems",
-  "required"
-)
-
-#' Keywords Introducing Properties That Are Not Declared Locally
-#'
-#' When an object schema uses one of these, `openapi_schema_object()` cannot
-#' know the full set of property names, so it stops checking `required`
-#' against them; see `openapi_required_names()`.
-#'
-#' @format Character vector of keyword names.
-#'
-#' @keywords internal
-#' @noRd
-OPENAPI_COMPOSITION_KEYWORDS <- c("allOf", "anyOf", "oneOf", "not", "$ref")
-
-#' Known JSON Schema & OpenAPI Keywords
-#'
-#' Used to warn about typos, see `warn_unknown_keywords()`. Not a validation
-#' list: anything here is passed through untouched, whether or not it makes
-#' sense for the schema's type.
-#'
-#' @format Character vector of keyword names.
-#'
-#' @keywords internal
-#' @noRd
-OPENAPI_KEYWORDS <- c(
-  # core
-  "$ref",
-  "$comment",
-  "type",
-  "enum",
-  "const",
-  "default",
-  "format",
-  "title",
-  "description",
-  "example",
-  "examples",
-  "deprecated",
-  "readOnly",
-  "writeOnly",
-  # composition & conditionals
-  "allOf",
-  "anyOf",
-  "oneOf",
-  "not",
-  "if",
-  "then",
-  "else",
-  # objects
-  "properties",
-  "patternProperties",
-  "additionalProperties",
-  "required",
-  "propertyNames",
-  "minProperties",
-  "maxProperties",
-  "dependentRequired",
-  "dependentSchemas",
-  # arrays
-  "items",
-  "prefixItems",
-  "contains",
-  "minItems",
-  "maxItems",
-  "minContains",
-  "maxContains",
-  "uniqueItems",
-  # numbers
-  "minimum",
-  "maximum",
-  "exclusiveMinimum",
-  "exclusiveMaximum",
-  "multipleOf",
-  # strings
-  "minLength",
-  "maxLength",
-  "pattern",
-  "contentEncoding",
-  "contentMediaType",
-  # openapi extras
-  "discriminator",
-  "externalDocs",
-  "xml"
-)
