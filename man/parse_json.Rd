@@ -38,6 +38,16 @@ arithmetic, and both \code{\link[yyjsonr:write_json_str]{yyjsonr::write_json_str
 \code{\link[jsonlite:toJSON]{jsonlite::toJSON()}} write the value back as \verb{["a"]}; \code{identical()} and
 \code{inherits()} do see it.
 
+\code{int64 = "double"} reads an integer too large for R's integer type as a
+whole double, where yyjsonr would (by default) read it as a string: a
+64-bit id or a millisecond timestamp stays a number, and \verb{[3000000000, 10]}
+stays a numeric vector rather than a list of a string and an integer. An
+integer that fits is still read as an integer, so a handler gets an integer
+or a double depending on the value, the way \code{1} and \code{1e3} already did. A
+double holds a whole number exactly up to 2^53; past that it is rounded.
+Pass \code{int64 = "string"} for the old reading, or \code{int64 = "bit64"} with
+the bit64 package attached for exact 64-bit integers.
+
 A request with no body at all parses to \code{NULL}, before the parser is
 called. Nothing on the wire is \code{NULL}, so an absent body cannot be
 confused with \code{{}}, a named empty list, or \verb{[]}, an empty list. A body
