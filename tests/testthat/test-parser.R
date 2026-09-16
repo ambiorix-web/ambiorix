@@ -47,6 +47,24 @@ test_that("parse_json works correctly", {
   result <- parse_json(req)
   expect_identical(result, list(tags = I("a"), title = "a"))
 
+  # an integer past R's range is a whole double, not a string; one that
+  # fits is still an integer
+  req <- mockRequest()
+  req$rook.input <- list(
+    read = function() {
+      charToRaw('{"id":3000000000,"n":10,"ids":[3000000000,10]}')
+    },
+    rewind = function() NULL
+  )
+  result <- parse_json(req)
+  expect_identical(result$id, 3e9)
+  expect_identical(result$n, 10L)
+  expect_identical(result$ids, c(3e9, 10))
+
+  # the old reading is a call away
+  result <- parse_json(req, int64 = "string")
+  expect_identical(result$id, "3000000000")
+
   # empty JSON object
   req <- mockRequest()
   req$rook.input <- list(

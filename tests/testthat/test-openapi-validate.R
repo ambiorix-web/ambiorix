@@ -94,6 +94,34 @@ test_that("types are checked against the parsed JSON", {
   )
 })
 
+test_that("an integer past R's range is still an integer", {
+  schema <- openapi_schema_object(
+    properties = list(
+      id = openapi_schema_integer(),
+      ids = openapi_schema_array(openapi_schema_integer()),
+      at = openapi_schema_integer(minimum = 0L)
+    )
+  )
+
+  req <- mock_request(
+    body = '{"id":3000000000,"ids":[3000000000,10],"at":1758000000000}'
+  )
+  body <- req$parse_json()
+
+  expect_length(openapi_validate(value = body, schema = schema), 0L)
+  expect_identical(body$id, 3e9)
+
+  # and no longer a string
+  problems <- openapi_validate(
+    value = body,
+    schema = openapi_schema_object(
+      properties = list(id = openapi_schema_string())
+    )
+  )
+  expect_equal(paths(problems), "id")
+  expect_match(messages(problems), "must be a string")
+})
+
 test_that("an array is not a scalar", {
   req <- mock_request(body = '{"tags":["a","b"],"title":"a"}')
   body <- req$parse_json()

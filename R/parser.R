@@ -361,6 +361,16 @@ parse_form_urlencoded <- function(req, ...) {
 #' [jsonlite::toJSON()] write the value back as `["a"]`; `identical()` and
 #' `inherits()` do see it.
 #'
+#' `int64 = "double"` reads an integer too large for R's integer type as a
+#' whole double, where yyjsonr would (by default) read it as a string: a
+#' 64-bit id or a millisecond timestamp stays a number, and `[3000000000, 10]`
+#' stays a numeric vector rather than a list of a string and an integer. An
+#' integer that fits is still read as an integer, so a handler gets an integer
+#' or a double depending on the value, the way `1` and `1e3` already did. A
+#' double holds a whole number exactly up to 2^53; past that it is rounded.
+#' Pass `int64 = "string"` for the old reading, or `int64 = "bit64"` with
+#' the bit64 package attached for exact 64-bit integers.
+#'
 #' A request with no body at all parses to `NULL`, before the parser is
 #' called. Nothing on the wire is `NULL`, so an absent body cannot be
 #' confused with `{}`, a named empty list, or `[]`, an empty list. A body
@@ -426,7 +436,8 @@ parse_json <- function(req, ...) {
       obj_of_arrs_to_df = FALSE,
       arr_of_objs_to_df = FALSE,
       arr_of_arrs_to_matrix = FALSE,
-      length1_array_asis = TRUE
+      length1_array_asis = TRUE,
+      int64 = "double"
     )
     for (option in setdiff(x = names(defaults), y = names(opts))) {
       opts[[option]] <- defaults[[option]]
