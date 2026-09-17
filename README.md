@@ -48,7 +48,7 @@ app$get("/", function(req, res) {
 app$start()
 ```
 
-Run it, then open <http://localhost:3000>
+Run it, then open `http://localhost:3000`.
 
 Websites and APIs use the same syntax, so one app can serve both:
 
