@@ -44,8 +44,11 @@
 #'                renderer.
 #'
 #' @param error Function /// Optional. \cr
-#'              A handler invoked if the route raises an error; receives the
+#'              A handler invoked if the route raises an error; receives the \cr
 #'              request, response, and the error condition. \cr
+#'              It answers for everything the route runs, not just `handler`: \cr
+#'              a middleware, a parameter middleware, and request validation \cr
+#'              with its `on_invalid`. \cr
 #'              Defaults to `NULL`, the app's error handler.
 #'
 #' @param docs OpenAPI docs /// Optional. \cr
@@ -639,82 +642,75 @@ Routing <- R6::R6Class(
 
           basepath <- private$.routes[[i]]$route$basepath
 
-          # parse request
-          request$params <- tryCatch(
-            set_params(request$PATH_INFO, private$.routes[[i]]$route),
-            error = function(error) {
-              error
-            }
-          )
+          # a `return()` in here still leaves `.call()`
+          response <- tryCatch(
+            {
+              # parse request
+              request$params <- set_params(
+                request$PATH_INFO,
+                private$.routes[[i]]$route
+              )
 
-          if (inherits(request$params, "error")) {
-            handler <- private$.routes[[i]]$error %||% self$error
-            return(
-              handler(request, res, request$params)
-            )
-          }
+              # parameter middleware
+              if (length(private$.params) > 0L && length(request$params) > 0L) {
+                for (j in seq_along(private$.params)) {
+                  pn <- private$.params[[j]]$params
+                  pv <- request$params[[pn]]
 
-          # parameter middleware
+                  # if param middleware is on correct router and has a
+                  # handler for a request parameter.
+                  on_router <- identical(
+                    attr(private$.params[[j]], "basepath"),
+                    basepath
+                  )
 
-          if (length(private$.params) > 0L && length(request$params) > 0L) {
-            for (j in seq_along(private$.params)) {
-              param_res <- NULL
-              pn <- private$.params[[j]]$params
-              pv <- request$params[[pn]]
+                  if (!on_router || is.null(pv)) {
+                    next
+                  }
 
-              # if param middleware is on correct router and has a handler for
-              # a request parameter.
+                  param_res <- private$.params[[j]]$handler(
+                    request,
+                    res,
+                    pv,
+                    pn
+                  )
 
-              if (
-                identical(attr(private$.params[[j]], "basepath"), basepath) &&
-                  !is.null(pv)
-              ) {
-                param_res <- private$.params[[j]]$handler(
-                  request,
-                  res,
-                  pv,
-                  pn
-                )
-
-                if (is_response(param_res)) {
-                  return(param_res)
+                  if (is_response(param_res)) {
+                    return(param_res)
+                  }
                 }
               }
-            }
-          }
 
-          # Middleware
+              # middleware
+              for (j in seq_along(private$.middleware)) {
+                mid_basepath <- attr(private$.middleware[[j]], "basepath")
 
-          if (length(private$.middleware) > 0L) {
-            for (j in seq_along(private$.middleware)) {
-              mid_basepath <- attr(private$.middleware[[j]], "basepath")
+                if (!startsWith(req$PATH_INFO, mid_basepath)) {
+                  next
+                }
 
-              mid_res <- NULL
-              if (startsWith(req$PATH_INFO, mid_basepath)) {
                 mid_res <- private$.middleware[[j]](request, res)
+
+                if (is_response(mid_res)) {
+                  return(mid_res)
+                }
               }
 
-              if (is_response(mid_res)) {
-                return(mid_res)
+              # validate the request against its documentation: after the
+              # middleware, so that e.g. authentication runs first
+              invalid <- private$.validate_request(
+                request,
+                res,
+                private$.routes[[i]]
+              )
+
+              if (is_response(invalid)) {
+                return(invalid)
               }
-            }
-          }
 
-          # validate the request against its documentation: after the
-          # middleware, so that e.g. authentication runs first
-          invalid <- private$.validate_request(
-            request,
-            res,
-            private$.routes[[i]]
-          )
-
-          if (is_response(invalid)) {
-            return(invalid)
-          }
-
-          # get response
-          response <- tryCatch(
-            private$.routes[[i]]$fun(request, res),
+              # get response
+              private$.routes[[i]]$fun(request, res)
+            },
             error = function(error) {
               error
             }

@@ -7,8 +7,12 @@
 #' @keywords internal
 #' @noRd
 prepare_app <- function(app) {
+  private <- app$.__enclos_env__$private
+
   app$prepare()
-  app$.__enclos_env__$private$.routes <- app$get_routes()
+  private$.routes <- app$get_routes()
+  private$.middleware <- app$get_middleware()
+  private$.params <- app$get_params()
   invisible(NULL)
 }
 
@@ -19,12 +23,15 @@ prepare_app <- function(app) {
 #' @param path String /// Optional.
 #'             Route path. Defaults to "/".
 #'
+#' @param query String /// Optional.
+#'              Query string. Defaults to "".
+#'
 #' @return [Response()]
 #'
 #' @keywords internal
 #' @noRd
-call_app <- function(app, path = "/") {
-  req <- mockRequest(path = path)$body
+call_app <- function(app, path = "/", query = "") {
+  req <- mockRequest(path = path, query = query)$body
   app$.__enclos_env__$private$.call(req)
 }
 
@@ -169,6 +176,161 @@ test_that("error handler receives the actual error condition", {
 
   expect_true(inherits(captured_error, "error"))
   expect_equal(conditionMessage(captured_error), "specific message")
+
+  stop_all()
+})
+
+test_that("an error in a middleware is answered by the error handler", {
+  app <- Ambiorix$new()
+
+  captured_error <- NULL
+  app$error <- function(req, res, error) {
+    captured_error <<- error
+    res$status <- 503L
+    res$send("global handler")
+  }
+
+  app$use(function(req, res) {
+    stop("middleware bug")
+  })
+
+  app$get("/", function(req, res) {
+    res$send("never reached")
+  })
+
+  prepare_app(app)
+  resp <- call_app(app)
+
+  expect_equal(resp$status, 503L)
+  expect_equal(resp$body, "global handler")
+  expect_equal(conditionMessage(captured_error), "middleware bug")
+
+  stop_all()
+})
+
+test_that("an error in a parameter middleware is answered by the error handler", {
+  app <- Ambiorix$new()
+
+  app$error <- function(req, res, error) {
+    res$status <- 503L
+    res$send(conditionMessage(error))
+  }
+
+  app$param("id", function(req, res, value, name) {
+    stop("param middleware bug")
+  })
+
+  app$get("/items/:id", function(req, res) {
+    res$send("never reached")
+  })
+
+  prepare_app(app)
+  resp <- call_app(app, "/items/1")
+
+  expect_equal(resp$status, 503L)
+  expect_equal(resp$body, "param middleware bug")
+
+  stop_all()
+})
+
+test_that("an error in `on_invalid` is answered by the error handler", {
+  app <- Ambiorix$new()
+
+  app$error <- function(req, res, error) {
+    res$status <- 503L
+    res$send(conditionMessage(error))
+  }
+
+  app$openapi(
+    on_invalid = function(req, res, details) {
+      stop("on_invalid bug")
+    }
+  )
+
+  app$get(
+    "/items",
+    function(req, res) {
+      res$send("never reached")
+    },
+    docs = openapi_docs(
+      parameters = openapi_param(
+        name = "n",
+        schema = openapi_schema_integer()
+      )
+    )
+  )
+
+  prepare_app(app)
+
+  # a valid request never meets `on_invalid`
+  resp <- call_app(app, "/items", query = "?n=1")
+  expect_equal(resp$body, "never reached")
+
+  resp <- call_app(app, "/items", query = "?n=abc")
+  expect_equal(resp$status, 503L)
+  expect_equal(resp$body, "on_invalid bug")
+
+  stop_all()
+})
+
+test_that("a route's own error handler answers for its middleware too", {
+  app <- Ambiorix$new()
+
+  app$error <- function(req, res, error) {
+    res$status <- 500L
+    res$send("global handler")
+  }
+
+  app$use(function(req, res) {
+    stop("middleware bug")
+  })
+
+  app$get(
+    "/",
+    function(req, res) {
+      res$send("never reached")
+    },
+    error = function(req, res, error) {
+      res$status <- 422L
+      res$send("route handler")
+    }
+  )
+
+  prepare_app(app)
+  resp <- call_app(app)
+
+  expect_equal(resp$status, 422L)
+  expect_equal(resp$body, "route handler")
+
+  stop_all()
+})
+
+test_that("a stage that answers early still does, and forward() still forwards", {
+  app <- Ambiorix$new()
+
+  app$use(function(req, res) {
+    if (identical(req$query$auth, "no")) {
+      res$status <- 401L
+      return(res$send("middleware answered"))
+    }
+  })
+
+  app$get("/", function(req, res) {
+    forward()
+  })
+
+  app$get("/", function(req, res) {
+    res$send("second handler")
+  })
+
+  prepare_app(app)
+
+  resp <- call_app(app, query = "?auth=no")
+  expect_equal(resp$status, 401L)
+  expect_equal(resp$body, "middleware answered")
+
+  resp <- call_app(app)
+  expect_equal(resp$body, "second handler")
 
   stop_all()
 })

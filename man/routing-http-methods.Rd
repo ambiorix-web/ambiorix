@@ -17,8 +17,11 @@ Handlers can return the result of helper functions such as
 renderer.}
 
 \item{error}{Function /// Optional. \cr
-A handler invoked if the route raises an error; receives the
+A handler invoked if the route raises an error; receives the \cr
 request, response, and the error condition. \cr
+It answers for everything the route runs, not just \code{handler}: \cr
+a middleware, a parameter middleware, and request validation \cr
+with its \code{on_invalid}. \cr
 Defaults to \code{NULL}, the app's error handler.}
 
 \item{docs}{OpenAPI docs /// Optional. \cr
