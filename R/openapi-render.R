@@ -600,25 +600,12 @@ openapi_render_parameters <- function(parameters, ctx, path) {
   out <- list()
 
   for (name in openapi_path_params(path)) {
-    override <- overrides[[name]]
+    # an undeclared token is a required string, which is also what
+    # `openapi_validate_request()` checks it as
+    param <- overrides[[name]] %||% openapi_param(name, location = "path")
     overrides[[name]] <- NULL
 
-    if (!is.null(override)) {
-      out <- append(out, list(as_openapi(override, ctx)))
-      next
-    }
-
-    out <- append(
-      out,
-      list(
-        list(
-          name = name,
-          `in` = "path",
-          required = TRUE,
-          schema = list(type = "string")
-        )
-      )
-    )
+    out <- append(out, list(as_openapi(param, ctx)))
   }
 
   # path parameters that match no token in the route are dropped

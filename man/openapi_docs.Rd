@@ -98,7 +98,8 @@ in the generated document at all.
 \details{
 Path parameters are documented automatically from the route's \verb{:param}
 tokens with a string schema, so only query, header, and cookie parameters
-need to be declared. To override an automatic path parameter (e.g. to
+need to be declared. With validation on they are checked as that string,
+declared or not. To override an automatic path parameter (e.g. to
 document it as an integer), declare it with \code{\link[=openapi_param]{openapi_param()}} using
 \code{location = "path"} and a name matching the route token.
 

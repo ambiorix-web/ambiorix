@@ -302,6 +302,59 @@ test_that("a string that is not valid UTF-8 is reported, not thrown", {
   expect_equal(paths(problems), "[2]")
 })
 
+test_that("a path parameter the docs do not declare is checked as a string", {
+  docs <- openapi_docs(summary = "No parameters declared")
+  bytes <- webutils::parse_query("a=%ff%fe")$a
+
+  req <- mock_request(params = list(name = "ada"))
+  expect_length(
+    openapi_validate_request(
+      request = req,
+      docs = docs,
+      path = "/users/:name"
+    ),
+    0L
+  )
+  expect_identical(req$params$name, "ada")
+
+  req <- mock_request(params = list(name = bytes))
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs,
+    path = "/users/:name"
+  )
+  expect_equal(paths(problems), "name")
+  expect_equal(messages(problems), "must be valid UTF-8")
+  expect_equal(problems[[1]]$location, "path")
+
+  # `/users/` matches `/users/:name` and sets no parameter at all
+  req <- mock_request()
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs,
+    path = "/users/:name"
+  )
+  expect_equal(paths(problems), "name")
+  expect_equal(messages(problems), "is required")
+
+  # a declared token is checked once, by its own schema
+  docs <- openapi_docs(
+    parameters = openapi_param(
+      name = "id",
+      location = "path",
+      schema = openapi_schema_integer()
+    )
+  )
+  req <- mock_request(params = list(org = "acme", id = "x"))
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs,
+    path = "/orgs/:org/users/:id"
+  )
+  expect_equal(paths(problems), "id")
+  expect_equal(messages(problems), "must be an integer")
+})
+
 test_that("a form field name that is not valid UTF-8 is a body problem", {
   docs <- openapi_docs(
     request_body = openapi_request_body(
@@ -1860,7 +1913,11 @@ test_that("validation can be overridden per route", {
   app <- Ambiorix$new()
   private <- environment(app$openapi)$private
 
-  route <- list(docs = docs_with_body())
+  route <- list(
+    route = Route$new("/tasks"),
+    path = "/tasks",
+    docs = docs_with_body()
+  )
   req <- mock_request(body = "{}")
   res <- Response$new()
 
@@ -1888,7 +1945,11 @@ test_that("enabling the docs enables validation", {
   app <- Ambiorix$new()
   private <- environment(app$openapi)$private
 
-  route <- list(docs = docs_with_body())
+  route <- list(
+    route = Route$new("/tasks"),
+    path = "/tasks",
+    docs = docs_with_body()
+  )
   req <- mock_request(body = "{}")
   res <- Response$new()
 
@@ -1913,7 +1974,11 @@ test_that("`on_invalid` answers for a rejected request", {
     }
   )
 
-  route <- list(docs = docs_with_body())
+  route <- list(
+    route = Route$new("/tasks"),
+    path = "/tasks",
+    docs = docs_with_body()
+  )
   req <- mock_request(body = '{"other": 1}')
   res <- Response$new()
 
@@ -1933,7 +1998,11 @@ test_that("an unparseable body is answered like any other invalid request", {
   app <- Ambiorix$new()
   private <- environment(app$openapi)$private
 
-  route <- list(docs = docs_with_body())
+  route <- list(
+    route = Route$new("/tasks"),
+    path = "/tasks",
+    docs = docs_with_body()
+  )
   req <- mock_request(body = '{"title": ')
   res <- Response$new()
 

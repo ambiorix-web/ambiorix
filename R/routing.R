@@ -550,7 +550,8 @@ Routing <- R6::R6Class(
       details <- openapi_validate_request(
         request = request,
         docs = route$docs,
-        schemas = private$.openapi_schemas %||% list()
+        schemas = private$.openapi_schemas %||% list(),
+        path = paste0(route$route$basepath, route$path)
       )
 
       if (!length(details)) {

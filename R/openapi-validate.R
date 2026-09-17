@@ -43,6 +43,12 @@
 #'                The document's schemas, used to resolve references. \cr
 #'                Defaults to `list()`.
 #'
+#' @param path String /// Optional. \cr
+#'             The route's full path, whose `:param` tokens are the path
+#'             parameters. One the docs do not declare is checked as the
+#'             string it is documented as. \cr
+#'             Defaults to `""`, a route with no path parameters.
+#'
 #' @return A `list` of problems, empty when the request is valid. Each is a
 #'         `list(location, path, message)`, see `openapi_detail()`.
 #'
@@ -66,10 +72,32 @@
 #'
 #' @keywords internal
 #' @noRd
-openapi_validate_request <- function(request, docs, schemas = list()) {
+openapi_validate_request <- function(
+  request,
+  docs,
+  schemas = list(),
+  path = ""
+) {
   details <- list()
 
-  for (param in docs$parameters) {
+  # a `:param` token the docs do not declare is documented as a string, see
+  # `openapi_render_parameters()`, and what is documented is checked
+  declared <- Filter(
+    f = function(param) identical(param$location, "path"),
+    x = docs$parameters
+  )
+  declared <- vapply(
+    X = declared,
+    FUN = function(param) param$name,
+    FUN.VALUE = character(1)
+  )
+  automatic <- lapply(
+    X = setdiff(openapi_path_params(path), declared),
+    FUN = openapi_param,
+    location = "path"
+  )
+
+  for (param in c(automatic, docs$parameters)) {
     if (!param$location %in% c("query", "path")) {
       next
     }
