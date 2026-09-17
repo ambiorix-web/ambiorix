@@ -397,6 +397,13 @@ print.ambiorix_openapi_response <- function(x, ...) {
 #' `allOf`, `anyOf`, `oneOf`, and `not` are; see the Composition section of
 #' [openapi-schemas].
 #'
+#' A property sent as `null` is read as absent, which is how a handler sees
+#' it too: `is.null(req$payload$name)` is `TRUE` either way. It is reported
+#' only when the property is required. Inside an array a `null` is an
+#' element like any other, reaches the handler as `NA` or `NULL`, and is
+#' rejected unless the items allow it, e.g.
+#' `openapi_schema(type = c("string", "null"))`.
+#'
 #' The `validate` argument below overrides the app-wide setting for this one
 #' route, in either direction: `FALSE` opts a route out of validation, `TRUE`
 #' opts a single route in while the rest of the app stays unchecked.

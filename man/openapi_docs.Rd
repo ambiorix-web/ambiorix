@@ -119,6 +119,13 @@ Header and cookie parameters are never checked. Schemas composed with
 \code{allOf}, \code{anyOf}, \code{oneOf}, and \code{not} are; see the Composition section of
 \link{openapi-schemas}.
 
+A property sent as \code{null} is read as absent, which is how a handler sees
+it too: \code{is.null(req$payload$name)} is \code{TRUE} either way. It is reported
+only when the property is required. Inside an array a \code{null} is an
+element like any other, reaches the handler as \code{NA} or \code{NULL}, and is
+rejected unless the items allow it, e.g.
+\code{openapi_schema(type = c("string", "null"))}.
+
 The \code{validate} argument below overrides the app-wide setting for this one
 route, in either direction: \code{FALSE} opts a route out of validation, \code{TRUE}
 opts a single route in while the rest of the app stays unchecked.

@@ -203,6 +203,88 @@ test_that("an array is not a scalar", {
   )
 })
 
+test_that("a null inside an array is a null, whatever it parsed to", {
+  strings <- openapi_schema_array(
+    items = openapi_schema_string(minLength = 1L, maxLength = 5L)
+  )
+  numbers <- openapi_schema_array(
+    items = openapi_schema_number(minimum = 0, multipleOf = 1)
+  )
+
+  # beside scalars of one type, `null` is parsed into their atomic vector
+  # as `NA`
+  req <- mock_request(body = '{"s":["a",null],"n":[1.5,null],"b":[true,null]}')
+  body <- req$parse_json()
+  expect_identical(body$s, c("a", NA))
+
+  problems <- openapi_validate(value = body$s, schema = strings)
+  expect_equal(paths(problems), "[2]")
+  expect_equal(messages(problems), "must be a string")
+
+  problems <- openapi_validate(value = body$n, schema = numbers)
+  expect_equal(paths(problems), c("[1]", "[2]"))
+  expect_equal(
+    messages(problems),
+    c("must be a multiple of 1", "must be a number")
+  )
+
+  problems <- openapi_validate(
+    value = body$b,
+    schema = openapi_schema_array(items = openapi_schema_boolean())
+  )
+  expect_equal(messages(problems), "must be a boolean")
+
+  # items that allow it: the null passes, and has no keywords to meet
+  nullable <- openapi_schema_array(
+    items = openapi_schema(type = c("string", "null"), minLength = 1L)
+  )
+  expect_length(openapi_validate(value = body$s, schema = nullable), 0L)
+
+  nullable <- openapi_schema_array(
+    items = openapi_schema(type = c("number", "null"), minimum = 0)
+  )
+  expect_length(openapi_validate(value = body$n, schema = nullable), 0L)
+
+  # keywords with no type beside them
+  expect_length(
+    openapi_validate(
+      value = body$n,
+      schema = openapi_schema_array(items = openapi_schema(minimum = 0))
+    ),
+    0L
+  )
+
+  # in a list it is `NULL`, and was never mistaken for anything
+  req <- mock_request(body = '[{"a":1},null]')
+  problems <- openapi_validate(
+    value = req$parse_json(),
+    schema = openapi_schema_array(items = openapi_schema_object())
+  )
+  expect_equal(paths(problems), "[2]")
+  expect_equal(messages(problems), "must be an object")
+})
+
+test_that("a property sent as null is read as absent", {
+  schema <- openapi_schema_object(
+    properties = list(
+      title = openapi_schema_string(),
+      note = openapi_schema_string(minLength = 1L)
+    ),
+    required = "title"
+  )
+
+  req <- mock_request(body = '{"title":"a","note":null}')
+  expect_length(
+    openapi_validate(value = req$parse_json(), schema = schema),
+    0L
+  )
+
+  req <- mock_request(body = '{"title":null}')
+  problems <- openapi_validate(value = req$parse_json(), schema = schema)
+  expect_equal(paths(problems), "title")
+  expect_equal(messages(problems), "is required")
+})
+
 test_that("empty arrays and objects are told apart", {
   req <- mock_request(body = '{"arr":[],"obj":{}}')
   body <- req$parse_json()

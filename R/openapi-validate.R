@@ -692,7 +692,8 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
     }
   }
 
-  if (scalar && is.numeric(value)) {
+  # a `null` parsed beside numbers is a numeric `NA`, with no bounds to meet
+  if (scalar && is.numeric(value) && !is.na(value)) {
     problems <- c(problems, openapi_check_number(value, schema, path))
   }
 
@@ -1350,6 +1351,11 @@ openapi_resolve_schema <- function(schema, schemas) {
 #' `1.0` both parse to a number, so an integer is a number that equals its
 #' own truncation.
 #'
+#' `null` arrives in two forms. In a list it is `NULL`. Beside scalars of one
+#' type it is `NA`: `["a", null]` parses to `c("a", NA)`, since an atomic
+#' vector cannot hold `NULL`. JSON has no `NA` of its own, so a scalar `NA`
+#' is a `null` and no other type.
+#'
 #' Types that are not part of the specification are not checked, and pass.
 #'
 #' @param value Object /// Required. \cr
@@ -1382,30 +1388,36 @@ openapi_resolve_schema <- function(schema, schemas) {
 #'
 #' openapi_is_type(list(id = 1L), "object")
 #'
+#' # the `null` of `["a", null]`
+#' openapi_is_type(NA_character_, "string")
+#'
+#' openapi_is_type(NA_character_, "null")
+#'
 #' @keywords internal
 #' @noRd
 openapi_is_type <- function(value, type) {
-  if (identical(type, "null")) {
-    return(is.null(value))
-  }
-
-  if (is.null(value)) {
-    return(FALSE)
-  }
-
   is_asis <- inherits(value, "AsIs")
   scalar <- !is_asis && length(value) == 1L && !is.list(value)
+
+  # an atomic vector cannot hold `NULL`, so the `null` in `["a", null]` is
+  # parsed as `NA`. nothing else on the wire is
+  is_null <- is.null(value) || (scalar && is.na(value))
+
+  if (identical(type, "null")) {
+    return(is_null)
+  }
+
+  if (is_null) {
+    return(FALSE)
+  }
 
   switch(
     EXPR = type,
     string = scalar && is.character(value),
     # JSON has no integer type of its own: 1 and 1.0 both parse to a number
-    integer = scalar &&
-      is.numeric(value) &&
-      !is.na(value) &&
-      value == trunc(value),
+    integer = scalar && is.numeric(value) && value == trunc(value),
     number = scalar && is.numeric(value),
-    boolean = scalar && is.logical(value) && !is.na(value),
+    boolean = scalar && is.logical(value),
     array = is_asis ||
       (is.atomic(value) && length(value) != 1L) ||
       (is.list(value) && is.null(names(value))),
