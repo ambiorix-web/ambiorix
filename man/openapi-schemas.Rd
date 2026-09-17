@@ -117,6 +117,57 @@ reading the document, so unknown names emit a warning. Extension
 keywords (\verb{x-*}) are always allowed.
 }
 
+\section{Composition}{
+
+
+\code{allOf}, \code{anyOf}, and \code{oneOf} each take an unnamed list of schemas, and
+\code{not} takes a single schema. They go through \code{...} like any other keyword,
+on their own with \code{openapi_schema()} or beside a type:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# a User is a NewUser plus what the server adds
+openapi_schema(
+  allOf = list(
+    openapi_schema_ref("NewUser"),
+    openapi_schema_object(
+      properties = list(id = openapi_schema_integer()),
+      required = "id"
+    )
+  )
+)
+
+# one address, or several
+openapi_schema(
+  oneOf = list(
+    openapi_schema_string(format = "email"),
+    openapi_schema_array(openapi_schema_string(format = "email"))
+  )
+)
+
+openapi_schema_string(not = openapi_schema(enum = list("admin", "root")))
+}\if{html}{\out{</div>}}
+
+When a request is validated, a value must match every \code{allOf} schema, at
+least one \code{anyOf} schema, exactly one \code{oneOf} schema, and must not match
+the \code{not} schema. When nothing in an \code{anyOf} or \code{oneOf} matches and only
+one of its schemas is of the value's type, that schema's problems are the
+ones reported, e.g. \verb{to: must be at least 3 character(s) long}; otherwise
+the response says only that no schema matched.
+
+A query, path, or form value arrives as a string, which each branch reads
+its own way: an integer schema reads \code{42} as a number, a string schema as
+text. The first reading that is valid is the one the handler receives, so
+\verb{/products/42} documented as an integer or a lowercase slug is the integer
+\code{42}. List the narrower schema first where two readings can both be valid:
+a string schema with no constraints accepts anything, and placed first it
+keeps every value a string. An array is the exception:
+\code{?tag=a} is read as an array of one only when the schema's own \code{type} is
+\code{"array"}, not when an array is one of its branches.
+
+Each schema is checked on its own, as JSON Schema specifies, so
+\code{additionalProperties = FALSE} inside an \code{allOf} rejects the properties
+the other schemas declare.
+}
+
 \examples{
 openapi_schema_string()
 

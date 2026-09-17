@@ -43,6 +43,56 @@
 #' reading the document, so unknown names emit a warning. Extension
 #' keywords (`x-*`) are always allowed.
 #'
+#' @section Composition:
+#'
+#' `allOf`, `anyOf`, and `oneOf` each take an unnamed list of schemas, and
+#' `not` takes a single schema. They go through `...` like any other keyword,
+#' on their own with `openapi_schema()` or beside a type:
+#'
+#' ```r
+#' # a User is a NewUser plus what the server adds
+#' openapi_schema(
+#'   allOf = list(
+#'     openapi_schema_ref("NewUser"),
+#'     openapi_schema_object(
+#'       properties = list(id = openapi_schema_integer()),
+#'       required = "id"
+#'     )
+#'   )
+#' )
+#'
+#' # one address, or several
+#' openapi_schema(
+#'   oneOf = list(
+#'     openapi_schema_string(format = "email"),
+#'     openapi_schema_array(openapi_schema_string(format = "email"))
+#'   )
+#' )
+#'
+#' openapi_schema_string(not = openapi_schema(enum = list("admin", "root")))
+#' ```
+#'
+#' When a request is validated, a value must match every `allOf` schema, at
+#' least one `anyOf` schema, exactly one `oneOf` schema, and must not match
+#' the `not` schema. When nothing in an `anyOf` or `oneOf` matches and only
+#' one of its schemas is of the value's type, that schema's problems are the
+#' ones reported, e.g. `to: must be at least 3 character(s) long`; otherwise
+#' the response says only that no schema matched.
+#'
+#' A query, path, or form value arrives as a string, which each branch reads
+#' its own way: an integer schema reads `42` as a number, a string schema as
+#' text. The first reading that is valid is the one the handler receives, so
+#' `/products/42` documented as an integer or a lowercase slug is the integer
+#' `42`. List the narrower schema first where two readings can both be valid:
+#' a string schema with no constraints accepts anything, and placed first it
+#' keeps every value a string. An array is the exception:
+#' `?tag=a` is read as an array of one only when the schema's own `type` is
+#' `"array"`, not when an array is one of its branches.
+#'
+#' Each schema is checked on its own, as JSON Schema specifies, so
+#' `additionalProperties = FALSE` inside an `allOf` rejects the properties
+#' the other schemas declare.
+#'
 #' @param type String or Character vector /// Optional. \cr
 #'             The schema type, e.g. `"string"`. Only needed with
 #'             `openapi_schema()`; the other constructors set it for you. A
@@ -146,6 +196,35 @@ openapi_schema <- function(type = NULL, ...) {
     warn_unknown_keywords(names(keywords))
   }
 
+  for (keyword in intersect(c("allOf", "anyOf", "oneOf"), names(keywords))) {
+    branches <- keywords[[keyword]]
+
+    # a schema is itself a list, so a forgotten `list()` has to be told apart
+    # from one, and a named list would render as an object, not an array
+    valid <- is.list(branches) &&
+      !is_openapi_schema(branches) &&
+      length(branches) &&
+      is.null(names(branches)) &&
+      is_openapi_schema_list(branches)
+
+    if (!valid) {
+      stop(
+        "`",
+        keyword,
+        "` must be a non-empty, unnamed list of OpenAPI ",
+        "schemas, see `?openapi-schemas`",
+        call. = FALSE
+      )
+    }
+  }
+
+  if ("not" %in% names(keywords) && !is_openapi_schema(keywords[["not"]])) {
+    stop(
+      "`not` must be an OpenAPI schema, see `?openapi-schemas`",
+      call. = FALSE
+    )
+  }
+
   if (!is.null(type)) {
     assert_that(is.character(type))
     keywords <- c(list(type = type), keywords)
@@ -221,13 +300,7 @@ openapi_schema_object <- function(properties = list(), required = NULL, ...) {
     out$required <- required
   }
 
-  if (length(keywords)) {
-    assert_that(has_names(keywords))
-    warn_unknown_keywords(names(keywords))
-    out[names(keywords)] <- keywords
-  }
-
-  new_openapi_schema(out)
+  do.call(what = openapi_schema, args = c(out, keywords))
 }
 
 #' @rdname openapi-schemas

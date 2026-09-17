@@ -53,8 +53,9 @@
     `components` and references it with `$ref` wherever it is used.
   - Documented routes are validated. Query and path parameters and JSON,
     form-urlencoded, and multipart bodies are checked against the
-    documented schemas before the handler runs; parameters are converted to
-    their documented type, and the parsed body is stored on `req$payload`.
+    documented schemas before the handler runs, `allOf`, `anyOf`, `oneOf`,
+    and `not` included; parameters are converted to their documented type,
+    and the parsed body is stored on `req$payload`.
     A request that does not match is answered with a `400` listing what is
     wrong. `app$openapi(on_invalid =)` replaces that response,
     `app$openapi(validate = FALSE)` turns validation off app-wide, and

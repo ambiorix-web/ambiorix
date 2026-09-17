@@ -115,7 +115,9 @@ it is on, query and path parameters and a JSON, form-urlencoded, or
 multipart request body are checked against the schemas documented here
 before the handler runs, and a \code{400} is returned when they do not match;
 see \code{app$openapi(on_invalid =)} to answer with a response of your own.
-Header and cookie parameters are never checked.
+Header and cookie parameters are never checked. Schemas composed with
+\code{allOf}, \code{anyOf}, \code{oneOf}, and \code{not} are; see the Composition section of
+\link{openapi-schemas}.
 
 The \code{validate} argument below overrides the app-wide setting for this one
 route, in either direction: \code{FALSE} opts a route out of validation, \code{TRUE}

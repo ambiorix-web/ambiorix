@@ -393,7 +393,9 @@ print.ambiorix_openapi_response <- function(x, ...) {
 #' multipart request body are checked against the schemas documented here
 #' before the handler runs, and a `400` is returned when they do not match;
 #' see `app$openapi(on_invalid =)` to answer with a response of your own.
-#' Header and cookie parameters are never checked.
+#' Header and cookie parameters are never checked. Schemas composed with
+#' `allOf`, `anyOf`, `oneOf`, and `not` are; see the Composition section of
+#' [openapi-schemas].
 #'
 #' The `validate` argument below overrides the app-wide setting for this one
 #' route, in either direction: `FALSE` opts a route out of validation, `TRUE`

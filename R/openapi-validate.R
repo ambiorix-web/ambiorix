@@ -194,6 +194,10 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
 #' decides types, not whether a field survives, so
 #' `additionalProperties = FALSE` still has something to complain about.
 #'
+#' The properties are gathered through `allOf`, `anyOf`, and `oneOf`, since
+#' a composed body declares its fields in the branches. A name declared more
+#' than once is shaped by its first declaration.
+#'
 #' @param payload Named list /// Required. \cr
 #'                The parsed body, from [parse_form_urlencoded()] or
 #'                [parse_multipart()]. One element per occurrence, so a name
@@ -223,7 +227,23 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
 #' @keywords internal
 #' @noRd
 openapi_form <- function(payload, schema, schemas = list()) {
-  properties <- openapi_resolve_schema(schema, schemas)$properties
+  gather <- function(schema) {
+    schema <- openapi_resolve_schema(schema, schemas)
+    properties <- schema[["properties"]]
+    branches <- c(schema[["allOf"]], schema[["anyOf"]], schema[["oneOf"]])
+
+    for (branch in branches) {
+      nested <- gather(branch)
+      properties <- c(
+        properties,
+        nested[setdiff(names(nested), names(properties))]
+      )
+    }
+
+    properties
+  }
+
+  properties <- gather(schema)
 
   # named even when every field is blank: a form body is an object, `{}`,
   # never `[]`
@@ -563,6 +583,14 @@ openapi_detail_list <- function(location, problems) {
 #' resolved, accept anything. A multipart file part (`filename` in its names)
 #' documented with `format: binary` or `byte` is accepted as-is.
 #'
+#' The composition keywords come last, each branch checked by coming back
+#' here with the same `path`. `allOf` reports every branch's problems as they
+#' are. `anyOf` and `oneOf` cannot: the problems of a branch the client never
+#' meant are noise. So when no branch matches, the branches whose `type` fits
+#' the value are counted; a single one is taken for the branch that was meant
+#' and its problems are reported, and otherwise there is one problem saying
+#' that nothing matched. `not` fails when its schema matches.
+#'
 #' @param value Object /// Required. \cr
 #'              The value to check.
 #'
@@ -597,6 +625,14 @@ openapi_detail_list <- function(location, problems) {
 #'
 #' # a wrong type short-circuits: no `minLength` complaint on top
 #' openapi_validate(1L, openapi_schema_string(minLength = 5L))
+#'
+#' # `oneOf`: only the object branch fits an object, so its problems are
+#' # reported; `TRUE` fits neither branch
+#' either <- openapi_schema(oneOf = list(openapi_schema_string(), schema))
+#'
+#' openapi_validate(list(tags = list("web")), either)
+#'
+#' openapi_validate(TRUE, either)
 #'
 #' @keywords internal
 #' @noRd
@@ -676,6 +712,81 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
       problems,
       openapi_check_object(value, schema, schemas, path)
     )
+  }
+
+  for (branch in schema[["allOf"]]) {
+    problems <- c(problems, openapi_validate(value, branch, schemas, path))
+  }
+
+  for (keyword in c("anyOf", "oneOf")) {
+    branches <- schema[[keyword]]
+
+    if (is.null(branches)) {
+      next
+    }
+
+    results <- lapply(
+      X = branches,
+      FUN = function(branch) openapi_validate(value, branch, schemas, path)
+    )
+    matched <- sum(lengths(results) == 0L)
+
+    if (matched == 1L || (matched > 1L && keyword == "anyOf")) {
+      next
+    }
+
+    if (matched > 1L) {
+      fail(
+        sprintf(
+          "must match exactly one of the documented schemas, matched %d",
+          matched
+        )
+      )
+
+      next
+    }
+
+    # nothing matched. a branch of another type was never what the client
+    # meant, so when a single branch is left its problems are the useful ones
+    candidates <- vapply(
+      X = branches,
+      FUN = function(branch) {
+        types <- openapi_resolve_schema(branch, schemas)[["type"]]
+
+        if (is.null(types)) {
+          return(TRUE)
+        }
+
+        any(
+          vapply(
+            X = types,
+            FUN = function(type) openapi_is_type(value, type),
+            FUN.VALUE = logical(1)
+          )
+        )
+      },
+      FUN.VALUE = logical(1)
+    )
+
+    if (sum(candidates) == 1L) {
+      problems <- c(problems, results[[which(candidates)]])
+      next
+    }
+
+    fail(
+      sprintf(
+        "must match %s of the %d documented schemas",
+        if (keyword == "oneOf") "exactly one" else "at least one",
+        length(branches)
+      )
+    )
+  }
+
+  if (
+    !is.null(schema[["not"]]) &&
+      !length(openapi_validate(value, schema[["not"]], schemas, path))
+  ) {
+    fail("must not match the excluded schema")
   }
 
   problems
@@ -1031,6 +1142,16 @@ openapi_check_object <- function(value, schema, schemas, path) {
 #' union of types, an unresolvable reference, a multipart file part, or any
 #' other value that is not a single string.
 #'
+#' A schema with no `type` of its own is converted by its `allOf`, `anyOf`,
+#' and `oneOf` branches instead. Each branch reads the string its own way,
+#' and the first reading the whole schema accepts is the one kept: `42`
+#' documented as an integer or a slug is the integer, because `"42"` is not
+#' a slug, and `123` documented as three digits or a number of at least 1000
+#' stays the string. Converting first and validating after would have picked
+#' the number and then rejected it. When no reading is accepted, the first
+#' converted one is kept, so the problem reported is about the number and not
+#' about a string that was never meant.
+#'
 #' Each type accepts the spelling JSON gives it and nothing else: `10` is an
 #' integer, `1.5` and `1e3` are numbers, `true` and `false` are booleans.
 #' What R's own coercion would also take is not a value on the wire: `1.5`
@@ -1087,7 +1208,34 @@ openapi_convert <- function(value, schema, schemas = list()) {
 
   type <- schema[["type"]]
 
-  if (is.null(type) || length(type) != 1L) {
+  if (is.null(type)) {
+    # composed: every branch has its own reading of the string
+    branches <- c(schema[["allOf"]], schema[["anyOf"]], schema[["oneOf"]])
+    candidates <- lapply(
+      X = branches,
+      FUN = function(branch) openapi_convert(value, branch, schemas)
+    )
+
+    # the string cannot say which reading was meant, so the first one the
+    # whole schema accepts decides
+    for (candidate in candidates) {
+      if (!length(openapi_validate(candidate, schema, schemas))) {
+        return(candidate)
+      }
+    }
+
+    # none is accepted. a converted reading makes for the better complaint:
+    # `0` is *must be greater than or equal to 1*, not a failed pattern
+    for (candidate in candidates) {
+      if (!is.character(candidate)) {
+        return(candidate)
+      }
+    }
+
+    return(value)
+  }
+
+  if (length(type) != 1L) {
     return(value)
   }
 
