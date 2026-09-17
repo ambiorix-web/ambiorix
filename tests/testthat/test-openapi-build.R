@@ -278,6 +278,27 @@ test_that("document level fields render", {
   expect_true(op$deprecated)
 })
 
+test_that("a single scope is serialised as an array", {
+  expect_equal(
+    default_serialiser(
+      openapi_render_security(list(list(oauth = c("read:users"))))
+    ),
+    '[{"oauth":["read:users"]}]'
+  )
+
+  expect_equal(
+    default_serialiser(
+      openapi_render_security(
+        list(list(oauth = c("read:x", "write:x")), list(apiKey = list()))
+      )
+    ),
+    '[{"oauth":["read:x","write:x"]},{"apiKey":[]}]'
+  )
+
+  # no authentication
+  expect_equal(default_serialiser(openapi_render_security(list())), "[]")
+})
+
 test_that("user-declared path params override the auto-generated defaults", {
   app <- Ambiorix$new()
 

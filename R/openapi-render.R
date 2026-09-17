@@ -676,7 +676,9 @@ openapi_path_params <- function(path) {
 #' Render a Security Requirement
 #'
 #' A character vector names the schemes that must *all* be satisfied; a list
-#' is passed through as-is, for schemes that take scopes.
+#' is for schemes that take scopes. Its scopes are wrapped with [as.list()]:
+#' the serialiser unboxes an atomic vector of one, and a single scope must
+#' still be emitted as an array.
 #'
 #' Each scheme is rendered with an empty scope array, which is what the
 #' specification wants for schemes that do not use scopes. Pass a `list` to
@@ -697,14 +699,19 @@ openapi_path_params <- function(path) {
 #' # several schemes that must all be satisfied
 #' openapi_render_security(c("bearerAuth", "apiKey"))
 #'
-#' # a list passes through, for schemes that take scopes
+#' # a list, for schemes that take scopes: one scope is still an array
 #' openapi_render_security(list(list(oauth = c("read:users"))))
 #'
 #' @keywords internal
 #' @noRd
 openapi_render_security <- function(security) {
   if (is.list(security)) {
-    return(security)
+    return(
+      lapply(
+        X = security,
+        FUN = function(requirement) lapply(X = requirement, FUN = as.list)
+      )
+    )
   }
 
   requirement <- list()
