@@ -1,0 +1,2028 @@
+mock_request <- function(
+  query = list(),
+  params = list(),
+  body = NULL,
+  content_type = NULL
+) {
+  request <- mockRequest()
+  request$query <- query
+  request$params <- params
+  request$rook.input <- list(
+    read = function() {
+      if (is.null(body)) {
+        return(raw())
+      }
+      charToRaw(body)
+    },
+    rewind = function() invisible(NULL)
+  )
+  if (!is.null(content_type)) {
+    request$CONTENT_TYPE <- content_type
+  }
+  request
+}
+
+messages <- function(problems) {
+  vapply(X = problems, FUN = function(p) p$message, FUN.VALUE = character(1))
+}
+
+paths <- function(problems) {
+  vapply(X = problems, FUN = function(p) p$path, FUN.VALUE = character(1))
+}
+
+test_that("types are checked against the parsed JSON", {
+  expect_length(
+    openapi_validate(
+      value = "a",
+      schema = openapi_schema_string()
+    ),
+    0L
+  )
+  expect_length(
+    openapi_validate(
+      value = 1L,
+      schema = openapi_schema_integer()
+    ),
+    0L
+  )
+  expect_length(
+    openapi_validate(
+      value = 1.5,
+      schema = openapi_schema_number()
+    ),
+    0L
+  )
+  expect_length(
+    openapi_validate(
+      value = TRUE,
+      schema = openapi_schema_boolean()
+    ),
+    0L
+  )
+
+  expect_match(
+    messages(
+      openapi_validate(
+        value = 1L,
+        schema = openapi_schema_string()
+      )
+    ),
+    "must be a string"
+  )
+  expect_match(
+    messages(
+      openapi_validate(
+        value = "a",
+        schema = openapi_schema_integer()
+      )
+    ),
+    "must be an integer"
+  )
+  expect_length(
+    openapi_validate(
+      value = 1,
+      schema = openapi_schema_integer()
+    ),
+    0L
+  )
+  expect_length(
+    openapi_validate(
+      value = 1.5,
+      schema = openapi_schema_integer()
+    ),
+    1L
+  )
+})
+
+test_that("an integer past R's range is still an integer", {
+  schema <- openapi_schema_object(
+    properties = list(
+      id = openapi_schema_integer(),
+      ids = openapi_schema_array(openapi_schema_integer()),
+      at = openapi_schema_integer(minimum = 0L)
+    )
+  )
+
+  req <- mock_request(
+    body = '{"id":3000000000,"ids":[3000000000,10],"at":1758000000000}'
+  )
+  body <- req$parse_json()
+
+  expect_length(openapi_validate(value = body, schema = schema), 0L)
+  expect_identical(body$id, 3e9)
+
+  # and no longer a string
+  problems <- openapi_validate(
+    value = body,
+    schema = openapi_schema_object(
+      properties = list(id = openapi_schema_string())
+    )
+  )
+  expect_equal(paths(problems), "id")
+  expect_match(messages(problems), "must be a string")
+})
+
+test_that("an array is not a scalar", {
+  req <- mock_request(body = '{"tags":["a","b"],"title":"a"}')
+  body <- req$parse_json()
+
+  expect_length(
+    openapi_validate(
+      value = body$tags,
+      schema = openapi_schema_array(
+        items = openapi_schema_string()
+      )
+    ),
+    0L
+  )
+
+  expect_length(
+    openapi_validate(
+      value = body$title,
+      schema = openapi_schema_string()
+    ),
+    0L
+  )
+
+  # a scalar is not an array...
+  expect_length(
+    openapi_validate(
+      value = body$title,
+      schema = openapi_schema_array(
+        items = openapi_schema_string()
+      )
+    ),
+    1L
+  )
+
+  # ...and an array of two is not a scalar
+  expect_length(
+    openapi_validate(
+      value = body$tags,
+      schema = openapi_schema_string()
+    ),
+    1L
+  )
+
+  expect_length(
+    openapi_validate(
+      value = list("a"),
+      schema = openapi_schema_array(
+        items = openapi_schema_string()
+      )
+    ),
+    0L
+  )
+
+  # a list is an array, never a scalar
+  expect_length(
+    openapi_validate(
+      value = list("a"),
+      schema = openapi_schema_string()
+    ),
+    1L
+  )
+
+  # so is an array of one, as the parser marks it
+  expect_length(
+    openapi_validate(
+      value = I("a"),
+      schema = openapi_schema_array(
+        items = openapi_schema_string()
+      )
+    ),
+    0L
+  )
+
+  expect_length(
+    openapi_validate(
+      value = I("a"),
+      schema = openapi_schema_string()
+    ),
+    1L
+  )
+})
+
+test_that("a null inside an array is a null, whatever it parsed to", {
+  strings <- openapi_schema_array(
+    items = openapi_schema_string(minLength = 1L, maxLength = 5L)
+  )
+  numbers <- openapi_schema_array(
+    items = openapi_schema_number(minimum = 0, multipleOf = 1)
+  )
+
+  # beside scalars of one type, `null` is parsed into their atomic vector
+  # as `NA`
+  req <- mock_request(body = '{"s":["a",null],"n":[1.5,null],"b":[true,null]}')
+  body <- req$parse_json()
+  expect_identical(body$s, c("a", NA))
+
+  problems <- openapi_validate(value = body$s, schema = strings)
+  expect_equal(paths(problems), "[2]")
+  expect_equal(messages(problems), "must be a string")
+
+  problems <- openapi_validate(value = body$n, schema = numbers)
+  expect_equal(paths(problems), c("[1]", "[2]"))
+  expect_equal(
+    messages(problems),
+    c("must be a multiple of 1", "must be a number")
+  )
+
+  problems <- openapi_validate(
+    value = body$b,
+    schema = openapi_schema_array(items = openapi_schema_boolean())
+  )
+  expect_equal(messages(problems), "must be a boolean")
+
+  # items that allow it: the null passes, and has no keywords to meet
+  nullable <- openapi_schema_array(
+    items = openapi_schema(type = c("string", "null"), minLength = 1L)
+  )
+  expect_length(openapi_validate(value = body$s, schema = nullable), 0L)
+
+  nullable <- openapi_schema_array(
+    items = openapi_schema(type = c("number", "null"), minimum = 0)
+  )
+  expect_length(openapi_validate(value = body$n, schema = nullable), 0L)
+
+  # keywords with no type beside them
+  expect_length(
+    openapi_validate(
+      value = body$n,
+      schema = openapi_schema_array(items = openapi_schema(minimum = 0))
+    ),
+    0L
+  )
+
+  # in a list it is `NULL`, and was never mistaken for anything
+  req <- mock_request(body = '[{"a":1},null]')
+  problems <- openapi_validate(
+    value = req$parse_json(),
+    schema = openapi_schema_array(items = openapi_schema_object())
+  )
+  expect_equal(paths(problems), "[2]")
+  expect_equal(messages(problems), "must be an object")
+})
+
+test_that("a string that is not valid UTF-8 is reported, not thrown", {
+  # what percent-decoding makes of `%ff%fe`, and of a latin1 `caf%E9`
+  bytes <- webutils::parse_query("a=%ff%fe&b=caf%E9&c=caf%C3%A9")
+  expect_false(validUTF8(bytes$a))
+
+  # `nchar()` raises on it
+  problems <- openapi_validate(
+    value = bytes$a,
+    schema = openapi_schema_string(minLength = 1L, maxLength = 5L)
+  )
+  expect_equal(messages(problems), "must be valid UTF-8")
+
+  # reported once, and not as a pattern that failed to match
+  problems <- openapi_validate(
+    value = bytes$b,
+    schema = openapi_schema_string(pattern = "^caf")
+  )
+  expect_equal(messages(problems), "must be valid UTF-8")
+
+  # a string with no keywords is still a string
+  docs <- openapi_docs(parameters = openapi_param(name = "q"))
+
+  req <- mock_request(query = list(q = bytes$a))
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_equal(paths(problems), "q")
+  expect_equal(messages(problems), "must be valid UTF-8")
+
+  req <- mock_request(query = list(q = bytes$c))
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+
+  # inside an array, the element is named
+  problems <- openapi_validate(
+    value = c("a", bytes$a),
+    schema = openapi_schema_array(items = openapi_schema_string())
+  )
+  expect_equal(paths(problems), "[2]")
+})
+
+test_that("a path parameter the docs do not declare is checked as a string", {
+  docs <- openapi_docs(summary = "No parameters declared")
+  bytes <- webutils::parse_query("a=%ff%fe")$a
+
+  req <- mock_request(params = list(name = "ada"))
+  expect_length(
+    openapi_validate_request(
+      request = req,
+      docs = docs,
+      path = "/users/:name"
+    ),
+    0L
+  )
+  expect_identical(req$params$name, "ada")
+
+  req <- mock_request(params = list(name = bytes))
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs,
+    path = "/users/:name"
+  )
+  expect_equal(paths(problems), "name")
+  expect_equal(messages(problems), "must be valid UTF-8")
+  expect_equal(problems[[1]]$location, "path")
+
+  # `/users/` matches `/users/:name` and sets no parameter at all
+  req <- mock_request()
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs,
+    path = "/users/:name"
+  )
+  expect_equal(paths(problems), "name")
+  expect_equal(messages(problems), "is required")
+
+  # a declared token is checked once, by its own schema
+  docs <- openapi_docs(
+    parameters = openapi_param(
+      name = "id",
+      location = "path",
+      schema = openapi_schema_integer()
+    )
+  )
+  req <- mock_request(params = list(org = "acme", id = "x"))
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs,
+    path = "/orgs/:org/users/:id"
+  )
+  expect_equal(paths(problems), "id")
+  expect_equal(messages(problems), "must be an integer")
+})
+
+test_that("a form field name that is not valid UTF-8 is a body problem", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(name = openapi_schema_string()),
+        additionalProperties = FALSE
+      ),
+      content_type = "application/x-www-form-urlencoded"
+    )
+  )
+
+  req <- mock_request(body = "name=Ada&%ff%fe=1")
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_length(problems, 1L)
+  expect_equal(paths(problems), "")
+  expect_equal(messages(problems), "a field name is not valid UTF-8")
+  expect_null(req$payload)
+
+  # the response that reports it can be written
+  expect_no_error(
+    default_serialiser(list(error = "Invalid request", details = problems))
+  )
+})
+
+test_that("a property sent as null is read as absent", {
+  schema <- openapi_schema_object(
+    properties = list(
+      title = openapi_schema_string(),
+      note = openapi_schema_string(minLength = 1L)
+    ),
+    required = "title"
+  )
+
+  req <- mock_request(body = '{"title":"a","note":null}')
+  expect_length(
+    openapi_validate(value = req$parse_json(), schema = schema),
+    0L
+  )
+
+  req <- mock_request(body = '{"title":null}')
+  problems <- openapi_validate(value = req$parse_json(), schema = schema)
+  expect_equal(paths(problems), "title")
+  expect_equal(messages(problems), "is required")
+})
+
+test_that("empty arrays and objects are told apart", {
+  req <- mock_request(body = '{"arr":[],"obj":{}}')
+  body <- req$parse_json()
+
+  expect_length(
+    openapi_validate(
+      value = body$arr,
+      schema = openapi_schema_array(
+        items = openapi_schema_string()
+      )
+    ),
+    0L
+  )
+
+  expect_length(
+    openapi_validate(
+      value = body$obj,
+      schema = openapi_schema_object()
+    ),
+    0L
+  )
+
+  expect_length(
+    openapi_validate(
+      value = body$arr,
+      schema = openapi_schema_object()
+    ),
+    1L
+  )
+})
+
+test_that("required properties are checked", {
+  schema <- openapi_schema_object(
+    properties = list(
+      title = openapi_schema_string(),
+      done = openapi_schema_boolean()
+    ),
+    required = "title"
+  )
+
+  req <- mock_request(body = '{"title":"a"}')
+  body <- req$parse_json()
+
+  expect_length(
+    openapi_validate(
+      value = body,
+      schema = schema
+    ),
+    0L
+  )
+
+  req <- mock_request(body = "{}")
+  body <- req$parse_json()
+  problems <- openapi_validate(
+    value = body,
+    schema = schema
+  )
+
+  expect_length(problems, 1L)
+  expect_equal(paths(problems), "title")
+  expect_equal(messages(problems), "is required")
+})
+
+test_that("nested objects and arrays report the path of the problem", {
+  schema <- openapi_schema_object(
+    properties = list(
+      task = openapi_schema_object(
+        properties = list(
+          tags = openapi_schema_array(
+            items = openapi_schema_string()
+          )
+        )
+      )
+    )
+  )
+
+  req <- mock_request(body = '{"task":{"tags":["a",1,"c"]}}')
+  body <- req$parse_json()
+  problems <- openapi_validate(
+    value = body,
+    schema = schema
+  )
+
+  expect_length(problems, 1L)
+  expect_equal(paths(problems), "task.tags[2]")
+})
+
+test_that("string, number, and array keywords are checked", {
+  expect_match(
+    messages(
+      openapi_validate(
+        value = "",
+        schema = openapi_schema_string(minLength = 1L)
+      )
+    ),
+    "at least 1"
+  )
+
+  expect_match(
+    messages(
+      openapi_validate(
+        value = "abc",
+        schema = openapi_schema_string(maxLength = 2L)
+      )
+    ),
+    "at most 2"
+  )
+
+  expect_match(
+    messages(
+      openapi_validate(
+        value = "abc",
+        schema = openapi_schema_string(pattern = "^z")
+      )
+    ),
+    "must match"
+  )
+
+  expect_match(
+    messages(
+      openapi_validate(
+        value = 0L,
+        schema = openapi_schema_integer(minimum = 1L)
+      )
+    ),
+    "greater than or equal to 1"
+  )
+
+  expect_match(
+    messages(
+      openapi_validate(
+        value = 5L,
+        schema = openapi_schema_integer(maximum = 1L)
+      )
+    ),
+    "less than or equal to 1"
+  )
+
+  expect_match(
+    messages(
+      openapi_validate(
+        value = "c",
+        schema = openapi_schema_string(enum = c("a", "b"))
+      )
+    ),
+    "must be one of"
+  )
+
+  req <- mock_request(body = '{"t":["a","b","a"]}')
+  tags <- req$parse_json()$t
+
+  expect_match(
+    messages(
+      openapi_validate(
+        value = tags,
+        schema = openapi_schema_array(
+          items = openapi_schema_string(),
+          maxItems = 2L
+        )
+      )
+    ),
+    "at most 2"
+  )
+
+  expect_match(
+    messages(
+      openapi_validate(
+        value = tags,
+        schema = openapi_schema_array(
+          items = openapi_schema_string(),
+          uniqueItems = TRUE
+        )
+      )
+    ),
+    "must not contain duplicates"
+  )
+})
+
+test_that("keywords are read exactly, never by prefix", {
+  # `$` would partial-match `pattern` to `patternProperties`
+  schema <- openapi_schema(
+    type = c("string", "object"),
+    patternProperties = list("^x-" = openapi_schema_string())
+  )
+
+  expect_length(openapi_validate(value = "hello", schema = schema), 0L)
+
+  expect_match(
+    messages(
+      openapi_validate(
+        value = "hello",
+        schema = openapi_schema(
+          type = c("string", "object"),
+          pattern = "^z",
+          patternProperties = list("^x-" = openapi_schema_string())
+        )
+      )
+    ),
+    "must match the pattern \\^z"
+  )
+})
+
+test_that("additionalProperties = FALSE rejects unknown properties", {
+  schema <- openapi_schema_object(
+    properties = list(
+      title = openapi_schema_string()
+    ),
+    additionalProperties = FALSE
+  )
+
+  req <- mock_request(body = '{"title":"a","nope":1}')
+  body <- req$parse_json()
+  problems <- openapi_validate(
+    value = body,
+    schema = schema
+  )
+
+  expect_length(problems, 1L)
+  expect_equal(paths(problems), "nope")
+})
+
+test_that("references are resolved against the document's schemas", {
+  task <- openapi_schema_ref(
+    name = "Task",
+    schema = openapi_schema_object(
+      properties = list(
+        title = openapi_schema_string()
+      ),
+      required = "title"
+    )
+  )
+
+  schemas <- list(Task = task)
+
+  req <- mock_request(body = '{"title":"a"}')
+  body <- req$parse_json()
+
+  expect_length(
+    openapi_validate(
+      value = body,
+      schema = task,
+      schemas = schemas
+    ),
+    0L
+  )
+
+  req <- mock_request(body = "{}")
+  body <- req$parse_json()
+  problems <- openapi_validate(
+    value = body,
+    schema = openapi_schema_ref(name = "Task"),
+    schemas = schemas
+  )
+
+  expect_equal(messages(problems), "is required")
+
+  expect_length(
+    openapi_validate(
+      value = body,
+      schema = openapi_schema_ref(name = "Nope"),
+      schemas = schemas
+    ),
+    0L
+  )
+})
+
+test_that("allOf requires every branch and keeps their problems", {
+  schemas <- list(
+    NewUser = openapi_schema_object(
+      properties = list(name = openapi_schema_string(minLength = 1L)),
+      required = "name"
+    )
+  )
+  user <- openapi_schema(
+    allOf = list(
+      openapi_schema_ref(name = "NewUser"),
+      openapi_schema_object(
+        properties = list(id = openapi_schema_integer()),
+        required = "id"
+      )
+    )
+  )
+
+  expect_length(
+    openapi_validate(
+      value = list(name = "Ada", id = 1L),
+      schema = user,
+      schemas = schemas
+    ),
+    0L
+  )
+
+  problems <- openapi_validate(
+    value = list(id = "x"),
+    schema = user,
+    schemas = schemas
+  )
+  expect_equal(paths(problems), c("name", "id"))
+  expect_equal(messages(problems), c("is required", "must be an integer"))
+})
+
+test_that("anyOf accepts one match or several", {
+  schema <- openapi_schema(
+    anyOf = list(
+      openapi_schema_object(
+        properties = list(email = openapi_schema_string()),
+        required = "email"
+      ),
+      openapi_schema_object(
+        properties = list(phone = openapi_schema_string()),
+        required = "phone"
+      )
+    )
+  )
+
+  expect_length(
+    openapi_validate(value = list(email = "a@b.c"), schema = schema),
+    0L
+  )
+  expect_length(
+    openapi_validate(
+      value = list(email = "a@b.c", phone = "0700"),
+      schema = schema
+    ),
+    0L
+  )
+
+  # both branches fit an object, so neither can be singled out
+  problems <- openapi_validate(value = list(name = "Ada"), schema = schema)
+  expect_equal(paths(problems), "")
+  expect_equal(
+    messages(problems),
+    "must match at least one of the 2 documented schemas"
+  )
+})
+
+test_that("oneOf accepts exactly one match", {
+  schema <- openapi_schema(
+    oneOf = list(
+      openapi_schema_integer(),
+      openapi_schema_number(minimum = 10)
+    )
+  )
+
+  expect_length(openapi_validate(value = 5L, schema = schema), 0L)
+  expect_length(openapi_validate(value = 10.5, schema = schema), 0L)
+
+  expect_equal(
+    messages(openapi_validate(value = 12L, schema = schema)),
+    "must match exactly one of the documented schemas, matched 2"
+  )
+  expect_equal(
+    messages(openapi_validate(value = TRUE, schema = schema)),
+    "must match exactly one of the 2 documented schemas"
+  )
+})
+
+test_that("a lone branch of the value's type reports its own problems", {
+  schema <- openapi_schema_object(
+    properties = list(
+      to = openapi_schema(
+        oneOf = list(
+          openapi_schema_string(minLength = 3L),
+          openapi_schema_array(
+            items = openapi_schema_string(),
+            minItems = 2L
+          )
+        )
+      )
+    )
+  )
+
+  problems <- openapi_validate(value = list(to = "ab"), schema = schema)
+  expect_equal(paths(problems), "to")
+  expect_equal(messages(problems), "must be at least 3 character(s) long")
+
+  problems <- openapi_validate(value = list(to = I("abc")), schema = schema)
+  expect_equal(paths(problems), "to")
+  expect_equal(messages(problems), "must have at least 2 item(s)")
+
+  # a branch reached through a reference is narrowed by the type it
+  # resolves to
+  schemas <- list(
+    Card = openapi_schema_object(
+      properties = list(number = openapi_schema_string()),
+      required = "number"
+    )
+  )
+  payment <- openapi_schema(
+    anyOf = list(openapi_schema_string(), openapi_schema_ref(name = "Card"))
+  )
+
+  problems <- openapi_validate(
+    value = list(cvv = "123"),
+    schema = payment,
+    schemas = schemas
+  )
+  expect_equal(paths(problems), "number")
+  expect_equal(messages(problems), "is required")
+})
+
+test_that("composition keywords nest, and sit beside a type", {
+  schema <- openapi_schema_string(
+    allOf = list(
+      openapi_schema(
+        anyOf = list(
+          openapi_schema(enum = list("a", "b")),
+          openapi_schema(pattern = "^x")
+        )
+      )
+    )
+  )
+
+  expect_length(openapi_validate(value = "a", schema = schema), 0L)
+  expect_length(openapi_validate(value = "xyz", schema = schema), 0L)
+  expect_equal(
+    messages(openapi_validate(value = "c", schema = schema)),
+    "must match at least one of the 2 documented schemas"
+  )
+
+  # a wrong type short-circuits before the branches are tried
+  expect_equal(
+    messages(openapi_validate(value = 1L, schema = schema)),
+    "must be a string"
+  )
+})
+
+test_that("not rejects what its schema accepts", {
+  schema <- openapi_schema_string(
+    not = openapi_schema(enum = list("admin", "root"))
+  )
+
+  expect_length(openapi_validate(value = "ada", schema = schema), 0L)
+  expect_equal(
+    messages(openapi_validate(value = "admin", schema = schema)),
+    "must not match the excluded schema"
+  )
+})
+
+test_that("parameters are converted to their documented type", {
+  expect_identical(
+    openapi_convert(
+      value = "3",
+      schema = openapi_schema_integer()
+    ),
+    3L
+  )
+  expect_identical(
+    openapi_convert(
+      value = "3.5",
+      schema = openapi_schema_number()
+    ),
+    3.5
+  )
+  expect_identical(
+    openapi_convert(
+      value = "true",
+      schema = openapi_schema_boolean()
+    ),
+    TRUE
+  )
+  expect_identical(
+    openapi_convert(
+      value = "false",
+      schema = openapi_schema_boolean()
+    ),
+    FALSE
+  )
+
+  # only JSON's spellings are booleans
+  for (value in c("TRUE", "True", "T", "1", "0", "yes")) {
+    expect_identical(
+      openapi_convert(
+        value = value,
+        schema = openapi_schema_boolean()
+      ),
+      value
+    )
+  }
+  expect_identical(
+    openapi_convert(
+      value = "abc",
+      schema = openapi_schema_string()
+    ),
+    "abc"
+  )
+
+  # what will not convert is left for the type check to report
+  expect_identical(
+    openapi_convert(
+      value = "abc",
+      schema = openapi_schema_integer()
+    ),
+    "abc"
+  )
+
+  # only JSON's spellings are numbers: no truncation, no R-isms
+  for (value in c("1.5", "1.0", "1e3", "Inf", "0x10", " 7 ", "+5", "007")) {
+    expect_identical(
+      openapi_convert(
+        value = value,
+        schema = openapi_schema_integer()
+      ),
+      value
+    )
+  }
+  for (value in c("Inf", "NaN", "0x10", " 7 ", "+5", ".5", "1.", "1,5")) {
+    expect_identical(
+      openapi_convert(
+        value = value,
+        schema = openapi_schema_number()
+      ),
+      value
+    )
+  }
+  expect_identical(
+    openapi_convert(
+      value = "1e3",
+      schema = openapi_schema_number()
+    ),
+    1000
+  )
+  expect_identical(
+    openapi_convert(
+      value = "-0",
+      schema = openapi_schema_integer()
+    ),
+    0L
+  )
+
+  # past R's integer range: a whole double, not NA, and no warning
+  expect_silent(
+    converted <- openapi_convert(
+      value = "3000000000",
+      schema = openapi_schema_integer()
+    )
+  )
+  expect_identical(converted, 3e9)
+  expect_silent(
+    openapi_convert(
+      value = "-2147483648",
+      schema = openapi_schema_integer()
+    )
+  )
+  expect_identical(
+    openapi_convert(
+      value = "maybe",
+      schema = openapi_schema_boolean()
+    ),
+    "maybe"
+  )
+})
+
+test_that("query and path parameters are validated and converted", {
+  docs <- openapi_docs(
+    parameters = list(
+      openapi_param(
+        name = "id",
+        location = "path",
+        schema = openapi_schema_integer()
+      ),
+      openapi_param(
+        name = "limit",
+        location = "query",
+        schema = openapi_schema_integer(maximum = 10L)
+      )
+    )
+  )
+
+  req <- mock_request(
+    query = list(limit = "5"),
+    params = list(id = "42")
+  )
+
+  expect_length(
+    openapi_validate_request(
+      request = req,
+      docs = docs
+    ),
+    0L
+  )
+
+  expect_identical(req$params$id, 42L)
+  expect_identical(req$query$limit, 5L)
+
+  req <- mock_request(
+    query = list(),
+    params = list(id = "abc")
+  )
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs
+  )
+
+  expect_equal(paths(problems), "id")
+  expect_match(messages(problems), "must be an integer")
+
+  req <- mock_request(
+    query = list(limit = "50"),
+    params = list(id = "1")
+  )
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs
+  )
+
+  expect_match(messages(problems), "less than or equal to 10")
+})
+
+test_that("a composed parameter is converted by its branches", {
+  docs <- openapi_docs(
+    parameters = openapi_param(
+      name = "id",
+      location = "path",
+      schema = openapi_schema(
+        anyOf = list(
+          openapi_schema_string(pattern = "^[a-z-]+$"),
+          openapi_schema_integer(minimum = 1L)
+        )
+      )
+    )
+  )
+
+  # the string branch comes first and still does not claim a number
+  req <- mock_request(params = list(id = "42"))
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$params$id, 42L)
+
+  req <- mock_request(params = list(id = "hello-world"))
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$params$id, "hello-world")
+
+  req <- mock_request(params = list(id = "0"))
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_equal(messages(problems), "must be greater than or equal to 1")
+
+  # a reading the schema rejects is not kept over one it accepts: `123` as
+  # a number is under the minimum, as a string it is three digits
+  schema <- openapi_schema(
+    anyOf = list(
+      openapi_schema_string(pattern = "^[0-9]{3}$"),
+      openapi_schema_number(minimum = 1000)
+    )
+  )
+  expect_identical(openapi_convert(value = "123", schema = schema), "123")
+  expect_identical(openapi_convert(value = "5000", schema = schema), 5000)
+  # no reading is accepted: the number makes for the better complaint
+  expect_identical(openapi_convert(value = "12", schema = schema), 12)
+
+  # a branch with no type of its own has no reading to offer, and the
+  # `allOf` as a whole still decides
+  schema <- openapi_schema(
+    allOf = list(openapi_schema(minimum = 1L), openapi_schema_integer())
+  )
+  expect_identical(openapi_convert(value = "7", schema = schema), 7L)
+  expect_identical(openapi_convert(value = "0", schema = schema), 0L)
+
+  # where both readings are valid, the first schema listed decides
+  expect_identical(
+    openapi_convert(
+      value = "42",
+      schema = openapi_schema(
+        anyOf = list(openapi_schema_string(), openapi_schema_integer())
+      )
+    ),
+    "42"
+  )
+  expect_identical(
+    openapi_convert(
+      value = "42",
+      schema = openapi_schema(
+        anyOf = list(openapi_schema_integer(), openapi_schema_string())
+      )
+    ),
+    42L
+  )
+
+  # nested, and through `allOf` and `oneOf` alike
+  schema <- openapi_schema(
+    allOf = list(
+      openapi_schema(
+        oneOf = list(openapi_schema_boolean(), openapi_schema_number())
+      )
+    )
+  )
+  expect_identical(openapi_convert(value = "true", schema = schema), TRUE)
+  expect_identical(openapi_convert(value = "1.5", schema = schema), 1.5)
+  expect_identical(openapi_convert(value = "abc", schema = schema), "abc")
+})
+
+test_that("a decimal is not an integer parameter", {
+  docs <- openapi_docs(
+    parameters = openapi_param(
+      name = "limit",
+      location = "query",
+      schema = openapi_schema_integer()
+    )
+  )
+
+  req <- mock_request(query = list(limit = "1.5"))
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), "limit")
+  expect_match(messages(problems), "must be an integer")
+  # not truncated to 1
+  expect_identical(req$query$limit, "1.5")
+})
+
+test_that("repeated query parameters follow the parameter schema", {
+  docs <- openapi_docs(
+    parameters = openapi_param(
+      name = "tag",
+      location = "query",
+      schema = openapi_schema_array(openapi_schema_string(), minItems = 2L)
+    )
+  )
+
+  req <- mock_request(query = webutils::parse_query("tag=a&n=1&tag=b"))
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$query$tag, c("a", "b"))
+  # the other parameters keep their place
+  expect_identical(names(req$query), c("tag", "n"))
+
+  req <- mock_request(query = webutils::parse_query("tag=a"))
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_equal(paths(problems), "tag")
+  expect_match(messages(problems), "at least 2 item")
+  # documented as an array, so a single value is one too
+  expect_identical(req$query$tag, I("a"))
+
+  # a blank parameter is an absent one
+  req <- mock_request(query = webutils::parse_query("tag="))
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+})
+
+test_that("a missing required parameter is reported", {
+  docs <- openapi_docs(
+    parameters = list(
+      openapi_param(
+        name = "limit",
+        location = "query",
+        required = TRUE
+      )
+    )
+  )
+
+  req <- mock_request()
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs
+  )
+
+  expect_equal(paths(problems), "limit")
+  expect_equal(messages(problems), "is required")
+
+  docs <- openapi_docs(
+    parameters = list(
+      openapi_param(
+        name = "limit",
+        location = "query"
+      )
+    )
+  )
+  req <- mock_request()
+
+  expect_length(
+    openapi_validate_request(
+      request = req,
+      docs = docs
+    ),
+    0L
+  )
+})
+
+test_that("the request body is validated", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          title = openapi_schema_string(minLength = 1L)
+        ),
+        required = "title"
+      )
+    )
+  )
+
+  req <- mock_request(body = '{"title":"hello"}')
+  rook_body <- req$body
+
+  expect_length(
+    openapi_validate_request(
+      request = req,
+      docs = docs
+    ),
+    0L
+  )
+  expect_identical(req$payload, list(title = "hello"))
+  expect_identical(req$body, rook_body)
+
+  # `{}` was sent: an object missing its required property, not a missing
+  # body
+  req <- mock_request(body = "{}")
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs
+  )
+
+  expect_equal(paths(problems), "title")
+  expect_equal(messages(problems), "is required")
+  expect_true(is.list(req$payload))
+  expect_length(req$payload, 0L)
+
+  # a body of no bytes at all is the missing one
+  req <- mock_request()
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs
+  )
+
+  expect_equal(messages(problems), "a request body is required")
+  expect_null(req$payload)
+
+  req <- mock_request(body = '{"description":"some description"}')
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs
+  )
+
+  expect_equal(paths(problems), "title")
+  expect_identical(req$payload, list(description = "some description"))
+})
+
+test_that("an empty body is absent, an empty value is checked", {
+  schema <- openapi_schema_array(
+    items = openapi_schema_integer(),
+    minItems = 1L
+  )
+
+  # `[]` is an array with too few items, not a missing body
+  docs <- openapi_docs(request_body = openapi_request_body(schema = schema))
+  req <- mock_request(body = "[]")
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_match(messages(problems), "at least 1 item")
+
+  # an optional body may be absent...
+  optional <- openapi_docs(
+    request_body = openapi_request_body(schema = schema, required = FALSE)
+  )
+  req <- mock_request()
+
+  expect_length(openapi_validate_request(request = req, docs = optional), 0L)
+
+  # ...but what is sent is still checked
+  req <- mock_request(body = "[]")
+  problems <- openapi_validate_request(request = req, docs = optional)
+
+  expect_match(messages(problems), "at least 1 item")
+})
+
+test_that("a JSON array of one is an array, a scalar is not", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          tags = openapi_schema_array(items = openapi_schema_string())
+        )
+      )
+    )
+  )
+
+  req <- mock_request(body = '{"tags":["a"]}')
+
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_true(openapi_is_type(req$payload$tags, "array"))
+  expect_identical(req$payload$tags, I("a"))
+
+  # a scalar is not an array of one
+  req <- mock_request(body = '{"tags":"a"}')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), "tags")
+  expect_equal(messages(problems), "must be an array")
+
+  req <- mock_request(body = '{"tags":["a","b"]}')
+
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$payload$tags, c("a", "b"))
+
+  # an object is not an array
+  req <- mock_request(body = '{"tags":{"a":1}}')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), "tags")
+  expect_equal(messages(problems), "must be an array")
+
+  req <- mock_request(body = '{"tags":[1]}')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), "tags[1]")
+  expect_equal(messages(problems), "must be a string")
+})
+
+test_that("a nested JSON array of one is an array", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          task = openapi_schema_object(
+            properties = list(
+              tags = openapi_schema_array(items = openapi_schema_string())
+            )
+          )
+        )
+      )
+    )
+  )
+
+  req <- mock_request(body = '{"task":{"tags":["a"]}}')
+
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_true(openapi_is_type(req$payload$task$tags, "array"))
+})
+
+test_that("a JSON array of objects is an array of objects", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_array(
+        items = openapi_schema_object(
+          properties = list(
+            name = openapi_schema_string(),
+            langs = openapi_schema_array(items = openapi_schema_string())
+          ),
+          required = "name"
+        )
+      )
+    )
+  )
+
+  req <- mock_request(body = '[{"name":"a"},{"name":"b"}]')
+
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  # the payload keeps the wire structure: a list of objects
+  expect_true(openapi_is_type(req$payload, "array"))
+  expect_identical(req$payload, list(list(name = "a"), list(name = "b")))
+
+  req <- mock_request(body = '[{"name":"a","langs":["r"]}]')
+
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_true(openapi_is_type(req$payload[[1]]$langs, "array"))
+
+  req <- mock_request(body = '[{"name":1},{"name":2}]')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), c("[1].name", "[2].name"))
+})
+
+test_that("a JSON body keeps the shape it was sent with", {
+  # an object of arrays is an object, and only an object
+  body <- '{"a":[1,2],"b":[3,4]}'
+
+  as_object <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          a = openapi_schema_array(items = openapi_schema_integer()),
+          b = openapi_schema_array(items = openapi_schema_integer())
+        )
+      )
+    )
+  )
+  req <- mock_request(body = body)
+  expect_length(openapi_validate_request(request = req, docs = as_object), 0L)
+  expect_identical(req$payload$a, c(1L, 2L))
+
+  # the same body documented as an array of objects is a type problem: the
+  # client did not send an array
+  as_array <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_array(
+        items = openapi_schema_object(
+          properties = list(
+            a = openapi_schema_integer(),
+            b = openapi_schema_integer()
+          )
+        )
+      )
+    )
+  )
+  req <- mock_request(body = body)
+  problems <- openapi_validate_request(request = req, docs = as_array)
+  expect_equal(messages(problems), "must be an array")
+
+  # an array of arrays stays a list of arrays, one element per inner array
+  arrays_docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_array(
+        items = openapi_schema_array(items = openapi_schema_integer()),
+        minItems = 2L
+      )
+    )
+  )
+
+  req <- mock_request(body = "[[1,2],[3,4]]")
+  expect_length(openapi_validate_request(request = req, docs = arrays_docs), 0L)
+  expect_identical(req$payload, list(c(1L, 2L), c(3L, 4L)))
+
+  req <- mock_request(body = "[[1,2]]")
+  problems <- openapi_validate_request(request = req, docs = arrays_docs)
+  expect_match(messages(problems), "at least 2 item")
+
+  # an element without a property simply lacks it; nothing invents a hole
+  # to validate...
+  optional <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_array(
+        items = openapi_schema_object(
+          properties = list(
+            title = openapi_schema_string(),
+            done = openapi_schema_boolean()
+          ),
+          required = "title"
+        )
+      )
+    )
+  )
+
+  req <- mock_request(body = '[{"title":"a"},{"title":"b","done":true}]')
+  expect_length(openapi_validate_request(request = req, docs = optional), 0L)
+
+  # ...so a required property an element is missing is still reported
+  req <- mock_request(body = '[{"title":"a"},{"done":true}]')
+  problems <- openapi_validate_request(request = req, docs = optional)
+  expect_equal(paths(problems), "[2].title")
+  expect_equal(messages(problems), "is required")
+})
+
+test_that("a documented array of one still counts toward minItems", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          tags = openapi_schema_array(
+            items = openapi_schema_string(),
+            minItems = 2L
+          )
+        )
+      )
+    )
+  )
+
+  req <- mock_request(body = '{"tags":["a"]}')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_equal(paths(problems), "tags")
+  expect_match(messages(problems), "at least 2")
+})
+
+test_that("form-urlencoded bodies are validated and typed", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          name = openapi_schema_string(minLength = 1L),
+          age = openapi_schema_integer(minimum = 0L),
+          active = openapi_schema_boolean()
+        ),
+        required = c("name", "age")
+      ),
+      content_type = "application/x-www-form-urlencoded"
+    )
+  )
+
+  req <- mock_request(body = "name=Ada&age=36&active=true")
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(
+    req$payload,
+    list(name = "Ada", age = 36L, active = TRUE)
+  )
+
+  req <- mock_request(body = "name=Ada&age=nope")
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_equal(paths(problems), "age")
+  expect_match(messages(problems), "must be an integer")
+
+  req <- mock_request(body = "age=10")
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_equal(paths(problems), "name")
+  expect_equal(messages(problems), "is required")
+
+  req <- mock_request()
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_match(messages(problems), "a request body is required")
+  expect_length(req$payload, 0L)
+
+  # empty field values are treated as absent
+  req <- mock_request(body = "name=&age=10")
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_equal(paths(problems), "name")
+  expect_equal(messages(problems), "is required")
+})
+
+test_that("repeated form fields documented as an array are collected", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          tags = openapi_schema_array(openapi_schema_string()),
+          ids = openapi_schema_array(openapi_schema_integer())
+        )
+      ),
+      content_type = "application/x-www-form-urlencoded"
+    )
+  )
+
+  req <- mock_request(body = "tags=a&tags=b")
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$payload$tags, c("a", "b"))
+
+  req <- mock_request(body = "tags=a")
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$payload$tags, I("a"))
+
+  req <- mock_request(body = "ids=1&ids=2")
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$payload$ids, c(1L, 2L))
+
+  req <- mock_request(body = "ids=1&ids=nope")
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_equal(paths(problems), "ids[2]")
+  expect_match(messages(problems), "must be an integer")
+
+  docs_required <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          name = openapi_schema_string(),
+          tags = openapi_schema_array(openapi_schema_string())
+        ),
+        required = "tags"
+      ),
+      content_type = "application/x-www-form-urlencoded"
+    )
+  )
+  req <- mock_request(body = "name=Ada&tags=&tags=")
+  problems <- openapi_validate_request(request = req, docs = docs_required)
+  expect_equal(paths(problems), "tags")
+  expect_equal(messages(problems), "is required")
+})
+
+test_that("a repeated form field documented as a scalar is a type problem", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          name = openapi_schema_string(minLength = 2L)
+        ),
+        required = "name"
+      ),
+      content_type = "application/x-www-form-urlencoded"
+    )
+  )
+
+  req <- mock_request(body = "name=Ada&name=Bob")
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_equal(paths(problems), "name")
+  expect_equal(messages(problems), "must be a string")
+
+  # the payload is still an object: one name, every value it was sent with
+  expect_identical(names(req$payload), "name")
+  expect_identical(req$payload$name, c("Ada", "Bob"))
+})
+
+test_that("undocumented form fields are shaped but not converted", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(name = openapi_schema_string())
+      ),
+      content_type = "application/x-www-form-urlencoded"
+    )
+  )
+
+  req <- mock_request(body = "name=Ada&extra=1&extra=2")
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$payload$extra, c("1", "2"))
+
+  docs_strict <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(name = openapi_schema_string()),
+        additionalProperties = FALSE
+      ),
+      content_type = "application/x-www-form-urlencoded"
+    )
+  )
+
+  req <- mock_request(body = "name=Ada&extra=1&extra=2")
+  problems <- openapi_validate_request(request = req, docs = docs_strict)
+  expect_equal(paths(problems), "extra")
+  expect_equal(messages(problems), "is not an allowed property")
+})
+
+test_that("a composed form body is typed by its branches' properties", {
+  schemas <- list(
+    NewUser = openapi_schema_object(
+      properties = list(
+        name = openapi_schema_string(),
+        age = openapi_schema_integer()
+      ),
+      required = "name"
+    )
+  )
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema(
+        allOf = list(
+          openapi_schema_ref(name = "NewUser"),
+          openapi_schema_object(
+            properties = list(
+              tags = openapi_schema_array(openapi_schema_string()),
+              # declared again: the first declaration shapes the field
+              age = openapi_schema_string()
+            )
+          )
+        )
+      ),
+      content_type = "application/x-www-form-urlencoded"
+    )
+  )
+
+  req <- mock_request(body = "name=Ada&age=36&tags=r")
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs,
+    schemas = schemas
+  )
+  expect_identical(req$payload$age, 36L)
+  expect_identical(req$payload$tags, I("r"))
+
+  # validation stays exact: the second declaration wanted a string
+  expect_equal(paths(problems), "age")
+  expect_equal(messages(problems), "must be a string")
+})
+
+test_that("multipart bodies are validated including file fields", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          email = openapi_schema_string(minLength = 1L),
+          document = openapi_schema_string(format = "binary")
+        ),
+        required = c("email", "document")
+      ),
+      content_type = "multipart/form-data"
+    )
+  )
+
+  boundary <- "----AmbiorixBoundary"
+  body_ok <- paste0(
+    "--",
+    boundary,
+    "\r\n",
+    "Content-Disposition: form-data; name=\"email\"\r\n\r\n",
+    "ada@example.com\r\n",
+    "--",
+    boundary,
+    "\r\n",
+    "Content-Disposition: form-data; name=\"document\"; filename=\"note.txt\"\r\n",
+    "Content-Type: text/plain\r\n\r\n",
+    "hello\r\n",
+    "--",
+    boundary,
+    "--\r\n"
+  )
+  content_type <- paste0("multipart/form-data; boundary=", boundary)
+
+  req <- mock_request(body = body_ok, content_type = content_type)
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_equal(req$payload$email, "ada@example.com")
+  expect_equal(req$payload$document$filename, "note.txt")
+  expect_equal(rawToChar(req$payload$document$value), "hello")
+
+  body_no_file <- paste0(
+    "--",
+    boundary,
+    "\r\n",
+    "Content-Disposition: form-data; name=\"email\"\r\n\r\n",
+    "ada@example.com\r\n",
+    "--",
+    boundary,
+    "--\r\n"
+  )
+  req <- mock_request(body = body_no_file, content_type = content_type)
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_equal(paths(problems), "document")
+  expect_equal(messages(problems), "is required")
+
+  body_typed <- paste0(
+    "--",
+    boundary,
+    "\r\n",
+    "Content-Disposition: form-data; name=\"email\"\r\n\r\n",
+    "ada@example.com\r\n",
+    "--",
+    boundary,
+    "\r\n",
+    "Content-Disposition: form-data; name=\"document\"; filename=\"note.txt\"\r\n",
+    "Content-Type: text/plain\r\n\r\n",
+    "hello\r\n",
+    "--",
+    boundary,
+    "\r\n",
+    "Content-Disposition: form-data; name=\"count\"\r\n\r\n",
+    "3\r\n",
+    "--",
+    boundary,
+    "--\r\n"
+  )
+  docs_count <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          email = openapi_schema_string(),
+          document = openapi_schema_string(format = "binary"),
+          count = openapi_schema_integer()
+        ),
+        required = "email"
+      ),
+      content_type = "multipart/form-data"
+    )
+  )
+  req <- mock_request(body = body_typed, content_type = content_type)
+  expect_length(openapi_validate_request(request = req, docs = docs_count), 0L)
+  expect_identical(req$payload$count, 3L)
+})
+
+test_that("repeated multipart files follow the property schema", {
+  boundary <- "----AmbiorixBoundary"
+  body_two_files <- paste0(
+    "--",
+    boundary,
+    "\r\n",
+    "Content-Disposition: form-data; name=\"document\"; filename=\"a.txt\"\r\n",
+    "Content-Type: text/plain\r\n\r\n",
+    "aaa\r\n",
+    "--",
+    boundary,
+    "\r\n",
+    "Content-Disposition: form-data; name=\"document\"; filename=\"b.txt\"\r\n",
+    "Content-Type: text/plain\r\n\r\n",
+    "bbb\r\n",
+    "--",
+    boundary,
+    "--\r\n"
+  )
+  content_type <- paste0("multipart/form-data; boundary=", boundary)
+
+  docs_array <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          document = openapi_schema_array(
+            openapi_schema_string(format = "binary")
+          )
+        )
+      ),
+      content_type = "multipart/form-data"
+    )
+  )
+  req <- mock_request(body = body_two_files, content_type = content_type)
+  expect_length(openapi_validate_request(request = req, docs = docs_array), 0L)
+  expect_length(req$payload$document, 2L)
+  expect_equal(req$payload$document[[1]]$filename, "a.txt")
+  expect_equal(req$payload$document[[2]]$filename, "b.txt")
+
+  docs_one <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          document = openapi_schema_string(format = "binary")
+        )
+      ),
+      content_type = "multipart/form-data"
+    )
+  )
+  req <- mock_request(body = body_two_files, content_type = content_type)
+  problems <- openapi_validate_request(request = req, docs = docs_one)
+  expect_equal(paths(problems), "document")
+  expect_equal(messages(problems), "must be a string")
+
+  # one file for a property documented as an array is still an array
+  body_one_file <- paste0(
+    "--",
+    boundary,
+    "\r\n",
+    "Content-Disposition: form-data; name=\"document\"; filename=\"a.txt\"\r\n",
+    "Content-Type: text/plain\r\n\r\n",
+    "aaa\r\n",
+    "--",
+    boundary,
+    "--\r\n"
+  )
+  req <- mock_request(body = body_one_file, content_type = content_type)
+  expect_length(openapi_validate_request(request = req, docs = docs_array), 0L)
+  expect_length(req$payload$document, 1L)
+  expect_equal(req$payload$document[[1]]$filename, "a.txt")
+})
+
+test_that("non-JSON non-form bodies are not validated", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_string(format = "binary"),
+      content_type = "application/octet-stream"
+    )
+  )
+
+  req <- mock_request(body = "anything")
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_null(req$payload)
+})
+
+test_that("a JSON body the parser cannot read is reported, not thrown", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          title = openapi_schema_string()
+        ),
+        required = "title"
+      )
+    )
+  )
+
+  req <- mock_request(body = '{"title": ')
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_length(problems, 1L)
+  expect_equal(problems[[1]]$location, "body")
+  expect_equal(paths(problems), "")
+  expect_equal(messages(problems), "could not be parsed as application/json")
+  expect_null(req$payload)
+})
+
+test_that("a multipart body without a boundary is reported, not thrown", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          title = openapi_schema_string()
+        )
+      ),
+      content_type = "multipart/form-data"
+    )
+  )
+
+  req <- mock_request(
+    body = "garbage",
+    content_type = "multipart/form-data"
+  )
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_length(problems, 1L)
+  expect_equal(messages(problems), "could not be parsed as multipart/form-data")
+  expect_null(req$payload)
+})
+
+test_that("header and cookie parameters are not checked", {
+  docs <- openapi_docs(
+    parameters = list(
+      openapi_param(
+        name = "X-Trace",
+        location = "header",
+        required = TRUE
+      ),
+      openapi_param(
+        name = "session",
+        location = "cookie",
+        required = TRUE
+      )
+    )
+  )
+
+  req <- mock_request()
+
+  expect_length(
+    openapi_validate_request(
+      request = req,
+      docs = docs
+    ),
+    0L
+  )
+})
+
+docs_with_body <- function() {
+  openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          title = openapi_schema_string()
+        ),
+        required = "title"
+      )
+    )
+  )
+}
+
+test_that("validation can be overridden per route", {
+  app <- Ambiorix$new()
+  private <- environment(app$openapi)$private
+
+  route <- list(
+    route = Route$new("/tasks"),
+    path = "/tasks",
+    docs = docs_with_body()
+  )
+  req <- mock_request(body = "{}")
+  res <- Response$new()
+
+  expect_null(private$.validate_request(req, res, route))
+
+  private$.openapi_validate <- TRUE
+  invalid <- private$.validate_request(req, res, route)
+
+  expect_true(is_response(invalid))
+  expect_equal(invalid$status, 400L)
+
+  route$docs$validate <- FALSE
+  expect_null(private$.validate_request(req, res, route))
+
+  private$.openapi_validate <- FALSE
+  route$docs$validate <- TRUE
+  expect_true(is_response(private$.validate_request(req, res, route)))
+
+  expect_null(private$.validate_request(req, res, list(docs = NULL)))
+
+  stop_all()
+})
+
+test_that("enabling the docs enables validation", {
+  app <- Ambiorix$new()
+  private <- environment(app$openapi)$private
+
+  route <- list(
+    route = Route$new("/tasks"),
+    path = "/tasks",
+    docs = docs_with_body()
+  )
+  req <- mock_request(body = "{}")
+  res <- Response$new()
+
+  app$openapi()
+  expect_true(is_response(private$.validate_request(req, res, route)))
+
+  app$openapi(validate = FALSE)
+  expect_null(private$.validate_request(req, res, route))
+
+  stop_all()
+})
+
+test_that("`on_invalid` answers for a rejected request", {
+  app <- Ambiorix$new()
+  private <- environment(app$openapi)$private
+
+  seen <- NULL
+  app$openapi(
+    on_invalid = function(req, res, details) {
+      seen <<- details
+      res$set_status(422L)$json(list(ok = FALSE))
+    }
+  )
+
+  route <- list(
+    route = Route$new("/tasks"),
+    path = "/tasks",
+    docs = docs_with_body()
+  )
+  req <- mock_request(body = '{"other": 1}')
+  res <- Response$new()
+
+  invalid <- private$.validate_request(req, res, route)
+
+  expect_true(is_response(invalid))
+  expect_equal(invalid$status, 422L)
+  expect_equal(paths(seen), "title")
+  expect_equal(messages(seen), "is required")
+
+  expect_error(app$openapi(on_invalid = function(req, res) NULL))
+
+  stop_all()
+})
+
+test_that("an unparseable body is answered like any other invalid request", {
+  app <- Ambiorix$new()
+  private <- environment(app$openapi)$private
+
+  route <- list(
+    route = Route$new("/tasks"),
+    path = "/tasks",
+    docs = docs_with_body()
+  )
+  req <- mock_request(body = '{"title": ')
+  res <- Response$new()
+
+  app$openapi()
+  invalid <- private$.validate_request(req, res, route)
+
+  expect_true(is_response(invalid))
+  expect_equal(invalid$status, 400L)
+
+  seen <- NULL
+  app$openapi(
+    on_invalid = function(req, res, details) {
+      seen <<- details
+      res$set_status(422L)$json(list(ok = FALSE))
+    }
+  )
+  invalid <- private$.validate_request(req, res, route)
+
+  expect_equal(invalid$status, 422L)
+  expect_equal(messages(seen), "could not be parsed as application/json")
+
+  stop_all()
+})

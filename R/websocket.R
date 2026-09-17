@@ -96,14 +96,21 @@ Websocket <- R6::R6Class(
   "Websocket",
   public = list(
     #' @details Constructor
-    #' @param ws The websocket
+    #'
+    #' @param ws Websocket /// Required. \cr
+    #'   The httpuv websocket to wrap.
+    #'
     initialize = function(ws) {
       private$.ws <- ws
     },
     #' @details Send a message
-    #' @param name Name, identifier, of the message.
-    #' @param message Content of the message, anything that can be
-    #' serialised to JSON.
+    #'
+    #' @param name String /// Required. \cr
+    #'   Name, identifier, of the message.
+    #'
+    #' @param message Object /// Required. \cr
+    #'   Content of the message, anything that can be serialised to JSON.
+    #'
     send = function(name, message) {
       message <- list(
         name = name,
@@ -126,7 +133,8 @@ Websocket <- R6::R6Class(
 #'
 #' Handle ambiorix websocket client.
 #'
-#' @param path Path to copy the file to.
+#' @param path String /// Required. \cr
+#'             Path to copy the file to.
 #'
 #' @section Functions:
 #' - `copy_websocket_client` Copies the websocket client file, useful when

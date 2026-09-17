@@ -1,13 +1,76 @@
-# ambiorix 3.1.0
+# ambiorix 4.0.0
+
+**Breaking Changes**
+
+- `parse_json()` no longer collapses JSON into data frames or matrices:
+  `obj_of_arrs_to_df`, `arr_of_objs_to_df`, and `arr_of_arrs_to_matrix` are
+  now off by default, so a body keeps the structure it was sent with — an
+  array of objects is a list of named lists, never a data frame. The same
+  JSON shape now always parses to the same R shape, whatever values it
+  holds; previously the R type of a parsed body depended on whether the
+  values happened to collapse. An array of one is read marked `AsIs`, so
+  `["a"]` and `"a"` stay apart: `I("a")` compares and serialises like the
+  string, and is written back as `["a"]`. Restore the old reading per call
+  with `req$parse_json(arr_of_objs_to_df = TRUE)`, or globally with
+  `options(AMBIORIX_JSON_PARSER = ...)`.
+- `parse_json()` reads an integer too large for R's integer type as a
+  double, where it read it as a string: `{"id": 3000000000}` is now
+  numeric, and can be documented and validated as an integer. Whole numbers
+  past 2^53 are rounded; pass `int64 = "string"` for the old reading, or
+  `int64 = "bit64"` with the bit64 package attached for exact 64-bit
+  integers.
+- Websocket messages are parsed by the same parser as request bodies, so
+  the two changes above apply to the message an `app$receive()` handler
+  gets: an array of objects is a list of named lists, not a data frame,
+  and a large integer is a number, not a string. A parser set with
+  `options(AMBIORIX_JSON_PARSER = ...)` now reads messages too, the way
+  `AMBIORIX_SERIALISER` already wrote them. A binary frame is parsed as
+  well, where it errored.
+- `parse_json()`, `parse_form_urlencoded()` and `parse_multipart()` return
+  `NULL` for a request with no body, where they returned `list()`. Nothing
+  on the wire is `NULL`, so an absent body is now told apart from `{}` and
+  `[]`.
 
 **New Features**
 
-- Add support for OpenAPI (Swagger) documentation, [pull/163](https://github.com/ambiorix-web/ambiorix/pull/163).
+- Add support for OpenAPI (Swagger) documentation,
+  [pull/163](https://github.com/ambiorix-web/ambiorix/pull/163):
+  - `app$openapi()` enables it. Routes registered with a `docs` argument are
+    collected into an OpenAPI 3.1 document served at `/openapi.json`, with
+    the Swagger UI at `/docs`. `title`, `version`, `description`, `info`,
+    `servers`, `tags`, `security_schemes`, and `security` fill the
+    document's top level. The Swagger UI assets are bundled with the
+    package, so the pages work without an internet connection.
+  - `openapi_docs()` documents a route, with `openapi_param()`,
+    `openapi_request_body()`, and `openapi_response()` for its parameters,
+    body, and responses. Path parameters are documented automatically from
+    the route's `:param` tokens.
+  - Schemas are built with `openapi_schema_string()`,
+    `openapi_schema_integer()`, `openapi_schema_number()`,
+    `openapi_schema_boolean()`, `openapi_schema_array()`,
+    `openapi_schema_object()`, and `openapi_schema()`, and named with
+    `openapi_schema_ref()`, which places a schema in the document's
+    `components` and references it with `$ref` wherever it is used.
+  - Documented routes are validated. Query and path parameters and JSON,
+    form-urlencoded, and multipart bodies are checked against the
+    documented schemas before the handler runs, `allOf`, `anyOf`, `oneOf`,
+    and `not` included; parameters are converted to their documented type,
+    and the parsed body is stored on `req$payload`.
+    A request that does not match is answered with a `400` listing what is
+    wrong. `app$openapi(on_invalid =)` replaces that response,
+    `app$openapi(validate = FALSE)` turns validation off app-wide, and
+    `openapi_docs(validate =)` overrides it per route.
+- Add `req$parse_form_urlencoded()`, next to `req$parse_json()` and
+  `req$parse_multipart()`.
 
 **Bug Fixes**
 
 - Allow overriding of default error handler, regardless of the order
   it's registered in, [pull/161](https://github.com/ambiorix-web/ambiorix/pull/161).
+- An error in a middleware or a parameter middleware is answered by the
+  route's error handler, or `app$error`, the way an error in the handler
+  is. It used to reach httpuv, which answered `ERROR: <the R message>`,
+  handing the message to the client, and logged nothing.
 
 # ambiorix 3.0.0
 

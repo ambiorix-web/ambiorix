@@ -7,7 +7,8 @@
 jobj(obj)
 }
 \arguments{
-\item{obj}{Object to serialise.}
+\item{obj}{Object /// Required. \cr
+The object to serialise.}
 }
 \value{
 Object of class "jobj".

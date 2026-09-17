@@ -2,9 +2,17 @@
 #'
 #' Plain HTTP Responses.
 #'
-#' @param body Body of response.
-#' @param headers HTTP headers.
-#' @param status Response status
+#' @param body String /// Optional. \cr
+#'             Body of the response. \cr
+#'             Defaults to a message matching the status.
+#'
+#' @param headers Named list /// Optional. \cr
+#'                HTTP headers. \cr
+#'                Defaults to `list("Content-Type" = content_html())`.
+#'
+#' @param status Integer /// Optional. \cr
+#'               Response status. \cr
+#'               Defaults to the status the function is named after.
 #'
 #' @examples
 #' app <- Ambiorix$new()
@@ -69,7 +77,8 @@ response_500 <- function(
 #'
 #' Body may only be a character vector of length 1.
 #'
-#' @param body Body of response.
+#' @param body Object /// Required. \cr
+#'             Body of the response.
 #'
 #' @keywords internal
 #' @noRd
@@ -245,14 +254,20 @@ Response <- R6::R6Class(
   lock_objects = FALSE,
   public = list(
     #' @details Set the status of the response.
-    #' @param status An integer defining the status.
+    #'
+    #' @param status Integer /// Required. \cr
+    #'   The status to set.
+    #'
     set_status = function(status) {
       assert_that(not_missing(status))
       private$.status <- status
       invisible(self)
     },
     #' @details Send a plain HTML response.
-    #' @param body Body of the response.
+    #'
+    #' @param body Object /// Required. \cr
+    #'   Body of the response.
+    #'
     send = function(body) {
       response(
         body = body,
@@ -261,8 +276,13 @@ Response <- R6::R6Class(
       )
     },
     #' @details Send a plain HTML response, pre-processed with sprintf.
-    #' @param body Body of the response.
-    #' @param ... Passed to `...` of `sprintf`.
+    #'
+    #' @param body String /// Required. \cr
+    #'   Body of the response, a [sprintf()] format.
+    #'
+    #' @param ... Key=Value pairs /// Optional. \cr
+    #'   Passed to `...` of [sprintf()].
+    #'
     sendf = function(body, ...) {
       response(
         body = sprintf(body, ...),
@@ -271,7 +291,10 @@ Response <- R6::R6Class(
       )
     },
     #' @details Send a plain text response.
-    #' @param body Body of the response.
+    #'
+    #' @param body Object /// Required. \cr
+    #'   Body of the response.
+    #'
     text = function(body) {
       self$header_content_plain()
 
@@ -282,7 +305,10 @@ Response <- R6::R6Class(
       )
     },
     #' @details Send a file.
-    #' @param file File to send.
+    #'
+    #' @param file String /// Required. \cr
+    #'   Path to the file to send.
+    #'
     send_file = function(file) {
       assert_that(not_missing(file))
 
@@ -304,7 +330,10 @@ Response <- R6::R6Class(
       )
     },
     #' @details Redirect to a path or URL.
-    #' @param path Path or URL to redirect to.
+    #'
+    #' @param path String /// Required. \cr
+    #'   Path or URL to redirect to.
+    #'
     redirect = function(path) {
       status <- private$.get_status()
 
@@ -326,8 +355,14 @@ Response <- R6::R6Class(
       )
     },
     #' @details Render a template file.
-    #' @param file Template file.
-    #' @param data List to fill `[% tags %]`.
+    #'
+    #' @param file String /// Required. \cr
+    #'   Path to the template file.
+    #'
+    #' @param data Named list /// Optional. \cr
+    #'   Data to fill `[% tags %]` with. \cr
+    #'   Defaults to `list()`.
+    #'
     render = function(file, data = list()) {
       assert_that(not_missing(file))
       assert_that(has_file(file))
@@ -339,8 +374,13 @@ Response <- R6::R6Class(
       )
     },
     #' @details Render an object as JSON.
-    #' @param body Body of the response.
-    #' @param ... Additional named arguments passed to the serialiser.
+    #'
+    #' @param body Object /// Required. \cr
+    #'   Body of the response.
+    #'
+    #' @param ... Key=Value pairs /// Optional. \cr
+    #'   Additional named arguments passed to the serialiser.
+    #'
     json = function(body, ...) {
       self$header_content_json()
 
@@ -351,9 +391,17 @@ Response <- R6::R6Class(
       )
     },
     #' @details Sends a comma separated value file
-    #' @param data Data to convert to CSV.
-    #' @param name Name of the file.
-    #' @param ... Additional arguments passed to [readr::format_csv()].
+    #'
+    #' @param data Data frame /// Required. \cr
+    #'   The data to convert to CSV.
+    #'
+    #' @param name String /// Optional. \cr
+    #'   Name of the file, without its extension. \cr
+    #'   Defaults to `"data"`.
+    #'
+    #' @param ... Key=Value pairs /// Optional. \cr
+    #'   Additional arguments passed to [readr::format_csv()].
+    #'
     csv = function(data, name = "data", ...) {
       assert_that(not_missing(data))
       check_installed("readr")
@@ -374,9 +422,17 @@ Response <- R6::R6Class(
       )
     },
     #' @details Sends a tab separated value file
-    #' @param data Data to convert to CSV.
-    #' @param name Name of the file.
-    #' @param ... Additional arguments passed to [readr::format_tsv()].
+    #'
+    #' @param data Data frame /// Required. \cr
+    #'   The data to convert to TSV.
+    #'
+    #' @param name String /// Optional. \cr
+    #'   Name of the file, without its extension. \cr
+    #'   Defaults to `"data"`.
+    #'
+    #' @param ... Key=Value pairs /// Optional. \cr
+    #'   Additional arguments passed to [readr::format_tsv()].
+    #'
     tsv = function(data, name = "data", ...) {
       assert_that(not_missing(data))
       check_installed("readr")
@@ -397,8 +453,13 @@ Response <- R6::R6Class(
       )
     },
     #' @details Sends an htmlwidget.
-    #' @param widget The widget to use.
-    #' @param ... Additional arguments passed to [htmlwidgets::saveWidget()].
+    #'
+    #' @param widget Htmlwidget /// Required. \cr
+    #'   The widget to send.
+    #'
+    #' @param ... Key=Value pairs /// Optional. \cr
+    #'   Additional arguments passed to [htmlwidgets::saveWidget()].
+    #'
     htmlwidget = function(widget, ...) {
       check_installed("htmlwidgets")
       if (!inherits(widget, "htmlwidget")) {
@@ -417,8 +478,14 @@ Response <- R6::R6Class(
       )
     },
     #' @details Render a markdown file.
-    #' @param file Template file.
-    #' @param data List to fill `[% tags %]`.
+    #'
+    #' @param file String /// Required. \cr
+    #'   Path to the template file.
+    #'
+    #' @param data Named list /// Optional. \cr
+    #'   Data to fill `[% tags %]` with. \cr
+    #'   Defaults to `list()`.
+    #'
     md = function(file, data = list()) {
       check_installed("commonmark")
       self$render(
@@ -427,19 +494,28 @@ Response <- R6::R6Class(
       )
     },
     #' @details Send a png file
-    #' @param file Path to local file.
+    #'
+    #' @param file String /// Required. \cr
+    #'   Path to the local file.
+    #'
     png = function(file) {
       private$.send_image(file, "png")
     },
     #' @details Send a jpeg file
-    #' @param file Path to local file.
+    #'
+    #' @param file String /// Required. \cr
+    #'   Path to the local file.
+    #'
     jpeg = function(file) {
       private$.send_image(file, "jpeg")
     },
     #' @details Send an image
     #' Similar to `png` and `jpeg` methods but guesses correct method
     #' based on file extension.
-    #' @param file Path to local file.
+    #'
+    #' @param file String /// Required. \cr
+    #'   Path to the local file.
+    #'
     image = function(file) {
       type <- tools::file_ext(file)
       if (!type %in% c("png", "jpeg")) {
@@ -448,9 +524,16 @@ Response <- R6::R6Class(
       private$.send_image(file, type)
     },
     #' @details Ggplot2
-    #' @param plot Ggplot2 plot object.
-    #' @param type Type of image to save.
-    #' @param ... Passed to [ggplot2::ggsave()]
+    #'
+    #' @param plot Ggplot /// Required. \cr
+    #'   The ggplot2 plot object to send.
+    #'
+    #' @param type String /// Optional. \cr
+    #'   Type of image to save. Either `"png"` (default) or `"jpeg"`.
+    #'
+    #' @param ... Key=Value pairs /// Optional. \cr
+    #'   Passed to [ggplot2::ggsave()].
+    #'
     ggplot2 = function(plot, ..., type = c("png", "jpeg")) {
       assert_that(not_missing(plot))
       check_installed("ggplot2")
@@ -484,8 +567,13 @@ Response <- R6::R6Class(
       cli::cli_end()
     },
     #' @details Add headers to the response.
-    #' @param name String. Name of the header.
-    #' @param value Value of the header.
+    #'
+    #' @param name String /// Required. \cr
+    #'   Name of the header.
+    #'
+    #' @param value String /// Required. \cr
+    #'   Value of the header.
+    #'
     #' @return Invisibly returns self.
     header = function(name, value) {
       assert_that(not_missing(name))
@@ -530,13 +618,17 @@ Response <- R6::R6Class(
     },
     #' @details Get a header
     #' Returns a single header currently, `NULL` if not set.
-    #' @param name Name of the header to return.
+    #' @param name String /// Required. \cr
+    #'   Name of the header to return.
+    #'
     get_header = function(name) {
       assert_that(not_missing(name))
       private$.headers[[name]]
     },
     #' @details Set headers
-    #' @param headers A named list of headers to set.
+    #' @param headers Named list /// Required. \cr
+    #'   The headers to set.
+    #'
     set_headers = function(headers) {
       assert_that(not_missing(headers))
       if (!is.list(headers)) {
@@ -549,12 +641,13 @@ Response <- R6::R6Class(
     #' @details Add a pre render hook.
     #' Runs before the `render` method.
     #'
-    #' @param hook A function that accepts at least 4 arguments:
-    #' - `self`: The `Request` class instance.
-    #' - `content`: File content a vector of character string,
-    #' content of the template.
-    #' - `data`: `list` passed from `render` method.
-    #' - `ext`: File extension of the template file.
+    #' @param hook Function /// Required. \cr
+    #'   A function that accepts at least 4 arguments:
+    #'   - `self`: The `Request` class instance.
+    #'   - `content`: File content a vector of character string, content of
+    #'     the template.
+    #'   - `data`: `list` passed from `render` method.
+    #'   - `ext`: File extension of the template file.
     #'
     #' This function is used to add pre-render hooks to the `render`
     #' method. The function should return an object of class
@@ -583,12 +676,13 @@ Response <- R6::R6Class(
     },
     #' @details Post render hook.
     #'
-    #' @param hook A function to run after the rendering of HTML.
-    #' It should accept at least 3 arguments:
-    #' - `self`: The `Response` class instance.
-    #' - `content`: File content a vector of character string,
-    #' content of the template.
-    #' - `ext`: File extension of the template file.
+    #' @param hook Function /// Required. \cr
+    #'   A function to run after the rendering of HTML. It should accept at
+    #'   least 3 arguments:
+    #'   - `self`: The `Response` class instance.
+    #'   - `content`: File content a vector of character string, content of
+    #'     the template.
+    #'   - `ext`: File extension of the template file.
     #'
     #' Include `...` in your `hook` to ensure it will handle
     #' potential updates to hooks in the future.
@@ -611,29 +705,52 @@ Response <- R6::R6Class(
     },
     #' @details Set a cookie
     #' Overwrites existing cookie of the same `name`.
-    #' @param name String. Name of the cookie.
-    #' @param value value of the cookie.
-    #' @param expires Expiry, if an integer assumes it's the number of seconds
-    #' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
-    #' If a `character` string then it is set as-is and not pre-processed.
-    #' If unspecified, the cookie becomes a session cookie. A session finishes
-    #' when the client shuts down, after which the session cookie is removed.
-    #' @param max_age Indicates the number of seconds until the cookie expires.
-    #' A zero or negative number will expire the cookie immediately.
-    #' If both `expires` and `max_age` are set, the latter has precedence.
-    #' @param domain Defines the host to which the cookie will be sent.
-    #' If omitted, this attribute defaults to the host of the current document URL,
-    #' not including subdomains.
-    #' @param path Indicates the path that must exist in the requested URL for the
-    #' browser to send the Cookie header.
-    #' @param secure Indicates that the cookie is sent to the server only when a
-    #' request is made with the https: scheme (except on localhost), and therefore,
-    #' is more resistant to man-in-the-middle attacks.
-    #' @param http_only Forbids JavaScript from accessing the cookie, for example,
-    #' through the document.cookie property.
-    #' @param same_site Controls whether or not a cookie is sent with cross-origin
-    #' requests, providing some protection against cross-site request forgery
-    #' attacks (CSRF). Accepts `Strict`, `Lax`, or `None`.
+    #' @param name String /// Required. \cr
+    #'   Name of the cookie.
+    #'
+    #' @param value String /// Required. \cr
+    #'   Value of the cookie.
+    #'
+    #' @param expires Integer, POSIXct, Date, or String /// Optional. \cr
+    #'   Expiry. An integer is taken as the number of seconds from now; a
+    #'   `character` string is set as-is and not pre-processed. \cr
+    #'   Defaults to the `ambiorix.cookie.expire` option; unset, the cookie
+    #'   becomes a session cookie. A session finishes when the client shuts
+    #'   down, after which the session cookie is removed.
+    #'
+    #' @param max_age Integer /// Optional. \cr
+    #'   The number of seconds until the cookie expires. A zero or negative
+    #'   number expires it immediately. \cr
+    #'   Defaults to the `ambiorix.cookie.maxage` option. If both `expires`
+    #'   and `max_age` are set, the latter has precedence.
+    #'
+    #' @param domain String /// Optional. \cr
+    #'   The host to which the cookie will be sent. \cr
+    #'   Defaults to the `ambiorix.cookie.domain` option; unset, the host of
+    #'   the current document URL, not including subdomains.
+    #'
+    #' @param path String /// Optional. \cr
+    #'   The path that must exist in the requested URL for the browser to
+    #'   send the Cookie header. \cr
+    #'   Defaults to the `ambiorix.cookie.path` option, `"/"`.
+    #'
+    #' @param secure Logical /// Optional. \cr
+    #'   Whether the cookie is sent to the server only when a request is made
+    #'   with the https: scheme (except on localhost), and therefore is more
+    #'   resistant to man-in-the-middle attacks. \cr
+    #'   Defaults to the `ambiorix.cookie.secure` option, `TRUE`.
+    #'
+    #' @param http_only Logical /// Optional. \cr
+    #'   Whether to forbid JavaScript from accessing the cookie, for example
+    #'   through the document.cookie property. \cr
+    #'   Defaults to the `ambiorix.cookie.httponly` option, `TRUE`.
+    #'
+    #' @param same_site String /// Optional. \cr
+    #'   Whether a cookie is sent with cross-origin requests, providing some
+    #'   protection against cross-site request forgery attacks (CSRF). Either
+    #'   `"Strict"`, `"Lax"`, or `"None"`. \cr
+    #'   Defaults to the `ambiorix.cookie.savesite` option.
+    #'
     #' @return Invisibly returns self.
     cookie = function(
       name,
@@ -681,7 +798,9 @@ Response <- R6::R6Class(
     },
     #' @details Clear a cookie
     #' Clears the value of a cookie.
-    #' @param name Name of the cookie to clear.
+    #' @param name String /// Required. \cr
+    #'   Name of the cookie to clear.
+    #'
     #' @return Invisibly returns self.
     clear_cookie = function(name) {
       # cookies with date in the past are removed from the browser
@@ -922,8 +1041,9 @@ Response <- R6::R6Class(
 #' to the expected
 #' [Date format](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Date).
 #'
-#' @param expires Expiry, if an integer assumes it's the number of seconds
-#' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
+#' @param expires Integer, POSIXct, Date, or String /// Required. \cr
+#'                Expiry. An integer is taken as the number of seconds from
+#'                now; a `character` string is returned as-is.
 #'
 #' @examples
 #' # expires in an hour

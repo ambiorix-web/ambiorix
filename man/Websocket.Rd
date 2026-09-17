@@ -78,7 +78,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{ws}}{The websocket}
+      \item{\code{ws}}{Websocket /// Required. \cr
+The httpuv websocket to wrap.}
     }
     \if{html}{\out{</div>}}
   }
@@ -99,9 +100,10 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{Name, identifier, of the message.}
-      \item{\code{message}}{Content of the message, anything that can be
-serialised to JSON.}
+      \item{\code{name}}{String /// Required. \cr
+Name, identifier, of the message.}
+      \item{\code{message}}{Object /// Required. \cr
+Content of the message, anything that can be serialised to JSON.}
     }
     \if{html}{\out{</div>}}
   }

@@ -7,7 +7,8 @@
 robj(obj)
 }
 \arguments{
-\item{obj}{R object to treat.}
+\item{obj}{Object /// Required. \cr
+The R object to treat.}
 }
 \value{
 Object of class "robj".
