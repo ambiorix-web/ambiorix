@@ -469,6 +469,179 @@ test_that("references are resolved against the document's schemas", {
   )
 })
 
+test_that("allOf requires every branch and keeps their problems", {
+  schemas <- list(
+    NewUser = openapi_schema_object(
+      properties = list(name = openapi_schema_string(minLength = 1L)),
+      required = "name"
+    )
+  )
+  user <- openapi_schema(
+    allOf = list(
+      openapi_schema_ref(name = "NewUser"),
+      openapi_schema_object(
+        properties = list(id = openapi_schema_integer()),
+        required = "id"
+      )
+    )
+  )
+
+  expect_length(
+    openapi_validate(
+      value = list(name = "Ada", id = 1L),
+      schema = user,
+      schemas = schemas
+    ),
+    0L
+  )
+
+  problems <- openapi_validate(
+    value = list(id = "x"),
+    schema = user,
+    schemas = schemas
+  )
+  expect_equal(paths(problems), c("name", "id"))
+  expect_equal(messages(problems), c("is required", "must be an integer"))
+})
+
+test_that("anyOf accepts one match or several", {
+  schema <- openapi_schema(
+    anyOf = list(
+      openapi_schema_object(
+        properties = list(email = openapi_schema_string()),
+        required = "email"
+      ),
+      openapi_schema_object(
+        properties = list(phone = openapi_schema_string()),
+        required = "phone"
+      )
+    )
+  )
+
+  expect_length(
+    openapi_validate(value = list(email = "a@b.c"), schema = schema),
+    0L
+  )
+  expect_length(
+    openapi_validate(
+      value = list(email = "a@b.c", phone = "0700"),
+      schema = schema
+    ),
+    0L
+  )
+
+  # both branches fit an object, so neither can be singled out
+  problems <- openapi_validate(value = list(name = "Ada"), schema = schema)
+  expect_equal(paths(problems), "")
+  expect_equal(
+    messages(problems),
+    "must match at least one of the 2 documented schemas"
+  )
+})
+
+test_that("oneOf accepts exactly one match", {
+  schema <- openapi_schema(
+    oneOf = list(
+      openapi_schema_integer(),
+      openapi_schema_number(minimum = 10)
+    )
+  )
+
+  expect_length(openapi_validate(value = 5L, schema = schema), 0L)
+  expect_length(openapi_validate(value = 10.5, schema = schema), 0L)
+
+  expect_equal(
+    messages(openapi_validate(value = 12L, schema = schema)),
+    "must match exactly one of the documented schemas, matched 2"
+  )
+  expect_equal(
+    messages(openapi_validate(value = TRUE, schema = schema)),
+    "must match exactly one of the 2 documented schemas"
+  )
+})
+
+test_that("a lone branch of the value's type reports its own problems", {
+  schema <- openapi_schema_object(
+    properties = list(
+      to = openapi_schema(
+        oneOf = list(
+          openapi_schema_string(minLength = 3L),
+          openapi_schema_array(
+            items = openapi_schema_string(),
+            minItems = 2L
+          )
+        )
+      )
+    )
+  )
+
+  problems <- openapi_validate(value = list(to = "ab"), schema = schema)
+  expect_equal(paths(problems), "to")
+  expect_equal(messages(problems), "must be at least 3 character(s) long")
+
+  problems <- openapi_validate(value = list(to = I("abc")), schema = schema)
+  expect_equal(paths(problems), "to")
+  expect_equal(messages(problems), "must have at least 2 item(s)")
+
+  # a branch reached through a reference is narrowed by the type it
+  # resolves to
+  schemas <- list(
+    Card = openapi_schema_object(
+      properties = list(number = openapi_schema_string()),
+      required = "number"
+    )
+  )
+  payment <- openapi_schema(
+    anyOf = list(openapi_schema_string(), openapi_schema_ref(name = "Card"))
+  )
+
+  problems <- openapi_validate(
+    value = list(cvv = "123"),
+    schema = payment,
+    schemas = schemas
+  )
+  expect_equal(paths(problems), "number")
+  expect_equal(messages(problems), "is required")
+})
+
+test_that("composition keywords nest, and sit beside a type", {
+  schema <- openapi_schema_string(
+    allOf = list(
+      openapi_schema(
+        anyOf = list(
+          openapi_schema(enum = list("a", "b")),
+          openapi_schema(pattern = "^x")
+        )
+      )
+    )
+  )
+
+  expect_length(openapi_validate(value = "a", schema = schema), 0L)
+  expect_length(openapi_validate(value = "xyz", schema = schema), 0L)
+  expect_equal(
+    messages(openapi_validate(value = "c", schema = schema)),
+    "must match at least one of the 2 documented schemas"
+  )
+
+  # a wrong type short-circuits before the branches are tried
+  expect_equal(
+    messages(openapi_validate(value = 1L, schema = schema)),
+    "must be a string"
+  )
+})
+
+test_that("not rejects what its schema accepts", {
+  schema <- openapi_schema_string(
+    not = openapi_schema(enum = list("admin", "root"))
+  )
+
+  expect_length(openapi_validate(value = "ada", schema = schema), 0L)
+  expect_equal(
+    messages(openapi_validate(value = "admin", schema = schema)),
+    "must not match the excluded schema"
+  )
+})
+
 test_that("parameters are converted to their documented type", {
   expect_identical(
     openapi_convert(
@@ -637,6 +810,87 @@ test_that("query and path parameters are validated and converted", {
   )
 
   expect_match(messages(problems), "less than or equal to 10")
+})
+
+test_that("a composed parameter is converted by its branches", {
+  docs <- openapi_docs(
+    parameters = openapi_param(
+      name = "id",
+      location = "path",
+      schema = openapi_schema(
+        anyOf = list(
+          openapi_schema_string(pattern = "^[a-z-]+$"),
+          openapi_schema_integer(minimum = 1L)
+        )
+      )
+    )
+  )
+
+  # the string branch comes first and still does not claim a number
+  req <- mock_request(params = list(id = "42"))
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$params$id, 42L)
+
+  req <- mock_request(params = list(id = "hello-world"))
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$params$id, "hello-world")
+
+  req <- mock_request(params = list(id = "0"))
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_equal(messages(problems), "must be greater than or equal to 1")
+
+  # a reading the schema rejects is not kept over one it accepts: `123` as
+  # a number is under the minimum, as a string it is three digits
+  schema <- openapi_schema(
+    anyOf = list(
+      openapi_schema_string(pattern = "^[0-9]{3}$"),
+      openapi_schema_number(minimum = 1000)
+    )
+  )
+  expect_identical(openapi_convert(value = "123", schema = schema), "123")
+  expect_identical(openapi_convert(value = "5000", schema = schema), 5000)
+  # no reading is accepted: the number makes for the better complaint
+  expect_identical(openapi_convert(value = "12", schema = schema), 12)
+
+  # a branch with no type of its own has no reading to offer, and the
+  # `allOf` as a whole still decides
+  schema <- openapi_schema(
+    allOf = list(openapi_schema(minimum = 1L), openapi_schema_integer())
+  )
+  expect_identical(openapi_convert(value = "7", schema = schema), 7L)
+  expect_identical(openapi_convert(value = "0", schema = schema), 0L)
+
+  # where both readings are valid, the first schema listed decides
+  expect_identical(
+    openapi_convert(
+      value = "42",
+      schema = openapi_schema(
+        anyOf = list(openapi_schema_string(), openapi_schema_integer())
+      )
+    ),
+    "42"
+  )
+  expect_identical(
+    openapi_convert(
+      value = "42",
+      schema = openapi_schema(
+        anyOf = list(openapi_schema_integer(), openapi_schema_string())
+      )
+    ),
+    42L
+  )
+
+  # nested, and through `allOf` and `oneOf` alike
+  schema <- openapi_schema(
+    allOf = list(
+      openapi_schema(
+        oneOf = list(openapi_schema_boolean(), openapi_schema_number())
+      )
+    )
+  )
+  expect_identical(openapi_convert(value = "true", schema = schema), TRUE)
+  expect_identical(openapi_convert(value = "1.5", schema = schema), 1.5)
+  expect_identical(openapi_convert(value = "abc", schema = schema), "abc")
 })
 
 test_that("a decimal is not an integer parameter", {
@@ -1150,6 +1404,48 @@ test_that("undocumented form fields are shaped but not converted", {
   problems <- openapi_validate_request(request = req, docs = docs_strict)
   expect_equal(paths(problems), "extra")
   expect_equal(messages(problems), "is not an allowed property")
+})
+
+test_that("a composed form body is typed by its branches' properties", {
+  schemas <- list(
+    NewUser = openapi_schema_object(
+      properties = list(
+        name = openapi_schema_string(),
+        age = openapi_schema_integer()
+      ),
+      required = "name"
+    )
+  )
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema(
+        allOf = list(
+          openapi_schema_ref(name = "NewUser"),
+          openapi_schema_object(
+            properties = list(
+              tags = openapi_schema_array(openapi_schema_string()),
+              # declared again: the first declaration shapes the field
+              age = openapi_schema_string()
+            )
+          )
+        )
+      ),
+      content_type = "application/x-www-form-urlencoded"
+    )
+  )
+
+  req <- mock_request(body = "name=Ada&age=36&tags=r")
+  problems <- openapi_validate_request(
+    request = req,
+    docs = docs,
+    schemas = schemas
+  )
+  expect_identical(req$payload$age, 36L)
+  expect_identical(req$payload$tags, I("r"))
+
+  # validation stays exact: the second declaration wanted a string
+  expect_equal(paths(problems), "age")
+  expect_equal(messages(problems), "must be a string")
 })
 
 test_that("multipart bodies are validated including file fields", {

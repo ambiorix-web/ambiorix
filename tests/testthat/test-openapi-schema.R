@@ -136,6 +136,43 @@ test_that("openapi_schema_array/object validate their inputs", {
   expect_error(openapi_schema_string("unnamed keyword"))
 })
 
+test_that("composition keywords take schemas", {
+  schema <- openapi_schema(
+    oneOf = list(openapi_schema_string(), openapi_schema_integer())
+  )
+  expect_length(schema$oneOf, 2L)
+
+  # through every constructor, `openapi_schema_object()` included
+  expect_s3_class(
+    openapi_schema_object(allOf = list(openapi_schema_ref("Task"))),
+    "ambiorix_openapi_schema"
+  )
+  expect_s3_class(
+    openapi_schema_string(not = openapi_schema(enum = list("admin"))),
+    "ambiorix_openapi_schema"
+  )
+
+  # a forgotten `list()`
+  expect_error(
+    openapi_schema(oneOf = openapi_schema_string()),
+    "`oneOf` must be a non-empty, unnamed list"
+  )
+  expect_error(
+    openapi_schema_object(anyOf = list("string")),
+    "`anyOf` must be"
+  )
+  expect_error(openapi_schema(allOf = list()), "`allOf` must be")
+  # a named list would render as an object
+  expect_error(
+    openapi_schema(oneOf = list(a = openapi_schema_string())),
+    "`oneOf` must be"
+  )
+  expect_error(
+    openapi_schema_string(not = list(enum = "admin")),
+    "`not` must be an OpenAPI schema"
+  )
+})
+
 test_that("openapi_schema_ref names a schema", {
   schema <- openapi_schema_ref(
     "Task",
