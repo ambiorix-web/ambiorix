@@ -264,6 +264,69 @@ test_that("a null inside an array is a null, whatever it parsed to", {
   expect_equal(messages(problems), "must be an object")
 })
 
+test_that("a string that is not valid UTF-8 is reported, not thrown", {
+  # what percent-decoding makes of `%ff%fe`, and of a latin1 `caf%E9`
+  bytes <- webutils::parse_query("a=%ff%fe&b=caf%E9&c=caf%C3%A9")
+  expect_false(validUTF8(bytes$a))
+
+  # `nchar()` raises on it
+  problems <- openapi_validate(
+    value = bytes$a,
+    schema = openapi_schema_string(minLength = 1L, maxLength = 5L)
+  )
+  expect_equal(messages(problems), "must be valid UTF-8")
+
+  # reported once, and not as a pattern that failed to match
+  problems <- openapi_validate(
+    value = bytes$b,
+    schema = openapi_schema_string(pattern = "^caf")
+  )
+  expect_equal(messages(problems), "must be valid UTF-8")
+
+  # a string with no keywords is still a string
+  docs <- openapi_docs(parameters = openapi_param(name = "q"))
+
+  req <- mock_request(query = list(q = bytes$a))
+  problems <- openapi_validate_request(request = req, docs = docs)
+  expect_equal(paths(problems), "q")
+  expect_equal(messages(problems), "must be valid UTF-8")
+
+  req <- mock_request(query = list(q = bytes$c))
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+
+  # inside an array, the element is named
+  problems <- openapi_validate(
+    value = c("a", bytes$a),
+    schema = openapi_schema_array(items = openapi_schema_string())
+  )
+  expect_equal(paths(problems), "[2]")
+})
+
+test_that("a form field name that is not valid UTF-8 is a body problem", {
+  docs <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(name = openapi_schema_string()),
+        additionalProperties = FALSE
+      ),
+      content_type = "application/x-www-form-urlencoded"
+    )
+  )
+
+  req <- mock_request(body = "name=Ada&%ff%fe=1")
+  problems <- openapi_validate_request(request = req, docs = docs)
+
+  expect_length(problems, 1L)
+  expect_equal(paths(problems), "")
+  expect_equal(messages(problems), "a field name is not valid UTF-8")
+  expect_null(req$payload)
+
+  # the response that reports it can be written
+  expect_no_error(
+    default_serialiser(list(error = "Invalid request", details = problems))
+  )
+})
+
 test_that("a property sent as null is read as absent", {
   schema <- openapi_schema_object(
     properties = list(

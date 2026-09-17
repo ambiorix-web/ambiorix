@@ -18,6 +18,11 @@
 #' than an error: it is reported as `could not be parsed as <media type>`, and
 #' the parser's own message is logged for whoever wrote the app.
 #'
+#' A form with a field name that is not valid UTF-8 is a problem of the body
+#' as a whole, and nothing else in it is checked: the name would be the
+#' `path` of whatever was reported about the field, and could not be
+#' serialised into the response.
+#'
 #' A form field, like a query parameter, can arrive more than once: a
 #' multiple select posts one occurrence per choice. Both are parsed into a
 #' flat list that repeats the name, which `[[` cannot read past, so every
@@ -167,6 +172,17 @@ openapi_validate_request <- function(request, docs, schemas = list()) {
   }
 
   if (!identical(body$content_type, "application/json")) {
+    # a field name becomes the `path` of a problem, and one that is not
+    # valid UTF-8 cannot be serialised into the response that reports it
+    if (!all(validUTF8(as.character(names(payload))))) {
+      return(
+        append(
+          details,
+          list(openapi_detail("body", "", "a field name is not valid UTF-8"))
+        )
+      )
+    }
+
     payload <- openapi_form(payload, body$schema, schemas)
   }
 
@@ -870,6 +886,12 @@ openapi_check_number <- function(value, schema, path) {
 #' annotation rather than a constraint, so `format = "email"` documents the
 #' intent without rejecting anything; use `pattern` to actually enforce it.
 #'
+#' A string that is not valid UTF-8 is not a JSON string, and is reported
+#' before any keyword is read. A JSON body cannot hold one, the parser
+#' refuses it; a query, path, or form value can, since percent-decoding
+#' yields whatever bytes it was given. This runs for every string, keywords
+#' or not, so none reaches a handler, where `res$json()` would raise on it.
+#'
 #' @param value String /// Required. \cr
 #'              The string to check.
 #'
@@ -901,6 +923,14 @@ openapi_check_string <- function(value, schema, path) {
   problems <- list()
   fail <- function(message) {
     problems[[length(problems) + 1L]] <<- list(path = path, message = message)
+  }
+
+  # percent-decoding yields whatever bytes it was given, e.g. `?q=%ff`.
+  # `nchar()` raises on them, and the serialiser would on the way out
+  if (!validUTF8(value)) {
+    fail("must be valid UTF-8")
+
+    return(problems)
   }
 
   if (!is.null(schema[["minLength"]]) && nchar(value) < schema[["minLength"]]) {
