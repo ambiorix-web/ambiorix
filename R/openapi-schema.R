@@ -237,6 +237,11 @@ openapi_schema <- function(type = NULL, ...) {
     stop("`multipleOf` must be a single number greater than 0", call. = FALSE)
   }
 
+  if (!is.null(keywords[["pattern"]])) {
+    # an invalid regex errors here:
+    grepl(keywords[["pattern"]], "", perl = TRUE)
+  }
+
   if (!is.null(type)) {
     assert_that(is.character(type))
     keywords <- c(list(type = type), keywords)

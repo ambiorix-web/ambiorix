@@ -978,7 +978,10 @@ openapi_check_string <- function(value, schema, path) {
     fail(sprintf("must be at most %s character(s) long", schema[["maxLength"]]))
   }
 
-  if (!is.null(schema[["pattern"]]) && !grepl(schema[["pattern"]], value)) {
+  if (
+    !is.null(schema[["pattern"]]) &&
+      !grepl(schema[["pattern"]], value, perl = TRUE)
+  ) {
     fail(sprintf("must match the pattern %s", schema[["pattern"]]))
   }
 

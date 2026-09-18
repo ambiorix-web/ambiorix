@@ -184,6 +184,15 @@ test_that("multipleOf must be a positive number", {
   expect_error(openapi_schema_number(multipleOf = NA_real_), "single number")
 })
 
+test_that("an invalid pattern fails at declaration", {
+  expect_no_error(openapi_schema_string(pattern = "^(?=.*[0-9]).+$"))
+
+  expect_error(
+    suppressWarnings(openapi_schema_string(pattern = "(")),
+    "invalid regular expression"
+  )
+})
+
 test_that("openapi_schema_ref names a schema", {
   schema <- openapi_schema_ref(
     "Task",

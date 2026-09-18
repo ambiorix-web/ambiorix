@@ -598,6 +598,16 @@ test_that("multipleOf is checked in decimal, not floating point", {
   expect_match(multiple_of(7L, 2L), "must be a multiple of 2")
 })
 
+test_that("pattern is an ECMA-262 regex, lookarounds included", {
+  schema <- openapi_schema_string(pattern = "^(?=.*[A-Z])(?=.*[0-9]).{8,}$")
+
+  expect_length(messages(openapi_validate("Passw0rdX", schema)), 0L)
+  expect_match(
+    messages(openapi_validate("password", schema)),
+    "must match the pattern"
+  )
+})
+
 test_that("keywords are read exactly, never by prefix", {
   # `$` would partial-match `pattern` to `patternProperties`
   schema <- openapi_schema(
