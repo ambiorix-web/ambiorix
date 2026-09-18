@@ -899,10 +899,14 @@ openapi_check_number <- function(value, schema, path) {
     fail(sprintf("must be less than %s", schema[["exclusiveMaximum"]]))
   }
 
-  if (
-    !is.null(schema[["multipleOf"]]) && value %% schema[["multipleOf"]] != 0
-  ) {
-    fail(sprintf("must be a multiple of %s", schema[["multipleOf"]]))
+  if (!is.null(schema[["multipleOf"]])) {
+    # `19.99 %% 0.01` is not 0 in floating point; the quotient is off from an
+    # integer by a few ulps, so the tolerance scales with it
+    quotient <- value / schema[["multipleOf"]]
+
+    if (abs(quotient - round(quotient)) > 1e-14 * max(1, abs(quotient))) {
+      fail(sprintf("must be a multiple of %s", schema[["multipleOf"]]))
+    }
   }
 
   problems

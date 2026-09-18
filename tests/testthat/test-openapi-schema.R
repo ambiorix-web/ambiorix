@@ -173,6 +173,17 @@ test_that("composition keywords take schemas", {
   )
 })
 
+test_that("multipleOf must be a positive number", {
+  expect_equal(openapi_schema_number(multipleOf = 0.01)$multipleOf, 0.01)
+  expect_equal(openapi_schema_integer(multipleOf = 2L)$multipleOf, 2L)
+
+  expect_error(openapi_schema_number(multipleOf = 0), "greater than 0")
+  expect_error(openapi_schema_number(multipleOf = -1), "greater than 0")
+  expect_error(openapi_schema_number(multipleOf = "2"), "single number")
+  expect_error(openapi_schema_number(multipleOf = c(1, 2)), "single number")
+  expect_error(openapi_schema_number(multipleOf = NA_real_), "single number")
+})
+
 test_that("openapi_schema_ref names a schema", {
   schema <- openapi_schema_ref(
     "Task",

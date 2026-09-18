@@ -579,6 +579,25 @@ test_that("string, number, and array keywords are checked", {
   )
 })
 
+test_that("multipleOf is checked in decimal, not floating point", {
+  multiple_of <- function(value, m) {
+    messages(openapi_validate(value, openapi_schema_number(multipleOf = m)))
+  }
+
+  # `%%` rejects every one of these
+  expect_length(multiple_of(19.99, 0.01), 0L)
+  expect_length(multiple_of(10, 0.1), 0L)
+  expect_length(multiple_of(0.3, 0.1), 0L)
+  expect_length(multiple_of(1234567.89, 0.01), 0L)
+  expect_length(multiple_of(0, 0.01), 0L)
+  expect_length(multiple_of(6L, 2L), 0L)
+
+  expect_match(multiple_of(19.991, 0.01), "must be a multiple of 0.01")
+  expect_match(multiple_of(0.1, 0.3), "must be a multiple of 0.3")
+  expect_match(multiple_of(1234567.891, 0.01), "must be a multiple of 0.01")
+  expect_match(multiple_of(7L, 2L), "must be a multiple of 2")
+})
+
 test_that("keywords are read exactly, never by prefix", {
   # `$` would partial-match `pattern` to `patternProperties`
   schema <- openapi_schema(
