@@ -135,47 +135,6 @@ Ambiorix <- R6::R6Class(
       self$not_found <- handler
       invisible(self)
     },
-    #' @details Sets the error handler.
-    #'
-    #' @param handler Function /// Required. \cr
-    #'   A function that accepts a request, a response, and an error object.
-    #'
-    #' @examples
-    #' # my custom error handler:
-    #' error_handler <- function(req, res, error) {
-    #'   if (!is.null(error)) {
-    #'     error_msg <- conditionMessage(error)
-    #'     cli::cli_alert_danger("Error: {error_msg}")
-    #'   }
-    #'   response <- list(
-    #'     code = 500L,
-    #'     msg = "Uhhmmm... Looks like there's an error from our side :("
-    #'   )
-    #'   res$
-    #'     set_status(500L)$
-    #'     json(response)
-    #' }
-    #'
-    #' # handler for GET at /whoami:
-    #' whoami <- function(req, res) {
-    #'   # simulate error (object 'Pikachu' is not defined)
-    #'   print(Pikachu)
-    #' }
-    #'
-    #' app <- Ambiorix$
-    #'   new()$
-    #'   set_error(error_handler)$
-    #'   get("/whoami", whoami)
-    #'
-    #' if (interactive()) {
-    #'   app$start(open = FALSE)
-    #' }
-    set_error = function(handler) {
-      assert_that(not_missing(handler))
-      assert_that(is_error_handler(handler))
-      self$error <- handler
-      invisible(self)
-    },
     #' @details Static directories
     #'
     #' @param path String /// Required. \cr

@@ -66,40 +66,6 @@ if(interactive())
  app$start()
 
 ## ------------------------------------------------
-## Method `Ambiorix$set_error()`
-## ------------------------------------------------
-
-# my custom error handler:
-error_handler <- function(req, res, error) {
-  if (!is.null(error)) {
-    error_msg <- conditionMessage(error)
-    cli::cli_alert_danger("Error: {error_msg}")
-  }
-  response <- list(
-    code = 500L,
-    msg = "Uhhmmm... Looks like there's an error from our side :("
-  )
-  res$
-    set_status(500L)$
-    json(response)
-}
-
-# handler for GET at /whoami:
-whoami <- function(req, res) {
-  # simulate error (object 'Pikachu' is not defined)
-  print(Pikachu)
-}
-
-app <- Ambiorix$
-  new()$
-  set_error(error_handler)$
-  get("/whoami", whoami)
-
-if (interactive()) {
-  app$start(open = FALSE)
-}
-
-## ------------------------------------------------
 ## Method `Ambiorix$start()`
 ## ------------------------------------------------
 
@@ -227,7 +193,6 @@ if (interactive()) {
     \item \href{#method-Ambiorix-cache_templates}{\code{Ambiorix$cache_templates()}}
     \item \href{#method-Ambiorix-listen}{\code{Ambiorix$listen()}}
     \item \href{#method-Ambiorix-set_404}{\code{Ambiorix$set_404()}}
-    \item \href{#method-Ambiorix-set_error}{\code{Ambiorix$set_error()}}
     \item \href{#method-Ambiorix-static}{\code{Ambiorix$static()}}
     \item \href{#method-Ambiorix-start}{\code{Ambiorix$start()}}
     \item \href{#method-Ambiorix-serialiser}{\code{Ambiorix$serialiser()}}
@@ -247,6 +212,7 @@ if (interactive()) {
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="param"><a href='../../ambiorix/html/Routing.html#method-Routing-param'><code>Routing$param()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="prepare"><a href='../../ambiorix/html/Routing.html#method-Routing-prepare'><code>Routing$prepare()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive"><a href='../../ambiorix/html/Routing.html#method-Routing-receive'><code>Routing$receive()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="set_error"><a href='../../ambiorix/html/Routing.html#method-Routing-set_error'><code>Routing$set_error()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use"><a href='../../ambiorix/html/Routing.html#method-Routing-use'><code>Routing$use()</code></a></span></li>
 </ul>
 </details>}}
@@ -370,62 +336,6 @@ app$get("/", function(req, res){
 
 if(interactive())
  app$start()
-}
-    \if{html}{\out{</div>}}
-  }
-}
-
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Ambiorix-set_error"></a>}}
-\if{latex}{\out{\hypertarget{method-Ambiorix-set_error}{}}}
-\subsection{\code{Ambiorix$set_error()}}{
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Ambiorix$set_error(handler)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{handler}}{Function /// Required. \cr
-A function that accepts a request, a response, and an error object.}
-    }
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Details}{
-    Sets the error handler.
-  }
-  \subsection{Examples}{
-    \if{html}{\out{<div class="r example copy">}}
-    \preformatted{# my custom error handler:
-error_handler <- function(req, res, error) {
-  if (!is.null(error)) {
-    error_msg <- conditionMessage(error)
-    cli::cli_alert_danger("Error: {error_msg}")
-  }
-  response <- list(
-    code = 500L,
-    msg = "Uhhmmm... Looks like there's an error from our side :("
-  )
-  res$
-    set_status(500L)$
-    json(response)
-}
-
-# handler for GET at /whoami:
-whoami <- function(req, res) {
-  # simulate error (object 'Pikachu' is not defined)
-  print(Pikachu)
-}
-
-app <- Ambiorix$
-  new()$
-  set_error(error_handler)$
-  get("/whoami", whoami)
-
-if (interactive()) {
-  app$start(open = FALSE)
-}
 }
     \if{html}{\out{</div>}}
   }

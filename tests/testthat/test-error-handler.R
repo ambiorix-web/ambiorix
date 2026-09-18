@@ -157,6 +157,98 @@ test_that("route-specific handler does not bleed into other routes", {
   stop_all()
 })
 
+test_that("a router's error handler answers its routes, in any order", {
+  app <- Ambiorix$new()
+
+  app$error <- function(req, res, error) {
+    res$status <- 500L
+    res$send("app handler")
+  }
+
+  router <- Router$new("/api")
+
+  router$get("/boom", function(req, res) {
+    stop("boom")
+  })
+
+  # set after the route, like the app's
+  router$set_error(function(req, res, error) {
+    res$status <- 503L
+    res$send("router handler")
+  })
+
+  app$use(router)
+
+  app$get("/boom", function(req, res) {
+    stop("boom")
+  })
+
+  prepare_app(app)
+
+  resp <- call_app(app, "/api/boom")
+  expect_equal(resp$status, 503L)
+  expect_equal(resp$body, "router handler")
+
+  # does not bleed into the app's own routes
+  resp <- call_app(app, "/boom")
+  expect_equal(resp$status, 500L)
+  expect_equal(resp$body, "app handler")
+
+  expect_error(router$set_error("not a function"))
+
+  stop_all()
+})
+
+test_that("error handlers resolve route, then router, then parent, then app", {
+  app <- Ambiorix$new()
+
+  app$error <- function(req, res, error) {
+    res$send("app handler")
+  }
+
+  outer <- Router$new("/outer")
+  outer$error <- function(req, res, error) {
+    res$send("outer handler")
+  }
+
+  inner <- Router$new("/inner")
+  inner$error <- function(req, res, error) {
+    res$send("inner handler")
+  }
+
+  bare <- Router$new("/bare")
+
+  inner$get(
+    "/route",
+    function(req, res) stop("boom"),
+    error = function(req, res, error) {
+      res$send("route handler")
+    }
+  )
+  inner$get("/router", function(req, res) stop("boom"))
+  bare$get("/parent", function(req, res) stop("boom"))
+  outer$get("/self", function(req, res) stop("boom"))
+
+  outer$use(inner)
+  outer$use(bare)
+  app$use(outer)
+
+  # a sibling router mounted beside `outer` must not take its handler
+  beside <- Router$new("/beside")
+  beside$get("/app", function(req, res) stop("boom"))
+  app$use(beside)
+
+  prepare_app(app)
+
+  expect_equal(call_app(app, "/outer/inner/route")$body, "route handler")
+  expect_equal(call_app(app, "/outer/inner/router")$body, "inner handler")
+  expect_equal(call_app(app, "/outer/bare/parent")$body, "outer handler")
+  expect_equal(call_app(app, "/outer/self")$body, "outer handler")
+  expect_equal(call_app(app, "/beside/app")$body, "app handler")
+
+  stop_all()
+})
+
 test_that("error handler receives the actual error condition", {
   app <- Ambiorix$new()
 

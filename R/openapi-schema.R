@@ -229,8 +229,10 @@ openapi_schema <- function(type = NULL, ...) {
 
   if (
     !is.null(multiple_of) &&
-      !(is.numeric(multiple_of) && length(multiple_of) == 1L &&
-        !is.na(multiple_of) && multiple_of > 0)
+      !(is.numeric(multiple_of) &&
+        length(multiple_of) == 1L &&
+        !is.na(multiple_of) &&
+        multiple_of > 0)
   ) {
     stop("`multipleOf` must be a single number greater than 0", call. = FALSE)
   }

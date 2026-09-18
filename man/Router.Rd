@@ -50,7 +50,12 @@ if(interactive())
 \section{Public fields}{
   \if{html}{\out{<div class="r6-fields">}}
   \describe{
-    \item{\code{error}}{500 response when the route errors, must a handler function that accepts the request and the response, by default uses \code{\link[=response_500]{response_500()}}.}
+    \item{\code{error}}{Function /// Optional. \cr
+Error handler for the router's routes. \cr
+Must be a function that accepts the request, the response, \cr
+and the error. \cr
+\code{NULL} (the default) uses the handler of the router it is \cr
+mounted on, or the app's. See \code{set_error()}.}
   }
   \if{html}{\out{</div>}}
 }
@@ -72,6 +77,7 @@ if(interactive())
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="param"><a href='../../ambiorix/html/Routing.html#method-Routing-param'><code>Routing$param()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="prepare"><a href='../../ambiorix/html/Routing.html#method-Routing-prepare'><code>Routing$prepare()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive"><a href='../../ambiorix/html/Routing.html#method-Routing-receive'><code>Routing$receive()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="set_error"><a href='../../ambiorix/html/Routing.html#method-Routing-set_error'><code>Routing$set_error()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use"><a href='../../ambiorix/html/Routing.html#method-Routing-use'><code>Routing$use()</code></a></span></li>
 </ul>
 </details>}}

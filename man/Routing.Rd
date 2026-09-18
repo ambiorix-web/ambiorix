@@ -27,6 +27,40 @@ handler for the single corresponding HTTP verb; see
 \examples{
 
 ## ------------------------------------------------
+## Method `Routing$set_error()`
+## ------------------------------------------------
+
+# my custom error handler:
+error_handler <- function(req, res, error) {
+  if (!is.null(error)) {
+    error_msg <- conditionMessage(error)
+    cli::cli_alert_danger("Error: {error_msg}")
+  }
+  response <- list(
+    code = 500L,
+    msg = "Uhhmmm... Looks like there's an error from our side :("
+  )
+  res$
+    set_status(500L)$
+    json(response)
+}
+
+# handler for GET at /whoami:
+whoami <- function(req, res) {
+  # simulate error (object 'Pikachu' is not defined)
+  print(Pikachu)
+}
+
+app <- Ambiorix$
+  new()$
+  set_error(error_handler)$
+  get("/whoami", whoami)
+
+if (interactive()) {
+  app$start(open = FALSE)
+}
+
+## ------------------------------------------------
 ## Method `Routing$param()`
 ## ------------------------------------------------
 
@@ -81,7 +115,7 @@ if(interactive())
 \section{Public fields}{
   \if{html}{\out{<div class="r6-fields">}}
   \describe{
-    \item{\code{error}}{Error handler.}
+    \item{\code{error}}{Error handler, see \code{set_error()}.}
 
     \item{\code{get}}{Register a route handler for HTTP GET requests. See
 \link{routing-http-methods}.}
@@ -119,6 +153,7 @@ Ambiorix. See \link{routing-http-methods}.}
 \subsection{Public methods}{
   \itemize{
     \item \href{#method-Routing-initialize}{\code{Routing$new()}}
+    \item \href{#method-Routing-set_error}{\code{Routing$set_error()}}
     \item \href{#method-Routing-param}{\code{Routing$param()}}
     \item \href{#method-Routing-receive}{\code{Routing$receive()}}
     \item \href{#method-Routing-print}{\code{Routing$print()}}
@@ -152,6 +187,67 @@ Defaults to \code{""}, no prefix.}
   }
   \subsection{Details}{
     Initialise
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Routing-set_error"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-set_error}{}}}
+\subsection{\code{Routing$set_error()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$set_error(handler)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{handler}}{Function /// Required. \cr
+A function that accepts a request, a response, and an error object.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Sets the error handler.
+
+It answers an error raised by any route of this router, or of a
+router mounted on it, that has no \code{error} handler of its own. A
+router without one falls back to the router it is mounted on, and
+in the end to the app's.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{# my custom error handler:
+error_handler <- function(req, res, error) {
+  if (!is.null(error)) {
+    error_msg <- conditionMessage(error)
+    cli::cli_alert_danger("Error: {error_msg}")
+  }
+  response <- list(
+    code = 500L,
+    msg = "Uhhmmm... Looks like there's an error from our side :("
+  )
+  res$
+    set_status(500L)$
+    json(response)
+}
+
+# handler for GET at /whoami:
+whoami <- function(req, res) {
+  # simulate error (object 'Pikachu' is not defined)
+  print(Pikachu)
+}
+
+app <- Ambiorix$
+  new()$
+  set_error(error_handler)$
+  get("/whoami", whoami)
+
+if (interactive()) {
+  app$start(open = FALSE)
+}
+}
+    \if{html}{\out{</div>}}
   }
 }
 
@@ -325,15 +421,12 @@ Note that multiple routers and middlewares can be used.}
 \subsection{\code{Routing$get_routes()}}{
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{Routing$get_routes(routes = list(), parent = "")}
+    \preformatted{Routing$get_routes(parent = "")}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{routes}}{List /// Optional. \cr
-Existing list of routes. \cr
-Defaults to \code{list()}.}
       \item{\code{parent}}{String /// Optional. \cr
 Parent path. \cr
 Defaults to \code{""}.}

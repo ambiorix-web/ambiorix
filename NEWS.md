@@ -67,6 +67,9 @@
 
 - Allow overriding of default error handler, regardless of the order
   it's registered in, [pull/161](https://github.com/ambiorix-web/ambiorix/pull/161).
+  The same holds for a router: its `error` handler answers its routes,
+  and a router without one falls back to the router it is mounted on,
+  then to the app. `set_error()` is available on routers too.
 - An error in a middleware or a parameter middleware is answered by the
   route's error handler, or `app$error`, the way an error in the handler
   is. It used to reach httpuv, which answered `ERROR: <the R message>`,

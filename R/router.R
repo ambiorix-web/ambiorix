@@ -2,7 +2,12 @@
 #'
 #' Web server.
 #'
-#' @field error 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
+#' @field error Function /// Optional. \cr
+#'              Error handler for the router's routes. \cr
+#'              Must be a function that accepts the request, the response, \cr
+#'              and the error. \cr
+#'              `NULL` (the default) uses the handler of the router it is \cr
+#'              mounted on, or the app's. See `set_error()`.
 #'
 #' @examples
 #' # log

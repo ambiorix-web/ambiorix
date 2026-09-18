@@ -110,7 +110,7 @@ NULL
 #' Core routing class.
 #' Do not use directly, see [Ambiorix], and [Router].
 #'
-#' @field error Error handler.
+#' @field error Error handler, see `set_error()`.
 #' @field get Register a route handler for HTTP GET requests. See
 #'   [routing-http-methods].
 #' @field put Register a route handler for HTTP PUT requests. See
@@ -162,6 +162,52 @@ Routing <- R6::R6Class(
       private$.basepath <- path
       private$.is_router <- path != ""
       private$.register_http_methods()
+    },
+    #' @details Sets the error handler.
+    #'
+    #' It answers an error raised by any route of this router, or of a
+    #' router mounted on it, that has no `error` handler of its own. A
+    #' router without one falls back to the router it is mounted on, and
+    #' in the end to the app's.
+    #'
+    #' @param handler Function /// Required. \cr
+    #'   A function that accepts a request, a response, and an error object.
+    #'
+    #' @examples
+    #' # my custom error handler:
+    #' error_handler <- function(req, res, error) {
+    #'   if (!is.null(error)) {
+    #'     error_msg <- conditionMessage(error)
+    #'     cli::cli_alert_danger("Error: {error_msg}")
+    #'   }
+    #'   response <- list(
+    #'     code = 500L,
+    #'     msg = "Uhhmmm... Looks like there's an error from our side :("
+    #'   )
+    #'   res$
+    #'     set_status(500L)$
+    #'     json(response)
+    #' }
+    #'
+    #' # handler for GET at /whoami:
+    #' whoami <- function(req, res) {
+    #'   # simulate error (object 'Pikachu' is not defined)
+    #'   print(Pikachu)
+    #' }
+    #'
+    #' app <- Ambiorix$
+    #'   new()$
+    #'   set_error(error_handler)$
+    #'   get("/whoami", whoami)
+    #'
+    #' if (interactive()) {
+    #'   app$start(open = FALSE)
+    #' }
+    set_error = function(handler) {
+      assert_that(not_missing(handler))
+      assert_that(is_error_handler(handler))
+      self$error <- handler
+      invisible(self)
     },
     #' @details PARAM Method
     #'
@@ -353,39 +399,33 @@ Routing <- R6::R6Class(
     },
     #' @details Get the routes
     #'
-    #' @param routes List /// Optional. \cr
-    #'   Existing list of routes. \cr
-    #'   Defaults to `list()`.
-    #'
     #' @param parent String /// Optional. \cr
-    #'   Parent path. \cr
-    #'   Defaults to `""`.
+    #'               Parent path. \cr
+    #'               Defaults to `""`.
     #'
-    get_routes = function(routes = list(), parent = "") {
-      routes <- append(
-        routes,
-        lapply(
-          private$.routes,
-          function(route) {
-            route$route$as_pattern(parent)
-            route$route$decompose(parent)
-            route$route$basepath <- paste0(parent, private$.basepath)
-            route
-          }
-        )
+    get_routes = function(parent = "") {
+      routes <- lapply(
+        private$.routes,
+        function(route) {
+          route$route$as_pattern(parent)
+          route$route$decompose(parent)
+          route$route$basepath <- paste0(parent, private$.basepath)
+          route
+        }
       )
-
-      if (!length(private$.routers)) {
-        return(routes)
-      }
 
       parent <- paste0(parent, private$.basepath)
 
       for (router in private$.routers) {
-        routes <- router$get_routes(routes, parent)
+        routes <- append(routes, router$get_routes(parent))
       }
 
-      return(routes)
+      # a route without its own error handler takes the nearest router's,
+      # then the app's: each level fills what the levels below left empty
+      lapply(routes, function(route) {
+        route$error <- route$error %||% self$error
+        route
+      })
     },
     #' @details Get the parameter middlewares
     #'
@@ -717,10 +757,7 @@ Routing <- R6::R6Class(
           )
 
           if (inherits(response, "error")) {
-            handler <- private$.routes[[i]]$error %||% self$error
-            return(
-              handler(request, res, response)
-            )
+            return(private$.routes[[i]]$error(request, res, response))
           }
 
           if (inherits(x = response, what = c("promise", "Future", "mirai"))) {
@@ -741,8 +778,7 @@ Routing <- R6::R6Class(
                     "Server error"
                   )
 
-                  handler <- private$.routes[[i]]$error %||% self$error
-                  handler(request, res, error)
+                  private$.routes[[i]]$error(request, res, error)
                 }
               )
             )
