@@ -21,7 +21,7 @@
 #' (e.g. `"/hello/:name"`).
 #'
 #' - A parameter matches one path segment: `"/users/:res"` matches
-#'   `/users/1`, not `/users/2/3` or `/users/`.
+#'   `/users/1`, not `/users/2/3`, `/users/1/` or `/users/`.
 #' - Exact paths are tried before parameters, whichever router they are on,
 #'   so `/users/me` is matched before `/users/:id`.
 #' - Regular expression syntax is available for finer control, e.g.
@@ -397,7 +397,8 @@ Routing <- R6::R6Class(
 
       invisible(self)
     },
-    #' @details Get the routes
+    #' @details Get the routes, compiled from their full path: the
+    #' basepaths of the routers they are mounted under included.
     #'
     #' @param parent String /// Optional. \cr
     #'               Parent path. \cr
@@ -781,12 +782,6 @@ Routing <- R6::R6Class(
         "on",
         request$PATH_INFO,
         "- Not found"
-      )
-
-      # return 404
-      request$params <- set_params(
-        request$PATH_INFO,
-        Route$new(request$PATH_INFO)
       )
 
       self$not_found(request, res)

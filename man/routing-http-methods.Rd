@@ -64,7 +64,7 @@ Paths are treated as regular expressions; use \code{:} to define a parameter
 (e.g. \code{"/hello/:name"}).
 \itemize{
 \item A parameter matches one path segment: \code{"/users/:res"} matches
-\verb{/users/1}, not \verb{/users/2/3} or \verb{/users/}.
+\verb{/users/1}, not \verb{/users/2/3}, \verb{/users/1/} or \verb{/users/}.
 \item Exact paths are tried before parameters, whichever router they are on,
 so \verb{/users/me} is matched before \verb{/users/:id}.
 \item Regular expression syntax is available for finer control, e.g.

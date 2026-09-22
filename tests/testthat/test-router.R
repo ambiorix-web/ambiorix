@@ -229,8 +229,14 @@ test_that("a router mounted in two places answers at both", {
   private <- app$.__enclos_env__$private
   private$.routes <- app$get_routes()
 
-  expect_equal(private$.call(mockRequest(path = "/status/ping")$body)$body, "pong")
-  expect_equal(private$.call(mockRequest(path = "/api/status/ping")$body)$body, "pong")
+  expect_equal(
+    private$.call(mockRequest(path = "/status/ping")$body)$body,
+    "pong"
+  )
+  expect_equal(
+    private$.call(mockRequest(path = "/api/status/ping")$body)$body,
+    "pong"
+  )
 
   # compiling does not touch the router's own routes
   own <- status$.__enclos_env__$private$.routes[[1]]$route

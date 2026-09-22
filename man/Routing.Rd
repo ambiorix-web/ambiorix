@@ -433,7 +433,8 @@ Defaults to \code{""}.}
     \if{html}{\out{</div>}}
   }
   \subsection{Details}{
-    Get the routes
+    Get the routes, compiled from their full path: the
+basepaths of the routers they are mounted under included.
   }
 }
 

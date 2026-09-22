@@ -237,12 +237,8 @@ Request <- R6::R6Class(
 #' @return Parameter list
 #' @keywords internal
 #' @noRd
-set_params <- function(path, route = NULL) {
-  if (is.null(route)) {
-    return(list())
-  }
-
-  if (!route$dynamic) {
+set_params <- function(path, route) {
+  if (!length(route$params)) {
     return(list())
   }
 

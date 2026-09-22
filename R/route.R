@@ -4,7 +4,6 @@ Route <- R6::R6Class(
     path = NULL,
     components = list(),
     pattern = NULL,
-    dynamic = FALSE,
     params = NULL,
     basepath = NULL,
     initialize = function(path) {
@@ -21,7 +20,6 @@ Route <- R6::R6Class(
     # pattern from them: a `:token` matches one segment
     compile = function(parent = "") {
       path <- paste0(parent, self$path)
-      self$dynamic <- grepl(pattern = ":", x = path, fixed = TRUE)
 
       components <- strsplit(
         x = path,

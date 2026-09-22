@@ -1,7 +1,6 @@
 test_that("Route", {
   r <- Route$new(path = "/:id")$compile()
 
-  expect_true(r$dynamic)
   expect_equal(r$pattern, "^/[^/]+$")
   expect_equal(r$params, "id")
 })
@@ -11,20 +10,19 @@ test_that("Route params match one segment", {
 
   expect_true(grepl(r$pattern, "/users/1"))
   expect_false(grepl(r$pattern, "/users/2/3"))
+  expect_false(grepl(r$pattern, "/users/1/"))
   expect_false(grepl(r$pattern, "/users/"))
 })
 
 test_that("Route is compiled from the full path, parent included", {
   r <- Route$new(path = "/teams/:team/info")$compile("/orgs/:org")
 
-  expect_true(r$dynamic)
   expect_equal(r$pattern, "^/orgs/[^/]+/teams/[^/]+/info$")
   expect_equal(r$params, c("org", "team"))
   expect_true(grepl(r$pattern, "/orgs/acme/teams/core/info"))
 
-  # a static path under a dynamic parent is dynamic
+  # a static path under a dynamic parent has the parent's parameters
   r <- Route$new(path = "/info")$compile("/orgs/:org")
-  expect_true(r$dynamic)
   expect_equal(r$params, "org")
 })
 
