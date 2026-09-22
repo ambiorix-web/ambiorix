@@ -35,8 +35,9 @@
   `/`, which let `/orgs/:org/info` answer `/orgs/acme/teams/core/info`
   with `org = "acme"` and the rest of the path dropped. A trailing slash
   was only ever accepted after a parameter; `/users` never matched
-  `/users/`. Use a regular expression, e.g. `/users/.+`, to match across
-  `/` on purpose.
+  `/users/`, and a trailing slash in a registered path is ignored, as it
+  always was: `/users/:id/` is `/users/:id`. Use a regular expression,
+  e.g. `/users/.+`, to match across `/` on purpose.
 - A `:token` in a router's basepath is matched at any depth: a router
   mounted on `Router$new("/orgs/:org")` had its routes compiled with the
   literal text `:org`, so none of them could be reached. Exact paths are

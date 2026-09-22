@@ -22,6 +22,9 @@
 #'
 #' - A parameter matches one path segment: `"/users/:res"` matches
 #'   `/users/1`, not `/users/2/3`, `/users/1/` or `/users/`.
+#' - A path never ends in `/`: a trailing slash in a registered path is
+#'   ignored, so `"/users/:res/"` is `"/users/:res"`, and a request with one
+#'   is not found.
 #' - Exact paths are tried before parameters, whichever router they are on,
 #'   so `/users/me` is matched before `/users/:id`.
 #' - Regular expression syntax is available for finer control, e.g.

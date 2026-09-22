@@ -14,6 +14,16 @@ test_that("Route params match one segment", {
   expect_false(grepl(r$pattern, "/users/"))
 })
 
+test_that("Route ignores a trailing slash", {
+  r <- Route$new(path = "/users/:res/")$compile()
+  expect_equal(r$pattern, "^/users/[^/]+$")
+
+  # a router's `/` route
+  r <- Route$new(path = "/")$compile("/orgs/:org")
+  expect_equal(r$pattern, "^/orgs/[^/]+$")
+  expect_equal(r$params, "org")
+})
+
 test_that("Route is compiled from the full path, parent included", {
   r <- Route$new(path = "/teams/:team/info")$compile("/orgs/:org")
 
