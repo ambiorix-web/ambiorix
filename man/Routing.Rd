@@ -262,8 +262,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{String /// Required. \cr
-Name of the parameter.}
+      \item{\code{name}}{Character vector /// Required. \cr
+Name(s) of the parameter.}
       \item{\code{handler}}{Function /// Required. \cr
 A function that accepts the request, response, parameter value, and
 the parameter name.}
@@ -271,7 +271,14 @@ the parameter name.}
     \if{html}{\out{</div>}}
   }
   \subsection{Details}{
-    PARAM Method
+    Add a parameter middleware
+
+It runs for every route of this router, and of the routers mounted
+on it, whose path has a \verb{:name} parameter. It runs after the
+middleware and the request validation, see \code{app$openapi()}, so
+\code{value} is the validated value when the route is documented, and
+right before the handler. A \code{forward()} runs it again for the next
+matching route. Return a response to answer the request there.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}

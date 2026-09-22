@@ -244,3 +244,134 @@ test_that("a router mounted in two places answers at both", {
 
   stop_all()
 })
+
+test_that("a parameter middleware runs after the middleware, for mounted routers too", {
+  app <- Ambiorix$new()
+
+  # registered before the middleware, still runs after it
+  app$param("org", function(req, res, value, name) {
+    req$trail <- c(req$trail, paste("app", name, value))
+  })
+  app$use(function(req, res) {
+    req$trail <- c(req$trail, "app mw")
+  })
+
+  orgs <- Router$new("/orgs/:org")
+  orgs$param("org", function(req, res, value, name) {
+    req$trail <- c(req$trail, paste("orgs", name, value))
+  })
+  orgs$use(function(req, res) {
+    req$trail <- c(req$trail, "orgs mw")
+  })
+  orgs$get("/info", function(req, res) {
+    res$send(paste(req$trail, collapse = " > "))
+  })
+
+  teams <- Router$new("/teams/:team")
+  teams$param("team", function(req, res, value, name) {
+    req$trail <- c(req$trail, paste("teams", name, value))
+  })
+  teams$get("/info", function(req, res) {
+    res$send(paste(req$trail, collapse = " > "))
+  })
+
+  # a sibling's parameter middleware must not run, whatever its name
+  other <- Router$new("/other")
+  other$param("org", function(req, res, value, name) {
+    req$trail <- c(req$trail, "other")
+  })
+  other$get("/:org", function(req, res) {
+    res$send(paste(req$trail, collapse = " > "))
+  })
+
+  orgs$use(teams)
+  app$use(orgs)
+  app$use(other)
+
+  private <- app$.__enclos_env__$private
+  private$.routes <- app$get_routes()
+  private$.middleware <- app$get_middleware()
+  private$.params <- app$get_params()
+
+  call <- function(path) {
+    private$.call(mockRequest(path = path)$body)$body
+  }
+
+  expect_equal(
+    call("/orgs/acme/info"),
+    "app mw > orgs mw > app org acme > orgs org acme"
+  )
+  expect_equal(
+    call("/orgs/acme/teams/core/info"),
+    "app mw > orgs mw > app org acme > orgs org acme > teams team core"
+  )
+  expect_equal(call("/other/acme"), "app mw > app org acme > other")
+
+  stop_all()
+})
+
+test_that("a parameter middleware answers the request when it returns a response", {
+  app <- Ambiorix$new()
+
+  app$param("id", function(req, res, value, name) {
+    if (value == "0") {
+      res$status <- 403L
+      return(res$send("forbidden"))
+    }
+  })
+  app$get("/items/:id", function(req, res) {
+    res$send(paste("item", req$params$id))
+  })
+
+  private <- app$.__enclos_env__$private
+  private$.routes <- app$get_routes()
+  private$.params <- app$get_params()
+
+  resp <- private$.call(mockRequest(path = "/items/0")$body)
+  expect_equal(resp$status, 403L)
+  expect_equal(resp$body, "forbidden")
+
+  resp <- private$.call(mockRequest(path = "/items/1")$body)
+  expect_equal(resp$body, "item 1")
+
+  stop_all()
+})
+
+test_that("a parameter middleware receives the validated value", {
+  app <- Ambiorix$new()
+
+  seen <- NULL
+  app$param("id", function(req, res, value, name) {
+    seen <<- value
+  })
+  app$get(
+    "/items/:id",
+    function(req, res) {
+      res$send("ok")
+    },
+    docs = openapi_docs(
+      validate = TRUE,
+      parameters = openapi_param(
+        name = "id",
+        location = "path",
+        schema = openapi_schema_integer()
+      )
+    )
+  )
+
+  private <- app$.__enclos_env__$private
+  private$.routes <- app$get_routes()
+  private$.params <- app$get_params()
+
+  resp <- private$.call(mockRequest(path = "/items/42")$body)
+  expect_equal(resp$body, "ok")
+  expect_identical(seen, 42L)
+
+  # an invalid value is answered before the parameter middleware runs
+  seen <- NULL
+  resp <- private$.call(mockRequest(path = "/items/abc")$body)
+  expect_equal(resp$status, 400L)
+  expect_null(seen)
+
+  stop_all()
+})

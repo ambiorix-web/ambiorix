@@ -49,6 +49,14 @@
   middleware for an app route at `/x/api/y` or `/apiary`, and a router
   with a `:token` in its basepath, e.g. `Router$new("/orgs/:org")`, never
   ran its middleware at all.
+- A parameter middleware, `param()`, is scoped the same way: it runs for
+  the routes of its router and of the routers mounted on it, so
+  `app$param("id", ...)` answers every `:id`. It used to run for the
+  routes of its own router only, as in Express. It also runs after the
+  middleware and the request validation, right before the handler: an
+  authentication middleware sees the request first, and `value` is the
+  validated value on a documented route. It used to run before both, and
+  received the raw string.
 
 **New Features**
 

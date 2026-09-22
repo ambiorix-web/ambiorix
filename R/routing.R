@@ -209,10 +209,17 @@ Routing <- R6::R6Class(
       self$error <- handler
       invisible(self)
     },
-    #' @details PARAM Method
+    #' @details Add a parameter middleware
     #'
-    #' @param name String /// Required. \cr
-    #'   Name of the parameter.
+    #' It runs for every route of this router, and of the routers mounted
+    #' on it, whose path has a `:name` parameter. It runs after the
+    #' middleware and the request validation, see `app$openapi()`, so
+    #' `value` is the validated value when the route is documented, and
+    #' right before the handler. A `forward()` runs it again for the next
+    #' matching route. Return a response to answer the request there.
+    #'
+    #' @param name Character vector /// Required. \cr
+    #'   Name(s) of the parameter.
     #'
     #' @param handler Function /// Required. \cr
     #'   A function that accepts the request, response, parameter value, and
@@ -661,48 +668,14 @@ Routing <- R6::R6Class(
           # a `return()` in here still leaves `.call()`
           response <- tryCatch(
             {
-              # parse request
               request$params <- set_params(
                 request$PATH_INFO,
                 private$.routes[[i]]$route
               )
 
-              # parameter middleware
-              if (length(private$.params) > 0L && length(request$params) > 0L) {
-                for (j in seq_along(private$.params)) {
-                  pn <- private$.params[[j]]$params
-                  pv <- request$params[[pn]]
-
-                  # if param middleware is on correct router and has a
-                  # handler for a request parameter.
-                  on_router <- identical(
-                    attr(private$.params[[j]], "basepath"),
-                    basepath
-                  )
-
-                  if (!on_router || is.null(pv)) {
-                    next
-                  }
-
-                  param_res <- private$.params[[j]]$handler(
-                    request,
-                    res,
-                    pv,
-                    pn
-                  )
-
-                  if (is_response(param_res)) {
-                    return(param_res)
-                  }
-                }
-              }
-
-              # middleware
+              # middleware:
               for (j in seq_along(private$.middleware)) {
                 mid_basepath <- attr(private$.middleware[[j]], "basepath")
-
-                # on the route's router or one it is mounted under: both
-                # basepaths are templates, the request path is not
                 under_router <- identical(basepath, mid_basepath) ||
                   startsWith(basepath, paste0(mid_basepath, "/"))
 
@@ -727,6 +700,30 @@ Routing <- R6::R6Class(
 
               if (is_response(invalid)) {
                 return(invalid)
+              }
+
+              # parameter middleware
+              for (j in seq_along(private$.params)) {
+                pn <- private$.params[[j]]$params
+                pv <- request$params[[pn]]
+                mid_basepath <- attr(private$.params[[j]], "basepath")
+                under_router <- identical(basepath, mid_basepath) ||
+                  startsWith(basepath, paste0(mid_basepath, "/"))
+
+                if (!under_router || is.null(pv)) {
+                  next
+                }
+
+                param_res <- private$.params[[j]]$handler(
+                  request,
+                  res,
+                  pv,
+                  pn
+                )
+
+                if (is_response(param_res)) {
+                  return(param_res)
+                }
               }
 
               # get response
