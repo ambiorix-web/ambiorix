@@ -210,7 +210,6 @@ if (interactive()) {
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_receivers"><a href='../../ambiorix/html/Routing.html#method-Routing-get_receivers'><code>Routing$get_receivers()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="get_routes"><a href='../../ambiorix/html/Routing.html#method-Routing-get_routes'><code>Routing$get_routes()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="param"><a href='../../ambiorix/html/Routing.html#method-Routing-param'><code>Routing$param()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="prepare"><a href='../../ambiorix/html/Routing.html#method-Routing-prepare'><code>Routing$prepare()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="receive"><a href='../../ambiorix/html/Routing.html#method-Routing-receive'><code>Routing$receive()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="set_error"><a href='../../ambiorix/html/Routing.html#method-Routing-set_error'><code>Routing$set_error()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="ambiorix" data-topic="Routing" data-id="use"><a href='../../ambiorix/html/Routing.html#method-Routing-use'><code>Routing$use()</code></a></span></li>

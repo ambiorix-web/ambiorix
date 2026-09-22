@@ -30,6 +30,23 @@
   `NULL` for a request with no body, where they returned `list()`. Nothing
   on the wire is `NULL`, so an absent body is now told apart from `{}` and
   `[]`.
+- A route parameter matches one path segment: `/users/:id` no longer
+  matches `/users/2/3` or `/users/`. It used to match across `/`, which
+  let `/orgs/:org/info` answer `/orgs/acme/teams/core/info` with
+  `org = "acme"` and the rest of the path dropped. Use a regular
+  expression, e.g. `/users/.+`, to match across `/` on purpose.
+- A `:token` in a router's basepath is matched at any depth: a router
+  mounted on `Router$new("/orgs/:org")` had its routes compiled with the
+  literal text `:org`, so none of them could be reached. Exact paths are
+  now tried before parameters across every router, not within each one,
+  so a router's `/users/me` is matched before the app's `/users/:id`.
+  `Routing$prepare()` is gone; `get_routes()` compiles the routes.
+- A router's middleware runs for the routes of that router and of the
+  routers mounted on it, and for nothing else. It was matched against the
+  request path as a regular expression, so a router at `/api` also ran its
+  middleware for an app route at `/x/api/y` or `/apiary`, and a router
+  with a `:token` in its basepath, e.g. `Router$new("/orgs/:org")`, never
+  ran its middleware at all.
 
 **New Features**
 
@@ -70,6 +87,8 @@
   The same holds for a router: its `error` handler answers its routes,
   and a router without one falls back to the router it is mounted on,
   then to the app. `set_error()` is available on routers too.
+- A router mounted in more than one place answers at each of them; only
+  the last mount used to.
 - An error in a middleware or a parameter middleware is answered by the
   route's error handler, or `app$error`, the way an error in the handler
   is. It used to reach httpuv, which answered `ERROR: <the R message>`,

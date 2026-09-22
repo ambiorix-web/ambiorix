@@ -163,7 +163,6 @@ Ambiorix. See \link{routing-http-methods}.}
     \item \href{#method-Routing-get_params}{\code{Routing$get_params()}}
     \item \href{#method-Routing-get_receivers}{\code{Routing$get_receivers()}}
     \item \href{#method-Routing-get_middleware}{\code{Routing$get_middleware()}}
-    \item \href{#method-Routing-prepare}{\code{Routing$prepare()}}
     \item \href{#method-Routing-clone}{\code{Routing$clone()}}
   }
 }
@@ -510,20 +509,6 @@ Defaults to \code{""}.}
   }
   \subsection{Details}{
     Get the middleware
-  }
-}
-
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Routing-prepare"></a>}}
-\if{latex}{\out{\hypertarget{method-Routing-prepare}{}}}
-\subsection{\code{Routing$prepare()}}{
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Routing$prepare()}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Details}{
-    Prepare routes and decomposes paths
   }
 }
 

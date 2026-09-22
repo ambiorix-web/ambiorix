@@ -63,12 +63,12 @@ methods. Each helper shares the same signature and behaviour.
 Paths are treated as regular expressions; use \code{:} to define a parameter
 (e.g. \code{"/hello/:name"}).
 \itemize{
-\item Parameters match greedily, across \code{/}: \code{"/users/:res"} matches
-\verb{/users/1} as well as \verb{/users/2/3}. Note that \code{req$params} captures a
-single path segment, so for \verb{/users/2/3} the value of \code{req$params$res}
-is \code{"2"}.
+\item A parameter matches one path segment: \code{"/users/:res"} matches
+\verb{/users/1}, not \verb{/users/2/3} or \verb{/users/}.
+\item Exact paths are tried before parameters, whichever router they are on,
+so \verb{/users/me} is matched before \verb{/users/:id}.
 \item Regular expression syntax is available for finer control, e.g.
-\code{app$get("/users/.+", ...)} for a greedy match without a parameter, or
+\code{app$get("/users/.+", ...)} to match across \code{/} without a parameter, or
 \code{app$get("/file\\\\.json", ...)} to match a literal dot (an unescaped \code{.}
 matches any character).
 \item To customise how paths are converted to patterns app-wide, see
