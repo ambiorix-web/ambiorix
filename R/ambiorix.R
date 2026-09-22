@@ -203,7 +203,6 @@ Ambiorix <- R6::R6Class(
 
       private$.register_openapi_routes()
 
-      super$prepare()
       private$.routes <- super$get_routes()
 
       if (private$n_routes() == 0L) {

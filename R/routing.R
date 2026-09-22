@@ -20,12 +20,12 @@
 #' Paths are treated as regular expressions; use `:` to define a parameter
 #' (e.g. `"/hello/:name"`).
 #'
-#' - Parameters match greedily, across `/`: `"/users/:res"` matches
-#'   `/users/1` as well as `/users/2/3`. Note that `req$params` captures a
-#'   single path segment, so for `/users/2/3` the value of `req$params$res`
-#'   is `"2"`.
+#' - A parameter matches one path segment: `"/users/:res"` matches
+#'   `/users/1`, not `/users/2/3` or `/users/`.
+#' - Exact paths are tried before parameters, whichever router they are on,
+#'   so `/users/me` is matched before `/users/:id`.
 #' - Regular expression syntax is available for finer control, e.g.
-#'   `app$get("/users/.+", ...)` for a greedy match without a parameter, or
+#'   `app$get("/users/.+", ...)` to match across `/` without a parameter, or
 #'   `app$get("/file\\.json", ...)` to match a literal dot (an unescaped `.`
 #'   matches any character).
 #' - To customise how paths are converted to patterns app-wide, see
@@ -407,8 +407,9 @@ Routing <- R6::R6Class(
       routes <- lapply(
         private$.routes,
         function(route) {
-          route$route$as_pattern(parent)
-          route$route$decompose(parent)
+          # a copy per mount: a router mounted twice compiles to two paths
+          route$route <- route$route$clone()
+          route$route$compile(parent)
           route$route$basepath <- paste0(parent, private$.basepath)
           route
         }
@@ -422,10 +423,24 @@ Routing <- R6::R6Class(
 
       # a route without its own error handler takes the nearest router's,
       # then the app's: each level fills what the levels below left empty
-      lapply(routes, function(route) {
+      routes <- lapply(routes, function(route) {
         route$error <- route$error %||% self$error
         route
       })
+
+      # fewer parameters is more specific, across every router: `/users/me`
+      # is tried before `/users/:id`, and that before `/:kind/:id`
+      n_params <- vapply(
+        routes,
+        function(route) length(route$route$params),
+        integer(1)
+      )
+      nchars <- vapply(
+        routes,
+        function(route) nchar(route$route$pattern),
+        integer(1)
+      )
+      routes[order(n_params, -nchars)]
     },
     #' @details Get the parameter middlewares
     #'
@@ -513,22 +528,6 @@ Routing <- R6::R6Class(
       }
 
       return(middlewares)
-    },
-    #' @details Prepare routes and decomposes paths
-    prepare = function() {
-      for (route in private$.routes) {
-        route$route$as_pattern()
-        route$route$decompose()
-      }
-
-      private$reorder_routes()
-      if (!length(private$.routers)) {
-        return()
-      }
-
-      for (route in private$.routers) {
-        route$prepare()
-      }
     }
   ),
   active = list(
@@ -643,30 +642,6 @@ Routing <- R6::R6Class(
 
       invisible(self)
     },
-    # we reorder the routes before launching the app
-    # we make sure the longest patterns are checked first
-    # this makes sure /:id/x matches BEFORE /:id does
-    # however we also want to try to match exact paths
-    # BEFORE dynamic ones
-    # e.g. /hello should be matched before /:id
-    reorder_routes = function() {
-      if (!length(private$.routes)) {
-        return()
-      }
-
-      indices <- seq_along(private$.routes)
-      paths <- lapply(private$.routes, function(route) {
-        data.frame(
-          nchar = nchar(route$route$path),
-          dynamic = route$route$dynamic
-        )
-      })
-      df <- do.call(rbind, paths)
-      df$order <- seq_len(nrow(df))
-      df <- df[order(df$dynamic, -df$nchar), ]
-
-      private$.routes <- private$.routes[df$order]
-    },
     .call = function(req) {
       request <- Request$new(req)
       res <- Response$new()
@@ -725,7 +700,12 @@ Routing <- R6::R6Class(
               for (j in seq_along(private$.middleware)) {
                 mid_basepath <- attr(private$.middleware[[j]], "basepath")
 
-                if (!startsWith(req$PATH_INFO, mid_basepath)) {
+                # on the route's router or one it is mounted under: both
+                # basepaths are templates, the request path is not
+                under_router <- identical(basepath, mid_basepath) ||
+                  startsWith(basepath, paste0(mid_basepath, "/"))
+
+                if (!under_router) {
                   next
                 }
 
