@@ -9,7 +9,6 @@
 prepare_app <- function(app) {
   private <- app$.__enclos_env__$private
 
-  app$prepare()
   private$.routes <- app$get_routes()
   private$.middleware <- app$get_middleware()
   private$.params <- app$get_params()

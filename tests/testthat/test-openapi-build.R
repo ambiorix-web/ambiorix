@@ -31,7 +31,6 @@ test_that("path params survive a custom path to pattern converter", {
     docs = openapi_docs(summary = "Get a user")
   )
 
-  app$prepare()
   doc <- build_openapi(app$get_routes())
 
   params <- doc$paths[["/users/{id}"]]$get$parameters
@@ -64,7 +63,6 @@ test_that("build_openapi produces a valid document", {
   # undocumented route should be excluded
   app$get("/health", function(req, res) res$json(list(ok = TRUE)))
 
-  app$prepare()
   routes <- app$get_routes()
   doc <- build_openapi(
     routes,
@@ -122,7 +120,6 @@ test_that("named schemas are hoisted into components and referenced", {
     docs = openapi_docs(responses = list(openapi_response(200, "A task", task)))
   )
 
-  app$prepare()
   doc <- build_openapi(app$get_routes())
 
   expect_equal(names(doc$components$schemas), "Task")
@@ -318,7 +315,6 @@ test_that("user-declared path params override the auto-generated defaults", {
     )
   )
 
-  app$prepare()
   routes <- app$get_routes()
   doc <- build_openapi(routes)
 
@@ -354,7 +350,6 @@ test_that("path params matching no route token warn and are dropped", {
     )
   )
 
-  app$prepare()
   routes <- app$get_routes()
   expect_message(doc <- build_openapi(routes), "task_id")
 
@@ -375,7 +370,6 @@ test_that("build_openapi expands all() across verbs", {
     docs = openapi_docs(summary = "Any verb")
   )
 
-  app$prepare()
   routes <- app$get_routes()
   doc <- build_openapi(routes)
 
@@ -464,7 +458,6 @@ test_that("build_openapi handles nested routers", {
   app <- Ambiorix$new()
   app$use(outer)
 
-  app$prepare()
   routes <- app$get_routes()
   doc <- build_openapi(routes)
 
@@ -483,9 +476,7 @@ test_that("path params are not duplicated across restarts", {
   )
 
   # simulate two consecutive `start()` calls
-  app$prepare()
   app$get_routes()
-  app$prepare()
   routes <- app$get_routes()
 
   doc <- build_openapi(routes)
@@ -508,7 +499,6 @@ test_that("the document is built once, at startup", {
   private <- environment(app$openapi)$private
   expect_null(private$.openapi_json)
 
-  app$prepare()
   private$.routes <- app$get_routes()
   private$.build_openapi()
 

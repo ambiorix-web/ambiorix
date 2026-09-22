@@ -72,7 +72,6 @@ test_that("openapi docs routes are registered on start", {
   # emulate what `start()` does before launching the server
   private <- environment(app$openapi)$private
   private$.register_openapi_routes()
-  app$prepare()
   private$.routes <- app$get_routes()
 
   paths <- vapply(
@@ -101,7 +100,6 @@ test_that("openapi docs routes are not shadowed by dynamic routes", {
 
   private <- environment(app$openapi)$private
   private$.register_openapi_routes()
-  app$prepare()
   private$.routes <- app$get_routes()
 
   # the first route matching /docs & /openapi.json must be the
@@ -134,7 +132,6 @@ test_that("openapi routes are registered only once", {
   private <- environment(app$openapi)$private
   private$.register_openapi_routes()
   private$.register_openapi_routes()
-  app$prepare()
   private$.routes <- app$get_routes()
 
   paths <- vapply(
@@ -223,7 +220,6 @@ test_that("openapi routes are skipped when they collide with user routes", {
   private <- environment(app$openapi)$private
   expect_message(private$.register_openapi_routes(), "already registered")
 
-  app$prepare()
   private$.routes <- app$get_routes()
 
   paths <- vapply(
