@@ -1,4 +1,10 @@
 test_that("Ambiorix", {
+  global_serialiser <- getOption("AMBIORIX_SERIALISER")
+  on.exit(
+    expr = options(AMBIORIX_SERIALISER = global_serialiser),
+    add = TRUE
+  )
+
   # default
   app <- Ambiorix$new()
   expect_s3_class(app, "Ambiorix")

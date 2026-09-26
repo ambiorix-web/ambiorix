@@ -29,7 +29,7 @@
     Message
       i JSON object
     Output
-      [1] "data"
+      [1] "{\"x\":1}"
 
 ---
 
