@@ -57,7 +57,7 @@ library(ambiorix)
 
 app <- Ambiorix$new(port = 3000L)
 
-# middleware runs on every request
+# middleware runs before every route's handler
 app$use(function(req, res) {
   req$received_at <- Sys.time()
 })

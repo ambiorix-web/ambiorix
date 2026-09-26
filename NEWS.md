@@ -44,20 +44,21 @@
   now tried before parameters across every router, not within each one,
   so a router's `/users/me` is matched before the app's `/users/:id`.
   `Routing$prepare()` is gone; `get_routes()` compiles the routes.
-- A router's middleware runs for the routes of that router and of the
-  routers mounted on it, and for nothing else. It was matched against the
-  request path as a regular expression, so a router at `/api` also ran its
-  middleware for an app route at `/x/api/y` or `/apiary`, and a router
-  with a `:token` in its basepath, e.g. `Router$new("/orgs/:org")`, never
-  ran its middleware at all.
+- A router's middleware runs for the routes under its basepath, whichever
+  router registered them: its own, those of the routers mounted on it, and
+  those of another router mounted at or below the same path. A router with
+  an empty basepath is at the root, so its middleware runs for every
+  route. It was matched against the request path as a regular expression,
+  so a router at `/api` also ran its middleware for an app route at
+  `/x/api/y` or `/apiary`, and a router with a `:token` in its basepath,
+  e.g. `Router$new("/orgs/:org")`, never ran its middleware at all.
 - A parameter middleware, `param()`, is scoped the same way: it runs for
-  the routes of its router and of the routers mounted on it, so
-  `app$param("id", ...)` answers every `:id`. It used to run for the
-  routes of its own router only, as in Express. It also runs after the
-  middleware and the request validation, right before the handler: an
-  authentication middleware sees the request first, and `value` is the
-  validated value on a documented route. It used to run before both, and
-  received the raw string.
+  the routes under its router's basepath, so `app$param("id", ...)`
+  answers every `:id`. It used to run for the routes of its own router
+  only, as in Express. It also runs after the middleware and the request
+  validation, right before the handler: an authentication middleware sees
+  the request first, and `value` is the validated value on a documented
+  route. It used to run before both, and received the raw string.
 
 **New Features**
 

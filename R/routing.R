@@ -214,8 +214,8 @@ Routing <- R6::R6Class(
     },
     #' @details Add a parameter middleware
     #'
-    #' It runs for every route of this router, and of the routers mounted
-    #' on it, whose path has a `:name` parameter. It runs after the
+    #' It runs for every route under this router's basepath whose path has
+    #' a `:name` parameter, scoped like middleware, see `use()`. It runs after the
     #' middleware and the request validation, see `app$openapi()`, so
     #' `value` is the validated value when the route is documented, and
     #' right before the handler. A `forward()` runs it again for the next
@@ -325,8 +325,16 @@ Routing <- R6::R6Class(
     #'   Either a router as returned by [Router], a function to use as
     #'   middleware, or a `list` of functions. \cr
     #'   If a function is passed, it must accept two arguments (the request,
-    #'   and the response): this function will be executed every time the
-    #'   server receives a request.
+    #'   and the response).
+    #'
+    #' Middleware runs when a route matches the request, before the request
+    #' validation and the handler. Middleware of the app runs for every
+    #' route. Middleware of a router runs for the routes under its basepath,
+    #' whichever router registered them: two routers mounted at `/api` share
+    #' their middleware, which also runs for the routes of a router at
+    #' `/api/public`. A router with an empty basepath is at the root, like
+    #' the app.
+    #'
     #' _Middleware may but does not have to return a response, unlike other methods such as `get`_
     #' Note that multiple routers and middlewares can be used.
     use = function(use) {

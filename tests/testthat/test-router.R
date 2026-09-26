@@ -147,6 +147,48 @@ test_that("a custom path converter receives the full path", {
   stop_all()
 })
 
+test_that("a router's middleware runs for every route under its basepath", {
+  app <- Ambiorix$new()
+  tag <- function(label) {
+    function(req, res) {
+      req$trail <- c(req$trail, label)
+    }
+  }
+  show <- function(req, res) res$send(paste(req$trail, collapse = " > "))
+
+  a <- Router$new("/api")
+  a$use(tag("a"))
+  a$get("/private", show)
+
+  # another router at the same path, and one below it: scoped by path, not
+  # by router, so both run `a`'s middleware
+  b <- Router$new("/api")
+  b$get("/health", show)
+  c <- Router$new("/api/public")
+  c$get("/info", show)
+
+  # a router at the root runs its middleware for every route
+  d <- Router$new("")
+  d$use(tag("d"))
+
+  app$get("/app-route", show)
+  app$use(a)
+  app$use(b)
+  app$use(c)
+  app$use(d)
+
+  private <- app$.__enclos_env__$private
+  private$.compile()
+  call <- function(path) private$.call(mockRequest(path = path)$body)$body
+
+  expect_equal(call("/api/private"), "a > d")
+  expect_equal(call("/api/health"), "a > d")
+  expect_equal(call("/api/public/info"), "a > d")
+  expect_equal(call("/app-route"), "d")
+
+  stop_all()
+})
+
 test_that("a basepath without a leading `/` is scoped like any other", {
   app <- Ambiorix$new()
   app$use(function(req, res) {

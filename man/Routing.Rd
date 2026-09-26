@@ -273,8 +273,8 @@ the parameter name.}
   \subsection{Details}{
     Add a parameter middleware
 
-It runs for every route of this router, and of the routers mounted
-on it, whose path has a \verb{:name} parameter. It runs after the
+It runs for every route under this router's basepath whose path has
+a \verb{:name} parameter, scoped like middleware, see \code{use()}. It runs after the
 middleware and the request validation, see \code{app$openapi()}, so
 \code{value} is the validated value when the route is documented, and
 right before the handler. A \code{forward()} runs it again for the next
@@ -409,8 +409,16 @@ The engine to render templates with.}
 Either a router as returned by \link{Router}, a function to use as
 middleware, or a \code{list} of functions. \cr
 If a function is passed, it must accept two arguments (the request,
-and the response): this function will be executed every time the
-server receives a request.
+and the response).
+
+Middleware runs when a route matches the request, before the request
+validation and the handler. Middleware of the app runs for every
+route. Middleware of a router runs for the routes under its basepath,
+whichever router registered them: two routers mounted at \verb{/api} share
+their middleware, which also runs for the routes of a router at
+\verb{/api/public}. A router with an empty basepath is at the root, like
+the app.
+
 \emph{Middleware may but does not have to return a response, unlike other methods such as \code{get}}
 Note that multiple routers and middlewares can be used.}
     }
