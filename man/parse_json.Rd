@@ -7,23 +7,61 @@
 parse_json(req, ...)
 }
 \arguments{
-\item{req}{The request object.}
+\item{req}{Request /// Required. \cr
+The \link{Request} whose body is parsed.}
 
-\item{...}{Additional parameters passed to the parser function.}
+\item{...}{Key=Value pairs /// Optional. \cr
+Additional parameters passed to the parser function.}
 }
 \value{
-An R object (e.g., list or data frame) parsed from the JSON data.
-
-Named list
+The parsed body: a named list for an object, an unnamed list or
+an atomic vector for an array, a scalar otherwise. \code{NULL} when
+the request has no body.
 }
 \description{
 This function parses JSON data from the request body.
 }
 \details{
+\subsection{Parsed Shapes}{
+
+By default, \code{parse_json()} uses \code{\link[yyjsonr:read_json_raw]{yyjsonr::read_json_raw()}} with
+\code{obj_of_arrs_to_df}, \code{arr_of_objs_to_df}, and \code{arr_of_arrs_to_matrix}
+turned off, so a body keeps the structure it was sent with: an object is
+a named list, an array of objects is an unnamed list of named lists, and
+neither becomes a data frame or matrix. The same JSON shape always parses
+to the same R shape, whatever values it holds.
+
+\code{length1_array_asis} is turned on for the same reason: \verb{["a"]} is read as
+\code{I("a")}, marked \code{AsIs}, where \code{"a"} is a plain string, so an array of
+one stays an array. The marker is invisible to \code{==}, \code{\%in\%}, \code{[[} and
+arithmetic, and both \code{\link[yyjsonr:write_json_str]{yyjsonr::write_json_str()}} and
+\code{\link[jsonlite:toJSON]{jsonlite::toJSON()}} write the value back as \verb{["a"]}; \code{identical()} and
+\code{inherits()} do see it.
+
+\code{int64 = "double"} reads an integer too large for R's integer type as a
+whole double, where yyjsonr would (by default) read it as a string: a
+64-bit id or a millisecond timestamp stays a number, and \verb{[3000000000, 10]}
+stays a numeric vector rather than a list of a string and an integer. An
+integer that fits is still read as an integer, so a handler gets an integer
+or a double depending on the value, the way \code{1} and \code{1e3} already did. A
+double holds a whole number exactly up to 2^53; past that it is rounded.
+Pass \code{int64 = "string"} for the old reading, or \code{int64 = "bit64"} with
+the bit64 package attached for exact 64-bit integers.
+
+A request with no body at all parses to \code{NULL}, before the parser is
+called. Nothing on the wire is \code{NULL}, so an absent body cannot be
+confused with \code{{}}, a named empty list, or \verb{[]}, an empty list. A body
+of \code{null} is the one exception: it is the same value.
+
+Pass any of those options per call to read the body differently:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{body <- req$parse_json(arr_of_objs_to_df = TRUE)
+}\if{html}{\out{</div>}}
+}
+
 \subsection{Overriding Default Parser}{
 
-By default, \code{parse_json()} uses \code{\link[yyjsonr:read_json_raw]{yyjsonr::read_json_raw()}} for JSON parsing.
-You can override this globally by setting the \code{AMBIORIX_JSON_PARSER} option:
+You can override the parser globally by setting the \code{AMBIORIX_JSON_PARSER} option:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{my_json_parser <- function(body, ...) \{
   txt <- rawToChar(body)
@@ -37,6 +75,22 @@ Your custom parser \emph{MUST} accept the following parameters:
 \item \code{body}: Raw vector containing the JSON data.
 \item \code{...}: Additional optional parameters.
 }
+
+The same parser, default or override, reads websocket messages: a
+message received by \code{app$receive()} has the shape \code{parse_json()} would
+give it as a body. A text frame is handed over as its bytes, a binary
+frame as is.
+}
+
+\subsection{Validated Routes}{
+
+On a route validated with \code{app$openapi()}, the body is parsed with this
+same parser — default or override — and stored on \code{req$payload}, so a
+handler sees exactly what \code{parse_json()} would return, and validation
+checks the structure the client actually sent. An override must keep an
+array of one apart from a scalar for that to hold: return it marked
+\code{AsIs}, as the default does, or as a list, as
+\code{jsonlite::fromJSON(simplifyVector = FALSE)} does.
 }
 }
 \examples{
@@ -77,6 +131,22 @@ if (interactive()) {
       tags$input(id = "email", name = "email", value = "john@mail.com"),
       tags$label(`for` = "framework", "Framework"),
       tags$input(id = "framework", name = "framework", value = "ambiorix"),
+      tags$label(`for` = "js-framework", "JS Framework"),
+      tags$select(
+        id = "js-framework",
+        name = "js-framework",
+        multiple = NA,
+        tags$option(
+          value = "js",
+          selected = NA,
+          "JavaScript"
+        ),
+        tags$option(
+          value = "node",
+          selected = NA,
+          "Node.js"
+        )
+      ),
       tags$label(`for` = "file", "Upload CSV file"),
       tags$input(type = "file", id = "file", name = "file", accept = ".csv"),
       tags$label(`for` = "file2", "Upload xlsx file"),
@@ -98,7 +168,7 @@ if (interactive()) {
   }
 
   home_post <- function(req, res) {
-    body <- parse_json(req)
+    body <- req$parse_json()
     # print(body)
 
     response <- list(
@@ -109,12 +179,14 @@ if (interactive()) {
   }
 
   url_form_encoded_post <- function(req, res) {
-    body <- parse_form_urlencoded(req)
+    body <- req$parse_form_urlencoded()
     # print(body)
 
     list_items <- lapply(
-      X = names(body),
-      FUN = function(nm) {
+      X = seq_along(body),
+      FUN = function(idx) {
+        nm <- names(body)[[idx]]
+
         tags$li(
           nm,
           ":",
@@ -134,12 +206,13 @@ if (interactive()) {
   }
 
   multipart_form_data_post <- function(req, res) {
-    body <- parse_multipart(req)
+    body <- req$parse_multipart()
 
     list_items <- lapply(
-      X = names(body),
-      FUN = function(nm) {
-        field <- body[[nm]]
+      X = seq_along(body),
+      FUN = function(idx) {
+        nm <- names(body)[[idx]]
+        field <- body[[idx]]
 
         # if 'field' is a file, parse it & print on console:
         is_file <- "filename" \%in\% names(field)
@@ -164,10 +237,20 @@ if (interactive()) {
           # print(readxl::read_xlsx(path = file_path))
         }
 
+        out <- ""
+
+        if (is_file) {
+          out <- "printed on console"
+        }
+
+        if (!is_file) {
+          out <- paste(field, collapse = ", ")
+        }
+
         tags$li(
           nm,
           ":",
-          if (is_file) "printed on console" else field
+          out
         )
       }
     )
@@ -198,15 +281,13 @@ if (interactive()) {
     res$send(html)
   }
 
-  app <- Ambiorix$new(port = 5000L)
-
-  app$
-    get("/", home_get)$
-    post("/", home_post)$
-    get("/about", about_get)$
-    get("/contact", contact_get)$
-    post("/url-form-encoded", url_form_encoded_post)$
-    post("/multipart-form-data", multipart_form_data_post)
+  app <- Ambiorix$new(port = 3000L)
+  app$get("/", home_get)
+  app$post("/", home_post)
+  app$get("/about", about_get)
+  app$get("/contact", contact_get)
+  app$post("url-form-encoded", url_form_encoded_post)
+  app$post("/multipart-form-data", multipart_form_data_post)
 
   app$start()
 }

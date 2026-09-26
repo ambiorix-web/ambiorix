@@ -2,8 +2,11 @@
 #'
 #' Parses multipart form data, including file uploads, and returns the parsed fields as a list.
 #'
-#' @param req The request object.
-#' @param ... Additional parameters passed to the parser function.
+#' @param req Request /// Required. \cr
+#'            The [Request] whose body is parsed.
+#'
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Additional parameters passed to the parser function.
 #'
 #' @details
 #' If a field is a file upload it is returned as a named list with:
@@ -15,7 +18,8 @@
 #' - `name`: Name of the form input field.
 #' - `filename`: Original name of the uploaded file.
 #'
-#' If no body data, an empty list is returned.
+#' A request with no body returns `NULL` without calling the parser, so an
+#' absent body is told apart from a form sent with no fields.
 #'
 #' ### Overriding Default Parser
 #'
@@ -69,6 +73,22 @@
 #'       tags$input(id = "email", name = "email", value = "john@mail.com"),
 #'       tags$label(`for` = "framework", "Framework"),
 #'       tags$input(id = "framework", name = "framework", value = "ambiorix"),
+#'       tags$label(`for` = "js-framework", "JS Framework"),
+#'       tags$select(
+#'         id = "js-framework",
+#'         name = "js-framework",
+#'         multiple = NA,
+#'         tags$option(
+#'           value = "js",
+#'           selected = NA,
+#'           "JavaScript"
+#'         ),
+#'         tags$option(
+#'           value = "node",
+#'           selected = NA,
+#'           "Node.js"
+#'         )
+#'       ),
 #'       tags$label(`for` = "file", "Upload CSV file"),
 #'       tags$input(type = "file", id = "file", name = "file", accept = ".csv"),
 #'       tags$label(`for` = "file2", "Upload xlsx file"),
@@ -90,7 +110,7 @@
 #'   }
 #'
 #'   home_post <- function(req, res) {
-#'     body <- parse_json(req)
+#'     body <- req$parse_json()
 #'     # print(body)
 #'
 #'     response <- list(
@@ -101,12 +121,14 @@
 #'   }
 #'
 #'   url_form_encoded_post <- function(req, res) {
-#'     body <- parse_form_urlencoded(req)
+#'     body <- req$parse_form_urlencoded()
 #'     # print(body)
 #'
 #'     list_items <- lapply(
-#'       X = names(body),
-#'       FUN = function(nm) {
+#'       X = seq_along(body),
+#'       FUN = function(idx) {
+#'         nm <- names(body)[[idx]]
+#'
 #'         tags$li(
 #'           nm,
 #'           ":",
@@ -126,12 +148,13 @@
 #'   }
 #'
 #'   multipart_form_data_post <- function(req, res) {
-#'     body <- parse_multipart(req)
+#'     body <- req$parse_multipart()
 #'
 #'     list_items <- lapply(
-#'       X = names(body),
-#'       FUN = function(nm) {
-#'         field <- body[[nm]]
+#'       X = seq_along(body),
+#'       FUN = function(idx) {
+#'         nm <- names(body)[[idx]]
+#'         field <- body[[idx]]
 #'
 #'         # if 'field' is a file, parse it & print on console:
 #'         is_file <- "filename" %in% names(field)
@@ -156,10 +179,20 @@
 #'           # print(readxl::read_xlsx(path = file_path))
 #'         }
 #'
+#'         out <- ""
+#'
+#'         if (is_file) {
+#'           out <- "printed on console"
+#'         }
+#'
+#'         if (!is_file) {
+#'           out <- paste(field, collapse = ", ")
+#'         }
+#'
 #'         tags$li(
 #'           nm,
 #'           ":",
-#'           if (is_file) "printed on console" else field
+#'           out
 #'         )
 #'       }
 #'     )
@@ -190,26 +223,24 @@
 #'     res$send(html)
 #'   }
 #'
-#'   app <- Ambiorix$new(port = 5000L)
-#'
-#'   app$
-#'     get("/", home_get)$
-#'     post("/", home_post)$
-#'     get("/about", about_get)$
-#'     get("/contact", contact_get)$
-#'     post("/url-form-encoded", url_form_encoded_post)$
-#'     post("/multipart-form-data", multipart_form_data_post)
+#'   app <- Ambiorix$new(port = 3000L)
+#'   app$get("/", home_get)
+#'   app$post("/", home_post)
+#'   app$get("/about", about_get)
+#'   app$get("/contact", contact_get)
+#'   app$post("url-form-encoded", url_form_encoded_post)
+#'   app$post("/multipart-form-data", multipart_form_data_post)
 #'
 #'   app$start()
 #' }
 #' @seealso [parse_form_urlencoded()], [parse_json()]
-#' @return Named list.
+#' @return Named list, or `NULL` when the request has no body.
 #' @export
 parse_multipart <- function(req, ...) {
   on.exit(req$rook.input$rewind())
   body <- req$rook.input$read()
   if (identical(body, raw())) {
-    return(list())
+    return(NULL)
   }
 
   default <- function(body, content_type, ...) {
@@ -253,13 +284,15 @@ parse_multipart <- function(req, ...) {
 #' @description
 #' This function parses `application/x-www-form-urlencoded` data, typically used in form submissions.
 #'
-#' @param req The request object.
-#' @param ... Additional parameters passed to the parser function.
+#' @param req Request /// Required. \cr
+#'            The [Request] whose body is parsed.
 #'
-#' @return A list of parsed form fields, with each key representing a form field name and each value
-#' representing the form field's value.
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Additional parameters passed to the parser function.
 #'
 #' @details
+#' A request with no body returns `NULL` without calling the parser, so an
+#' absent body is told apart from a form whose fields were left empty.
 #'
 #' ### Overriding Default Parser
 #'
@@ -276,13 +309,13 @@ parse_multipart <- function(req, ...) {
 #'
 #' @inherit parse_multipart examples
 #' @seealso [parse_multipart()], [parse_json()]
-#' @return Named list
+#' @return Named list, or `NULL` when the request has no body.
 #' @export
 parse_form_urlencoded <- function(req, ...) {
   on.exit(req$rook.input$rewind())
   body <- req$rook.input$read()
   if (identical(body, raw())) {
-    return(list())
+    return(NULL)
   }
 
   default <- function(body, ...) {
@@ -303,17 +336,58 @@ parse_form_urlencoded <- function(req, ...) {
 #' @description
 #' This function parses JSON data from the request body.
 #'
-#' @param req The request object.
-#' @param ... Additional parameters passed to the parser function.
+#' @param req Request /// Required. \cr
+#'            The [Request] whose body is parsed.
 #'
-#' @return An R object (e.g., list or data frame) parsed from the JSON data.
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Additional parameters passed to the parser function.
+#'
+#' @return The parsed body: a named list for an object, an unnamed list or
+#'         an atomic vector for an array, a scalar otherwise. `NULL` when
+#'         the request has no body.
 #'
 #' @details
 #'
+#' ### Parsed Shapes
+#'
+#' By default, `parse_json()` uses [yyjsonr::read_json_raw()] with
+#' `obj_of_arrs_to_df`, `arr_of_objs_to_df`, and `arr_of_arrs_to_matrix`
+#' turned off, so a body keeps the structure it was sent with: an object is
+#' a named list, an array of objects is an unnamed list of named lists, and
+#' neither becomes a data frame or matrix. The same JSON shape always parses
+#' to the same R shape, whatever values it holds.
+#'
+#' `length1_array_asis` is turned on for the same reason: `["a"]` is read as
+#' `I("a")`, marked `AsIs`, where `"a"` is a plain string, so an array of
+#' one stays an array. The marker is invisible to `==`, `%in%`, `[[` and
+#' arithmetic, and both [yyjsonr::write_json_str()] and
+#' [jsonlite::toJSON()] write the value back as `["a"]`; `identical()` and
+#' `inherits()` do see it.
+#'
+#' `int64 = "double"` reads an integer too large for R's integer type as a
+#' whole double, where yyjsonr would (by default) read it as a string: a
+#' 64-bit id or a millisecond timestamp stays a number, and `[3000000000, 10]`
+#' stays a numeric vector rather than a list of a string and an integer. An
+#' integer that fits is still read as an integer, so a handler gets an integer
+#' or a double depending on the value, the way `1` and `1e3` already did. A
+#' double holds a whole number exactly up to 2^53; past that it is rounded.
+#' Pass `int64 = "string"` for the old reading, or `int64 = "bit64"` with
+#' the bit64 package attached for exact 64-bit integers.
+#'
+#' A request with no body at all parses to `NULL`, before the parser is
+#' called. Nothing on the wire is `NULL`, so an absent body cannot be
+#' confused with `{}`, a named empty list, or `[]`, an empty list. A body
+#' of `null` is the one exception: it is the same value.
+#'
+#' Pass any of those options per call to read the body differently:
+#'
+#' ```r
+#' body <- req$parse_json(arr_of_objs_to_df = TRUE)
+#' ```
+#'
 #' ### Overriding Default Parser
 #'
-#' By default, `parse_json()` uses [yyjsonr::read_json_raw()] for JSON parsing.
-#' You can override this globally by setting the `AMBIORIX_JSON_PARSER` option:
+#' You can override the parser globally by setting the `AMBIORIX_JSON_PARSER` option:
 #'
 #' ```r
 #' my_json_parser <- function(body, ...) {
@@ -327,20 +401,86 @@ parse_form_urlencoded <- function(req, ...) {
 #' 1. `body`: Raw vector containing the JSON data.
 #' 2. `...`: Additional optional parameters.
 #'
+#' The same parser, default or override, reads websocket messages: a
+#' message received by `app$receive()` has the shape `parse_json()` would
+#' give it as a body. A text frame is handed over as its bytes, a binary
+#' frame as is.
+#'
+#' ### Validated Routes
+#'
+#' On a route validated with `app$openapi()`, the body is parsed with this
+#' same parser — default or override — and stored on `req$payload`, so a
+#' handler sees exactly what `parse_json()` would return, and validation
+#' checks the structure the client actually sent. An override must keep an
+#' array of one apart from a scalar for that to hold: return it marked
+#' `AsIs`, as the default does, or as a list, as
+#' `jsonlite::fromJSON(simplifyVector = FALSE)` does.
+#'
 #' @inherit parse_multipart examples
 #' @seealso [parse_multipart()], [parse_form_urlencoded()]
-#' @return Named list
 #' @export
 parse_json <- function(req, ...) {
   on.exit(req$rook.input$rewind())
   body <- req$rook.input$read()
   if (identical(body, raw())) {
-    return(list())
+    return(NULL)
   }
 
-  parser <- getOption(
-    x = "AMBIORIX_JSON_PARSER",
-    default = yyjsonr::read_json_raw
+  get_json_parser()(body, ...)
+}
+
+#' Default JSON Parser
+#'
+#' Reads JSON with [yyjsonr::read_json_raw()] and the defaults described
+#' under Parsed Shapes in [parse_json()]. Shared by request bodies and
+#' websocket messages, so both read the same way.
+#'
+#' @param body Raw vector /// Required. \cr
+#'             The JSON bytes.
+#'
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Named options passed to [yyjsonr::read_json_raw()], either
+#'            directly or as `opts = list(...)`. Both spellings are merged
+#'            and filled in with the defaults.
+#'
+#' @return The parsed value.
+#'
+#' @noRd
+#' @keywords internal
+default_json_parser <- function(body, ...) {
+  dots <- list(...)
+
+  # `yyjsonr::read_json_raw()` accepts both `opts` & `...` but
+  # `...` should override `opts`.
+  # ensure that happens and use `opts` only:
+  opts <- dots$opts
+  if (is.null(opts)) {
+    opts <- list()
+  }
+
+  dots$opts <- NULL
+  opts[names(dots)] <- dots
+
+  defaults <- list(
+    obj_of_arrs_to_df = FALSE,
+    arr_of_objs_to_df = FALSE,
+    arr_of_arrs_to_matrix = FALSE,
+    length1_array_asis = TRUE,
+    int64 = "double"
   )
-  parser(body, ...)
+  for (option in setdiff(x = names(defaults), y = names(opts))) {
+    opts[[option]] <- defaults[[option]]
+  }
+
+  yyjsonr::read_json_raw(body, opts = opts)
+}
+
+#' Retrieve JSON Parser
+#'
+#' The parser set with the `AMBIORIX_JSON_PARSER` option, or the default.
+#'
+#' @noRd
+#' @keywords internal
+get_json_parser <- function() {
+  getOption(x = "AMBIORIX_JSON_PARSER", default = default_json_parser)
 }

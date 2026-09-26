@@ -2,7 +2,12 @@
 #'
 #' Web server.
 #'
-#' @field error 500 response when the route errors, must a handler function that accepts the request and the response, by default uses [response_500()].
+#' @field error Function /// Optional. \cr
+#'              Error handler for the router's routes. \cr
+#'              Must be a function that accepts the request, the response, \cr
+#'              and the error. \cr
+#'              `NULL` (the default) uses the handler of the router it is \cr
+#'              mounted on, or the app's. See `set_error()`.
 #'
 #' @examples
 #' # log
@@ -49,7 +54,10 @@ Router <- R6::R6Class(
   public = list(
     error = NULL,
     #' @details Define the base route.
-    #' @param path The base path of the router.
+    #'
+    #' @param path String /// Required. \cr
+    #'   The base path of the router.
+    #'
     initialize = function(path) {
       assert_that(not_missing(path))
       super$initialize(path)
@@ -57,7 +65,9 @@ Router <- R6::R6Class(
     #' @details Print
     print = function() {
       cli::cli_rule("Ambiorix", right = "router")
+      cli::cli_ul()
       cli::cli_li("routes: {.val {super$n_routes()}}")
+      cli::cli_end()
     }
   )
 )

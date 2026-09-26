@@ -28,7 +28,8 @@ WebsocketHandler <- R6::R6Class(
     print = function() {
       foo <- paste0(deparse(private$.fun), collapse = "\n")
       cli::cli_alert_info("receive: {.code receive(message, ws)}")
-      cli::cli_ul("Listening on message:")
+      cli::cli_ul()
+      cli::cli_li("Listening on message:")
       cli::cli_li("name: {.val {private$.name}}")
       cli::cli_end()
     }
@@ -96,14 +97,21 @@ Websocket <- R6::R6Class(
   "Websocket",
   public = list(
     #' @details Constructor
-    #' @param ws The websocket
+    #'
+    #' @param ws Websocket /// Required. \cr
+    #'   The httpuv websocket to wrap.
+    #'
     initialize = function(ws) {
       private$.ws <- ws
     },
     #' @details Send a message
-    #' @param name Name, identifier, of the message.
-    #' @param message Content of the message, anything that can be
-    #' serialised to JSON.
+    #'
+    #' @param name String /// Required. \cr
+    #'   Name, identifier, of the message.
+    #'
+    #' @param message Object /// Required. \cr
+    #'   Content of the message, anything that can be serialised to JSON.
+    #'
     send = function(name, message) {
       message <- list(
         name = name,
@@ -114,7 +122,9 @@ Websocket <- R6::R6Class(
     },
     #' @details Print
     print = function() {
+      cli::cli_ul()
       cli::cli_li("send: {.code send(name, message)}")
+      cli::cli_end()
     }
   ),
   private = list(
@@ -126,7 +136,8 @@ Websocket <- R6::R6Class(
 #'
 #' Handle ambiorix websocket client.
 #'
-#' @param path Path to copy the file to.
+#' @param path String /// Required. \cr
+#'             Path to copy the file to.
 #'
 #' @section Functions:
 #' - `copy_websocket_client` Copies the websocket client file, useful when

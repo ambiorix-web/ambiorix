@@ -27,6 +27,40 @@ handler for the single corresponding HTTP verb; see
 \examples{
 
 ## ------------------------------------------------
+## Method `Routing$set_error()`
+## ------------------------------------------------
+
+# my custom error handler:
+error_handler <- function(req, res, error) {
+  if (!is.null(error)) {
+    error_msg <- conditionMessage(error)
+    cli::cli_alert_danger("Error: {error_msg}")
+  }
+  response <- list(
+    code = 500L,
+    msg = "Uhhmmm... Looks like there's an error from our side :("
+  )
+  res$
+    set_status(500L)$
+    json(response)
+}
+
+# handler for GET at /whoami:
+whoami <- function(req, res) {
+  # simulate error (object 'Pikachu' is not defined)
+  print(Pikachu)
+}
+
+app <- Ambiorix$
+  new()$
+  set_error(error_handler)$
+  get("/whoami", whoami)
+
+if (interactive()) {
+  app$start(open = FALSE)
+}
+
+## ------------------------------------------------
 ## Method `Routing$param()`
 ## ------------------------------------------------
 
@@ -81,7 +115,7 @@ if(interactive())
 \section{Public fields}{
   \if{html}{\out{<div class="r6-fields">}}
   \describe{
-    \item{\code{error}}{Error handler.}
+    \item{\code{error}}{Error handler, see \code{set_error()}.}
 
     \item{\code{get}}{Register a route handler for HTTP GET requests. See
 \link{routing-http-methods}.}
@@ -119,6 +153,7 @@ Ambiorix. See \link{routing-http-methods}.}
 \subsection{Public methods}{
   \itemize{
     \item \href{#method-Routing-initialize}{\code{Routing$new()}}
+    \item \href{#method-Routing-set_error}{\code{Routing$set_error()}}
     \item \href{#method-Routing-param}{\code{Routing$param()}}
     \item \href{#method-Routing-receive}{\code{Routing$receive()}}
     \item \href{#method-Routing-print}{\code{Routing$print()}}
@@ -128,7 +163,6 @@ Ambiorix. See \link{routing-http-methods}.}
     \item \href{#method-Routing-get_params}{\code{Routing$get_params()}}
     \item \href{#method-Routing-get_receivers}{\code{Routing$get_receivers()}}
     \item \href{#method-Routing-get_middleware}{\code{Routing$get_middleware()}}
-    \item \href{#method-Routing-prepare}{\code{Routing$prepare()}}
     \item \href{#method-Routing-clone}{\code{Routing$clone()}}
   }
 }
@@ -144,12 +178,75 @@ Ambiorix. See \link{routing-http-methods}.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{path}}{Prefix path.}
+      \item{\code{path}}{String /// Optional. \cr
+Prefix path. \cr
+Defaults to \code{""}, no prefix.}
     }
     \if{html}{\out{</div>}}
   }
   \subsection{Details}{
     Initialise
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Routing-set_error"></a>}}
+\if{latex}{\out{\hypertarget{method-Routing-set_error}{}}}
+\subsection{\code{Routing$set_error()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Routing$set_error(handler)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{handler}}{Function /// Required. \cr
+A function that accepts a request, a response, and an error object.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Sets the error handler.
+
+It answers an error raised by any route of this router, or of a
+router mounted on it, that has no \code{error} handler of its own. A
+router without one falls back to the router it is mounted on, and
+in the end to the app's.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{# my custom error handler:
+error_handler <- function(req, res, error) {
+  if (!is.null(error)) {
+    error_msg <- conditionMessage(error)
+    cli::cli_alert_danger("Error: {error_msg}")
+  }
+  response <- list(
+    code = 500L,
+    msg = "Uhhmmm... Looks like there's an error from our side :("
+  )
+  res$
+    set_status(500L)$
+    json(response)
+}
+
+# handler for GET at /whoami:
+whoami <- function(req, res) {
+  # simulate error (object 'Pikachu' is not defined)
+  print(Pikachu)
+}
+
+app <- Ambiorix$
+  new()$
+  set_error(error_handler)$
+  get("/whoami", whoami)
+
+if (interactive()) {
+  app$start(open = FALSE)
+}
+}
+    \if{html}{\out{</div>}}
   }
 }
 
@@ -165,13 +262,23 @@ Ambiorix. See \link{routing-http-methods}.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{Name of the parameter}
-      \item{\code{handler}}{Function that accepts the request, response, parameter value and the parameter name.}
+      \item{\code{name}}{Character vector /// Required. \cr
+Name(s) of the parameter.}
+      \item{\code{handler}}{Function /// Required. \cr
+A function that accepts the request, response, parameter value, and
+the parameter name.}
     }
     \if{html}{\out{</div>}}
   }
   \subsection{Details}{
-    PARAM Method
+    Add a parameter middleware
+
+It runs for every route under this router's basepath whose path has
+a \verb{:name} parameter, scoped like middleware, see \code{use()}. It runs after the
+middleware and the request validation, see \code{app$openapi()}, so
+\code{value} is the validated value when the route is documented, and
+right before the handler. A \code{forward()} runs it again for the next
+matching route. Return a response to answer the request there.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
@@ -215,8 +322,13 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{Name of message.}
-      \item{\code{handler}}{Function to run when message is received.}
+      \item{\code{name}}{String /// Required. \cr
+Name of the message.}
+      \item{\code{handler}}{Function /// Required. \cr
+A function to run when the message is received. Its first argument
+is the message, parsed the way \code{req$parse_json()} parses a request
+body, see \code{\link[=parse_json]{parse_json()}}; the second, if it takes one, is the
+\link{Websocket} to answer on.}
     }
     \if{html}{\out{</div>}}
   }
@@ -271,7 +383,8 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{engine}}{Engine function.}
+      \item{\code{engine}}{Function /// Required. \cr
+The engine to render templates with.}
     }
     \if{html}{\out{</div>}}
   }
@@ -292,10 +405,20 @@ if(interactive())
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{use}}{Either a router as returned by \link{Router}, a function to use as middleware,
-or a \code{list} of functions.
-If a function is passed, it must accept two arguments (the request, and the response):
-this function will be executed every time the server receives a request.
+      \item{\code{use}}{Router, Function, or List /// Required. \cr
+Either a router as returned by \link{Router}, a function to use as
+middleware, or a \code{list} of functions. \cr
+If a function is passed, it must accept two arguments (the request,
+and the response).
+
+Middleware runs when a route matches the request, before the request
+validation and the handler. Middleware of the app runs for every
+route. Middleware of a router runs for the routes under its basepath,
+whichever router registered them: two routers mounted at \verb{/api} share
+their middleware, which also runs for the routes of a router at
+\verb{/api/public}. A router with an empty basepath is at the root, like
+the app.
+
 \emph{Middleware may but does not have to return a response, unlike other methods such as \code{get}}
 Note that multiple routers and middlewares can be used.}
     }
@@ -312,19 +435,21 @@ Note that multiple routers and middlewares can be used.}
 \subsection{\code{Routing$get_routes()}}{
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{Routing$get_routes(routes = list(), parent = "")}
+    \preformatted{Routing$get_routes(parent = "")}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{routes}}{Existing list of routes.}
-      \item{\code{parent}}{Parent path.}
+      \item{\code{parent}}{String /// Optional. \cr
+Parent path. \cr
+Defaults to \code{""}.}
     }
     \if{html}{\out{</div>}}
   }
   \subsection{Details}{
-    Get the routes
+    Get the routes, compiled from their full path: the
+basepaths of the routers they are mounted under included.
   }
 }
 
@@ -340,8 +465,12 @@ Note that multiple routers and middlewares can be used.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{params}}{Existing list of parameter middlewares.}
-      \item{\code{parent}}{Parent path.}
+      \item{\code{params}}{List /// Optional. \cr
+Existing list of parameter middlewares. \cr
+Defaults to \code{list()}.}
+      \item{\code{parent}}{String /// Optional. \cr
+Parent path. \cr
+Defaults to \code{""}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -362,7 +491,9 @@ Note that multiple routers and middlewares can be used.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{receivers}}{Existing list of receivers}
+      \item{\code{receivers}}{List /// Optional. \cr
+Existing list of receivers. \cr
+Defaults to \code{list()}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -383,27 +514,17 @@ Note that multiple routers and middlewares can be used.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{middlewares}}{Existing list of middleswares}
-      \item{\code{parent}}{Parent path}
+      \item{\code{middlewares}}{List /// Optional. \cr
+Existing list of middlewares. \cr
+Defaults to \code{list()}.}
+      \item{\code{parent}}{String /// Optional. \cr
+Parent path. \cr
+Defaults to \code{""}.}
     }
     \if{html}{\out{</div>}}
   }
   \subsection{Details}{
     Get the middleware
-  }
-}
-
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Routing-prepare"></a>}}
-\if{latex}{\out{\hypertarget{method-Routing-prepare}{}}}
-\subsection{\code{Routing$prepare()}}{
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Routing$prepare()}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Details}{
-    Prepare routes and decomposes paths
   }
 }
 

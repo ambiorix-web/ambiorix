@@ -4,24 +4,38 @@
 \alias{routing-http-methods}
 \title{Routing HTTP Methods}
 \arguments{
-\item{path}{String. Route to listen to, treated as a regular expression;
-use \code{:} to define a parameter (e.g. \code{"/hello/:name"}). See the
+\item{path}{String /// Required. \cr
+Route to listen to, treated as a regular expression; use \code{:}
+to define a parameter (e.g. \code{"/hello/:name"}). See the
 \emph{Path matching} section.}
 
-\item{handler}{Function that accepts the request and response objects and
-returns an httpuv response (e.g. \code{\link[=response]{response()}}). Handlers can return the result
-of helper functions such as \code{Response$text()}, \code{Response$json()}, or the
-output of any renderer.}
+\item{handler}{Function /// Required. \cr
+A function that accepts the request and response objects
+and returns an httpuv response (e.g. \code{\link[=response]{response()}}).
+Handlers can return the result of helper functions such as
+\code{Response$text()}, \code{Response$json()}, or the output of any
+renderer.}
 
-\item{error}{Optional handler invoked if the route raises an error; receives
-the request, response, and the error condition.}
+\item{error}{Function /// Optional. \cr
+A handler invoked if the route raises an error; receives the \cr
+request, response, and the error condition. \cr
+It answers for everything the route runs, not just \code{handler}: \cr
+a middleware, a parameter middleware, and request validation \cr
+with its \code{on_invalid}. \cr
+Defaults to \code{NULL}, the app's error handler.}
 
-\item{docs}{Optional OpenAPI documentation for the route, created with
-\code{\link[=openapi_docs]{openapi_docs()}}. When the app enables docs via \code{app$openapi()}, documented
-routes appear in the generated OpenAPI document. Path parameters are
-documented automatically from the route's \verb{:param} tokens with a string
-schema; declare them via \code{\link[=openapi_param]{openapi_param()}} with \code{location = "path"} to
-override that default.}
+\item{docs}{OpenAPI docs /// Optional. \cr
+Documentation for the route, created with \code{\link[=openapi_docs]{openapi_docs()}}.
+When the app enables docs via \code{app$openapi()}, documented
+routes appear in the generated OpenAPI document, and, if
+validation is enabled, incoming requests are checked against
+the documented schemas before the handler runs. \cr
+Path parameters are documented automatically from the route's
+\verb{:param} tokens with a string schema; declare them via
+\code{\link[=openapi_param]{openapi_param()}} with \code{location = "path"} to override that
+default. \cr
+Defaults to \code{NULL}, which leaves the route out of the
+document entirely.}
 }
 \value{
 The routing object invisibly so calls can be chained.
@@ -49,12 +63,15 @@ methods. Each helper shares the same signature and behaviour.
 Paths are treated as regular expressions; use \code{:} to define a parameter
 (e.g. \code{"/hello/:name"}).
 \itemize{
-\item Parameters match greedily, across \code{/}: \code{"/users/:res"} matches
-\verb{/users/1} as well as \verb{/users/2/3}. Note that \code{req$params} captures a
-single path segment, so for \verb{/users/2/3} the value of \code{req$params$res}
-is \code{"2"}.
+\item A parameter matches one path segment: \code{"/users/:res"} matches
+\verb{/users/1}, not \verb{/users/2/3}, \verb{/users/1/} or \verb{/users/}.
+\item A path never ends in \code{/}: a trailing slash in a registered path is
+ignored, so \code{"/users/:res/"} is \code{"/users/:res"}, and a request with one
+is not found.
+\item Exact paths are tried before parameters, whichever router they are on,
+so \verb{/users/me} is matched before \verb{/users/:id}.
 \item Regular expression syntax is available for finer control, e.g.
-\code{app$get("/users/.+", ...)} for a greedy match without a parameter, or
+\code{app$get("/users/.+", ...)} to match across \code{/} without a parameter, or
 \code{app$get("/file\\\\.json", ...)} to match a literal dot (an unescaped \code{.}
 matches any character).
 \item To customise how paths are converted to patterns app-wide, see
@@ -63,14 +80,15 @@ matches any character).
 }
 }
 \examples{
-app <- Ambiorix$new()
+app <- Ambiorix$new(port = 3000L)
 
 app$get("/", function(req, res) {
   res$text("Hello, world!")
 })
 
 app$post("/echo", function(req, res) {
-  res$json(list(received = req$body))
+  body <- req$parse_json()
+  res$json(list(received = body))
 })
 
 app$all("/health", function(req, res) {
@@ -85,11 +103,15 @@ app$get(
   docs = openapi_docs(
     summary = "Get a user by ID",
     tags = "users",
-    responses = openapi_responses(
+    responses = list(
       openapi_response(200, "The user")
     )
   )
 )
+
+if (interactive()) {
+  app$start()
+}
 
 }
 \seealso{

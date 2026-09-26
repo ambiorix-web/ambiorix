@@ -88,6 +88,9 @@ if (interactive()) {
 
     \item{\code{body}}{Request, an environment.}
 
+    \item{\code{payload}}{Parsed request body set by OpenAPI validation when
+\code{app$openapi(..., validate = TRUE)}. Defaults to \code{NULL}.}
+
     \item{\code{query}}{Parsed \code{QUERY_STRING}, \code{list}.}
 
     \item{\code{params}}{A \code{list} of parameters.}
@@ -103,6 +106,7 @@ if (interactive()) {
     \item \href{#method-Request-print}{\code{Request$print()}}
     \item \href{#method-Request-get_header}{\code{Request$get_header()}}
     \item \href{#method-Request-parse_multipart}{\code{Request$parse_multipart()}}
+    \item \href{#method-Request-parse_form_urlencoded}{\code{Request$parse_form_urlencoded()}}
     \item \href{#method-Request-parse_json}{\code{Request$parse_json()}}
     \item \href{#method-Request-clone}{\code{Request$clone()}}
   }
@@ -119,7 +123,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{req}}{Original request (environment).}
+      \item{\code{req}}{Environment /// Required. \cr
+The original request.}
     }
     \if{html}{\out{</div>}}
   }
@@ -154,7 +159,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{Name of the header}
+      \item{\code{name}}{String /// Required. \cr
+Name of the header.}
     }
     \if{html}{\out{</div>}}
   }
@@ -178,6 +184,28 @@ if (interactive()) {
 }
 
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Request-parse_form_urlencoded"></a>}}
+\if{latex}{\out{\hypertarget{method-Request-parse_form_urlencoded}{}}}
+\subsection{\code{Request$parse_form_urlencoded()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Request$parse_form_urlencoded(...)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{...}}{Key=Value pairs /// Optional. \cr
+Arguments passed to \code{\link[=parse_form_urlencoded]{parse_form_urlencoded()}}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Parse \code{application/x-www-form-urlencoded} data
+  }
+}
+
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Request-parse_json"></a>}}
 \if{latex}{\out{\hypertarget{method-Request-parse_json}{}}}
 \subsection{\code{Request$parse_json()}}{
@@ -189,7 +217,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{...}}{Arguments passed to \code{\link[=parse_json]{parse_json()}}.}
+      \item{\code{...}}{Key=Value pairs /// Optional. \cr
+Arguments passed to \code{\link[=parse_json]{parse_json()}}.}
     }
     \if{html}{\out{</div>}}
   }

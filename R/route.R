@@ -4,73 +4,71 @@ Route <- R6::R6Class(
     path = NULL,
     components = list(),
     pattern = NULL,
-    dynamic = FALSE,
     params = NULL,
     basepath = NULL,
+    full_path = NULL,
     initialize = function(path) {
       assert_that(not_missing(path))
-      self$path <- gsub("\\?.*$", "", path) # remove query
-      self$dynamic <- grepl(":", path)
+
+      # remove query
+      self$path <- gsub(
+        pattern = "\\?.*$",
+        replacement = "",
+        x = path
+      )
     },
-    as_pattern = function(parent = "") {
-      if (!is.null(.globals$pathToPattern)) {
-        self$pattern <- .globals$pathToPattern(self$path)
-        return(
-          invisible(self)
-        )
-      }
-
-      # reset so repeated calls (e.g.: on server restart)
-      # do not duplicate parameters
-      self$params <- NULL
-
-      pattern <- sapply(self$components, function(comp) {
-        if (comp$dynamic) {
-          self$params <- append(self$params, comp$name)
-          return("[[:alnum:][:space:][:punct:]]*")
-        }
-
-        return(comp$name)
-      })
-
-      pattern <- paste0(pattern, collapse = "/")
-      self$pattern <- paste0("^", parent, "/", pattern, "$")
-      invisible(self)
-    },
-    decompose = function(parent = "") {
+    # split the full path, `parent` included, into components and build the
+    # pattern from them: a `:token` matches one segment. `full_path` is that
+    # path as it is matched, for everything that shows or compares it
+    compile = function(parent = "") {
       path <- paste0(parent, self$path)
-      # split
-      components <- strsplit(path, "(?<=.)(?=[:/])", perl = TRUE)[[1]]
+      self$full_path <- normalise_path(path)
 
-      # remove lonely /
+      if (!nzchar(self$full_path)) {
+        self$full_path <- "/"
+      }
+
+      components <- strsplit(
+        x = path,
+        split = "(?<=.)(?=[:/])",
+        perl = TRUE
+      )[[1]]
       components <- components[components != "/"]
+      components <- gsub(pattern = "/", replacement = "", x = components)
 
-      if (length(components) == 0) {
-        self$components <- list(
+      if (!length(components)) {
+        components <- ""
+      }
+
+      self$components <- lapply(
+        X = components,
+        FUN = function(component) {
           list(
-            index = 1L,
-            dynamic = FALSE,
-            name = ""
+            dynamic = grepl(pattern = ":", x = component, fixed = TRUE),
+            name = gsub(pattern = ":|$", replacement = "", x = component)
           )
-        )
-        return()
+        }
+      )
+
+      dynamic <- vapply(
+        X = self$components,
+        FUN = function(comp) comp$dynamic,
+        FUN.VALUE = logical(1)
+      )
+      pattern <- vapply(
+        X = self$components,
+        FUN = function(comp) comp$name,
+        FUN.VALUE = character(1)
+      )
+      self$params <- pattern[dynamic]
+
+      if (!is.null(.globals$pathToPattern)) {
+        self$pattern <- .globals$pathToPattern(self$full_path)
+        return(invisible(self))
       }
 
-      # cleanup
-      components <- gsub("/", "", components)
-
-      components <- as.list(components)
-      comp <- list()
-      for (i in seq_along(components)) {
-        c <- list(
-          index = i,
-          dynamic = grepl(":", components[[i]]),
-          name = gsub(":|$", "", components[[i]])
-        )
-        comp <- append(comp, list(c))
-      }
-
-      self$components <- comp
+      pattern[dynamic] <- "[^/]+"
+      self$pattern <- paste0("^/", paste0(pattern, collapse = "/"), "$")
       invisible(self)
     },
     print = function() {
@@ -85,8 +83,9 @@ Route <- R6::R6Class(
 #' Identify a function as a path to pattern function;
 #' a function that accepts a path and returns a matching pattern.
 #'
-#' @param path A function that accepts a character vector of length 1
-#' and returns another character vector of length 1.
+#' @param path Function /// Required. \cr
+#'             A function that accepts a character vector of length 1 and
+#'             returns another character vector of length 1.
 #'
 #' @examples
 #' fn <- function(path) {

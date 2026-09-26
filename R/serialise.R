@@ -2,8 +2,11 @@
 #'
 #' Serialise data to JSON.
 #'
-#' @param data Data to serialise.
-#' @param ... Named options to pass to [yyjsonr::write_json_str].
+#' @param data Object /// Required. \cr
+#'             The data to serialise.
+#'
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Named options passed to [yyjsonr::write_json_str()].
 #'
 #' @noRd
 #' @keywords internal
@@ -59,8 +62,11 @@ get_serialise <- function() {
 #' options(AMBIORIX_SERIALISER = my_serialiser)
 #' ```
 #'
-#' @param data Data to serialise.
-#' @param ... Passed to serialiser.
+#' @param data Object /// Required. \cr
+#'             The data to serialise.
+#'
+#' @param ... Key=Value pairs /// Optional. \cr
+#'            Passed to the serialiser.
 #'
 #' @examples
 #' if (interactive()) {
