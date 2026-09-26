@@ -399,6 +399,20 @@ print.ambiorix_openapi_response <- function(x, ...) {
 #' `allOf`, `anyOf`, `oneOf`, and `not` are; see the Composition section of
 #' [openapi-schemas].
 #'
+#' `security` is not checked either: ambiorix cannot tell a valid credential
+#' from an invalid one. Authenticate in a middleware, which runs before
+#' validation and the handler:
+#'
+#' ```r
+#' app$use(function(req, res) {
+#'   token <- sub("^Bearer ", "", req$get_header("authorization"))
+#'
+#'   if (!length(token) || !token_is_valid(token)) {
+#'     return(res$set_status(401L)$json(list(error = "Unauthorized")))
+#'   }
+#' })
+#' ```
+#'
 #' A `null` in a JSON body is a value, never an absence. A property sent as
 #' `null` meets `required`, and like an element of an array it is rejected
 #' unless its schema allows it, e.g.
@@ -473,6 +487,10 @@ print.ambiorix_openapi_response <- function(x, ...) {
 #'                 scopes: `list(c("apiKey", "appId"), list(oauth = "read"))`;
 #'                 an empty alternative, `character()`, makes authentication
 #'                 optional. \cr
+#'                 This documents the requirement, it does not enforce it:
+#'                 a request without credentials still reaches the handler,
+#'                 so authenticate in a middleware, see the Validation
+#'                 section. \cr
 #'                 Defaults to `NULL`, which inherits the app-wide `security`.
 #'                 Pass `list()` to declare that this route needs no
 #'                 authentication.

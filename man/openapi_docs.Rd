@@ -79,6 +79,10 @@ vector of schemes needed together or a named list of
 scopes: \code{list(c("apiKey", "appId"), list(oauth = "read"))};
 an empty alternative, \code{character()}, makes authentication
 optional. \cr
+This documents the requirement, it does not enforce it:
+a request without credentials still reaches the handler,
+so authenticate in a middleware, see the Validation
+section. \cr
 Defaults to \code{NULL}, which inherits the app-wide \code{security}.
 Pass \code{list()} to declare that this route needs no
 authentication.}
@@ -126,6 +130,19 @@ see \code{app$openapi(on_invalid =)} to answer with a response of your own.
 Header and cookie parameters are never checked. Schemas composed with
 \code{allOf}, \code{anyOf}, \code{oneOf}, and \code{not} are; see the Composition section of
 \link{openapi-schemas}.
+
+\code{security} is not checked either: ambiorix cannot tell a valid credential
+from an invalid one. Authenticate in a middleware, which runs before
+validation and the handler:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{app$use(function(req, res) \{
+  token <- sub("^Bearer ", "", req$get_header("authorization"))
+
+  if (!length(token) || !token_is_valid(token)) \{
+    return(res$set_status(401L)$json(list(error = "Unauthorized")))
+  \}
+\})
+}\if{html}{\out{</div>}}
 
 A \code{null} in a JSON body is a value, never an absence. A property sent as
 \code{null} meets \code{required}, and like an element of an array it is rejected
