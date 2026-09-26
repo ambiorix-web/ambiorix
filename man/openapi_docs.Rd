@@ -120,12 +120,15 @@ Header and cookie parameters are never checked. Schemas composed with
 \code{allOf}, \code{anyOf}, \code{oneOf}, and \code{not} are; see the Composition section of
 \link{openapi-schemas}.
 
-A property sent as \code{null} is read as absent, which is how a handler sees
-it too: \code{is.null(req$payload$name)} is \code{TRUE} either way. It is reported
-only when the property is required. Inside an array a \code{null} is an
-element like any other, reaches the handler as \code{NA} or \code{NULL}, and is
-rejected unless the items allow it, e.g.
-\code{openapi_schema(type = c("string", "null"))}.
+A \code{null} in a JSON body is a value, never an absence. A property sent as
+\code{null} meets \code{required}, and like an element of an array it is rejected
+unless its schema allows it, e.g.
+\code{openapi_schema(type = c("string", "null"))} or
+\code{openapi_schema(enum = list("a", NULL))}. It reaches the handler as \code{NULL},
+or as \code{NA} inside an atomic vector; \code{is.null(req$payload$name)} is \code{TRUE}
+for an absent property too, and \code{"name" \%in\% names(req$payload)} tells the
+two apart. A query, path, or form value is never \code{null}: the wire has no
+spelling for it, and a value left empty is absent.
 
 The \code{validate} argument below overrides the app-wide setting for this one
 route, in either direction: \code{FALSE} opts a route out of validation, \code{TRUE}

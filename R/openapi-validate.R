@@ -437,7 +437,7 @@ openapi_field <- function(values, schema, schemas = list()) {
   }
 
   schema <- openapi_resolve_schema(schema, schemas)
-  is_array <- identical(schema[["type"]], "array")
+  is_array <- "array" %in% schema[["type"]]
 
   elements <- lapply(
     X = unname(values),
@@ -725,14 +725,42 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
   scalar <- is.atomic(value) &&
     length(value) == 1L &&
     !inherits(value, "AsIs")
+  is_null <- openapi_is_type(value, "null")
 
-  if (!is.null(schema[["enum"]]) && scalar) {
-    allowed <- unlist(schema[["enum"]], use.names = FALSE)
+  if (!is.null(schema[["enum"]]) && (scalar || is_null)) {
+    # `list()` so a `NULL` member is kept; `NA` is a `null` too. a member
+    # matches only a value of its own JSON type: `"1"` is not `1`
+    allowed <- as.list(schema[["enum"]])
+    found <- vapply(
+      X = allowed,
+      FUN = function(member) {
+        if (openapi_is_type(member, "null") || is_null) {
+          return(openapi_is_type(member, "null") && is_null)
+        }
 
-    if (!value %in% allowed) {
-      fail(
-        sprintf("must be one of %s", paste0(allowed, collapse = ", "))
+        is.atomic(member) &&
+          length(member) == 1L &&
+          is.character(member) == is.character(value) &&
+          is.logical(member) == is.logical(value) &&
+          member == value
+      },
+      FUN.VALUE = logical(1)
+    )
+
+    if (!any(found)) {
+      labels <- vapply(
+        X = allowed,
+        FUN = function(member) {
+          if (openapi_is_type(member, "null")) {
+            return("null")
+          }
+
+          paste0(member, collapse = ", ")
+        },
+        FUN.VALUE = character(1)
       )
+
+      fail(sprintf("must be one of %s", paste0(labels, collapse = ", ")))
     }
   }
 
@@ -1098,8 +1126,9 @@ openapi_check_array <- function(value, schema, schemas, path) {
 #' allowed when `additionalProperties` is `FALSE`, and then every declared
 #' property that *is* present, recursively through `openapi_validate()`.
 #'
-#' A property that is absent is only ever a problem when it is required.
-#' Undeclared properties are allowed by default, which is what the
+#' A property that is absent is only ever a problem when it is required. A
+#' property sent as `null` is not absent: it meets `required`, and is checked
+#' against its schema like any other value. Undeclared properties are allowed by default, which is what the
 #' specification says: set `additionalProperties = FALSE` to reject them.
 #'
 #' @param value Named list /// Required. \cr
@@ -1148,8 +1177,9 @@ openapi_check_array <- function(value, schema, schemas, path) {
 openapi_check_object <- function(value, schema, schemas, path) {
   problems <- list()
 
+  # a property sent as `null` is present: its key is, holding `NULL`
   for (name in schema[["required"]]) {
-    if (!is.null(value[[name]])) {
+    if (name %in% names(value)) {
       next
     }
 
@@ -1178,7 +1208,7 @@ openapi_check_object <- function(value, schema, schemas, path) {
   }
 
   for (name in names(schema[["properties"]])) {
-    if (is.null(value[[name]])) {
+    if (!name %in% names(value)) {
       next
     }
 
@@ -1204,16 +1234,18 @@ openapi_check_object <- function(value, schema, schemas, path) {
 #' a handler for a route documented with `openapi_schema_integer()` receives an
 #' integer, not `"10"`.
 #'
-#' Anything not worth converting is returned untouched: a string schema, a
-#' union of types, an unresolvable reference, a multipart file part, or any
-#' other value that is not a single string.
+#' Anything not worth converting is returned untouched: a string schema, an
+#' unresolvable reference, a multipart file part, or any other value that is
+#' not a single string.
 #'
-#' A schema with no `type` of its own is converted by its `allOf`, `anyOf`,
-#' and `oneOf` branches instead. Each branch reads the string its own way,
-#' and the first reading the whole schema accepts is the one kept: `42`
-#' documented as an integer or a slug is the integer, because `"42"` is not
-#' a slug, and `123` documented as three digits or a number of at least 1000
-#' stays the string. Converting first and validating after would have picked
+#' Each of the schema's types reads the string its own way, in the order
+#' they are listed: `c("integer", "null")` has the one reading, `null` has no
+#' spelling in a query, and `c("integer", "string")` has two. A schema with
+#' no `type` of its own is read by its `allOf`, `anyOf`, and `oneOf`
+#' branches instead. The first reading the whole schema accepts is the one
+#' kept: `42` documented as an integer or a slug is the integer, because
+#' `"42"` is not a slug, and `123` documented as three digits or a number of
+#' at least 1000 stays the string. Converting first and validating after would have picked
 #' the number and then rejected it. When no reading is accepted, the first
 #' converted one is kept, so the problem reported is about the number and not
 #' about a string that was never meant.
@@ -1263,6 +1295,11 @@ openapi_check_object <- function(value, schema, schemas, path) {
 #' # too big for an R integer: a whole double
 #' openapi_convert("3000000000", openapi_schema_integer())
 #'
+#' # a union reads the string once per type, in the order listed
+#' openapi_convert("42", openapi_schema(type = c("integer", "null")))
+#' openapi_convert("42", openapi_schema(type = c("integer", "string")))
+#' openapi_convert("abc", openapi_schema(type = c("integer", "string")))
+#'
 #' @keywords internal
 #' @noRd
 openapi_convert <- function(value, schema, schemas = list()) {
@@ -1272,77 +1309,63 @@ openapi_convert <- function(value, schema, schemas = list()) {
     return(value)
   }
 
-  type <- schema[["type"]]
-
-  if (is.null(type)) {
-    # composed: every branch has its own reading of the string
-    branches <- c(schema[["allOf"]], schema[["anyOf"]], schema[["oneOf"]])
-    candidates <- lapply(
-      X = branches,
+  # every type, or every branch of a composed schema, has its own reading of
+  # the string, `NULL` when it has none. each type accepts its JSON spelling
+  # and nothing else. `as.numeric()` cannot warn on a string the number
+  # grammar has matched, and a whole number is narrowed to an integer only
+  # when it fits one, so an id past 2^31 reaches the handler as a whole
+  # double rather than as NA
+  readings <- if (is.null(schema[["type"]])) {
+    lapply(
+      X = c(schema[["allOf"]], schema[["anyOf"]], schema[["oneOf"]]),
       FUN = function(branch) openapi_convert(value, branch, schemas)
     )
+  } else {
+    lapply(
+      X = schema[["type"]],
+      FUN = function(type) {
+        switch(
+          EXPR = type,
+          string = value,
+          integer = if (grepl(pattern = "^-?(0|[1-9][0-9]*)$", x = value)) {
+            number <- as.numeric(value)
 
-    # the string cannot say which reading was meant, so the first one the
-    # whole schema accepts decides
-    for (candidate in candidates) {
-      if (!length(openapi_validate(candidate, schema, schemas))) {
-        return(candidate)
+            if (abs(number) <= .Machine$integer.max) {
+              as.integer(number)
+            } else {
+              number
+            }
+          },
+          number = if (
+            grepl(
+              pattern = "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?([eE][+-]?[0-9]+)?$",
+              x = value
+            )
+          ) {
+            as.numeric(value)
+          },
+          boolean = switch(EXPR = value, true = TRUE, false = FALSE),
+          NULL
+        )
       }
-    }
+    )
+  }
+  readings <- Filter(f = Negate(is.null), x = readings)
 
-    # none is accepted. a converted reading makes for the better complaint:
-    # `0` is *must be greater than or equal to 1*, not a failed pattern
-    for (candidate in candidates) {
-      if (!is.character(candidate)) {
-        return(candidate)
-      }
+  # the string cannot say which reading was meant, so the first one the
+  # whole schema accepts decides
+  for (reading in readings) {
+    if (!length(openapi_validate(reading, schema, schemas))) {
+      return(reading)
     }
-
-    return(value)
   }
 
-  if (length(type) != 1L) {
-    return(value)
-  }
-
-  # each type accepts its JSON spelling and nothing else. `as.numeric()`
-  # cannot warn on a string the number grammar has matched, and a whole
-  # number is narrowed to an integer only when it fits one, so an id past
-  # 2^31 reaches the handler as a whole double rather than as NA
-  converted <- switch(
-    EXPR = type,
-    integer = if (grepl(pattern = "^-?(0|[1-9][0-9]*)$", x = value)) {
-      number <- as.numeric(value)
-
-      if (abs(number) <= .Machine$integer.max) {
-        as.integer(number)
-      } else {
-        number
-      }
-    } else {
-      NA
-    },
-    number = if (
-      grepl(
-        pattern = "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?([eE][+-]?[0-9]+)?$",
-        x = value
-      )
-    ) {
-      as.numeric(value)
-    } else {
-      NA
-    },
-    boolean = switch(
-      EXPR = value,
-      true = TRUE,
-      false = FALSE,
-      NA
-    ),
-    value
-  )
-
-  if (!is.na(converted)) {
-    return(converted)
+  # none is accepted. a converted reading makes for the better complaint:
+  # `0` is *must be greater than or equal to 1*, not a failed pattern
+  for (reading in readings) {
+    if (!is.character(reading)) {
+      return(reading)
+    }
   }
 
   value

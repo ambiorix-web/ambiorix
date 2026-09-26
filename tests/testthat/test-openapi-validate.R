@@ -380,13 +380,13 @@ test_that("a form field name that is not valid UTF-8 is a body problem", {
   )
 })
 
-test_that("a property sent as null is read as absent", {
+test_that("a property sent as null is present, and checked", {
   schema <- openapi_schema_object(
     properties = list(
       title = openapi_schema_string(),
-      note = openapi_schema_string(minLength = 1L)
+      note = openapi_schema(type = c("string", "null"), minLength = 1L)
     ),
-    required = "title"
+    required = c("title", "note")
   )
 
   req <- mock_request(body = '{"title":"a","note":null}')
@@ -395,10 +395,73 @@ test_that("a property sent as null is read as absent", {
     0L
   )
 
-  req <- mock_request(body = '{"title":null}')
+  # a `null` the schema does not allow is the wrong type, not a missing value
+  req <- mock_request(body = '{"title":null,"note":null}')
   problems <- openapi_validate(value = req$parse_json(), schema = schema)
   expect_equal(paths(problems), "title")
+  expect_equal(messages(problems), "must be a string")
+
+  # absent is still absent
+  req <- mock_request(body = '{"title":"a"}')
+  problems <- openapi_validate(value = req$parse_json(), schema = schema)
+  expect_equal(paths(problems), "note")
   expect_equal(messages(problems), "is required")
+
+  # and a property that is not required may still not be `null`
+  req <- mock_request(body = '{"title":"a","note":"b","extra":null}')
+  schema$properties$extra <- openapi_schema_integer()
+  problems <- openapi_validate(value = req$parse_json(), schema = schema)
+  expect_equal(paths(problems), "extra")
+  expect_equal(messages(problems), "must be an integer")
+})
+
+test_that("enum matches null, and a value of its own type only", {
+  schema <- openapi_schema(enum = list("a", NULL))
+
+  expect_length(openapi_validate(value = "a", schema = schema), 0L)
+  expect_length(openapi_validate(value = NULL, schema = schema), 0L)
+  expect_length(openapi_validate(value = NA_character_, schema = schema), 0L)
+  expect_equal(
+    messages(openapi_validate(value = "b", schema = schema)),
+    "must be one of a, null"
+  )
+
+  # `NA` is a `null` member too, as it would render
+  schema <- openapi_schema(enum = c("a", NA))
+  expect_length(openapi_validate(value = NULL, schema = schema), 0L)
+
+  # without it, `null` is rejected
+  schema <- openapi_schema(enum = c("a", "b"))
+  expect_equal(
+    messages(openapi_validate(value = NULL, schema = schema)),
+    "must be one of a, b"
+  )
+
+  # `%in%` would coerce: `"1"` is not `1`, and `"TRUE"` is not `true`
+  expect_length(
+    openapi_validate(value = "1", schema = openapi_schema(enum = c(1, 2))),
+    1L
+  )
+  expect_length(
+    openapi_validate(value = 1L, schema = openapi_schema(enum = c(1, 2))),
+    0L
+  )
+  expect_length(
+    openapi_validate(value = "TRUE", schema = openapi_schema(enum = TRUE)),
+    1L
+  )
+  expect_length(
+    openapi_validate(value = TRUE, schema = openapi_schema(enum = TRUE)),
+    0L
+  )
+
+  # inside an object
+  schema <- openapi_schema_object(
+    properties = list(status = openapi_schema(enum = list("open", NULL))),
+    required = "status"
+  )
+  req <- mock_request(body = '{"status":null}')
+  expect_length(openapi_validate(value = req$parse_json(), schema = schema), 0L)
 })
 
 test_that("empty arrays and objects are told apart", {
@@ -1118,6 +1181,56 @@ test_that("a composed parameter is converted by its branches", {
   expect_identical(openapi_convert(value = "true", schema = schema), TRUE)
   expect_identical(openapi_convert(value = "1.5", schema = schema), 1.5)
   expect_identical(openapi_convert(value = "abc", schema = schema), "abc")
+})
+
+test_that("a parameter of several types is read once per type, in order", {
+  docs <- openapi_docs(
+    parameters = openapi_param(
+      name = "n",
+      schema = openapi_schema(type = c("integer", "null"))
+    )
+  )
+
+  req <- mock_request(query = list(n = "42"))
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$query$n, 42L)
+
+  # `null` has no spelling in a query
+  req <- mock_request(query = list(n = "null"))
+  expect_equal(
+    messages(openapi_validate_request(request = req, docs = docs)),
+    "must be an integer or null"
+  )
+
+  schema <- openapi_schema(type = c("integer", "string"))
+  expect_identical(openapi_convert(value = "42", schema = schema), 42L)
+  expect_identical(openapi_convert(value = "abc", schema = schema), "abc")
+
+  # the first type listed decides where both readings are valid
+  schema <- openapi_schema(type = c("string", "integer"))
+  expect_identical(openapi_convert(value = "42", schema = schema), "42")
+
+  # a reading the keywords reject is passed over
+  schema <- openapi_schema(type = c("integer", "string"), minimum = 100L)
+  expect_identical(openapi_convert(value = "42", schema = schema), "42")
+
+  schema <- openapi_schema(type = c("boolean", "number"))
+  expect_identical(openapi_convert(value = "true", schema = schema), TRUE)
+  expect_identical(openapi_convert(value = "1.5", schema = schema), 1.5)
+
+  # an array that may also be `null` is still an array
+  docs <- openapi_docs(
+    parameters = openapi_param(
+      name = "tag",
+      schema = openapi_schema(
+        type = c("array", "null"),
+        items = openapi_schema_integer()
+      )
+    )
+  )
+  req <- mock_request(query = list(tag = "1"))
+  expect_length(openapi_validate_request(request = req, docs = docs), 0L)
+  expect_identical(req$query$tag, I(1L))
 })
 
 test_that("a decimal is not an integer parameter", {

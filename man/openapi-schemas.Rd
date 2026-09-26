@@ -159,9 +159,13 @@ text. The first reading that is valid is the one the handler receives, so
 \verb{/products/42} documented as an integer or a lowercase slug is the integer
 \code{42}. List the narrower schema first where two readings can both be valid:
 a string schema with no constraints accepts anything, and placed first it
-keeps every value a string. An array is the exception:
-\code{?tag=a} is read as an array of one only when the schema's own \code{type} is
-\code{"array"}, not when an array is one of its branches.
+keeps every value a string. The types of a schema with several are read
+the same way, in the order they are listed: \code{c("integer", "string")}
+reads \code{42} as the integer, \code{c("string", "integer")} as the string, and the
+\code{"null"} of \code{c("integer", "null")} has no reading, since the wire has no
+spelling for \code{null}. An array is the exception: \code{?tag=a} is read as an
+array of one only when the schema's own \code{type} includes \code{"array"}, not
+when an array is one of its branches.
 
 Each schema is checked on its own, as JSON Schema specifies, so
 \code{additionalProperties = FALSE} inside an \code{allOf} rejects the properties
@@ -194,7 +198,7 @@ openapi_schema_ref(
 openapi_schema_ref("User")
 
 # the escape hatch: a type the wrappers do not cover, and a value that
-# may be a string or absent
+# may be a string or `null`
 openapi_schema(type = c("string", "null"))
 
 }
