@@ -63,10 +63,10 @@ as_openapi.default <- function(x, ctx, ...) {
 #' build. An environment so that nested nodes can register themselves as they
 #' are rendered.
 #'
-#' @return An environment with four bindings: `schemas`, the named schemas met
-#'         so far, keyed by name; `refs`, every name referenced, used to spot
-#'         references to schemas that are never defined; `notes`, warnings; and
-#'         `errors`, which abort the build.
+#' @return An environment with three bindings: `schemas`, the named schemas
+#'         met so far, keyed by name; `refs`, every name referenced, used to
+#'         spot references to schemas that are never defined; and `errors`,
+#'         which abort the build.
 #'
 #' @examples
 #' ctx <- new_openapi_ctx()
@@ -82,7 +82,6 @@ new_openapi_ctx <- function() {
   ctx <- new.env(parent = emptyenv())
   ctx$schemas <- named_list()
   ctx$refs <- character()
-  ctx$notes <- character()
   ctx$errors <- character()
   ctx
 }
@@ -546,8 +545,8 @@ as_openapi.ambiorix_openapi_docs <- function(x, ctx, path = "", ...) {
 #' Path parameters come out first, in the order the tokens appear in the
 #' route, followed by the query, header, and cookie parameters in the order
 #' they were declared. A declared path parameter whose name matches no token
-#' is dropped with a note: it would document a parameter that can never be
-#' sent.
+#' is an error: it can never be sent, so a route that requires it would
+#' answer every request with a `400`.
 #'
 #' @param parameters List of OpenAPI parameters /// Required. \cr
 #'                   The parameters declared on the route.
@@ -573,14 +572,14 @@ as_openapi.ambiorix_openapi_docs <- function(x, ctx, path = "", ...) {
 #'   "/users/:id"
 #' )
 #'
-#' # a path parameter matching no token is dropped, with a warning
+#' # a path parameter matching no token is an error
 #' openapi_render_parameters(
 #'   list(openapi_param("nope", location = "path")),
 #'   ctx,
 #'   "/users/:id"
 #' )
 #'
-#' ctx$notes
+#' ctx$errors
 #'
 #' @keywords internal
 #' @noRd
@@ -608,12 +607,11 @@ openapi_render_parameters <- function(parameters, ctx, path) {
     out <- append(out, list(as_openapi(param, ctx)))
   }
 
-  # path parameters that match no token in the route are dropped
   if (length(overrides)) {
-    ctx$notes <- c(
-      ctx$notes,
+    ctx$errors <- c(
+      ctx$errors,
       sprintf(
-        "Ignoring path parameter(s) %s for path `%s`: no matching `:param` token in the route.",
+        "Path parameter(s) %s of `%s` match no `:param` token in the route.",
         paste0("`", names(overrides), "`", collapse = ", "),
         path
       )
@@ -882,7 +880,14 @@ build_openapi <- function(routes, doc = list()) {
     )
   }
 
-  openapi_report(ctx)
+  # every error is reported at once, rather than stopping at the first
+  if (length(ctx$errors)) {
+    stop(
+      "Cannot build the OpenAPI document:\n",
+      paste0("* ", ctx$errors, collapse = "\n"),
+      call. = FALSE
+    )
+  }
 
   out <- list(
     openapi = "3.1.0",
@@ -918,46 +923,6 @@ build_openapi <- function(routes, doc = list()) {
   }
 
   out
-}
-
-#' Emit the Diagnostics Collected While Building a Document
-#'
-#' Notes are warnings: the document is still built, minus whatever could not
-#' be made sense of. Errors abort the build, and every one collected is
-#' reported at once rather than stopping at the first.
-#'
-#' @param ctx Build context /// Required. \cr
-#'            The accumulator created by `new_openapi_ctx()`.
-#'
-#' @return `NULL`, invisibly. Stops if `ctx` holds any errors.
-#'
-#' @examples
-#' ctx <- new_openapi_ctx()
-#' ctx$notes <- "Ignoring path parameter(s) `id` for path `/users`: no matching `:param` token in the route."
-#'
-#' # notes only: warns, carries on
-#' openapi_report(ctx)
-#'
-#' ctx$errors <- "Two different schemas are named User."
-#'
-#' try(openapi_report(ctx))
-#'
-#' @keywords internal
-#' @noRd
-openapi_report <- function(ctx) {
-  for (note in ctx$notes) {
-    cli::cli_alert_warning(note)
-  }
-
-  if (!length(ctx$errors)) {
-    return(invisible(NULL))
-  }
-
-  stop(
-    "Cannot build the OpenAPI document:\n",
-    paste0("* ", ctx$errors, collapse = "\n"),
-    call. = FALSE
-  )
 }
 
 #' Named Schemas of a Document, Keyed by Name

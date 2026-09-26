@@ -12,7 +12,8 @@
 #'
 #' @param name String /// Required. \cr
 #'             Name of the parameter. For path parameters this must match one
-#'             of the route's `:param` tokens.
+#'             of the route's `:param` tokens: one that matches none stops
+#'             `app$start()`.
 #'
 #' @param location String /// Optional. \cr
 #'                 Where the parameter is passed. Either `"query"` (default),

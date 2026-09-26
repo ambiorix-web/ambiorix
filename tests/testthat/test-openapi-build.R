@@ -423,7 +423,7 @@ test_that("user-declared path params override the auto-generated defaults", {
   stop_all()
 })
 
-test_that("path params matching no route token warn and are dropped", {
+test_that("path params matching no route token are an error", {
   app <- Ambiorix$new()
 
   app$get(
@@ -435,13 +435,14 @@ test_that("path params matching no route token warn and are dropped", {
     )
   )
 
-  routes <- app$get_routes()
-  expect_message(doc <- build_openapi(routes), "task_id")
+  expect_error(
+    build_openapi(app$get_routes()),
+    "Path parameter\\(s\\) `task_id` of `/tasks/:id` match no `:param` token"
+  )
 
-  params <- doc$paths[["/tasks/{id}"]]$get$parameters
-  expect_length(params, 1L)
-  expect_equal(params[[1]]$name, "id")
-  expect_equal(params[[1]]$schema$type, "string")
+  # at startup, before a request could be answered with a `400`
+  app$openapi()
+  expect_error(app$start(open = FALSE), "task_id")
 
   stop_all()
 })
