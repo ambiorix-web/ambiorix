@@ -187,7 +187,7 @@ test_that("two different schemas sharing a name is an error", {
   expect_error(build_openapi(list(mk("/a", a), mk("/b", a))), NA)
 })
 
-test_that("references to undefined schemas warn", {
+test_that("references to undefined schemas are an error", {
   routes <- list(
     list(
       route = list(basepath = ""),
@@ -201,7 +201,27 @@ test_that("references to undefined schemas warn", {
     )
   )
 
-  expect_message(build_openapi(routes), "Nope")
+  expect_error(build_openapi(routes), "Nope")
+})
+
+test_that("an undefined schema inside `not` is caught at build", {
+  routes <- list(
+    list(
+      route = list(basepath = ""),
+      path = "/x",
+      method = "POST",
+      docs = openapi_docs(
+        request_body = openapi_request_body(
+          openapi_schema_object(
+            properties = list(n = openapi_schema_integer()),
+            not = openapi_schema_ref("Nope")
+          )
+        )
+      )
+    )
+  )
+
+  expect_error(build_openapi(routes), "Nope")
 })
 
 test_that("a recursive schema can be expressed with a bare reference", {

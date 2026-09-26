@@ -1355,8 +1355,8 @@ openapi_convert <- function(value, schema, schemas = list()) {
 #' schemas, where it is a `$ref` string. Both forms are looked up here.
 #'
 #' A name that is in neither resolves to `NULL`, which callers treat as "no
-#' constraints" rather than an error: a dangling reference is already reported
-#' as a note when the document is built.
+#' constraints": a dangling reference is an error when the document is built,
+#' so one never reaches validation through `app$start()`.
 #'
 #' @param schema OpenAPI schema /// Required. \cr
 #'               The schema to resolve, possibly a bare reference.

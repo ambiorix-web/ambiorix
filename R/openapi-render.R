@@ -908,8 +908,8 @@ build_openapi <- function(routes, doc = list()) {
   dangling <- setdiff(ctx$refs, names(ctx$schemas))
 
   if (length(dangling)) {
-    ctx$notes <- c(
-      ctx$notes,
+    ctx$errors <- c(
+      ctx$errors,
       sprintf(
         "Reference(s) to undefined schema(s): %s.",
         paste0("`", dangling, "`", collapse = ", ")
@@ -968,7 +968,7 @@ build_openapi <- function(routes, doc = list()) {
 #'
 #' @examples
 #' ctx <- new_openapi_ctx()
-#' ctx$notes <- "Reference(s) to undefined schema(s): `User`."
+#' ctx$notes <- "Ignoring path parameter(s) `id` for path `/users`: no matching `:param` token in the route."
 #'
 #' # notes only: warns, carries on
 #' openapi_report(ctx)
