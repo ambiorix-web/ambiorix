@@ -18,6 +18,7 @@
 #' @importFrom assertthat assert_that
 #' @importFrom utils browseURL
 #' @importFrom methods formalArgs
+#' @importFrom R6 R6Class
 #'
 #' @examples
 #' app <- Ambiorix$new()
