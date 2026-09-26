@@ -104,6 +104,9 @@
   route's error handler, or `app$error`, the way an error in the handler
   is. It used to reach httpuv, which answered `ERROR: <the R message>`,
   handing the message to the client, and logged nothing.
+- Printing an app, a router, a websocket or OpenAPI docs left a cli list
+  open, so every list printed afterwards in the session, by ambiorix or by
+  anything else, was indented one level deeper.
 
 # ambiorix 3.0.0
 
