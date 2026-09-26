@@ -72,10 +72,10 @@ test_that("openapi docs routes are registered on start", {
   # emulate what `start()` does before launching the server
   private <- environment(app$openapi)$private
   private$.register_openapi_routes()
-  private$.routes <- app$get_routes()
+  private$.compile()
 
   paths <- vapply(
-    X = private$.routes,
+    X = private$.compiled$routes,
     FUN = function(route) {
       route$path
     },
@@ -100,12 +100,12 @@ test_that("openapi docs routes are not shadowed by dynamic routes", {
 
   private <- environment(app$openapi)$private
   private$.register_openapi_routes()
-  private$.routes <- app$get_routes()
+  private$.compile()
 
   # the first route matching /docs & /openapi.json must be the
   # docs routes themselves, not the dynamic /:page route
   first_match <- function(path) {
-    for (route in private$.routes) {
+    for (route in private$.compiled$routes) {
       if (grepl(route$route$pattern, path)) {
         return(route$path)
       }
@@ -132,10 +132,10 @@ test_that("openapi routes are registered only once", {
   private <- environment(app$openapi)$private
   private$.register_openapi_routes()
   private$.register_openapi_routes()
-  private$.routes <- app$get_routes()
+  private$.compile()
 
   paths <- vapply(
-    X = private$.routes,
+    X = private$.compiled$routes,
     FUN = function(route) {
       route$path
     },
@@ -220,10 +220,10 @@ test_that("openapi routes are skipped when they collide with user routes", {
   private <- environment(app$openapi)$private
   expect_message(private$.register_openapi_routes(), "already registered")
 
-  private$.routes <- app$get_routes()
+  private$.compile()
 
   paths <- vapply(
-    X = private$.routes,
+    X = private$.compiled$routes,
     FUN = function(route) {
       route$path
     },
@@ -235,4 +235,44 @@ test_that("openapi routes are skipped when they collide with user routes", {
   expect_equal(sum(paths == "/openapi.json"), 1L)
 
   stop_all()
+})
+
+test_that("a second start() compiles the same tree", {
+  app <- Ambiorix$new(log = FALSE)
+  app$openapi()
+  app$get("/", function(req, res) res$send("home"))
+  app$use(function(req, res) NULL)
+
+  api <- Router$new("/api")
+  api$get(
+    "/x",
+    function(req, res) res$send("x"),
+    docs = openapi_docs(operation_id = "getX")
+  )
+  api$use(function(req, res) NULL)
+  api$receive("ping", function(msg, ws) NULL)
+  app$use(api)
+
+  # emulate what `start()` does before launching the server, twice
+  private <- environment(app$openapi)$private
+  once <- function() {
+    private$.register_openapi_routes()
+    private$.compile()
+    private$.build_openapi()
+    private$.compiled
+  }
+  first <- once()
+  second <- once()
+
+  expect_length(second$routes, length(first$routes))
+  expect_length(second$middleware, 2L)
+  expect_length(second$receivers, 1L)
+
+  paths <- vapply(
+    X = second$routes,
+    FUN = function(route) paste0(route$route$basepath, route$path),
+    FUN.VALUE = character(1)
+  )
+  expect_true("/api/x" %in% paths)
+  expect_false("/x" %in% paths)
 })

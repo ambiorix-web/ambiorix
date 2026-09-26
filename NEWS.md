@@ -107,6 +107,13 @@
 - Printing an app, a router, a websocket or OpenAPI docs left a cli list
   open, so every list printed afterwards in the session, by ambiorix or by
   anything else, was indented one level deeper.
+- A second `app$start()` on the same app, after `app$stop()` or an
+  interrupt, compiled the routing tree on top of the previous compilation.
+  Every mounted router's routes, middleware and websocket receivers were
+  appended again: router middleware ran twice per request, receivers fired
+  twice per message, and a router's routes also answered at the root,
+  without their basepath. With OpenAPI on and an `operation_id` set, the
+  second start aborted with *Duplicated operation_id*.
 
 # ambiorix 3.0.0
 

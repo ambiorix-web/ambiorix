@@ -203,17 +203,13 @@ Ambiorix <- R6::R6Class(
 
       private$.register_openapi_routes()
 
-      private$.routes <- super$get_routes()
+      private$.compile()
 
-      if (private$n_routes() == 0L) {
+      if (!length(private$.compiled$routes) && !length(private$.static)) {
         stop("No routes specified")
       }
 
       private$.build_openapi()
-
-      private$.receivers <- super$get_receivers()
-      private$.middleware <- super$get_middleware()
-      private$.params <- super$get_params()
 
       private$.server <- httpuv::startServer(
         host = host,
@@ -613,6 +609,17 @@ Ambiorix <- R6::R6Class(
     n_routes = function() {
       length(private$.routes) + length(private$.static)
     },
+    # Flatten the routing tree into what the dispatcher reads. Registered
+    # state is left as is, so a second `start()` compiles the same tree.
+    .compile = function() {
+      private$.compiled <- list(
+        routes = super$get_routes(),
+        middleware = super$get_middleware(),
+        params = super$get_params(),
+        receivers = super$get_receivers()
+      )
+      invisible(self)
+    },
     .make_path = function(path) {
       paste0(private$.basepath, path)
     },
@@ -637,7 +644,7 @@ Ambiorix <- R6::R6Class(
       }
 
       spec <- build_openapi(
-        routes = private$.routes,
+        routes = private$.compiled$routes,
         doc = list(
           info = private$.openapi_info,
           servers = private$.openapi_servers,
@@ -650,7 +657,9 @@ Ambiorix <- R6::R6Class(
       # use the default serialiser: a user-defined serialiser
       # may not produce a valid OpenAPI document
       private$.openapi_json <- default_serialiser(spec)
-      private$.openapi_schemas <- openapi_named_schemas(private$.routes)
+      private$.openapi_schemas <- openapi_named_schemas(
+        private$.compiled$routes
+      )
 
       invisible(self)
     },

@@ -499,7 +499,7 @@ test_that("the document is built once, at startup", {
   private <- environment(app$openapi)$private
   expect_null(private$.openapi_json)
 
-  private$.routes <- app$get_routes()
+  private$.compile()
   private$.build_openapi()
 
   expect_type(private$.openapi_json, "character")

@@ -576,6 +576,8 @@ Routing <- R6::R6Class(
     .is_running = FALSE,
     .wss_custom = NULL,
     .routers = list(),
+    # what `start()` compiled from the routing tree: what the dispatcher reads
+    .compiled = NULL,
     # Validate a Request Against Its Route's Documentation
     #
     # Runs before the handler. Returns a response listing what is wrong when
@@ -658,29 +660,32 @@ Routing <- R6::R6Class(
     .call = function(req) {
       request <- Request$new(req)
       res <- Response$new()
+      routes <- private$.compiled$routes
+      middleware <- private$.compiled$middleware
+      params <- private$.compiled$params
 
       # loop over routes
-      for (i in seq_along(private$.routes)) {
+      for (i in seq_along(routes)) {
         # if path matches pattern and method
         if (
-          grepl(private$.routes[[i]]$route$pattern, req$PATH_INFO) &&
-            req$REQUEST_METHOD %in% private$.routes[[i]]$method
+          grepl(routes[[i]]$route$pattern, req$PATH_INFO) &&
+            req$REQUEST_METHOD %in% routes[[i]]$method
         ) {
           .globals$infoLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO)
 
-          basepath <- private$.routes[[i]]$route$basepath
+          basepath <- routes[[i]]$route$basepath
 
           # a `return()` in here still leaves `.call()`
           response <- tryCatch(
             {
               request$params <- set_params(
                 request$PATH_INFO,
-                private$.routes[[i]]$route
+                routes[[i]]$route
               )
 
               # middleware:
-              for (j in seq_along(private$.middleware)) {
-                mid_basepath <- attr(private$.middleware[[j]], "basepath")
+              for (j in seq_along(middleware)) {
+                mid_basepath <- attr(middleware[[j]], "basepath")
                 under_router <- identical(basepath, mid_basepath) ||
                   startsWith(basepath, paste0(mid_basepath, "/"))
 
@@ -688,7 +693,7 @@ Routing <- R6::R6Class(
                   next
                 }
 
-                mid_res <- private$.middleware[[j]](request, res)
+                mid_res <- middleware[[j]](request, res)
 
                 if (is_response(mid_res)) {
                   return(mid_res)
@@ -700,7 +705,7 @@ Routing <- R6::R6Class(
               invalid <- private$.validate_request(
                 request,
                 res,
-                private$.routes[[i]]
+                routes[[i]]
               )
 
               if (is_response(invalid)) {
@@ -708,10 +713,10 @@ Routing <- R6::R6Class(
               }
 
               # parameter middleware
-              for (j in seq_along(private$.params)) {
-                pn <- private$.params[[j]]$params
+              for (j in seq_along(params)) {
+                pn <- params[[j]]$params
                 pv <- request$params[[pn]]
-                mid_basepath <- attr(private$.params[[j]], "basepath")
+                mid_basepath <- attr(params[[j]], "basepath")
                 under_router <- identical(basepath, mid_basepath) ||
                   startsWith(basepath, paste0(mid_basepath, "/"))
 
@@ -719,7 +724,7 @@ Routing <- R6::R6Class(
                   next
                 }
 
-                param_res <- private$.params[[j]]$handler(
+                param_res <- params[[j]]$handler(
                   request,
                   res,
                   pv,
@@ -732,7 +737,7 @@ Routing <- R6::R6Class(
               }
 
               # get response
-              private$.routes[[i]]$fun(request, res)
+              routes[[i]]$fun(request, res)
             },
             error = function(error) {
               error
@@ -740,7 +745,7 @@ Routing <- R6::R6Class(
           )
 
           if (inherits(response, "error")) {
-            return(private$.routes[[i]]$error(request, res, response))
+            return(routes[[i]]$error(request, res, response))
           }
 
           if (inherits(x = response, what = c("promise", "Future", "mirai"))) {
@@ -761,7 +766,7 @@ Routing <- R6::R6Class(
                     "Server error"
                   )
 
-                  private$.routes[[i]]$error(request, res, error)
+                  routes[[i]]$error(request, res, error)
                 }
               )
             )
@@ -794,7 +799,7 @@ Routing <- R6::R6Class(
       # receive
       ws$onMessage(function(binary, message) {
         # don't run if no receiver
-        if (length(private$.receivers) == 0) {
+        if (length(private$.compiled$receivers) == 0) {
           return(NULL)
         }
 
@@ -806,13 +811,13 @@ Routing <- R6::R6Class(
 
         message <- get_json_parser()(message)
 
-        for (i in seq_along(private$.receivers)) {
-          if (private$.receivers[[i]]$is_handler(message)) {
+        for (i in seq_along(private$.compiled$receivers)) {
+          if (private$.compiled$receivers[[i]]$is_handler(message)) {
             .globals$infoLog$log(
               "Received message from websocket:",
               message$name
             )
-            return(private$.receivers[[i]]$receive(message, ws))
+            return(private$.compiled$receivers[[i]]$receive(message, ws))
           }
         }
       })

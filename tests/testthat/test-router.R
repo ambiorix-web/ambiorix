@@ -77,9 +77,7 @@ test_that("a :token in a router's basepath is matched at any depth", {
   app$use(orgs)
 
   private <- app$.__enclos_env__$private
-  private$.routes <- app$get_routes()
-  private$.middleware <- app$get_middleware()
-  private$.params <- app$get_params()
+  private$.compile()
 
   call <- function(path) {
     private$.call(mockRequest(path = path)$body)$body
@@ -110,9 +108,7 @@ test_that("an exact path on a router beats a token on its parent", {
   app$use(me)
 
   private <- app$.__enclos_env__$private
-  private$.routes <- app$get_routes()
-  private$.middleware <- app$get_middleware()
-  private$.params <- app$get_params()
+  private$.compile()
 
   expect_equal(private$.call(mockRequest(path = "/users/me")$body)$body, "me")
   expect_equal(
@@ -151,7 +147,7 @@ test_that("a route with fewer parameters is tried first", {
   app$get("/u/:id/:tab", function(req, res) res$send("two"))
 
   private <- app$.__enclos_env__$private
-  private$.routes <- app$get_routes()
+  private$.compile()
 
   call <- function(path) {
     private$.call(mockRequest(path = path)$body)$body
@@ -203,9 +199,7 @@ test_that("a router's middleware runs under a :token basepath", {
   app$use(orgsx)
 
   private <- app$.__enclos_env__$private
-  private$.routes <- app$get_routes()
-  private$.middleware <- app$get_middleware()
-  private$.params <- app$get_params()
+  private$.compile()
 
   resp <- private$.call(mockRequest(path = "/orgs/acme/teams/core/info")$body)
   expect_equal(resp$body, "app > orgs > teams")
@@ -227,7 +221,7 @@ test_that("a router mounted in two places answers at both", {
   app$use(status)
 
   private <- app$.__enclos_env__$private
-  private$.routes <- app$get_routes()
+  private$.compile()
 
   expect_equal(
     private$.call(mockRequest(path = "/status/ping")$body)$body,
@@ -289,9 +283,7 @@ test_that("a parameter middleware runs after the middleware, for mounted routers
   app$use(other)
 
   private <- app$.__enclos_env__$private
-  private$.routes <- app$get_routes()
-  private$.middleware <- app$get_middleware()
-  private$.params <- app$get_params()
+  private$.compile()
 
   call <- function(path) {
     private$.call(mockRequest(path = path)$body)$body
@@ -324,8 +316,7 @@ test_that("a parameter middleware answers the request when it returns a response
   })
 
   private <- app$.__enclos_env__$private
-  private$.routes <- app$get_routes()
-  private$.params <- app$get_params()
+  private$.compile()
 
   resp <- private$.call(mockRequest(path = "/items/0")$body)
   expect_equal(resp$status, 403L)
@@ -360,8 +351,7 @@ test_that("a parameter middleware receives the validated value", {
   )
 
   private <- app$.__enclos_env__$private
-  private$.routes <- app$get_routes()
-  private$.params <- app$get_params()
+  private$.compile()
 
   resp <- private$.call(mockRequest(path = "/items/42")$body)
   expect_equal(resp$body, "ok")
