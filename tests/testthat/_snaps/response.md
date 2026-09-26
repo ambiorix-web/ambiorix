@@ -40,23 +40,23 @@
       -- A Response 
       
       -- Headers 
-        * HEADER Content-Type
+      * HEADER Content-Type
     Output
        chr "tab-separated-values"
     Message
-        * HEADER Location
+      * HEADER Location
     Output
        chr "/"
     Message
-        * HEADER Content-Disposition
+      * HEADER Content-Disposition
     Output
        chr "attachment;charset=UTF-8;filename=data.tsv"
     Message
-        * HEADER Content-Length
+      * HEADER Content-Length
     Output
        num 17645
     Message
-        * HEADER xxx
+      * HEADER xxx
     Output
        chr "hello"
 

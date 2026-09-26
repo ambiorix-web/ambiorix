@@ -65,7 +65,9 @@ Router <- R6::R6Class(
     #' @details Print
     print = function() {
       cli::cli_rule("Ambiorix", right = "router")
+      cli::cli_ul()
       cli::cli_li("routes: {.val {super$n_routes()}}")
+      cli::cli_end()
     }
   )
 )

@@ -302,7 +302,9 @@ Routing <- R6::R6Class(
     #' @details Print
     print = function() {
       cli::cli_rule("Ambiorix", right = "web server")
+      cli::cli_ul()
       cli::cli_li("routes: {.val {private$n_routes()}}")
+      cli::cli_end()
     },
     #' @details Engine to use for rendering templates.
     #'

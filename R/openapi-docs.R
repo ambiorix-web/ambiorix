@@ -595,12 +595,14 @@ openapi_docs <- function(
 #' @export
 print.ambiorix_openapi_docs <- function(x, ...) {
   cli::cli_rule("Ambiorix", right = "OpenAPI docs")
+  cli::cli_ul()
   if (!is.null(x$summary)) {
     cli::cli_li("summary: {.val {x$summary}}")
   }
   if (!is.null(x$tags)) {
     cli::cli_li("tags: {.val {x$tags}}")
   }
+  cli::cli_end()
   invisible(x)
 }
 
