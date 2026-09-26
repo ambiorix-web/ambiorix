@@ -31,7 +31,8 @@ is meant to be handled.
 \item \code{filename}: Original name of the uploaded file.
 }
 
-If no body data, an empty list is returned.
+A request with no body returns \code{NULL} without calling the parser, so an
+absent body is told apart from a form sent with no fields.
 \subsection{Overriding Default Parser}{
 
 By default, \code{parse_multipart()} uses \code{\link[webutils:parse_http]{webutils::parse_http()}} internally.

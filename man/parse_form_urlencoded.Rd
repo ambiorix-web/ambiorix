@@ -20,6 +20,8 @@ Named list, or \code{NULL} when the request has no body.
 This function parses \code{application/x-www-form-urlencoded} data, typically used in form submissions.
 }
 \details{
+A request with no body returns \code{NULL} without calling the parser, so an
+absent body is told apart from a form whose fields were left empty.
 \subsection{Overriding Default Parser}{
 
 By default, \code{parse_form_urlencoded()} uses \code{\link[webutils:parse_http]{webutils::parse_http()}}.

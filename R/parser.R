@@ -18,7 +18,8 @@
 #' - `name`: Name of the form input field.
 #' - `filename`: Original name of the uploaded file.
 #'
-#' If no body data, an empty list is returned.
+#' A request with no body returns `NULL` without calling the parser, so an
+#' absent body is told apart from a form sent with no fields.
 #'
 #' ### Overriding Default Parser
 #'
@@ -290,6 +291,8 @@ parse_multipart <- function(req, ...) {
 #'            Additional parameters passed to the parser function.
 #'
 #' @details
+#' A request with no body returns `NULL` without calling the parser, so an
+#' absent body is told apart from a form whose fields were left empty.
 #'
 #' ### Overriding Default Parser
 #'
