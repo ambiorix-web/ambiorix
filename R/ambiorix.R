@@ -313,6 +313,11 @@ Ambiorix <- R6::R6Class(
     #' served locally at `assets_path` (default `/__swagger__`), so the docs
     #' work without an internet connection.
     #'
+    #' The Swagger UI page refers to the document and its assets with URLs
+    #' relative to itself, so it works behind a proxy that serves the app
+    #' under a path of its own, e.g. `/content/<guid>/` on Posit Connect: the
+    #' app never sees that path, and the browser resolves the URLs against it.
+    #'
     #' If `ui_path` or `spec_path` collides with an existing route, or
     #' `assets_path` collides with an existing static directory, the
     #' corresponding docs route (or asset directory) is not registered and a
@@ -361,8 +366,11 @@ Ambiorix <- R6::R6Class(
     #'   [server objects](https://spec.openapis.org/oas/v3.1.0#server-object)
     #'   instead of a character vector allows each to carry a `description` or
     #'   `variables`. \cr
-    #'   Defaults to `NULL`, which the specification reads as a server at `/`,
-    #'   i.e. the host the document was served from.
+    #'   Defaults to `NULL`, a server relative to the document, `"."`: the
+    #'   directory `spec_path` is served from, which is the app's root. The
+    #'   specification's own default, `/`, is the root of the host, and
+    #'   behind a proxy that serves the app under a path, e.g. Posit Connect,
+    #'   it is not the app.
     #'
     #' @param tags Character vector or List /// Optional. \cr
     #'   Tags used to group routes. Names, if any, are the tag names and the
@@ -607,6 +615,7 @@ Ambiorix <- R6::R6Class(
     .openapi_validate = FALSE,
     .openapi_on_invalid = NULL,
     .openapi_json = NULL,
+    .openapi_ui_html = NULL,
     .openapi_schemas = list(),
     .openapi_ui_path = "/docs",
     .openapi_spec_path = "/openapi.json",
@@ -648,11 +657,38 @@ Ambiorix <- R6::R6Class(
         return(invisible(self))
       }
 
+      # the app may be served under a prefix it cannot see, e.g. a proxy's
+      # `/content/<guid>/`, so every URL handed to the browser is relative:
+      # `ups` climbs from each document's directory back to the app's root
+      spec_path <- paste0(private$.basepath, private$.openapi_spec_path)
+      ui_path <- paste0(private$.basepath, private$.openapi_ui_path)
+      ups <- vapply(
+        X = c(spec = spec_path, ui = ui_path),
+        FUN = function(path) {
+          path <- sub(pattern = "/+$", replacement = "", x = path)
+          strrep(
+            x = "../",
+            times = lengths(regmatches(path, gregexpr("/", path))) - 1L
+          )
+        },
+        FUN.VALUE = character(1)
+      )
+
+      # a server relative to the document, where the default `/` would be the
+      # proxy's root
+      root <- sub(pattern = "/$", replacement = "", x = ups[["spec"]])
+      servers <- private$.openapi_servers %||%
+        list(
+          list(
+            url = if (nzchar(root)) root else "."
+          )
+        )
+
       spec <- build_openapi(
         routes = private$.compiled$routes,
         doc = list(
           info = private$.openapi_info,
-          servers = private$.openapi_servers,
+          servers = servers,
           tags = private$.openapi_tags,
           security_schemes = private$.openapi_security_schemes,
           security = private$.openapi_security
@@ -664,6 +700,15 @@ Ambiorix <- R6::R6Class(
       private$.openapi_json <- default_serialiser(spec)
       private$.openapi_schemas <- openapi_named_schemas(
         private$.compiled$routes
+      )
+      # static directories are served outside the basepath
+      private$.openapi_ui_html <- swagger_ui_html(
+        spec_url = paste0(ups[["ui"]], sub("^/+", "", spec_path)),
+        title = private$.openapi_info$title,
+        assets_url = paste0(
+          ups[["ui"]],
+          sub("^/+", "", private$.openapi_assets_path)
+        )
       )
 
       invisible(self)
@@ -735,13 +780,8 @@ Ambiorix <- R6::R6Class(
           )
         )
       } else {
-        ui_html <- swagger_ui_html(
-          spec_path,
-          title = info$title,
-          assets_path = assets_path
-        )
         self$get(ui_path, function(req, res) {
-          res$send(ui_html)
+          res$send(private$.openapi_ui_html)
         })
       }
 

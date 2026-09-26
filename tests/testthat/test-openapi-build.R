@@ -341,10 +341,16 @@ test_that("a security shape that is not a requirement is an error", {
     openapi_docs(security = list("bearerAuth", list(oauth = NA_character_))),
     "requirement 2"
   )
-  expect_error(openapi_docs(security = list("a", oauth = "read")), "requirement 1")
+  expect_error(
+    openapi_docs(security = list("a", oauth = "read")),
+    "requirement 1"
+  )
   expect_error(openapi_docs(security = ""), "requirement 1")
   expect_error(openapi_docs(security = NA_character_), "requirement 1")
-  expect_error(Ambiorix$new()$openapi(security = list(oauth = 1L)), "requirement 1")
+  expect_error(
+    Ambiorix$new()$openapi(security = list(oauth = 1L)),
+    "requirement 1"
+  )
 })
 
 test_that("a security requirement must name declared schemes", {
@@ -484,25 +490,73 @@ test_that("operation ids are suffixed per verb and must be unique", {
 })
 
 test_that("swagger_ui_html embeds the spec url and title", {
-  html <- swagger_ui_html("/openapi.json")
+  html <- swagger_ui_html("openapi.json")
   expect_true(grepl("swagger-ui", html))
-  expect_true(grepl("/openapi.json", html, fixed = TRUE))
+  expect_true(grepl('url: "openapi.json"', html, fixed = TRUE))
   expect_true(grepl("<title>API Documentation</title>", html, fixed = TRUE))
 
-  html <- swagger_ui_html("/openapi.json", title = "My <API>")
+  html <- swagger_ui_html("openapi.json", title = "My <API>")
   expect_true(grepl("<title>My &lt;API&gt;</title>", html, fixed = TRUE))
 })
 
 test_that("swagger_ui_html references local assets, not a CDN", {
-  html <- swagger_ui_html("/openapi.json")
-  expect_true(grepl("/__swagger__/swagger-ui.css", html, fixed = TRUE))
-  expect_true(grepl("/__swagger__/swagger-ui-bundle.js", html, fixed = TRUE))
+  html <- swagger_ui_html("openapi.json")
+  expect_true(grepl('"__swagger__/swagger-ui.css"', html, fixed = TRUE))
+  expect_true(grepl('"__swagger__/swagger-ui-bundle.js"', html, fixed = TRUE))
   expect_false(grepl("cdn.jsdelivr.net", html, fixed = TRUE))
 
-  # custom assets path, trailing slashes normalised
-  html <- swagger_ui_html("/openapi.json", assets_path = "/assets/")
-  expect_true(grepl("/assets/swagger-ui.css", html, fixed = TRUE))
-  expect_true(grepl("/assets/swagger-ui-bundle.js", html, fixed = TRUE))
+  # custom assets url, trailing slashes normalised
+  html <- swagger_ui_html("openapi.json", assets_url = "../assets/")
+  expect_true(grepl('"../assets/swagger-ui.css"', html, fixed = TRUE))
+  expect_true(grepl('"../assets/swagger-ui-bundle.js"', html, fixed = TRUE))
+})
+
+test_that("the docs page and the server are relative to the app", {
+  built <- function(configure) {
+    app <- Ambiorix$new()
+    configure(app)
+    app$get("/x", function(req, res) res$send("x"))
+    private <- environment(app$openapi)$private
+    private$.compile()
+    private$.build_openapi()
+    html <- private$.openapi_ui_html
+    list(
+      spec = regmatches(html, regexpr('url: "[^"]*"', html)),
+      css = regmatches(html, regexpr('"[^"]*swagger-ui.css"', html)),
+      servers = yyjsonr::read_json_str(private$.openapi_json)$servers
+    )
+  }
+
+  # defaults: `/docs`, `/openapi.json`, `/__swagger__`
+  out <- built(function(app) app$openapi())
+  expect_equal(out$spec, 'url: "openapi.json"')
+  expect_equal(out$css, '"__swagger__/swagger-ui.css"')
+  expect_equal(out$servers$url, ".")
+
+  # a deeper page climbs back to the root
+  out <- built(function(app) app$openapi(ui_path = "/api/docs"))
+  expect_equal(out$spec, 'url: "../openapi.json"')
+  expect_equal(out$css, '"../__swagger__/swagger-ui.css"')
+
+  # a deeper document puts the server further up
+  out <- built(function(app) app$openapi(spec_path = "/api/v1/openapi.json"))
+  expect_equal(out$spec, 'url: "api/v1/openapi.json"')
+  expect_equal(out$servers$url, "../..")
+
+  # the basepath moves the routes, not the static assets
+  out <- built(function(app) {
+    app$basepath <- "/v1"
+    app$openapi()
+  })
+  expect_equal(out$spec, 'url: "../v1/openapi.json"')
+  expect_equal(out$css, '"../__swagger__/swagger-ui.css"')
+  expect_equal(out$servers$url, "..")
+
+  # servers of the app's own are kept
+  out <- built(function(app) app$openapi(servers = "https://api.example.com"))
+  expect_equal(out$servers$url, "https://api.example.com")
+
+  stop_all()
 })
 
 test_that("swagger ui assets are bundled with the package", {

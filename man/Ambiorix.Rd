@@ -500,8 +500,11 @@ URLs at which the API is served. A \code{list} of
 \href{https://spec.openapis.org/oas/v3.1.0#server-object}{server objects}
 instead of a character vector allows each to carry a \code{description} or
 \code{variables}. \cr
-Defaults to \code{NULL}, which the specification reads as a server at \code{/},
-i.e. the host the document was served from.}
+Defaults to \code{NULL}, a server relative to the document, \code{"."}: the
+directory \code{spec_path} is served from, which is the app's root. The
+specification's own default, \code{/}, is the root of the host, and
+behind a proxy that serves the app under a path, e.g. Posit Connect,
+it is not the app.}
       \item{\code{tags}}{Character vector or List /// Optional. \cr
 Tags used to group routes. Names, if any, are the tag names and the
 values their descriptions; an unnamed element is a tag with no
@@ -559,6 +562,11 @@ with a \code{docs} argument (see \code{\link[=openapi_docs]{openapi_docs()}}) ap
 The Swagger UI assets (CSS & JavaScript) are bundled with ambiorix and
 served locally at \code{assets_path} (default \verb{/__swagger__}), so the docs
 work without an internet connection.
+
+The Swagger UI page refers to the document and its assets with URLs
+relative to itself, so it works behind a proxy that serves the app
+under a path of its own, e.g. \verb{/content/<guid>/} on Posit Connect: the
+app never sees that path, and the browser resolves the URLs against it.
 
 If \code{ui_path} or \code{spec_path} collides with an existing route, or
 \code{assets_path} collides with an existing static directory, the
