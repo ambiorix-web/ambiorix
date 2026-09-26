@@ -30,7 +30,8 @@ Imports:
     webutils (>= 1.2.0),
     yyjsonr (>= 0.1.22),
     mime (>= 0.13),
-    promises (>= 1.5.0)
+    promises (>= 1.5.0),
+    R6 (>= 2.6.1)
 Suggests:
     readr,
     readxl,
