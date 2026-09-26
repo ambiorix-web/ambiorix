@@ -70,7 +70,14 @@ test_that("Response", {
   # file
   resp <- res$send_file("file.html")
   expect_true(is.raw(resp$body))
-  expect_equal(length(resp$body), 52L)
+  expect_equal(
+    resp$body,
+    readBin(
+      con = "file.html",
+      what = "raw",
+      n = file.size("file.html")
+    )
+  )
 
   # redirect
   resp <- res$redirect("/")
