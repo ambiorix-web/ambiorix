@@ -188,7 +188,7 @@ Request <- R6::R6Class(
     #'
     get_header = function(name) {
       assert_that(not_missing(name))
-      req$HEADERS[[name]]
+      self$HEADERS[[name]]
     },
     #' @details Parse Multipart encoded data
     parse_multipart = function() {

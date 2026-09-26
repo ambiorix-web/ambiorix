@@ -19,4 +19,6 @@ test_that("Request", {
   expect_error(req$get("hello"))
 
   expect_error(req$get_header())
+  expect_equal(req$get_header("host"), "localhost:13698")
+  expect_null(req$get_header("authorization"))
 })

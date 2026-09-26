@@ -107,6 +107,8 @@
 - Printing an app, a router, a websocket or OpenAPI docs left a cli list
   open, so every list printed afterwards in the session, by ambiorix or by
   anything else, was indented one level deeper.
+- `req$get_header()` errored whatever the header, *object 'req' not
+  found*; it returns the header's value, or `NULL` when it was not sent.
 - A second `app$start()` on the same app, after `app$stop()` or an
   interrupt, compiled the routing tree on top of the previous compilation.
   Every mounted router's routes, middleware and websocket receivers were
