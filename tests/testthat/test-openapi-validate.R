@@ -2056,7 +2056,7 @@ test_that("validation can be overridden per route", {
   private <- environment(app$openapi)$private
 
   route <- list(
-    route = Route$new("/tasks"),
+    route = Route$new("/tasks")$compile(),
     path = "/tasks",
     docs = docs_with_body()
   )
@@ -2088,7 +2088,7 @@ test_that("enabling the docs enables validation", {
   private <- environment(app$openapi)$private
 
   route <- list(
-    route = Route$new("/tasks"),
+    route = Route$new("/tasks")$compile(),
     path = "/tasks",
     docs = docs_with_body()
   )
@@ -2117,7 +2117,7 @@ test_that("`on_invalid` answers for a rejected request", {
   )
 
   route <- list(
-    route = Route$new("/tasks"),
+    route = Route$new("/tasks")$compile(),
     path = "/tasks",
     docs = docs_with_body()
   )
@@ -2141,7 +2141,7 @@ test_that("an unparseable body is answered like any other invalid request", {
   private <- environment(app$openapi)$private
 
   route <- list(
-    route = Route$new("/tasks"),
+    route = Route$new("/tasks")$compile(),
     path = "/tasks",
     docs = docs_with_body()
   )

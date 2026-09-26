@@ -149,8 +149,7 @@ test_that("named schemas nested in composition keywords are hoisted", {
 
   routes <- list(
     list(
-      route = list(basepath = ""),
-      path = "/x",
+      route = list(full_path = "/x"),
       method = "GET",
       docs = openapi_docs(responses = list(openapi_response(200, "x", schema)))
     )
@@ -163,8 +162,7 @@ test_that("named schemas nested in composition keywords are hoisted", {
 test_that("two different schemas sharing a name is an error", {
   mk <- function(path, schema) {
     list(
-      route = list(basepath = ""),
-      path = path,
+      route = list(full_path = path),
       method = "GET",
       docs = openapi_docs(
         responses = list(openapi_response(200, "ok", schema))
@@ -190,8 +188,7 @@ test_that("two different schemas sharing a name is an error", {
 test_that("references to undefined schemas are an error", {
   routes <- list(
     list(
-      route = list(basepath = ""),
-      path = "/x",
+      route = list(full_path = "/x"),
       method = "GET",
       docs = openapi_docs(
         responses = list(
@@ -207,8 +204,7 @@ test_that("references to undefined schemas are an error", {
 test_that("an undefined schema inside `not` is caught at build", {
   routes <- list(
     list(
-      route = list(basepath = ""),
-      path = "/x",
+      route = list(full_path = "/x"),
       method = "POST",
       docs = openapi_docs(
         request_body = openapi_request_body(
@@ -237,8 +233,7 @@ test_that("a recursive schema can be expressed with a bare reference", {
 
   routes <- list(
     list(
-      route = list(basepath = ""),
-      path = "/x",
+      route = list(full_path = "/x"),
       method = "GET",
       docs = openapi_docs(responses = list(openapi_response(200, "ok", task)))
     )
@@ -254,8 +249,7 @@ test_that("a recursive schema can be expressed with a bare reference", {
 test_that("document level fields render", {
   routes <- list(
     list(
-      route = list(basepath = ""),
-      path = "/x",
+      route = list(full_path = "/x"),
       method = "GET",
       docs = openapi_docs(
         security = "bearerAuth",
@@ -356,8 +350,7 @@ test_that("a security shape that is not a requirement is an error", {
 test_that("a security requirement must name declared schemes", {
   routes <- list(
     list(
-      route = list(basepath = ""),
-      path = "/x",
+      route = list(full_path = "/x"),
       method = "GET",
       docs = openapi_docs(security = list(oauth = "read"))
     )
@@ -467,8 +460,7 @@ test_that("build_openapi expands all() across verbs", {
 
 test_that("operation ids are suffixed per verb and must be unique", {
   route <- list(
-    route = list(basepath = ""),
-    path = "/thing",
+    route = list(full_path = "/thing"),
     method = c("GET", "POST"),
     docs = openapi_docs(
       operation_id = "thing",
@@ -486,7 +478,7 @@ test_that("operation ids are suffixed per verb and must be unique", {
   expect_equal(doc$paths[["/thing"]]$get$operationId, "thing")
 
   other <- route
-  other$path <- "/other"
+  other$route$full_path <- "/other"
   expect_error(build_openapi(list(route, other)), "thing")
 })
 
@@ -510,6 +502,50 @@ test_that("swagger_ui_html references local assets, not a CDN", {
   html <- swagger_ui_html("openapi.json", assets_url = "../assets/")
   expect_true(grepl('"../assets/swagger-ui.css"', html, fixed = TRUE))
   expect_true(grepl('"../assets/swagger-ui-bundle.js"', html, fixed = TRUE))
+})
+
+test_that("documented paths are the paths the app answers", {
+  app <- Ambiorix$new()
+  handler <- function(req, res) res$send("ok")
+  docs <- openapi_docs(summary = "x")
+
+  users <- Router$new("/users")
+  users$get("/", handler, docs = docs)
+  app$use(users)
+
+  app$get("/items/:id/", handler, docs = docs)
+
+  api <- Router$new("/api/")
+  api$get("/status", handler, docs = docs)
+  app$use(api)
+
+  root <- Router$new("/")
+  root$get("/health", handler, docs = docs)
+  app$use(root)
+
+  app$get("/", handler, docs = docs)
+
+  doc <- build_openapi(app$get_routes())
+  expect_setequal(
+    names(doc$paths),
+    c("/users", "/items/{id}", "/api/status", "/health", "/")
+  )
+
+  stop_all()
+})
+
+test_that("a route at a docs path is caught however it is spelled", {
+  app <- Ambiorix$new()
+  app$get("/docs/", function(req, res) res$send("my own docs"))
+  app$openapi()
+
+  private <- environment(app$openapi)$private
+  expect_message(
+    private$.register_openapi_routes(),
+    "Swagger UI will not be served"
+  )
+
+  stop_all()
 })
 
 test_that("the docs page and the server are relative to the app", {
@@ -652,8 +688,7 @@ test_that("openapi_named_schemas collects the schemas by name", {
 
   routes <- list(
     list(
-      route = list(basepath = ""),
-      path = "/x",
+      route = list(full_path = "/x"),
       method = "GET",
       docs = openapi_docs(responses = list(openapi_response(200, "ok", task)))
     )

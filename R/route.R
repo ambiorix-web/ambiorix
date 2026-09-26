@@ -6,6 +6,7 @@ Route <- R6::R6Class(
     pattern = NULL,
     params = NULL,
     basepath = NULL,
+    full_path = NULL,
     initialize = function(path) {
       assert_that(not_missing(path))
 
@@ -17,9 +18,15 @@ Route <- R6::R6Class(
       )
     },
     # split the full path, `parent` included, into components and build the
-    # pattern from them: a `:token` matches one segment
+    # pattern from them: a `:token` matches one segment. `full_path` is that
+    # path as it is matched, for everything that shows or compares it
     compile = function(parent = "") {
       path <- paste0(parent, self$path)
+      self$full_path <- normalise_path(path)
+
+      if (!nzchar(self$full_path)) {
+        self$full_path <- "/"
+      }
 
       components <- strsplit(
         x = path,
@@ -56,7 +63,7 @@ Route <- R6::R6Class(
       self$params <- pattern[dynamic]
 
       if (!is.null(.globals$pathToPattern)) {
-        self$pattern <- .globals$pathToPattern(path)
+        self$pattern <- .globals$pathToPattern(self$full_path)
         return(invisible(self))
       }
 

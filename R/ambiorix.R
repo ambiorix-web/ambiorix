@@ -746,15 +746,18 @@ Ambiorix <- R6::R6Class(
       assets_path <- private$.openapi_assets_path
       info <- private$.openapi_info
 
+      # compared as requests are matched: `/docs/` is `/docs`
       existing_paths <- vapply(
         X = super$get_routes(),
-        FUN = function(route) {
-          paste0(route$route$basepath, route$path)
-        },
+        FUN = function(route) route$route$full_path,
         FUN.VALUE = character(1)
       )
+      taken <- normalise_path(
+        paste0(private$.basepath, c(spec_path, ui_path))
+      ) %in%
+        existing_paths
 
-      if (spec_path %in% existing_paths) {
+      if (taken[[1]]) {
         cli::cli_alert_warning(
           paste(
             "Route {.val {spec_path}} is already registered:",
@@ -770,7 +773,7 @@ Ambiorix <- R6::R6Class(
         })
       }
 
-      if (ui_path %in% existing_paths) {
+      if (taken[[2]]) {
         cli::cli_alert_warning(
           paste(
             "Route {.val {ui_path}} is already registered:",

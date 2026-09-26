@@ -76,6 +76,46 @@ named_list <- function() {
   out
 }
 
+#' Normalise a Path the Way Requests Are Matched
+#'
+#' A route's pattern is built from its non-empty segments, so a doubled `/`
+#' and a trailing `/` make no difference to what it answers. Every path
+#' compared with a route, or shown for one, goes through here so it reads the
+#' same: one leading `/`, no empty segments, no trailing `/`.
+#'
+#' The root is `""`, not `"/"`, so that a basepath is a prefix of the paths
+#' beneath it with `paste0(basepath, "/")`.
+#'
+#' @param path String /// Required. \cr
+#'             The path, possibly joined from a basepath and a route path.
+#'
+#' @return A single character string.
+#'
+#' @examples
+#' normalise_path("/users/")
+#'
+#' normalise_path("/api//status")
+#'
+#' # a router's basepath need not start with `/`
+#' normalise_path("api")
+#'
+#' # the root
+#' normalise_path("/")
+#'
+#' @noRd
+#' @keywords internal
+normalise_path <- function(path) {
+  sub(
+    pattern = "/$",
+    replacement = "",
+    x = gsub(
+      pattern = "/+",
+      replacement = "/",
+      x = paste0("/", path)
+    )
+  )
+}
+
 #' Checks if Package is Installed
 #'
 #' Checks if a package is installed, stops if not.

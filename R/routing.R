@@ -423,7 +423,9 @@ Routing <- R6::R6Class(
           # a copy per mount: a router mounted twice compiles to two paths
           route$route <- route$route$clone()
           route$route$compile(parent)
-          route$route$basepath <- paste0(parent, private$.basepath)
+          route$route$basepath <- normalise_path(
+            paste0(parent, private$.basepath)
+          )
           route
         }
       )
@@ -471,7 +473,9 @@ Routing <- R6::R6Class(
         lapply(
           private$.params,
           function(fn) {
-            attr(fn, "basepath") <- paste0(parent, private$.basepath)
+            attr(fn, "basepath") <- normalise_path(
+              paste0(parent, private$.basepath)
+            )
             return(fn)
           }
         )
@@ -524,7 +528,9 @@ Routing <- R6::R6Class(
         lapply(
           private$.middleware,
           function(fn) {
-            attr(fn, "basepath") <- paste0(parent, private$.basepath)
+            attr(fn, "basepath") <- normalise_path(
+              paste0(parent, private$.basepath)
+            )
             return(fn)
           }
         )
@@ -608,7 +614,7 @@ Routing <- R6::R6Class(
         request = request,
         docs = route$docs,
         schemas = private$.openapi_schemas %||% list(),
-        path = paste0(route$route$basepath, route$path)
+        path = route$route$full_path
       )
 
       if (!length(details)) {

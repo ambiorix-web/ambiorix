@@ -134,7 +134,44 @@ test_that("a custom path converter receives the full path", {
 
   expect_equal(seen, "/orgs/:org/info")
 
+  # the path as it is matched: no doubled or trailing `/`
+  seen <- NULL
+  users <- Router$new("/users/")
+  users$get("/", function(req, res) res$send("ok"))
+  app$use(users)
+  app$get_routes()
+
+  expect_true("/users" %in% seen)
+
   .globals$pathToPattern <- NULL
+  stop_all()
+})
+
+test_that("a basepath without a leading `/` is scoped like any other", {
+  app <- Ambiorix$new()
+  app$use(function(req, res) {
+    req$trail <- c(req$trail, "app")
+  })
+  app$param("id", function(req, res, value, name) {
+    req$trail <- c(req$trail, paste0("param:", value))
+  })
+
+  api <- Router$new("api")
+  api$use(function(req, res) {
+    req$trail <- c(req$trail, "api")
+  })
+  api$get("/secret/:id", function(req, res) {
+    res$send(paste(req$trail, collapse = " > "))
+  })
+  app$use(api)
+
+  private <- app$.__enclos_env__$private
+  private$.compile()
+
+  # the app's middleware and param middleware run for the router's routes
+  resp <- private$.call(mockRequest(path = "/api/secret/1")$body)
+  expect_equal(resp$body, "app > api > param:1")
+
   stop_all()
 })
 

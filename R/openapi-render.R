@@ -814,7 +814,7 @@ build_openapi <- function(routes, doc = list()) {
       next
     }
 
-    full_path <- paste0(route$route$basepath, route$path)
+    full_path <- route$route$full_path
     oapi_path <- openapi_path(full_path)
     operation <- as_openapi(route$docs, ctx, path = full_path)
     schemes <- c(schemes, unlist(lapply(X = operation$security, FUN = names)))
