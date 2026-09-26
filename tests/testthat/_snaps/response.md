@@ -54,7 +54,7 @@
     Message
       * HEADER Content-Length
     Output
-       num 17645
+       num <size>
     Message
       * HEADER xxx
     Output
