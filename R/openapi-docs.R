@@ -461,10 +461,17 @@ print.ambiorix_openapi_response <- function(x, ...) {
 #'                   The route still works.
 #'
 #' @param security Character vector or List /// Optional. \cr
-#'                 Names of the security schemes that apply to this route; see
-#'                 the `security_schemes` argument of `app$openapi()`. A `list`
-#'                 is passed through as-is, for schemes that take scopes, e.g.
-#'                 `list(list(oauth = c("read:users")))`. \cr
+#'                 The security schemes this route accepts, declared with the
+#'                 `security_schemes` argument of `app$openapi()`. A
+#'                 character vector names alternatives, any one of which
+#'                 grants access: `c("bearerAuth", "apiKey")`. A named list
+#'                 is a single requirement mapping each scheme to its scopes,
+#'                 all needed together: `list(oauth = c("read", "write"))`.
+#'                 An unnamed list holds alternatives, each a character
+#'                 vector of schemes needed together or a named list of
+#'                 scopes: `list(c("apiKey", "appId"), list(oauth = "read"))`;
+#'                 an empty alternative, `character()`, makes authentication
+#'                 optional. \cr
 #'                 Defaults to `NULL`, which inherits the app-wide `security`.
 #'                 Pass `list()` to declare that this route needs no
 #'                 authentication.
@@ -567,7 +574,7 @@ openapi_docs <- function(
   }
 
   if (!is.null(security)) {
-    assert_that(is.character(security) || is.list(security))
+    security <- openapi_security_requirements(security)
   }
 
   extra <- list(...)
@@ -708,4 +715,113 @@ assert_openapi_elements <- function(x, predicate, constructor) {
   }
 
   invisible(x)
+}
+
+#' Read a `security` Argument Into Security Requirements
+#'
+#' The document's `security` is an array of
+#' [security requirements](https://spec.openapis.org/oas/v3.1.0#security-requirement-object),
+#' any one of which grants access, and each requirement maps the schemes it
+#' needs together to their scopes. The argument is read into that shape once,
+#' where it is passed, so a shape that is not a requirement is an error
+#' there rather than an invalid document:
+#'
+#' - A character vector names alternatives, a scheme with no scopes each.
+#' - A named list is a single requirement: its names are the schemes, all
+#'   needed together, and its values their scopes, a character vector or
+#'   `NULL`.
+#' - An unnamed list holds alternatives, each a character vector of schemes
+#'   needed together or a named list as above. An empty one, `character()`,
+#'   is the requirement that needs nothing, which makes authentication
+#'   optional.
+#'
+#' `list()` and `character()` have no alternatives at all: no authentication.
+#'
+#' Scopes are wrapped with [as.list()]: the serialiser unboxes an atomic
+#' vector of one, and a single scope must still be emitted as an array.
+#'
+#' @param security Character vector or List /// Required. \cr
+#'                 The argument, as passed to [openapi_docs()] or
+#'                 `app$openapi()`.
+#'
+#' @return An unnamed `list` of named `list`s: the requirements, ready to be
+#'         serialised.
+#'
+#' @examples
+#' # either scheme grants access
+#' openapi_security_requirements(c("bearerAuth", "apiKey"))
+#'
+#' # one requirement, with scopes: one scope is still an array
+#' openapi_security_requirements(list(oauth = "read:users"))
+#'
+#' # both schemes together, or oauth alone
+#' openapi_security_requirements(
+#'   list(c("apiKey", "appId"), list(oauth = c("read", "write")))
+#' )
+#'
+#' # authentication is optional
+#' openapi_security_requirements(list(character(), "bearerAuth"))
+#'
+#' # no authentication
+#' openapi_security_requirements(list())
+#'
+#' try(openapi_security_requirements(list(oauth = 1L)))
+#'
+#' @keywords internal
+#' @noRd
+openapi_security_requirements <- function(security) {
+  if (is.character(security)) {
+    security <- as.list(security)
+  } else if (is.list(security) && !is.null(names(security))) {
+    security <- list(security)
+  }
+
+  if (!is.list(security)) {
+    stop("`security` must be a character vector or a list", call. = FALSE)
+  }
+
+  lapply(
+    X = seq_along(security),
+    FUN = function(i) {
+      requirement <- security[[i]]
+
+      if (is.character(requirement)) {
+        requirement <- structure(
+          rep(list(NULL), length(requirement)),
+          names = requirement
+        )
+      }
+
+      if (is.list(requirement) && !length(requirement)) {
+        return(named_list())
+      }
+
+      schemes <- names(requirement)
+      valid <- is.list(requirement) &&
+        !is.null(schemes) &&
+        !anyNA(schemes) &&
+        all(nzchar(schemes)) &&
+        all(
+          vapply(
+            X = requirement,
+            FUN = function(scopes) {
+              is.null(scopes) || (is.character(scopes) && !anyNA(scopes))
+            },
+            FUN.VALUE = logical(1)
+          )
+        )
+
+      if (!valid) {
+        stop(
+          "`security` requirement ",
+          i,
+          " must name its schemes, e.g. `\"bearerAuth\"`, or map them to ",
+          "their scopes, e.g. `list(oauth = \"read\")`",
+          call. = FALSE
+        )
+      }
+
+      lapply(X = requirement, FUN = as.list)
+    }
+  )
 }

@@ -295,25 +295,84 @@ test_that("document level fields render", {
   expect_true(op$deprecated)
 })
 
-test_that("a single scope is serialised as an array", {
+test_that("security is read into requirements", {
+  serialise <- function(security) {
+    default_serialiser(openapi_security_requirements(security))
+  }
+
+  # a character vector names alternatives
+  expect_equal(serialise("bearerAuth"), '[{"bearerAuth":[]}]')
   expect_equal(
-    default_serialiser(
-      openapi_render_security(list(list(oauth = c("read:users"))))
-    ),
-    '[{"oauth":["read:users"]}]'
+    serialise(c("bearerAuth", "apiKey")),
+    '[{"bearerAuth":[]},{"apiKey":[]}]'
   )
 
+  # a named list is one requirement; a single scope is still an array
   expect_equal(
-    default_serialiser(
-      openapi_render_security(
-        list(list(oauth = c("read:x", "write:x")), list(apiKey = list()))
-      )
-    ),
-    '[{"oauth":["read:x","write:x"]},{"apiKey":[]}]'
+    serialise(list(oauth = "read:users")),
+    '[{"oauth":["read:users"]}]'
+  )
+  expect_equal(
+    serialise(list(oauth = c("read", "write"), apiKey = NULL)),
+    '[{"oauth":["read","write"],"apiKey":[]}]'
+  )
+
+  # an unnamed list holds alternatives: schemes needed together, or scopes
+  expect_equal(
+    serialise(list(c("apiKey", "appId"), list(oauth = "read"))),
+    '[{"apiKey":[],"appId":[]},{"oauth":["read"]}]'
+  )
+
+  # an empty alternative makes authentication optional
+  expect_equal(
+    serialise(list(character(), "bearerAuth")),
+    '[{},{"bearerAuth":[]}]'
   )
 
   # no authentication
-  expect_equal(default_serialiser(openapi_render_security(list())), "[]")
+  expect_equal(serialise(list()), "[]")
+  expect_equal(serialise(character()), "[]")
+})
+
+test_that("a security shape that is not a requirement is an error", {
+  expect_error(openapi_docs(security = 1L), "character vector or a list")
+  expect_error(openapi_docs(security = list(oauth = 1L)), "requirement 1")
+  expect_error(
+    openapi_docs(security = list("bearerAuth", list(oauth = NA_character_))),
+    "requirement 2"
+  )
+  expect_error(openapi_docs(security = list("a", oauth = "read")), "requirement 1")
+  expect_error(openapi_docs(security = ""), "requirement 1")
+  expect_error(openapi_docs(security = NA_character_), "requirement 1")
+  expect_error(Ambiorix$new()$openapi(security = list(oauth = 1L)), "requirement 1")
+})
+
+test_that("a security requirement must name declared schemes", {
+  routes <- list(
+    list(
+      route = list(basepath = ""),
+      path = "/x",
+      method = "GET",
+      docs = openapi_docs(security = list(oauth = "read"))
+    )
+  )
+
+  expect_error(
+    build_openapi(
+      routes,
+      list(
+        security = openapi_security_requirements(c("bearerAuth", "apiKey")),
+        security_schemes = list(
+          bearerAuth = list(type = "http", scheme = "bearer")
+        )
+      )
+    ),
+    "undeclared scheme\\(s\\): `apiKey`, `oauth`"
+  )
+
+  # no authentication names nothing
+  routes[[1]]$docs <- openapi_docs(security = list())
+  expect_equal(build_openapi(routes)$paths[["/x"]]$get$security, list())
 })
 
 test_that("user-declared path params override the auto-generated defaults", {

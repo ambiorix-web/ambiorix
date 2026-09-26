@@ -516,9 +516,10 @@ the API supports, named so that routes can refer to them, e.g.
 Defaults to \code{NULL}. Declaring a scheme only documents it: ambiorix does
 not authenticate anything.}
       \item{\code{security}}{Character vector or List /// Optional. \cr
-Names of the security schemes that apply to every route; see the
-\code{security} argument of \code{\link[=openapi_docs]{openapi_docs()}}, which overrides this per
-route. \cr
+The security schemes every route accepts, in the shapes the
+\code{security} argument of \code{\link[=openapi_docs]{openapi_docs()}} takes, which overrides this
+per route. Every scheme named must be declared in
+\code{security_schemes}. \cr
 Defaults to \code{NULL}, no authentication.}
       \item{\code{validate}}{Logical /// Optional. \cr
 Whether to validate incoming requests against the documented schemas.

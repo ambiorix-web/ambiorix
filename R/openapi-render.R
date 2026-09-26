@@ -505,7 +505,7 @@ as_openapi.ambiorix_openapi_docs <- function(x, ctx, path = "", ...) {
   }
 
   if (!is.null(x$security)) {
-    operation$security <- openapi_render_security(x$security)
+    operation$security <- x$security
   }
 
   parameters <- openapi_render_parameters(x$parameters, ctx, path)
@@ -673,57 +673,6 @@ openapi_path_params <- function(path) {
   sub("^:", "", matches)
 }
 
-#' Render a Security Requirement
-#'
-#' A character vector names the schemes that must *all* be satisfied; a list
-#' is for schemes that take scopes. Its scopes are wrapped with [as.list()]:
-#' the serialiser unboxes an atomic vector of one, and a single scope must
-#' still be emitted as an array.
-#'
-#' Each scheme is rendered with an empty scope array, which is what the
-#' specification wants for schemes that do not use scopes. Pass a `list` to
-#' supply scopes yourself.
-#'
-#' @param security Character vector or List /// Required. \cr
-#'                 Names of the security schemes that apply, or a `list`
-#'                 supplying scopes.
-#'
-#' @return A `list`: an OpenAPI
-#'         [security requirement](https://spec.openapis.org/oas/v3.1.0#security-requirement-object)
-#'         array. Empty when `security` is `list()`, which declares that no
-#'         authentication is needed.
-#'
-#' @examples
-#' openapi_render_security("bearerAuth")
-#'
-#' # several schemes that must all be satisfied
-#' openapi_render_security(c("bearerAuth", "apiKey"))
-#'
-#' # a list, for schemes that take scopes: one scope is still an array
-#' openapi_render_security(list(list(oauth = c("read:users"))))
-#'
-#' @keywords internal
-#' @noRd
-openapi_render_security <- function(security) {
-  if (is.list(security)) {
-    return(
-      lapply(
-        X = security,
-        FUN = function(requirement) lapply(X = requirement, FUN = as.list)
-      )
-    )
-  }
-
-  requirement <- list()
-
-  for (scheme in security) {
-    # an empty scope array
-    requirement[[scheme]] <- list()
-  }
-
-  list(requirement)
-}
-
 #' Render the Document's Servers
 #'
 #' A character vector is the shorthand: each URL becomes a server object with
@@ -858,6 +807,9 @@ build_openapi <- function(routes, doc = list()) {
   # named so an empty `paths` serialises to `{}`, not `[]`
   paths <- named_list()
   operation_ids <- character(0)
+  # every scheme a security requirement names must be declared. `[[`, since
+  # `$` would partial-match `security_schemes`
+  schemes <- unlist(lapply(X = doc[["security"]], FUN = names))
 
   for (route in routes) {
     if (is.null(route$docs) || !is_openapi_docs(route$docs)) {
@@ -867,6 +819,7 @@ build_openapi <- function(routes, doc = list()) {
     full_path <- paste0(route$route$basepath, route$path)
     oapi_path <- openapi_path(full_path)
     operation <- as_openapi(route$docs, ctx, path = full_path)
+    schemes <- c(schemes, unlist(lapply(X = operation$security, FUN = names)))
 
     if (is.null(paths[[oapi_path]])) {
       paths[[oapi_path]] <- list()
@@ -905,6 +858,18 @@ build_openapi <- function(routes, doc = list()) {
     )
   }
 
+  undeclared <- setdiff(schemes, names(doc$security_schemes))
+
+  if (length(undeclared)) {
+    ctx$errors <- c(
+      ctx$errors,
+      sprintf(
+        "Security requirement(s) name undeclared scheme(s): %s. Declare them with `app$openapi(security_schemes =)`.",
+        paste0("`", undeclared, "`", collapse = ", ")
+      )
+    )
+  }
+
   dangling <- setdiff(ctx$refs, names(ctx$schemas))
 
   if (length(dangling)) {
@@ -932,8 +897,8 @@ build_openapi <- function(routes, doc = list()) {
     out$tags <- openapi_render_tags(doc$tags)
   }
 
-  if (!is.null(doc$security)) {
-    out$security <- openapi_render_security(doc$security)
+  if (!is.null(doc[["security"]])) {
+    out$security <- doc[["security"]]
   }
 
   out$paths <- paths

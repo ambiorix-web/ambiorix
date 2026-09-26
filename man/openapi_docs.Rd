@@ -68,10 +68,17 @@ or \code{TRUE}, which strikes the operation through in the UI.
 The route still works.}
 
 \item{security}{Character vector or List /// Optional. \cr
-Names of the security schemes that apply to this route; see
-the \code{security_schemes} argument of \code{app$openapi()}. A \code{list}
-is passed through as-is, for schemes that take scopes, e.g.
-\code{list(list(oauth = c("read:users")))}. \cr
+The security schemes this route accepts, declared with the
+\code{security_schemes} argument of \code{app$openapi()}. A
+character vector names alternatives, any one of which
+grants access: \code{c("bearerAuth", "apiKey")}. A named list
+is a single requirement mapping each scheme to its scopes,
+all needed together: \code{list(oauth = c("read", "write"))}.
+An unnamed list holds alternatives, each a character
+vector of schemes needed together or a named list of
+scopes: \code{list(c("apiKey", "appId"), list(oauth = "read"))};
+an empty alternative, \code{character()}, makes authentication
+optional. \cr
 Defaults to \code{NULL}, which inherits the app-wide \code{security}.
 Pass \code{list()} to declare that this route needs no
 authentication.}

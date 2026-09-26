@@ -380,9 +380,10 @@ Ambiorix <- R6::R6Class(
     #'   not authenticate anything.
     #'
     #' @param security Character vector or List /// Optional. \cr
-    #'   Names of the security schemes that apply to every route; see the
-    #'   `security` argument of [openapi_docs()], which overrides this per
-    #'   route. \cr
+    #'   The security schemes every route accepts, in the shapes the
+    #'   `security` argument of [openapi_docs()] takes, which overrides this
+    #'   per route. Every scheme named must be declared in
+    #'   `security_schemes`. \cr
     #'   Defaults to `NULL`, no authentication.
     #'
     #' @param validate Logical /// Optional. \cr
@@ -499,10 +500,14 @@ Ambiorix <- R6::R6Class(
       assert_that(is.list(info))
       assert_that(is.null(servers) || is.character(servers) || is.list(servers))
       assert_that(is.null(tags) || is.character(tags) || is.list(tags))
-      assert_that(is.null(security_schemes) || is.list(security_schemes))
       assert_that(
-        is.null(security) || is.character(security) || is.list(security)
+        is.null(security_schemes) ||
+          (is.list(security_schemes) && has_names(security_schemes))
       )
+
+      if (!is.null(security)) {
+        security <- openapi_security_requirements(security)
+      }
       assert_that(is_flag(validate))
       assert_that(
         is.null(on_invalid) ||
