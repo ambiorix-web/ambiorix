@@ -2136,6 +2136,35 @@ test_that("`on_invalid` answers for a rejected request", {
   stop_all()
 })
 
+test_that("`on_invalid` that returns no response falls back to the default", {
+  app <- Ambiorix$new()
+  private <- environment(app$openapi)$private
+
+  seen <- NULL
+  app$openapi(
+    on_invalid = function(req, res, details) {
+      seen <<- details
+      NULL
+    }
+  )
+
+  route <- list(
+    route = Route$new("/tasks")$compile(),
+    path = "/tasks",
+    docs = docs_with_body()
+  )
+  req <- mock_request(body = '{"other": 1}')
+  res <- Response$new()
+
+  invalid <- private$.validate_request(req, res, route)
+
+  expect_true(is_response(invalid))
+  expect_equal(invalid$status, 400L)
+  expect_equal(paths(seen), "title")
+
+  stop_all()
+})
+
 test_that("an unparseable body is answered like any other invalid request", {
   app <- Ambiorix$new()
   private <- environment(app$openapi)$private

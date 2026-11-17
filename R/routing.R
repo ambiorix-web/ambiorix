@@ -631,7 +631,9 @@ Routing <- R6::R6Class(
 
       on_invalid <- private$.openapi_on_invalid %||% openapi_invalid_response
 
-      on_invalid(request, res, details)
+      # an invalid request never reaches the handler
+      on_invalid(request, res, details) %response%
+        openapi_invalid_response(request, res, details)
     },
     .register_http_methods = function() {
       http_methods <- list(
