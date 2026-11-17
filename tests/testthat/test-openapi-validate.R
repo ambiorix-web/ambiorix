@@ -2245,6 +2245,27 @@ test_that("a body sent as another media type is a body problem", {
   expect_equal(messages(problems), "must be sent as multipart/form-data")
 })
 
+test_that("a file part stands for a binary string in a multipart body only", {
+  schema <- openapi_schema_object(
+    properties = list(
+      data = openapi_schema_string(format = "byte")
+    )
+  )
+  part <- list(data = list(filename = "a.txt", value = charToRaw("a")))
+
+  expect_length(
+    openapi_validate(part, schema, content_type = "multipart/form-data"),
+    0L
+  )
+  expect_equal(messages(openapi_validate(part, schema)), "must be a string")
+
+  docs <- openapi_docs(request_body = openapi_request_body(schema = schema))
+  req <- mock_request(body = '{"data": {"filename": 1, "x": [1, 2]}}')
+  problems <- openapi_validate_request(req, docs)
+  expect_equal(paths(problems), "data")
+  expect_equal(messages(problems), "must be a string")
+})
+
 test_that("an unparseable body is answered like any other invalid request", {
   app <- Ambiorix$new()
   private <- environment(app$openapi)$private

@@ -252,7 +252,12 @@ openapi_validate_request <- function(
     details,
     openapi_detail_list(
       "body",
-      openapi_validate(payload, body$schema, schemas)
+      openapi_validate(
+        payload,
+        body$schema,
+        schemas,
+        content_type = body$content_type
+      )
     )
   )
 }
@@ -656,8 +661,9 @@ openapi_detail_list <- function(location, problems) {
 #' A wrong type short-circuits: every keyword check assumes the type is right,
 #' so reporting *must be an integer* alongside *must be at least 1 character
 #' long* would only be noise. Schemas that are empty, or that could not be
-#' resolved, accept anything. A multipart file part (`filename` in its names)
-#' documented with `format: binary` or `byte` is accepted as-is.
+#' resolved, accept anything. In a multipart body, a file part (`filename`
+#' in its names) documented with `format: binary` or `byte` is accepted
+#' as-is.
 #'
 #' The composition keywords come last, each branch checked by coming back
 #' here with the same `path`. `allOf` reports every branch's problems as they
@@ -681,6 +687,11 @@ openapi_detail_list <- function(location, problems) {
 #'             Path to `value`, used in the messages. Empty at the top of a
 #'             body, and grown by `openapi_child_path()` on the way down. \cr
 #'             Defaults to `""`.
+#'
+#' @param content_type String /// Optional. \cr
+#'                     Media type of the body `value` is from. A file part \cr
+#'                     stands for a string in `"multipart/form-data"` only. \cr
+#'                     Defaults to `NULL`: not from a body.
 #'
 #' @return A `list` of `list(path, message)`, empty when the value is valid.
 #'
@@ -712,7 +723,13 @@ openapi_detail_list <- function(location, problems) {
 #'
 #' @keywords internal
 #' @noRd
-openapi_validate <- function(value, schema, schemas = list(), path = "") {
+openapi_validate <- function(
+  value,
+  schema,
+  schemas = list(),
+  path = "",
+  content_type = NULL
+) {
   schema <- openapi_resolve_schema(schema, schemas)
 
   if (is.null(schema) || !length(unclass(schema))) {
@@ -723,7 +740,8 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
   # matches, and `pattern` is a prefix of `patternProperties`
 
   # multipart file part documented as string + format binary/byte
-  is_file_part <- is.list(value) &&
+  is_file_part <- identical(content_type, "multipart/form-data") &&
+    is.list(value) &&
     "filename" %in% names(value) &&
     !is.null(schema[["format"]]) &&
     schema[["format"]] %in% c("binary", "byte")
@@ -808,19 +826,22 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
   if (openapi_is_type(value, "array")) {
     problems <- c(
       problems,
-      openapi_check_array(value, schema, schemas, path)
+      openapi_check_array(value, schema, schemas, path, content_type)
     )
   }
 
   if (openapi_is_type(value, "object")) {
     problems <- c(
       problems,
-      openapi_check_object(value, schema, schemas, path)
+      openapi_check_object(value, schema, schemas, path, content_type)
     )
   }
 
   for (branch in schema[["allOf"]]) {
-    problems <- c(problems, openapi_validate(value, branch, schemas, path))
+    problems <- c(
+      problems,
+      openapi_validate(value, branch, schemas, path, content_type)
+    )
   }
 
   for (keyword in c("anyOf", "oneOf")) {
@@ -832,7 +853,9 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
 
     results <- lapply(
       X = branches,
-      FUN = function(branch) openapi_validate(value, branch, schemas, path)
+      FUN = function(branch) {
+        openapi_validate(value, branch, schemas, path, content_type)
+      }
     )
     matched <- sum(lengths(results) == 0L)
 
@@ -889,7 +912,9 @@ openapi_validate <- function(value, schema, schemas = list(), path = "") {
 
   if (
     !is.null(schema[["not"]]) &&
-      !length(openapi_validate(value, schema[["not"]], schemas, path))
+      !length(
+        openapi_validate(value, schema[["not"]], schemas, path, content_type)
+      )
   ) {
     fail("must not match the excluded schema")
   }
@@ -1071,6 +1096,10 @@ openapi_check_string <- function(value, schema, path) {
 #' @param path String /// Required. \cr
 #'             Path to `value`, used in the messages.
 #'
+#' @param content_type String /// Optional. \cr
+#'                     Media type of the body `value` is from. \cr
+#'                     Defaults to `NULL`: not from a body.
+#'
 #' @return A `list` of `list(path, message)`, empty when `value` is valid.
 #'
 #' @examples
@@ -1093,7 +1122,13 @@ openapi_check_string <- function(value, schema, path) {
 #'
 #' @keywords internal
 #' @noRd
-openapi_check_array <- function(value, schema, schemas, path) {
+openapi_check_array <- function(
+  value,
+  schema,
+  schemas,
+  path,
+  content_type = NULL
+) {
   problems <- list()
 
   if (!is.null(schema[["minItems"]]) && length(value) < schema[["minItems"]]) {
@@ -1144,7 +1179,8 @@ openapi_check_array <- function(value, schema, schemas, path) {
         value[[i]],
         schema[["items"]],
         schemas,
-        sprintf("%s[%s]", path, i)
+        sprintf("%s[%s]", path, i),
+        content_type
       )
     )
   }
@@ -1176,6 +1212,10 @@ openapi_check_array <- function(value, schema, schemas, path) {
 #'             Path to `value`, used in the messages. Property names are
 #'             appended with a `.`, e.g. `"user.name"`.
 #'
+#' @param content_type String /// Optional. \cr
+#'                     Media type of the body `value` is from. \cr
+#'                     Defaults to `NULL`: not from a body.
+#'
 #' @return A `list` of `list(path, message)`, empty when `value` is valid.
 #'
 #' @examples
@@ -1206,7 +1246,13 @@ openapi_check_array <- function(value, schema, schemas, path) {
 #'
 #' @keywords internal
 #' @noRd
-openapi_check_object <- function(value, schema, schemas, path) {
+openapi_check_object <- function(
+  value,
+  schema,
+  schemas,
+  path,
+  content_type = NULL
+) {
   problems <- list()
 
   # a property sent as `null` is present: its key is, holding `NULL`
@@ -1250,7 +1296,8 @@ openapi_check_object <- function(value, schema, schemas, path) {
         value[[name]],
         schema[["properties"]][[name]],
         schemas,
-        openapi_child_path(path, name)
+        openapi_child_path(path, name),
+        content_type
       )
     )
   }
