@@ -404,7 +404,10 @@ Ambiorix <- R6::R6Class(
     #' @param on_invalid Function /// Optional. \cr
     #'   A function that accepts the request, the response, and `details`, a
     #'   `list` of the problems found, each a
-    #'   `list(location, path, message)`. It must return the response to send.
+    #'   `list(location, path, message)`. It returns the response to send;
+    #'   when it returns anything else, e.g. a handler that only logs, the
+    #'   default response below is sent. Either way the request never
+    #'   reaches the route's handler.
     #'   \cr
     #'   Defaults to `NULL`: a `400` whose body is
     #'   `list(error = "Invalid request", details = details)`. A handler of

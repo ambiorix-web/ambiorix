@@ -532,7 +532,10 @@ Individual routes override this with the \code{validate} argument of
       \item{\code{on_invalid}}{Function /// Optional. \cr
 A function that accepts the request, the response, and \code{details}, a
 \code{list} of the problems found, each a
-\code{list(location, path, message)}. It must return the response to send.
+\code{list(location, path, message)}. It returns the response to send;
+when it returns anything else, e.g. a handler that only logs, the
+default response below is sent. Either way the request never
+reaches the route's handler.
 \cr
 Defaults to \code{NULL}: a \code{400} whose body is
 \code{list(error = "Invalid request", details = details)}. A handler of
