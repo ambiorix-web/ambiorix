@@ -2,13 +2,13 @@ mock_request <- function(
   query = list(),
   params = list(),
   body = NULL,
-  content_type = NULL
+  content_type = "application/json"
 ) {
   request <- mockRequest()
   request$query <- query
   request$params <- params
   request$rook.input <- list(
-    read = function() {
+    read = function(l = -1L) {
       if (is.null(body)) {
         return(raw())
       }
@@ -366,7 +366,10 @@ test_that("a form field name that is not valid UTF-8 is a body problem", {
     )
   )
 
-  req <- mock_request(body = "name=Ada&%ff%fe=1")
+  req <- mock_request(
+    body = "name=Ada&%ff%fe=1",
+    content_type = "application/x-www-form-urlencoded"
+  )
   problems <- openapi_validate_request(request = req, docs = docs)
 
   expect_length(problems, 1L)
@@ -1616,19 +1619,28 @@ test_that("form-urlencoded bodies are validated and typed", {
     )
   )
 
-  req <- mock_request(body = "name=Ada&age=36&active=true")
+  req <- mock_request(
+    body = "name=Ada&age=36&active=true",
+    content_type = "application/x-www-form-urlencoded"
+  )
   expect_length(openapi_validate_request(request = req, docs = docs), 0L)
   expect_identical(
     req$payload,
     list(name = "Ada", age = 36L, active = TRUE)
   )
 
-  req <- mock_request(body = "name=Ada&age=nope")
+  req <- mock_request(
+    body = "name=Ada&age=nope",
+    content_type = "application/x-www-form-urlencoded"
+  )
   problems <- openapi_validate_request(request = req, docs = docs)
   expect_equal(paths(problems), "age")
   expect_match(messages(problems), "must be an integer")
 
-  req <- mock_request(body = "age=10")
+  req <- mock_request(
+    body = "age=10",
+    content_type = "application/x-www-form-urlencoded"
+  )
   problems <- openapi_validate_request(request = req, docs = docs)
   expect_equal(paths(problems), "name")
   expect_equal(messages(problems), "is required")
@@ -1639,7 +1651,10 @@ test_that("form-urlencoded bodies are validated and typed", {
   expect_length(req$payload, 0L)
 
   # empty field values are treated as absent
-  req <- mock_request(body = "name=&age=10")
+  req <- mock_request(
+    body = "name=&age=10",
+    content_type = "application/x-www-form-urlencoded"
+  )
   problems <- openapi_validate_request(request = req, docs = docs)
   expect_equal(paths(problems), "name")
   expect_equal(messages(problems), "is required")
@@ -1658,19 +1673,31 @@ test_that("repeated form fields documented as an array are collected", {
     )
   )
 
-  req <- mock_request(body = "tags=a&tags=b")
+  req <- mock_request(
+    body = "tags=a&tags=b",
+    content_type = "application/x-www-form-urlencoded"
+  )
   expect_length(openapi_validate_request(request = req, docs = docs), 0L)
   expect_identical(req$payload$tags, c("a", "b"))
 
-  req <- mock_request(body = "tags=a")
+  req <- mock_request(
+    body = "tags=a",
+    content_type = "application/x-www-form-urlencoded"
+  )
   expect_length(openapi_validate_request(request = req, docs = docs), 0L)
   expect_identical(req$payload$tags, I("a"))
 
-  req <- mock_request(body = "ids=1&ids=2")
+  req <- mock_request(
+    body = "ids=1&ids=2",
+    content_type = "application/x-www-form-urlencoded"
+  )
   expect_length(openapi_validate_request(request = req, docs = docs), 0L)
   expect_identical(req$payload$ids, c(1L, 2L))
 
-  req <- mock_request(body = "ids=1&ids=nope")
+  req <- mock_request(
+    body = "ids=1&ids=nope",
+    content_type = "application/x-www-form-urlencoded"
+  )
   problems <- openapi_validate_request(request = req, docs = docs)
   expect_equal(paths(problems), "ids[2]")
   expect_match(messages(problems), "must be an integer")
@@ -1687,7 +1714,10 @@ test_that("repeated form fields documented as an array are collected", {
       content_type = "application/x-www-form-urlencoded"
     )
   )
-  req <- mock_request(body = "name=Ada&tags=&tags=")
+  req <- mock_request(
+    body = "name=Ada&tags=&tags=",
+    content_type = "application/x-www-form-urlencoded"
+  )
   problems <- openapi_validate_request(request = req, docs = docs_required)
   expect_equal(paths(problems), "tags")
   expect_equal(messages(problems), "is required")
@@ -1706,7 +1736,10 @@ test_that("a repeated form field documented as a scalar is a type problem", {
     )
   )
 
-  req <- mock_request(body = "name=Ada&name=Bob")
+  req <- mock_request(
+    body = "name=Ada&name=Bob",
+    content_type = "application/x-www-form-urlencoded"
+  )
   problems <- openapi_validate_request(request = req, docs = docs)
   expect_equal(paths(problems), "name")
   expect_equal(messages(problems), "must be a string")
@@ -1726,7 +1759,10 @@ test_that("undocumented form fields are shaped but not converted", {
     )
   )
 
-  req <- mock_request(body = "name=Ada&extra=1&extra=2")
+  req <- mock_request(
+    body = "name=Ada&extra=1&extra=2",
+    content_type = "application/x-www-form-urlencoded"
+  )
   expect_length(openapi_validate_request(request = req, docs = docs), 0L)
   expect_identical(req$payload$extra, c("1", "2"))
 
@@ -1740,7 +1776,10 @@ test_that("undocumented form fields are shaped but not converted", {
     )
   )
 
-  req <- mock_request(body = "name=Ada&extra=1&extra=2")
+  req <- mock_request(
+    body = "name=Ada&extra=1&extra=2",
+    content_type = "application/x-www-form-urlencoded"
+  )
   problems <- openapi_validate_request(request = req, docs = docs_strict)
   expect_equal(paths(problems), "extra")
   expect_equal(messages(problems), "is not an allowed property")
@@ -1774,7 +1813,10 @@ test_that("a composed form body is typed by its branches' properties", {
     )
   )
 
-  req <- mock_request(body = "name=Ada&age=36&tags=r")
+  req <- mock_request(
+    body = "name=Ada&age=36&tags=r",
+    content_type = "application/x-www-form-urlencoded"
+  )
   problems <- openapi_validate_request(
     request = req,
     docs = docs,
@@ -2163,6 +2205,44 @@ test_that("`on_invalid` that returns no response falls back to the default", {
   expect_equal(paths(seen), "title")
 
   stop_all()
+})
+
+test_that("a body sent as another media type is a body problem", {
+  docs <- docs_with_body()
+
+  req <- mock_request(body = '{"title": "a"}', content_type = "text/plain")
+  problems <- openapi_validate_request(req, docs)
+  expect_equal(messages(problems), "must be sent as application/json")
+  expect_null(req$payload)
+
+  req <- mock_request(body = '{"title": "a"}', content_type = NULL)
+  problems <- openapi_validate_request(req, docs)
+  expect_equal(messages(problems), "must be sent as application/json")
+
+  req <- mock_request(
+    body = '{"title": "a"}',
+    content_type = "Application/JSON; charset=utf-8"
+  )
+  expect_length(openapi_validate_request(req, docs), 0L)
+
+  # an absent body has no media type
+  req <- mock_request(content_type = NULL)
+  problems <- openapi_validate_request(req, docs)
+  expect_equal(messages(problems), "a request body is required")
+
+  multipart <- openapi_docs(
+    request_body = openapi_request_body(
+      schema = openapi_schema_object(
+        properties = list(
+          file = openapi_schema_string(format = "binary")
+        )
+      ),
+      content_type = "multipart/form-data"
+    )
+  )
+  req <- mock_request(body = '{"file": {"filename": "x", "value": "y"}}')
+  problems <- openapi_validate_request(req, multipart)
+  expect_equal(messages(problems), "must be sent as multipart/form-data")
 })
 
 test_that("an unparseable body is answered like any other invalid request", {

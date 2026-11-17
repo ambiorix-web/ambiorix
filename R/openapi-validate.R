@@ -154,15 +154,47 @@ openapi_validate_request <- function(
     return(details)
   }
 
+  parse <- switch(
+    EXPR = body$content_type,
+    "application/json" = request$parse_json,
+    "application/x-www-form-urlencoded" = request$parse_form_urlencoded,
+    "multipart/form-data" = request$parse_multipart
+  )
+
+  # any other media type is documented, not validated
+  if (is.null(parse)) {
+    return(details)
+  }
+
+  sent <- sub(
+    pattern = ";.*$",
+    replacement = "",
+    x = request$CONTENT_TYPE %||% ""
+  )
+
+  # an absent body has no media type to compare: one byte tells
+  if (
+    !identical(tolower(trimws(sent)), body$content_type) &&
+      length(request$rook.input$read(1L)) > 0L
+  ) {
+    request$rook.input$rewind()
+
+    return(
+      append(
+        details,
+        list(
+          openapi_detail(
+            "body",
+            "",
+            sprintf("must be sent as %s", body$content_type)
+          )
+        )
+      )
+    )
+  }
+
   payload <- tryCatch(
-    expr = switch(
-      EXPR = body$content_type,
-      "application/json" = request$parse_json(),
-      "application/x-www-form-urlencoded" = request$parse_form_urlencoded(),
-      "multipart/form-data" = request$parse_multipart(),
-      # otherwise, media type not supported. just return:
-      return(details)
-    ),
+    expr = parse(),
     error = function(error) {
       .globals$errorLog$log(
         "Could not parse request body:",
