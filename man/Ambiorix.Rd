@@ -590,6 +590,11 @@ Only documented routes are checked; individual routes
 opt out with \code{openapi_docs(..., validate = FALSE)}, and the whole app
 with \code{validate = FALSE} here.
 
+Every element of an array is checked, so a large array takes time
+even when it is valid. Give an array schema \code{maxItems}: an array past
+it is rejected without its elements being looked at. At most 100
+problems are reported per array.
+
 \code{on_invalid} decides what a rejected request is answered with, for
 apps whose errors have a shape of their own, or that would rather
 re-render a form than send JSON.
