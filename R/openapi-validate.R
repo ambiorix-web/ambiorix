@@ -326,25 +326,28 @@ openapi_form <- function(payload, schema, schemas = list()) {
 
   properties <- gather(schema)
 
+  # grouped once: a lookup per name rescans every field
+  nms <- names(payload) %||% character()
+  occurrences <- split(
+    x = unname(payload)[seq_along(nms)],
+    f = factor(nms, levels = unique(nms))
+  )
+
+  fields <- lapply(
+    X = seq_along(occurrences),
+    FUN = function(i) {
+      openapi_field(
+        occurrences[[i]],
+        properties[[names(occurrences)[[i]]]],
+        schemas
+      )
+    }
+  )
+  blank <- vapply(X = fields, FUN = is.null, FUN.VALUE = logical(1))
+
   # named even when every field is blank: a form body is an object, `{}`,
   # never `[]`
-  fields <- structure(list(), names = character())
-
-  for (name in unique(names(payload))) {
-    value <- openapi_field(
-      openapi_occurrences(payload, name),
-      properties[[name]],
-      schemas
-    )
-
-    if (is.null(value)) {
-      next
-    }
-
-    fields[[name]] <- value
-  }
-
-  fields
+  structure(fields[!blank], names = names(occurrences)[!blank])
 }
 
 #' Every Occurrence of a Name
@@ -1159,6 +1162,9 @@ openapi_check_array <- function(
         )
       )
     )
+
+    # an array past its limit is not walked
+    return(problems)
   }
 
   if (isTRUE(schema[["uniqueItems"]]) && anyDuplicated(value)) {
@@ -1173,6 +1179,11 @@ openapi_check_array <- function(
   }
 
   for (i in seq_along(value)) {
+    # enough for a client to act on
+    if (length(problems) >= 100L) {
+      break
+    }
+
     problems <- c(
       problems,
       openapi_validate(

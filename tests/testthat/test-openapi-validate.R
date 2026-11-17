@@ -2266,6 +2266,34 @@ test_that("a file part stands for a binary string in a multipart body only", {
   expect_equal(messages(problems), "must be a string")
 })
 
+test_that("an array stops collecting problems at 100", {
+  schema <- openapi_schema_array(openapi_schema_string())
+
+  problems <- openapi_validate(as.list(1:500), schema)
+  expect_length(problems, 100L)
+  expect_equal(paths(problems)[[100]], "[100]")
+})
+
+test_that("an array past `maxItems` is not walked", {
+  schema <- openapi_schema_array(openapi_schema_string(), maxItems = 2L)
+
+  problems <- openapi_validate(list(1L, 2L, 3L), schema)
+  expect_equal(messages(problems), "must have at most 2 item(s)")
+
+  problems <- openapi_validate(list(1L, "a"), schema)
+  expect_equal(paths(problems), "[1]")
+})
+
+test_that("a form with many distinct fields is shaped in linear time", {
+  n <- 20000L
+  payload <- as.list(rep("1", n))
+  names(payload) <- paste0("f", seq_len(n))
+
+  fields <- openapi_form(payload, openapi_schema_object())
+  expect_length(fields, n)
+  expect_equal(names(fields)[[n]], "f20000")
+})
+
 test_that("an unparseable body is answered like any other invalid request", {
   app <- Ambiorix$new()
   private <- environment(app$openapi)$private
