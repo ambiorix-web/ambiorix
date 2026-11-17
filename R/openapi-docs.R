@@ -190,7 +190,9 @@ print.ambiorix_openapi_parameter <- function(x, ...) {
 #'                     Media type of the body. \cr
 #'                     Defaults to `"application/json"`. JSON, form-urlencoded,
 #'                     and multipart bodies are validated; other media types
-#'                     are documented only.
+#'                     are documented only. \cr
+#'                     A validated body must be sent with this media type as \cr
+#'                     its `Content-Type`, or the request is rejected.
 #'
 #' @return An object of class `ambiorix_openapi_request_body`.
 #'

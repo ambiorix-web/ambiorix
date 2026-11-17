@@ -32,7 +32,9 @@ arrives without a body is rejected.}
 Media type of the body. \cr
 Defaults to \code{"application/json"}. JSON, form-urlencoded,
 and multipart bodies are validated; other media types
-are documented only.}
+are documented only. \cr
+A validated body must be sent with this media type as \cr
+its \code{Content-Type}, or the request is rejected.}
 }
 \value{
 An object of class \code{ambiorix_openapi_request_body}.
