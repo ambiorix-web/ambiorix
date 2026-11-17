@@ -677,7 +677,10 @@ Ambiorix <- R6::R6Class(
           path <- sub(pattern = "/+$", replacement = "", x = path)
           strrep(
             x = "../",
-            times = lengths(regmatches(path, gregexpr("/", path))) - 1L
+            times = max(
+              0L,
+              lengths(regmatches(path, gregexpr("/", path))) - 1L
+            )
           )
         },
         FUN.VALUE = character(1)

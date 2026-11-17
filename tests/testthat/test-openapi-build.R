@@ -589,6 +589,18 @@ test_that("the docs page and the server are relative to the app", {
   expect_equal(out$css, '"../__swagger__/swagger-ui.css"')
   expect_equal(out$servers$url, "..")
 
+  # a page at the root has nothing to climb
+  out <- built(function(app) app$openapi(ui_path = "/"))
+  expect_equal(out$spec, 'url: "openapi.json"')
+  expect_equal(out$css, '"__swagger__/swagger-ui.css"')
+
+  # nor do paths without a leading slash
+  out <- built(function(app) {
+    app$openapi(ui_path = "docs", spec_path = "openapi.json")
+  })
+  expect_equal(out$spec, 'url: "openapi.json"')
+  expect_equal(out$servers$url, ".")
+
   # servers of the app's own are kept
   out <- built(function(app) app$openapi(servers = "https://api.example.com"))
   expect_equal(out$servers$url, "https://api.example.com")
