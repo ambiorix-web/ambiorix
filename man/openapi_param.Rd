@@ -7,9 +7,9 @@
 openapi_param(
   name,
   location = c("query", "path", "header", "cookie"),
-  required = FALSE,
-  description = NULL,
   schema = openapi_schema_string(),
+  description = NULL,
+  required = FALSE,
   ...
 )
 }
@@ -23,20 +23,20 @@ of the route's \verb{:param} tokens: one that matches none stops
 Where the parameter is passed. Either \code{"query"} (default),
 \code{"path"}, \code{"header"}, or \code{"cookie"}.}
 
-\item{required}{Logical /// Optional. \cr
-Whether the parameter is required. Either \code{FALSE} (default)
-or \code{TRUE}. \cr
-Path parameters are always required so this
-argument is ignored for them and forced to \code{TRUE}.}
+\item{schema}{OpenAPI schema /// Optional. \cr
+An OpenAPI schema (see \link{openapi-schemas}) describing the
+parameter's type. \cr
+Defaults to \code{\link[=openapi_schema_string]{openapi_schema_string()}}.}
 
 \item{description}{String /// Optional. \cr
 Human readable description of the parameter. \cr
 Defaults to \code{NULL}.}
 
-\item{schema}{OpenAPI schema /// Optional. \cr
-An OpenAPI schema (see \link{openapi-schemas}) describing the
-parameter's type. \cr
-Defaults to \code{\link[=openapi_schema_string]{openapi_schema_string()}}.}
+\item{required}{Logical /// Optional. \cr
+Whether the parameter is required. Either \code{FALSE} (default)
+or \code{TRUE}. \cr
+Path parameters are always required so this
+argument is ignored for them and forced to \code{TRUE}.}
 
 \item{...}{Key=Value pairs /// Optional. \cr
 Additional fields of the \href{https://spec.openapis.org/oas/v3.1.0#parameter-object}{parameter object},
@@ -61,16 +61,12 @@ and \code{?tag=r&tag=api} both reach the handler as an array on
 openapi_param(
   name = "verbose",
   location = "query",
-  description = "Return extra fields",
-  schema = openapi_schema_boolean()
+  schema = openapi_schema_boolean(),
+  description = "Return extra fields"
 )
 
 # override the automatic string schema of a path parameter
-openapi_param(
-  name = "id",
-  location = "path",
-  schema = openapi_schema_integer()
-)
+openapi_param("id", "path", openapi_schema_integer())
 
 }
 \seealso{

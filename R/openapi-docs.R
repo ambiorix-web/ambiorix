@@ -19,20 +19,20 @@
 #'                 Where the parameter is passed. Either `"query"` (default),
 #'                 `"path"`, `"header"`, or `"cookie"`.
 #'
-#' @param required Logical /// Optional. \cr
-#'                 Whether the parameter is required. Either `FALSE` (default)
-#'                 or `TRUE`. \cr
-#'                 Path parameters are always required so this
-#'                 argument is ignored for them and forced to `TRUE`.
+#' @param schema OpenAPI schema /// Optional. \cr
+#'               An OpenAPI schema (see [openapi-schemas]) describing the
+#'               parameter's type. \cr
+#'               Defaults to [openapi_schema_string()].
 #'
 #' @param description String /// Optional. \cr
 #'                    Human readable description of the parameter. \cr
 #'                    Defaults to `NULL`.
 #'
-#' @param schema OpenAPI schema /// Optional. \cr
-#'               An OpenAPI schema (see [openapi-schemas]) describing the
-#'               parameter's type. \cr
-#'               Defaults to [openapi_schema_string()].
+#' @param required Logical /// Optional. \cr
+#'                 Whether the parameter is required. Either `FALSE` (default)
+#'                 or `TRUE`. \cr
+#'                 Path parameters are always required so this
+#'                 argument is ignored for them and forced to `TRUE`.
 #'
 #' @param ... Key=Value pairs /// Optional. \cr
 #'            Additional fields of the [parameter object](https://spec.openapis.org/oas/v3.1.0#parameter-object),
@@ -44,16 +44,12 @@
 #' openapi_param(
 #'   name = "verbose",
 #'   location = "query",
-#'   description = "Return extra fields",
-#'   schema = openapi_schema_boolean()
+#'   schema = openapi_schema_boolean(),
+#'   description = "Return extra fields"
 #' )
 #'
 #' # override the automatic string schema of a path parameter
-#' openapi_param(
-#'   name = "id",
-#'   location = "path",
-#'   schema = openapi_schema_integer()
-#' )
+#' openapi_param("id", "path", openapi_schema_integer())
 #'
 #' @seealso [openapi_docs()], which parameters are passed to, [openapi-schemas]
 #' for the `schema` argument, and [routing-http-methods].
@@ -62,9 +58,9 @@
 openapi_param <- function(
   name,
   location = c("query", "path", "header", "cookie"),
-  required = FALSE,
-  description = NULL,
   schema = openapi_schema_string(),
+  description = NULL,
+  required = FALSE,
   ...
 ) {
   assert_that(not_missing(name))

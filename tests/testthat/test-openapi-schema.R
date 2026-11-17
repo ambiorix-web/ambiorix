@@ -306,6 +306,15 @@ test_that("openapi_param builds a parameter", {
   expect_true(p$required)
 })
 
+test_that("openapi_param takes name, location and schema by position", {
+  p <- openapi_param("id", "path", openapi_schema_integer(), "The user's ID")
+
+  expect_equal(p$name, "id")
+  expect_equal(p$location, "path")
+  expect_equal(p$schema$type, "integer")
+  expect_equal(p$description, "The user's ID")
+})
+
 test_that("openapi_param accepts path location and forces required", {
   p <- openapi_param(
     "id",
