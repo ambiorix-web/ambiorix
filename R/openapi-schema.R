@@ -98,7 +98,8 @@
 #' the other schemas declare.
 #'
 #' @param type String or Character vector /// Optional. \cr
-#'             The schema type, e.g. `"string"`. Only needed with
+#'             The schema type: `"string"`, `"number"`, `"integer"`,
+#'             `"boolean"`, `"array"`, `"object"`, or `"null"`. Only needed with
 #'             `openapi_schema()`; the other constructors set it for you. A
 #'             vector documents a value that may be any of several types, e.g.
 #'             `c("string", "null")`. \cr
@@ -247,7 +248,22 @@ openapi_schema <- function(type = NULL, ...) {
   }
 
   if (!is.null(type)) {
-    assert_that(is.character(type))
+    valid <- is.character(type) &&
+      length(type) &&
+      !anyDuplicated(type) &&
+      all(
+        type %in%
+          c("string", "number", "integer", "boolean", "array", "object", "null")
+      )
+
+    if (!valid) {
+      stop(
+        '`type` must be one or more of "string", "number", "integer", ',
+        '"boolean", "array", "object", and "null", each named once',
+        call. = FALSE
+      )
+    }
+
     keywords <- c(list(type = type), keywords)
   }
 

@@ -30,7 +30,8 @@ openapi_schema_ref(name, schema = NULL)
 }
 \arguments{
 \item{type}{String or Character vector /// Optional. \cr
-The schema type, e.g. \code{"string"}. Only needed with
+The schema type: \code{"string"}, \code{"number"}, \code{"integer"},
+\code{"boolean"}, \code{"array"}, \code{"object"}, or \code{"null"}. Only needed with
 \code{openapi_schema()}; the other constructors set it for you. A
 vector documents a value that may be any of several types, e.g.
 \code{c("string", "null")}. \cr

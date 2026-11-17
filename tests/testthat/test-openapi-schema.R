@@ -173,6 +173,20 @@ test_that("composition keywords take schemas", {
   )
 })
 
+test_that("`type` must be a JSON Schema type", {
+  expect_no_error(openapi_schema(type = c("string", "null")))
+  expect_no_error(openapi_schema())
+
+  expect_error(openapi_schema(type = "strng"), "`type` must be one or more of")
+  expect_error(openapi_schema(type = "int"))
+  expect_error(openapi_schema(type = "String"))
+  expect_error(openapi_schema(type = c("string", "numeric")))
+  expect_error(openapi_schema(type = c("string", "string")))
+  expect_error(openapi_schema(type = character()))
+  expect_error(openapi_schema(type = NA_character_))
+  expect_error(openapi_schema(type = 1L))
+})
+
 test_that("multipleOf must be a positive number", {
   expect_equal(openapi_schema_number(multipleOf = 0.01)$multipleOf, 0.01)
   expect_equal(openapi_schema_integer(multipleOf = 2L)$multipleOf, 2L)
