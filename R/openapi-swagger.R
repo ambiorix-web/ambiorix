@@ -2,6 +2,8 @@
 #'
 #' The Swagger UI assets (CSS & JavaScript) are bundled with ambiorix
 #' (`inst/swagger-ui/`), so the page works without an internet connection.
+#' The validator badge is off: Swagger UI would fetch it from
+#' `validator.swagger.io`, handing it the document's URL.
 #'
 #' Both URLs are written into the page as given, and are meant to be relative
 #' to it: behind a proxy that serves the app under a path the app never sees,
@@ -66,7 +68,8 @@ swagger_ui_html <- function(
           window.onload = function () {
             window.ui = SwaggerUIBundle({
               url: "%s",
-              dom_id: "#swagger-ui"
+              dom_id: "#swagger-ui",
+              validatorUrl: null
             });
           };
         </script>

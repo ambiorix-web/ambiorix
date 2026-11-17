@@ -498,6 +498,9 @@ test_that("swagger_ui_html references local assets, not a CDN", {
   expect_true(grepl('"__swagger__/swagger-ui-bundle.js"', html, fixed = TRUE))
   expect_false(grepl("cdn.jsdelivr.net", html, fixed = TRUE))
 
+  # no validator badge: it is fetched from swagger.io with the spec's URL
+  expect_true(grepl("validatorUrl: null", html, fixed = TRUE))
+
   # custom assets url, trailing slashes normalised
   html <- swagger_ui_html("openapi.json", assets_url = "../assets/")
   expect_true(grepl('"../assets/swagger-ui.css"', html, fixed = TRUE))
