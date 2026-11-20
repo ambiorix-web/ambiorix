@@ -152,7 +152,7 @@ as_openapi.ambiorix_openapi_schema <- function(x, ctx, ...) {
   ctx$refs <- unique(c(ctx$refs, name))
 
   # a bare reference: nothing to register, the schema is declared elsewhere
-  if (!length(unclass(x))) {
+  if (isTRUE(attr(x, "openapi_bare"))) {
     return(list(`$ref` = openapi_ref_path(name)))
   }
 
@@ -209,7 +209,8 @@ as_openapi.ambiorix_openapi_schema <- function(x, ctx, ...) {
 #' @keywords internal
 #' @noRd
 openapi_render_keywords <- function(x, ctx) {
-  out <- list()
+  # named so an empty schema serialises to `{}`, not `[]`
+  out <- named_list()
 
   # keywords whose value is an array. the serialiser unboxes length one
   # vectors, so `required = "id"` would emit `"id"` where `["id"]` is
@@ -965,7 +966,11 @@ openapi_named_schemas <- function(routes) {
     if (is_openapi_schema(x)) {
       name <- attr(x, "openapi_name")
 
-      if (!is.null(name) && length(unclass(x)) && is.null(out[[name]])) {
+      if (
+        !is.null(name) &&
+          !isTRUE(attr(x, "openapi_bare")) &&
+          is.null(out[[name]])
+      ) {
         out[[name]] <<- x
       }
     }

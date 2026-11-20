@@ -223,6 +223,12 @@ test_that("openapi_schema_ref names a schema", {
   bare <- openapi_schema_ref("Task")
   expect_length(unclass(bare), 0L)
   expect_equal(attr(bare, "openapi_name"), "Task")
+  expect_true(attr(bare, "openapi_bare"))
+
+  # an empty schema can be named, and is not a bare reference
+  any <- openapi_schema_ref("Any", openapi_schema())
+  expect_length(unclass(any), 0L)
+  expect_null(attr(any, "openapi_bare"))
 
   expect_error(openapi_schema_ref("not a name!"))
   expect_error(openapi_schema_ref("Task", "nope"))

@@ -201,6 +201,41 @@ test_that("references to undefined schemas are an error", {
   expect_error(build_openapi(routes), "Nope")
 })
 
+test_that("an empty schema can be named and referenced", {
+  routes <- list(
+    list(
+      route = list(full_path = "/x"),
+      method = "POST",
+      docs = openapi_docs(
+        request_body = openapi_request_body(
+          openapi_schema_object(
+            properties = list(
+              a = openapi_schema_ref("Any", openapi_schema()),
+              b = openapi_schema_ref("Any")
+            )
+          )
+        ),
+        responses = list(openapi_response(200, "ok"))
+      )
+    )
+  )
+
+  doc <- build_openapi(routes)
+  expect_equal(doc$components$schemas$Any, named_list())
+  expect_equal(default_serialiser(doc$components$schemas), '{"Any":{}}')
+
+  schemas <- openapi_named_schemas(routes)
+  expect_named(schemas, "Any")
+  expect_length(
+    openapi_validate(
+      list(a = 1L, b = "x"),
+      routes[[1]]$docs$request_body$schema,
+      schemas
+    ),
+    0L
+  )
+})
+
 test_that("an undefined schema inside `not` is caught at build", {
   routes <- list(
     list(

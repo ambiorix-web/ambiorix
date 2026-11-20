@@ -1464,7 +1464,7 @@ openapi_convert <- function(value, schema, schemas = list()) {
 #' Resolve a Reference to a Named Schema
 #'
 #' Validation works on the schema objects themselves, where a reference is an
-#' `openapi_name` attribute on an otherwise empty schema, and on rendered
+#' `openapi_name` attribute on a schema marked `openapi_bare`, and on rendered
 #' schemas, where it is a `$ref` string. Both forms are looked up here.
 #'
 #' A name that is in neither resolves to `NULL`, which callers treat as "no
@@ -1505,8 +1505,7 @@ openapi_resolve_schema <- function(schema, schemas) {
 
   name <- attr(schema, "openapi_name")
 
-  # a bare reference holds no keywords of its own
-  if (!is.null(name) && !length(unclass(schema))) {
+  if (isTRUE(attr(schema, "openapi_bare"))) {
     return(schemas[[name]])
   }
 

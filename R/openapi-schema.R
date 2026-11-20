@@ -348,8 +348,10 @@ openapi_schema_ref <- function(name, schema = NULL) {
   assert_that(is_openapi_component_name(name))
 
   if (is.null(schema)) {
-    # a bare reference: the schema itself is declared elsewhere
+    # a bare reference: the schema itself is declared elsewhere. marked,
+    # since an empty schema can be named too
     schema <- new_openapi_schema(list())
+    attr(schema, "openapi_bare") <- TRUE
   }
 
   assert_that(is_openapi_schema(schema))
@@ -365,7 +367,7 @@ openapi_schema_ref <- function(name, schema = NULL) {
 print.ambiorix_openapi_schema <- function(x, ...) {
   name <- attr(x, "openapi_name")
 
-  if (!is.null(name) && !length(x)) {
+  if (isTRUE(attr(x, "openapi_bare"))) {
     cli::cli_alert_info("A reference to the OpenAPI schema {.val {name}}")
     return(invisible(x))
   }
