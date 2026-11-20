@@ -59,6 +59,29 @@ test_that("app$openapi enables docs and returns self", {
   stop_all()
 })
 
+test_that("app$openapi lets `info` override title, version and description", {
+  stored <- function(...) {
+    app <- Ambiorix$new()
+    app$openapi(...)
+    environment(app$openapi)$private$.openapi_info
+  }
+
+  expect_equal(stored(), list(title = "API", version = "1.0.0"))
+
+  expect_equal(
+    stored(title = "Mine", version = "2.0.0", description = "About"),
+    list(title = "Mine", version = "2.0.0", description = "About")
+  )
+
+  info <- list(title = "Theirs", version = "3.0.0", description = "Other")
+  expect_equal(
+    stored(title = "Mine", version = "2.0.0", description = "About", info = info),
+    info
+  )
+
+  stop_all()
+})
+
 test_that("openapi docs routes are registered on start", {
   app <- Ambiorix$new()
   app$openapi(title = "My API", version = "1.0.0")

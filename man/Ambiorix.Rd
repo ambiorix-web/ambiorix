@@ -493,8 +493,8 @@ Defaults to \code{NULL}.}
 Additional fields added to the OpenAPI
 \href{https://spec.openapis.org/oas/v3.1.0#info-object}{info object}, e.g.
 \code{contact} or \code{license}. \cr
-Defaults to \code{list()}. \code{title}, \code{version}, and \code{description} are set
-from the arguments above and override anything given here.}
+Defaults to \code{list()}. A \code{title}, \code{version}, or \code{description} given
+here overrides the argument of the same name.}
       \item{\code{servers}}{Character vector or List /// Optional. \cr
 URLs at which the API is served. A \code{list} of
 \href{https://spec.openapis.org/oas/v3.1.0#server-object}{server objects}

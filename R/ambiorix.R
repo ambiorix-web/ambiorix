@@ -364,8 +364,8 @@ Ambiorix <- R6::R6Class(
     #'   Additional fields added to the OpenAPI
     #'   [info object](https://spec.openapis.org/oas/v3.1.0#info-object), e.g.
     #'   `contact` or `license`. \cr
-    #'   Defaults to `list()`. `title`, `version`, and `description` are set
-    #'   from the arguments above and override anything given here.
+    #'   Defaults to `list()`. A `title`, `version`, or `description` given
+    #'   here overrides the argument of the same name.
     #'
     #' @param servers Character vector or List /// Optional. \cr
     #'   URLs at which the API is served. A `list` of
@@ -535,12 +535,9 @@ Ambiorix <- R6::R6Class(
       assert_that(is_string(spec_path))
       assert_that(is_string(assets_path))
 
-      info$title <- title
-      info$version <- version
-
-      if (!is.null(description)) {
-        info$description <- description
-      }
+      info$title <- info$title %||% title
+      info$version <- info$version %||% version
+      info$description <- info$description %||% description
 
       private$.openapi_info <- info
       private$.openapi_servers <- servers
