@@ -43,7 +43,7 @@ test_that("`...` takes arbitrary JSON Schema keywords", {
 })
 
 test_that("unknown keywords warn but are kept", {
-  expect_message(
+  expect_warning(
     schema <- openapi_schema_string(minLenght = 3L),
     "minLenght"
   )

@@ -564,11 +564,12 @@ warn_unknown_keywords <- function(x) {
     return(invisible(NULL))
   }
 
-  cli::cli_alert_warning(
-    paste(
-      "Unknown OpenAPI schema keyword{?s}: {.val {unknown}}:",
-      "ignored by anything reading the document."
-    )
+  warning(
+    "Unknown OpenAPI schema ",
+    if (length(unknown) > 1L) "keywords: " else "keyword: ",
+    paste0("`", unknown, "`", collapse = ", "),
+    ", ignored by anything reading the document",
+    call. = FALSE
   )
 
   invisible(NULL)
