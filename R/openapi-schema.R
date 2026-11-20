@@ -492,6 +492,12 @@ warn_unknown_keywords <- function(x) {
     # core
     "$ref",
     "$comment",
+    "$id",
+    "$schema",
+    "$anchor",
+    "$defs",
+    "$dynamicRef",
+    "$dynamicAnchor",
     "type",
     "enum",
     "const",
@@ -522,6 +528,7 @@ warn_unknown_keywords <- function(x) {
     "maxProperties",
     "dependentRequired",
     "dependentSchemas",
+    "unevaluatedProperties",
     # arrays
     "items",
     "prefixItems",
@@ -531,6 +538,7 @@ warn_unknown_keywords <- function(x) {
     "minContains",
     "maxContains",
     "uniqueItems",
+    "unevaluatedItems",
     # numbers
     "minimum",
     "maximum",
@@ -543,6 +551,7 @@ warn_unknown_keywords <- function(x) {
     "pattern",
     "contentEncoding",
     "contentMediaType",
+    "contentSchema",
     # openapi extras
     "discriminator",
     "externalDocs",

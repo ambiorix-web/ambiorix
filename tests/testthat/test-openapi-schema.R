@@ -50,6 +50,27 @@ test_that("unknown keywords warn but are kept", {
   expect_equal(schema$minLenght, 3L)
 })
 
+test_that("JSON Schema 2020-12 keywords are known", {
+  expect_no_warning(
+    openapi_schema_object(
+      `$id` = "https://example.com/task",
+      `$schema` = "https://json-schema.org/draft/2020-12/schema",
+      `$anchor` = "task",
+      `$defs` = list(id = openapi_schema_integer()),
+      unevaluatedProperties = FALSE
+    )
+  )
+  expect_no_warning(
+    openapi_schema_array(openapi_schema_string(), unevaluatedItems = FALSE)
+  )
+  expect_no_warning(
+    openapi_schema_string(
+      contentMediaType = "application/json",
+      contentSchema = openapi_schema_object()
+    )
+  )
+})
+
 test_that("openapi_schema_object declares required properties", {
   obj <- openapi_schema_object(
     properties = list(
