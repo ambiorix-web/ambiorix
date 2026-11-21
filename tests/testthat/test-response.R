@@ -243,15 +243,15 @@ test_that("Response", {
   expect_type(headers, "list")
   # Content-Length is the size of the PNG ggsave() wrote, which depends on
   # the device
-  expect_snapshot(
-    res,
-    transform = function(lines) {
-      sub(
-        pattern = "^(\\s*num) \\d+$",
-        replacement = "\\1 <size>",
-        x = lines
-      )
-    }
+  expect_gt(headers[["Content-Length"]], 0)
+  expect_equal(
+    headers[names(headers) != "Content-Length"],
+    list(
+      "Content-Type" = content_tsv(),
+      "Location" = "/",
+      "Content-Disposition" = "attachment;charset=UTF-8;filename=data.tsv",
+      "xxx" = "hello"
+    )
   )
 
   expect_error(res$headers("error"))

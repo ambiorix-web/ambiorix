@@ -31,32 +31,3 @@
     Output
       [1] "{\"x\":1}"
 
----
-
-    Code
-      res
-    Message
-      
-      -- A Response 
-      
-      -- Headers 
-      * HEADER Content-Type
-    Output
-       chr "tab-separated-values"
-    Message
-      * HEADER Location
-    Output
-       chr "/"
-    Message
-      * HEADER Content-Disposition
-    Output
-       chr "attachment;charset=UTF-8;filename=data.tsv"
-    Message
-      * HEADER Content-Length
-    Output
-       num <size>
-    Message
-      * HEADER xxx
-    Output
-       chr "hello"
-
