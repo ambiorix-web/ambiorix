@@ -14,7 +14,8 @@ get_websocket_client_path()
 get_websocket_clients()
 }
 \arguments{
-\item{path}{Path to copy the file to.}
+\item{path}{String /// Required. \cr
+Path to copy the file to.}
 }
 \value{
 \itemize{

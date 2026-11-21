@@ -1,6 +1,6 @@
 ^LICENSE\.md$
-test.R
-^dev\.R$
+^test\.R$
+^dev
 ^srcjs$
 ^node_modules$
 ^package\.json$
@@ -21,3 +21,4 @@ docker/
 ^test\.html$
 ^\.vscode$
 ^\.lintr$
+^TODO\.md$

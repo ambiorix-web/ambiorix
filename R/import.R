@@ -2,7 +2,9 @@
 #'
 #' Import all R-files in a directory.
 #'
-#' @param ... Directory from which to import `.R` or `.r` files.
+#' @param ... String /// Required. \cr
+#'            Directory from which to import `.R` or `.r` files. Passed to
+#'            [list.files()].
 #'
 #' @examples
 #' if (interactive()) {

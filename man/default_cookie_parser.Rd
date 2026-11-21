@@ -7,7 +7,9 @@
 default_cookie_parser(req)
 }
 \arguments{
-\item{req}{A \link{Request}.}
+\item{req}{Request /// Required. \cr
+The \link{Request} whose cookie string is parsed. The string itself
+is on the request at \code{req$HTTP_COOKIE}.}
 }
 \value{
 A \code{list} of key value pairs or cookie values.

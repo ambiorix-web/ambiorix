@@ -80,7 +80,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{status}}{An integer defining the status.}
+      \item{\code{status}}{Integer /// Required. \cr
+The status to set.}
     }
     \if{html}{\out{</div>}}
   }
@@ -101,7 +102,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{body}}{Body of the response.}
+      \item{\code{body}}{Object /// Required. \cr
+Body of the response.}
     }
     \if{html}{\out{</div>}}
   }
@@ -122,8 +124,10 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{body}}{Body of the response.}
-      \item{\code{...}}{Passed to \code{...} of \code{sprintf}.}
+      \item{\code{body}}{String /// Required. \cr
+Body of the response, a \code{\link[=sprintf]{sprintf()}} format.}
+      \item{\code{...}}{Key=Value pairs /// Optional. \cr
+Passed to \code{...} of \code{\link[=sprintf]{sprintf()}}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -144,7 +148,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{body}}{Body of the response.}
+      \item{\code{body}}{Object /// Required. \cr
+Body of the response.}
     }
     \if{html}{\out{</div>}}
   }
@@ -165,7 +170,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{file}}{File to send.}
+      \item{\code{file}}{String /// Required. \cr
+Path to the file to send.}
     }
     \if{html}{\out{</div>}}
   }
@@ -186,7 +192,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{path}}{Path or URL to redirect to.}
+      \item{\code{path}}{String /// Required. \cr
+Path or URL to redirect to.}
     }
     \if{html}{\out{</div>}}
   }
@@ -207,8 +214,11 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{file}}{Template file.}
-      \item{\code{data}}{List to fill \verb{[\% tags \%]}.}
+      \item{\code{file}}{String /// Required. \cr
+Path to the template file.}
+      \item{\code{data}}{Named list /// Optional. \cr
+Data to fill \verb{[\% tags \%]} with. \cr
+Defaults to \code{list()}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -229,8 +239,10 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{body}}{Body of the response.}
-      \item{\code{...}}{Additional named arguments passed to the serialiser.}
+      \item{\code{body}}{Object /// Required. \cr
+Body of the response.}
+      \item{\code{...}}{Key=Value pairs /// Optional. \cr
+Additional named arguments passed to the serialiser.}
     }
     \if{html}{\out{</div>}}
   }
@@ -251,9 +263,13 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{data}}{Data to convert to CSV.}
-      \item{\code{name}}{Name of the file.}
-      \item{\code{...}}{Additional arguments passed to \code{\link[readr:format_csv]{readr::format_csv()}}.}
+      \item{\code{data}}{Data frame /// Required. \cr
+The data to convert to CSV.}
+      \item{\code{name}}{String /// Optional. \cr
+Name of the file, without its extension. \cr
+Defaults to \code{"data"}.}
+      \item{\code{...}}{Key=Value pairs /// Optional. \cr
+Additional arguments passed to \code{\link[readr:format_csv]{readr::format_csv()}}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -274,9 +290,13 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{data}}{Data to convert to CSV.}
-      \item{\code{name}}{Name of the file.}
-      \item{\code{...}}{Additional arguments passed to \code{\link[readr:format_tsv]{readr::format_tsv()}}.}
+      \item{\code{data}}{Data frame /// Required. \cr
+The data to convert to TSV.}
+      \item{\code{name}}{String /// Optional. \cr
+Name of the file, without its extension. \cr
+Defaults to \code{"data"}.}
+      \item{\code{...}}{Key=Value pairs /// Optional. \cr
+Additional arguments passed to \code{\link[readr:format_tsv]{readr::format_tsv()}}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -297,8 +317,10 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{widget}}{The widget to use.}
-      \item{\code{...}}{Additional arguments passed to \code{\link[htmlwidgets:saveWidget]{htmlwidgets::saveWidget()}}.}
+      \item{\code{widget}}{Htmlwidget /// Required. \cr
+The widget to send.}
+      \item{\code{...}}{Key=Value pairs /// Optional. \cr
+Additional arguments passed to \code{\link[htmlwidgets:saveWidget]{htmlwidgets::saveWidget()}}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -319,8 +341,11 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{file}}{Template file.}
-      \item{\code{data}}{List to fill \verb{[\% tags \%]}.}
+      \item{\code{file}}{String /// Required. \cr
+Path to the template file.}
+      \item{\code{data}}{Named list /// Optional. \cr
+Data to fill \verb{[\% tags \%]} with. \cr
+Defaults to \code{list()}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -341,7 +366,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{file}}{Path to local file.}
+      \item{\code{file}}{String /// Required. \cr
+Path to the local file.}
     }
     \if{html}{\out{</div>}}
   }
@@ -362,7 +388,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{file}}{Path to local file.}
+      \item{\code{file}}{String /// Required. \cr
+Path to the local file.}
     }
     \if{html}{\out{</div>}}
   }
@@ -383,7 +410,8 @@ if (interactive()) {
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{file}}{Path to local file.}
+      \item{\code{file}}{String /// Required. \cr
+Path to the local file.}
     }
     \if{html}{\out{</div>}}
   }
@@ -406,9 +434,12 @@ based on file extension.
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{plot}}{Ggplot2 plot object.}
-      \item{\code{...}}{Passed to \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}}
-      \item{\code{type}}{Type of image to save.}
+      \item{\code{plot}}{Ggplot /// Required. \cr
+The ggplot2 plot object to send.}
+      \item{\code{...}}{Key=Value pairs /// Optional. \cr
+Passed to \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}.}
+      \item{\code{type}}{String /// Optional. \cr
+Type of image to save. Either \code{"png"} (default) or \code{"jpeg"}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -443,8 +474,10 @@ based on file extension.
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{String. Name of the header.}
-      \item{\code{value}}{Value of the header.}
+      \item{\code{name}}{String /// Required. \cr
+Name of the header.}
+      \item{\code{value}}{String /// Required. \cr
+Value of the header.}
     }
     \if{html}{\out{</div>}}
   }
@@ -568,7 +601,8 @@ Returns the list of headers currently set.
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{Name of the header to return.}
+      \item{\code{name}}{String /// Required. \cr
+Name of the header to return.}
     }
     \if{html}{\out{</div>}}
   }
@@ -590,7 +624,8 @@ Returns a single header currently, \code{NULL} if not set.
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{headers}}{A named list of headers to set.}
+      \item{\code{headers}}{Named list /// Required. \cr
+The headers to set.}
     }
     \if{html}{\out{</div>}}
   }
@@ -611,11 +646,12 @@ Returns a single header currently, \code{NULL} if not set.
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{hook}}{A function that accepts at least 4 arguments:
+      \item{\code{hook}}{Function /// Required. \cr
+A function that accepts at least 4 arguments:
 \itemize{
 \item \code{self}: The \code{Request} class instance.
-\item \code{content}: File content a vector of character string,
-content of the template.
+\item \code{content}: File content a vector of character string, content of
+the template.
 \item \code{data}: \code{list} passed from \code{render} method.
 \item \code{ext}: File extension of the template file.
 }
@@ -652,12 +688,13 @@ Runs before the \code{render} method.
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{hook}}{A function to run after the rendering of HTML.
-It should accept at least 3 arguments:
+      \item{\code{hook}}{Function /// Required. \cr
+A function to run after the rendering of HTML. It should accept at
+least 3 arguments:
 \itemize{
 \item \code{self}: The \code{Response} class instance.
-\item \code{content}: File content a vector of character string,
-content of the template.
+\item \code{content}: File content a vector of character string, content of
+the template.
 \item \code{ext}: File extension of the template file.
 }
 
@@ -696,29 +733,43 @@ potential updates to hooks in the future.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{String. Name of the cookie.}
-      \item{\code{value}}{value of the cookie.}
-      \item{\code{expires}}{Expiry, if an integer assumes it's the number of seconds
-from now. Otherwise accepts an object of class \code{POSIXct} or \code{Date}.
-If a \code{character} string then it is set as-is and not pre-processed.
-If unspecified, the cookie becomes a session cookie. A session finishes
-when the client shuts down, after which the session cookie is removed.}
-      \item{\code{max_age}}{Indicates the number of seconds until the cookie expires.
-A zero or negative number will expire the cookie immediately.
-If both \code{expires} and \code{max_age} are set, the latter has precedence.}
-      \item{\code{domain}}{Defines the host to which the cookie will be sent.
-If omitted, this attribute defaults to the host of the current document URL,
-not including subdomains.}
-      \item{\code{path}}{Indicates the path that must exist in the requested URL for the
-browser to send the Cookie header.}
-      \item{\code{secure}}{Indicates that the cookie is sent to the server only when a
-request is made with the https: scheme (except on localhost), and therefore,
-is more resistant to man-in-the-middle attacks.}
-      \item{\code{http_only}}{Forbids JavaScript from accessing the cookie, for example,
-through the document.cookie property.}
-      \item{\code{same_site}}{Controls whether or not a cookie is sent with cross-origin
-requests, providing some protection against cross-site request forgery
-attacks (CSRF). Accepts \code{Strict}, \code{Lax}, or \code{None}.}
+      \item{\code{name}}{String /// Required. \cr
+Name of the cookie.}
+      \item{\code{value}}{String /// Required. \cr
+Value of the cookie.}
+      \item{\code{expires}}{Integer, POSIXct, Date, or String /// Optional. \cr
+Expiry. An integer is taken as the number of seconds from now; a
+\code{character} string is set as-is and not pre-processed. \cr
+Defaults to the \code{ambiorix.cookie.expire} option; unset, the cookie
+becomes a session cookie. A session finishes when the client shuts
+down, after which the session cookie is removed.}
+      \item{\code{max_age}}{Integer /// Optional. \cr
+The number of seconds until the cookie expires. A zero or negative
+number expires it immediately. \cr
+Defaults to the \code{ambiorix.cookie.maxage} option. If both \code{expires}
+and \code{max_age} are set, the latter has precedence.}
+      \item{\code{domain}}{String /// Optional. \cr
+The host to which the cookie will be sent. \cr
+Defaults to the \code{ambiorix.cookie.domain} option; unset, the host of
+the current document URL, not including subdomains.}
+      \item{\code{path}}{String /// Optional. \cr
+The path that must exist in the requested URL for the browser to
+send the Cookie header. \cr
+Defaults to the \code{ambiorix.cookie.path} option, \code{"/"}.}
+      \item{\code{secure}}{Logical /// Optional. \cr
+Whether the cookie is sent to the server only when a request is made
+with the https: scheme (except on localhost), and therefore is more
+resistant to man-in-the-middle attacks. \cr
+Defaults to the \code{ambiorix.cookie.secure} option, \code{TRUE}.}
+      \item{\code{http_only}}{Logical /// Optional. \cr
+Whether to forbid JavaScript from accessing the cookie, for example
+through the document.cookie property. \cr
+Defaults to the \code{ambiorix.cookie.httponly} option, \code{TRUE}.}
+      \item{\code{same_site}}{String /// Optional. \cr
+Whether a cookie is sent with cross-origin requests, providing some
+protection against cross-site request forgery attacks (CSRF). Either
+\code{"Strict"}, \code{"Lax"}, or \code{"None"}. \cr
+Defaults to the \code{ambiorix.cookie.savesite} option.}
     }
     \if{html}{\out{</div>}}
   }
@@ -743,7 +794,8 @@ Overwrites existing cookie of the same \code{name}.
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{name}}{Name of the cookie to clear.}
+      \item{\code{name}}{String /// Required. \cr
+Name of the cookie to clear.}
     }
     \if{html}{\out{</div>}}
   }

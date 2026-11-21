@@ -70,7 +70,14 @@ test_that("Response", {
   # file
   resp <- res$send_file("file.html")
   expect_true(is.raw(resp$body))
-  expect_equal(length(resp$body), 52L)
+  expect_equal(
+    resp$body,
+    readBin(
+      con = "file.html",
+      what = "raw",
+      n = file.size("file.html")
+    )
+  )
 
   # redirect
   resp <- res$redirect("/")
@@ -234,7 +241,18 @@ test_that("Response", {
   # get headers
   headers <- res$get_headers()
   expect_type(headers, "list")
-  expect_snapshot(res)
+  # Content-Length is the size of the PNG ggsave() wrote, which depends on
+  # the device
+  expect_gt(headers[["Content-Length"]], 0)
+  expect_equal(
+    headers[names(headers) != "Content-Length"],
+    list(
+      "Content-Type" = content_tsv(),
+      "Location" = "/",
+      "Content-Disposition" = "attachment;charset=UTF-8;filename=data.tsv",
+      "xxx" = "hello"
+    )
+  )
 
   expect_error(res$headers("error"))
   expect_type(res$headers, "list")

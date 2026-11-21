@@ -2,7 +2,10 @@
 #'
 #' Parses the cookie string.
 #'
-#' @param req A [Request].
+#' @param req Request /// Required. \cr
+#'            The [Request] whose cookie string is parsed. The string itself
+#'            is on the request at `req$HTTP_COOKIE`.
+#'
 #' @examples
 #' if (interactive()) {
 #'   library(ambiorix)
@@ -58,12 +61,12 @@ default_cookie_parser <- function(req) {
 #'
 #' Identifies a function as a cookie parser (see example).
 #'
-#' @param fn A function that accepts a single argument,
-#' `req` the [Request] and returns the parsed cookie string,
-#' generally a `list`.
-#' Note that the original cookie string is available on the
-#' [Request] at the `HTTP_COOKIE` field, get it with:
-#' `req$HTTP_COOKIE`
+#' @param fn Function /// Required. \cr
+#'           A function that accepts a single argument, `req` the [Request],
+#'           and returns the parsed cookie string, generally a `list`. \cr
+#'           Note that the original cookie string is available on the
+#'           [Request] at the `HTTP_COOKIE` field, get it with
+#'           `req$HTTP_COOKIE`.
 #'
 #' @examples
 #' func <- function(req) {
@@ -107,10 +110,10 @@ is_cookie_parser <- function(obj) {
 #'
 #' Identifies a function as a cookie preprocessor.
 #'
-#' @param fn A function that accepts the same arguments
-#' as the `cookie` method of the [Response] class
-#' (name, value, ...), and returns a modified
-#' `value`.
+#' @param fn Function /// Required. \cr
+#'           A function that accepts the same arguments as the `cookie`
+#'           method of the [Response] class (name, value, ...), and returns
+#'           a modified `value`.
 #'
 #' @examples
 #' func <- function(name, value, ...) {
@@ -153,29 +156,53 @@ is_cookie_preprocessor <- function(obj) {
 #'
 #' Create a cookie object.
 #'
-#' @param name Name of the cookie.
-#' @param value value of the cookie.
-#' @param expires Expiry, if an integer assumes it's the number of seconds
-#' from now. Otherwise accepts an object of class `POSIXct` or `Date`.
-#' If a `character` string then it is set as-is and not pre-processed.
-#' If unspecified, the cookie becomes a session cookie. A session finishes
-#' when the client shuts down, after which the session cookie is removed.
-#' @param max_age Indicates the number of seconds until the cookie expires.
-#' A zero or negative number will expire the cookie immediately.
-#' If both `expires` and `max_age` are set, the latter has precedence.
-#' @param domain Defines the host to which the cookie will be sent.
-#' If omitted, this attribute defaults to the host of the current document URL,
-#' not including subdomains.
-#' @param path Indicates the path that must exist in the requested URL for the
-#' browser to send the Cookie header.
-#' @param secure Indicates that the cookie is sent to the server only when a
-#' request is made with the https: scheme (except on localhost), and therefore,
-#' is more resistant to man-in-the-middle attacks.
-#' @param http_only Forbids JavaScript from accessing the cookie, for example,
-#' through the document.cookie property.
-#' @param same_site Controls whether or not a cookie is sent with cross-origin
-#' requests, providing some protection against cross-site request forgery
-#' attacks (CSRF). Accepts `Strict`, `Lax`, or `None`.
+#' @param name String /// Required. \cr
+#'             Name of the cookie.
+#'
+#' @param value String /// Required. \cr
+#'              Value of the cookie.
+#'
+#' @param expires Integer, POSIXct, Date, or String /// Optional. \cr
+#'                Expiry. An integer is taken as the number of seconds from
+#'                now; a `character` string is set as-is and not
+#'                pre-processed. \cr
+#'                Defaults to `NULL`, which makes it a session cookie. A
+#'                session finishes when the client shuts down, after which
+#'                the session cookie is removed.
+#'
+#' @param max_age Integer /// Optional. \cr
+#'                The number of seconds until the cookie expires. A zero or
+#'                negative number expires it immediately. \cr
+#'                Defaults to `NULL`. If both `expires` and `max_age` are
+#'                set, the latter has precedence.
+#'
+#' @param domain String /// Optional. \cr
+#'               The host to which the cookie will be sent. \cr
+#'               Defaults to `NULL`, the host of the current document URL,
+#'               not including subdomains.
+#'
+#' @param path String /// Optional. \cr
+#'             The path that must exist in the requested URL for the browser
+#'             to send the Cookie header. \cr
+#'             Defaults to `NULL`.
+#'
+#' @param secure Logical /// Optional. \cr
+#'               Whether the cookie is sent to the server only when a request
+#'               is made with the https: scheme (except on localhost), and
+#'               therefore is more resistant to man-in-the-middle attacks.
+#'               Either `TRUE` (default) or `FALSE`.
+#'
+#' @param http_only Logical /// Optional. \cr
+#'                  Whether to forbid JavaScript from accessing the cookie,
+#'                  for example through the document.cookie property. Either
+#'                  `TRUE` (default) or `FALSE`.
+#'
+#' @param same_site String /// Optional. \cr
+#'                  Whether a cookie is sent with cross-origin requests,
+#'                  providing some protection against cross-site request
+#'                  forgery attacks (CSRF). Either `"Strict"`, `"Lax"`, or
+#'                  `"None"`. \cr
+#'                  Defaults to `NULL`.
 #'
 #' @keywords internal
 #' @noRd

@@ -4,7 +4,7 @@
       ws
     Message
       i receive: `receive(message, ws)`
-        * Listening on message:
+      * Listening on message:
       * name: "hello"
 
 ---

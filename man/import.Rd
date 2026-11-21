@@ -7,7 +7,9 @@
 import(...)
 }
 \arguments{
-\item{...}{Directory from which to import \code{.R} or \code{.r} files.}
+\item{...}{String /// Required. \cr
+Directory from which to import \code{.R} or \code{.r} files. Passed to
+\code{\link[=list.files]{list.files()}}.}
 }
 \value{
 Invisibly returns \code{NULL}.

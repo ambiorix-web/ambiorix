@@ -7,11 +7,17 @@
 mockRequest(cookie = "", query = "", path = "/")
 }
 \arguments{
-\item{cookie}{Cookie string.}
+\item{cookie}{String /// Optional. \cr
+Cookie string. \cr
+Defaults to \code{""}.}
 
-\item{query}{Query string.}
+\item{query}{String /// Optional. \cr
+Query string. \cr
+Defaults to \code{""}.}
 
-\item{path}{Path string.}
+\item{path}{String /// Optional. \cr
+Path string. \cr
+Defaults to \code{"/"}.}
 }
 \value{
 A \code{Request} object.

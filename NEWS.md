@@ -1,13 +1,122 @@
-# ambiorix 3.1.0
+# ambiorix 4.0.0
+
+**Breaking Changes**
+
+- `parse_json()` no longer collapses JSON into data frames or matrices:
+  `obj_of_arrs_to_df`, `arr_of_objs_to_df`, and `arr_of_arrs_to_matrix` are
+  now off by default, so a body keeps the structure it was sent with — an
+  array of objects is a list of named lists, never a data frame. The same
+  JSON shape now always parses to the same R shape, whatever values it
+  holds; previously the R type of a parsed body depended on whether the
+  values happened to collapse. An array of one is read marked `AsIs`, so
+  `["a"]` and `"a"` stay apart: `I("a")` compares and serialises like the
+  string, and is written back as `["a"]`. Restore the old reading per call
+  with `req$parse_json(arr_of_objs_to_df = TRUE)`, or globally with
+  `options(AMBIORIX_JSON_PARSER = ...)`.
+- `parse_json()` reads an integer too large for R's integer type as a
+  double, where it read it as a string: `{"id": 3000000000}` is now
+  numeric, and can be documented and validated as an integer. Whole numbers
+  past 2^53 are rounded; pass `int64 = "string"` for the old reading, or
+  `int64 = "bit64"` with the bit64 package attached for exact 64-bit
+  integers.
+- Websocket messages are parsed by the same parser as request bodies, so
+  the two changes above apply to the message an `app$receive()` handler
+  gets: an array of objects is a list of named lists, not a data frame,
+  and a large integer is a number, not a string. A parser set with
+  `options(AMBIORIX_JSON_PARSER = ...)` now reads messages too, the way
+  `AMBIORIX_SERIALISER` already wrote them. A binary frame is parsed as
+  well, where it errored.
+- `parse_json()`, `parse_form_urlencoded()` and `parse_multipart()` return
+  `NULL` for a request with no body, where they returned `list()`. Nothing
+  on the wire is `NULL`, so an absent body is now told apart from `{}` and
+  `[]`.
+- A route parameter matches one path segment: `/users/:id` no longer
+  matches `/users/2/3`, `/users/1/` or `/users/`. It used to match across
+  `/`, which let `/orgs/:org/info` answer `/orgs/acme/teams/core/info`
+  with `org = "acme"` and the rest of the path dropped. A trailing slash
+  was only ever accepted after a parameter; `/users` never matched
+  `/users/`, and a trailing slash in a registered path is ignored, as it
+  always was: `/users/:id/` is `/users/:id`. Use a regular expression,
+  e.g. `/users/.+`, to match across `/` on purpose.
+- A `:token` in a router's basepath is matched at any depth: a router
+  mounted on `Router$new("/orgs/:org")` had its routes compiled with the
+  literal text `:org`, so none of them could be reached. Exact paths are
+  now tried before parameters across every router, not within each one,
+  so a router's `/users/me` is matched before the app's `/users/:id`.
+  `Routing$prepare()` is gone; `get_routes()` compiles the routes.
+- A router's middleware runs for the routes under its basepath, whichever
+  router registered them: its own, those of the routers mounted on it, and
+  those of another router mounted at or below the same path. A router with
+  an empty basepath is at the root, so its middleware runs for every
+  route. It was matched against the request path as a regular expression,
+  so a router at `/api` also ran its middleware for an app route at
+  `/x/api/y` or `/apiary`, and a router with a `:token` in its basepath,
+  e.g. `Router$new("/orgs/:org")`, never ran its middleware at all.
+- A parameter middleware, `param()`, is scoped the same way: it runs for
+  the routes under its router's basepath, so `app$param("id", ...)`
+  answers every `:id`. It used to run for the routes of its own router
+  only, as in Express. It also runs after the middleware and the request
+  validation, right before the handler: an authentication middleware sees
+  the request first, and `value` is the validated value on a documented
+  route. It used to run before both, and received the raw string.
 
 **New Features**
 
-- Add support for OpenAPI (Swagger) documentation, [pull/163](https://github.com/ambiorix-web/ambiorix/pull/163).
+- Add support for OpenAPI (Swagger) documentation,
+  [pull/163](https://github.com/ambiorix-web/ambiorix/pull/163):
+  - `app$openapi()` enables it. Routes registered with a `docs` argument are
+    collected into an OpenAPI 3.1 document served at `/openapi.json`, with
+    the Swagger UI at `/docs`. `title`, `version`, `description`, `info`,
+    `servers`, `tags`, `security_schemes`, and `security` fill the
+    document's top level. The Swagger UI assets are bundled with the
+    package, so the pages work without an internet connection.
+  - `openapi_docs()` documents a route, with `openapi_param()`,
+    `openapi_request_body()`, and `openapi_response()` for its parameters,
+    body, and responses. Path parameters are documented automatically from
+    the route's `:param` tokens.
+  - Schemas are built with `openapi_schema_string()`,
+    `openapi_schema_integer()`, `openapi_schema_number()`,
+    `openapi_schema_boolean()`, `openapi_schema_array()`,
+    `openapi_schema_object()`, and `openapi_schema()`, and named with
+    `openapi_schema_ref()`, which places a schema in the document's
+    `components` and references it with `$ref` wherever it is used.
+  - Documented routes are validated. Query and path parameters and JSON,
+    form-urlencoded, and multipart bodies are checked against the
+    documented schemas before the handler runs, `allOf`, `anyOf`, `oneOf`,
+    and `not` included; parameters are converted to their documented type,
+    and the parsed body is stored on `req$payload`.
+    A request that does not match is answered with a `400` listing what is
+    wrong. `app$openapi(on_invalid =)` replaces that response,
+    `app$openapi(validate = FALSE)` turns validation off app-wide, and
+    `openapi_docs(validate =)` overrides it per route.
+- Add `req$parse_form_urlencoded()`, next to `req$parse_json()` and
+  `req$parse_multipart()`.
 
 **Bug Fixes**
 
 - Allow overriding of default error handler, regardless of the order
   it's registered in, [pull/161](https://github.com/ambiorix-web/ambiorix/pull/161).
+  The same holds for a router: its `error` handler answers its routes,
+  and a router without one falls back to the router it is mounted on,
+  then to the app. `set_error()` is available on routers too.
+- A router mounted in more than one place answers at each of them; only
+  the last mount used to.
+- An error in a middleware or a parameter middleware is answered by the
+  route's error handler, or `app$error`, the way an error in the handler
+  is. It used to reach httpuv, which answered `ERROR: <the R message>`,
+  handing the message to the client, and logged nothing.
+- Printing an app, a router, a websocket or OpenAPI docs left a cli list
+  open, so every list printed afterwards in the session, by ambiorix or by
+  anything else, was indented one level deeper.
+- `req$get_header()` errored whatever the header, *object 'req' not
+  found*; it returns the header's value, or `NULL` when it was not sent.
+- A second `app$start()` on the same app, after `app$stop()` or an
+  interrupt, compiled the routing tree on top of the previous compilation.
+  Every mounted router's routes, middleware and websocket receivers were
+  appended again: router middleware ran twice per request, receivers fired
+  twice per message, and a router's routes also answered at the root,
+  without their basepath. With OpenAPI on and an `operation_id` set, the
+  second start aborted with *Duplicated operation_id*.
 
 # ambiorix 3.0.0
 

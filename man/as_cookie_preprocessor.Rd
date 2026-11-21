@@ -7,10 +7,10 @@
 as_cookie_preprocessor(fn)
 }
 \arguments{
-\item{fn}{A function that accepts the same arguments
-as the \code{cookie} method of the \link{Response} class
-(name, value, ...), and returns a modified
-\code{value}.}
+\item{fn}{Function /// Required. \cr
+A function that accepts the same arguments as the \code{cookie}
+method of the \link{Response} class (name, value, ...), and returns
+a modified \code{value}.}
 }
 \value{
 Object of class "cookiePreprocessor".

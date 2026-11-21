@@ -22,11 +22,17 @@ response_500(
 )
 }
 \arguments{
-\item{body}{Body of response.}
+\item{body}{String /// Optional. \cr
+Body of the response. \cr
+Defaults to a message matching the status.}
 
-\item{headers}{HTTP headers.}
+\item{headers}{Named list /// Optional. \cr
+HTTP headers. \cr
+Defaults to \code{list("Content-Type" = content_html())}.}
 
-\item{status}{Response status}
+\item{status}{Integer /// Optional. \cr
+Response status. \cr
+Defaults to the status the function is named after.}
 }
 \value{
 An Ambiorix response.

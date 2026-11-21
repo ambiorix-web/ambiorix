@@ -2,9 +2,11 @@
 #'
 #' Replaces partial tags `[! ... !]` with their content.
 #'
-#' @param content File content where partials should be
-#' replaced.
-#' @param dir Directory of file from which `content` originates.
+#' @param content Character vector /// Required. \cr
+#'                File content where partials should be replaced.
+#'
+#' @param dir String /// Required. \cr
+#'            Directory of the file from which `content` originates.
 #'
 #' @keywords internal
 #' @noRd
@@ -23,8 +25,11 @@ replace_partials <- function(content, dir) {
 #' Replaces partial on a single line.
 #' Assumes we have a single partial on a single line.
 #'
-#' @param line Single content line.
-#' @param dir Base directory.
+#' @param line String /// Required. \cr
+#'             A single content line.
+#'
+#' @param dir String /// Required. \cr
+#'            Base directory.
 #'
 #' @keywords internal
 #' @noRd
@@ -72,7 +77,8 @@ replace_partial <- function(line, dir) {
 #'
 #' Retrieve directory from a file.
 #'
-#' @param file File to retrieve directory from.
+#' @param file String /// Required. \cr
+#'             Path to the file to retrieve the directory from.
 #'
 #' @keywords internal
 #' @noRd
@@ -106,7 +112,9 @@ apply_replace_partial <- function(content, dir) {
 #' like `x <- hello` (missing quote): breaking the template. Using `robj` one would
 #' obtain `x <- "hello"`.
 #'
-#' @param obj R object to treat.
+#' @param obj Object /// Required. \cr
+#'            The R object to treat.
+#'
 #' @return Object of class "robj".
 #' @examples
 #' robj(1:10)
@@ -133,7 +141,9 @@ print.robj <- function(x, ...) {
 #'
 #' Serialises an object to JSON in `res$render`.
 #'
-#' @param obj Object to serialise.
+#' @param obj Object /// Required. \cr
+#'            The object to serialise.
+#'
 #' @examples
 #' if (interactive()) {
 #'   l <- list(a = "hello", b = 2L, c = 3)
@@ -155,8 +165,11 @@ print.jobj <- function(x, ...) {
 
 #' Pre Hook Response
 #'
-#' @param content File content, a character vector.
-#' @param data A list of data passed to `glue::glue_data`.
+#' @param content Character vector /// Required. \cr
+#'                The file content.
+#'
+#' @param data Named list /// Required. \cr
+#'             The data passed to [glue::glue_data()].
 #'
 #' @examples
 #' my_prh <- function(self, content, data, ext, ...) {
@@ -228,8 +241,11 @@ use_html_template <- function() {
 
 #' Render Tags
 #'
-#' @param lines Output of [read_lines()]
-#' @param data Data to render, a `list`.
+#' @param lines Character vector /// Required. \cr
+#'              Output of [read_lines()].
+#'
+#' @param data Named list /// Required. \cr
+#'             The data to render.
 #'
 #' @keywords internal
 #' @noRd
@@ -278,7 +294,8 @@ render_tags <- function(lines, data) {
 #' Evaluates a string to collect [htmltools::tags], evaluates,
 #' and returns the render HTML as a collapsed string.
 #'
-#' @param expr Expression to evaluate.
+#' @param expr Expression /// Required. \cr
+#'             The expression to evaluate.
 #'
 #' @noRd
 #' @keywords internal
@@ -297,9 +314,9 @@ render_html <- function(expr) {
 #'
 #' Create a custom renderer.
 #'
-#' @param fn A function that accepts two arguments,
-#' the full path to the `file` to render, and the
-#' `data` to render.
+#' @param fn Function /// Required. \cr
+#'           A function that accepts two arguments: the full path to the
+#'           `file` to render, and the `data` to render.
 #'
 #' @return A renderer function.
 #' @examples
@@ -333,7 +350,8 @@ print.renderer <- function(x, ...) {
 #'
 #' Check whether an object is a renderer.
 #'
-#' @param obj Object to check.
+#' @param obj Object /// Required. \cr
+#'            The value to check.
 #'
 #' @return Boolean
 #' @keywords internal
