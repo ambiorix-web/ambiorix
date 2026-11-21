@@ -59,6 +59,9 @@
   validation, right before the handler: an authentication middleware sees
   the request first, and `value` is the validated value on a documented
   route. It used to run before both, and received the raw string.
+- `res$cookie()` reads the default of `same_site` from the
+  `ambiorix.cookie.samesite` option. It used to read the misspelled
+  `ambiorix.cookie.savesite`, which is no longer read.
 
 **New Features**
 

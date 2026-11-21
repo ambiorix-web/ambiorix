@@ -96,3 +96,12 @@ test_that("Request cookie", {
     "hello=prefix.world; Path=/; Secure; HttpOnly"
   )
 })
+
+test_that("Response cookie reads the `ambiorix.cookie.samesite` option", {
+  old <- options(ambiorix.cookie.samesite = "Strict")
+  on.exit(options(old))
+
+  res <- Response$new()
+  res$cookie("yummy_cookie", "choco")
+  expect_match(res$send("ok")$headers[["Set-Cookie"]], "SameSite=Strict")
+})
