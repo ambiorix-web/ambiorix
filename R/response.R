@@ -905,10 +905,12 @@ Response <- R6::R6Class(
 
       # collapse html
       if (ext == "html" || ext == "md") {
-        return(private$.run_post_hooks(
-          paste0(file_content, collapse = ""),
-          ext
-        ))
+        return(
+          private$.run_post_hooks(
+            paste0(file_content, collapse = "\n"),
+            ext
+          )
+        )
       }
 
       # parse R

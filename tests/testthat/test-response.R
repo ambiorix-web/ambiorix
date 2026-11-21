@@ -100,17 +100,17 @@ test_that("Response", {
   resp <- res$render("render.html", list(title = "hello"))
   expect_equal(
     resp$body,
-    "<html><script>console.log('tests');</script>  <body>     <h1>hello</h1>  </body></html>"
+    "<html>\n<script>console.log('tests');</script>\n  <body>\n    <h1>hello</h1>\n  </body>\n</html>"
   )
   resp <- res$render("render.R", list(title = "hello"))
   expect_equal(
     resp$body,
-    "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><style>body{background-color:none;}</style></head><html>  <title>hello</title>  <body>    <p>hello</p>  </body></html></html>"
+    "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\"/>\n<style>body{background-color:none;}</style>\n\n\n</head>\n<html>\n  <title>hello</title>\n  <body>\n    <p>hello</p>\n  </body>\n</html>\n</html>"
   )
   resp <- res$render("render.R", list(title = robj(list(x = 1))))
   expect_equal(
     resp$body,
-    "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><style>body{background-color:none;}</style></head><html>  <title>1</title>  <body>    <p>hello</p>  </body></html></html>"
+    "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\"/>\n<style>body{background-color:none;}</style>\n\n\n</head>\n<html>\n  <title>1</title>\n  <body>\n    <p>hello</p>\n  </body>\n</html>\n</html>"
   )
   expect_error(robj())
   expect_error(jobj())
