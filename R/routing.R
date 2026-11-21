@@ -54,6 +54,18 @@
 #'              with its `on_invalid`. \cr
 #'              Defaults to `NULL`, the app's error handler.
 #'
+#' @param middleware Function or List /// Optional. \cr
+#'                   Middleware for this route only: a function that accepts \cr
+#'                   the request and the response, or a `list` of such \cr
+#'                   functions, run in order. \cr
+#'                   It runs after the middleware of the app and of the \cr
+#'                   routers, see `use()` in [`Routing`], and before the \cr
+#'                   request validation, the parameter middleware and \cr
+#'                   `handler`. \cr
+#'                   Like any middleware, it may return a response to answer \cr
+#'                   the request there, or a promise to pause the rest. \cr
+#'                   Defaults to `NULL`, no middleware.
+#'
 #' @param docs OpenAPI docs /// Optional. \cr
 #'             Documentation for the route, created with [openapi_docs()].
 #'             When the app enables docs via `app$openapi()`, documented
@@ -84,6 +96,22 @@
 #' app$all("/health", function(req, res) {
 #'   res$json(list(status = "ok"))
 #' })
+#'
+#' # middleware for one route
+#' authenticate <- function(req, res) {
+#'   if (!identical(req$get_header("authorization"), "secret")) {
+#'     res$status <- 401L
+#'     return(res$text("Unauthorised"))
+#'   }
+#' }
+#'
+#' app$get(
+#'   "/admin",
+#'   function(req, res) {
+#'     res$text("Welcome!")
+#'   },
+#'   middleware = authenticate
+#' )
 #'
 #' app$get(
 #'   "/users/:id",
@@ -336,7 +364,8 @@ Routing <- R6::R6Class(
     #' whichever router registered them: two routers mounted at `/api` share
     #' their middleware, which also runs for the routes of a router at
     #' `/api/public`. A router with an empty basepath is at the root, like
-    #' the app.
+    #' the app. For a single route, pass `middleware` when registering it,
+    #' see [routing-http-methods].
     #'
     #' _Middleware may but does not have to return a response, unlike other methods such as `get`_
     #' Note that multiple routers and middlewares can be used.
@@ -703,11 +732,37 @@ Routing <- R6::R6Class(
 
       Map(
         f = function(name, value) {
-          self[[name]] <- function(path, handler, error = NULL, docs = NULL) {
+          self[[name]] <- function(
+            path,
+            handler,
+            error = NULL,
+            middleware = NULL,
+            docs = NULL
+          ) {
             assert_that(valid_path(path))
             assert_that(not_missing(handler))
             assert_that(is_handler(handler))
             assert_that(is.null(docs) || is_openapi_docs(docs))
+
+            if (is.function(middleware)) {
+              middleware <- list(middleware)
+            }
+            assert_that(
+              is.list(middleware) || is.null(middleware),
+              all(
+                vapply(
+                  X = middleware,
+                  FUN = function(fn) {
+                    is.function(fn) && is_handler(fn)
+                  },
+                  FUN.VALUE = logical(1)
+                )
+              ),
+              msg = paste(
+                "`middleware` must be a function that accepts `req` and `res`,",
+                "or a list of such functions"
+              )
+            )
 
             r <- list(
               route = Route$new(private$.make_path(path)),
@@ -715,6 +770,7 @@ Routing <- R6::R6Class(
               fun = handler,
               method = value,
               error = error,
+              middleware = middleware,
               docs = docs
             )
             private$.routes <- append(private$.routes, list(r))
@@ -785,15 +841,17 @@ Routing <- R6::R6Class(
 
       self$not_found(request, res)
     },
-    # run the steps of a route from step `from`: the middleware, the request
-    # validation, the parameter middleware, then the handler. A step that
-    # returns a promise pauses the rest until it resolves.
+    # run the steps of a route from step `from`: the middleware, the route's
+    # own middleware, the request validation, the parameter middleware, then
+    # the handler. A step that returns a promise pauses the rest until it
+    # resolves.
     .run = function(request, res, route, from) {
       middleware <- private$.compiled$middleware
       params <- private$.compiled$params
       basepath <- route$route$basepath
       n_mid <- length(middleware)
-      last <- n_mid + length(params) + 2L
+      n_before <- n_mid + length(route$middleware)
+      last <- n_before + length(params) + 2L
 
       under_router <- function(x) {
         mid_basepath <- attr(x, "basepath")
@@ -812,11 +870,13 @@ Routing <- R6::R6Class(
               if (under_router(middleware[[k]])) {
                 middleware[[k]](request, res)
               }
-            } else if (k == n_mid + 1L) {
+            } else if (k <= n_before) {
+              route$middleware[[k - n_mid]](request, res)
+            } else if (k == n_before + 1L) {
               # after the middleware, so that e.g. authentication runs first
               private$.validate_request(request, res, route)
             } else if (k < last) {
-              param <- params[[k - n_mid - 1L]]
+              param <- params[[k - n_before - 1L]]
               value <- request$params[[param$params]]
 
               if (under_router(param) && !is.null(value)) {

@@ -149,3 +149,19 @@ test_that("a request with no async step is answered synchronously", {
   expect_true(is_response(resp))
   expect_equal(resp$body, "sync")
 })
+
+test_that("the handler waits for an async route middleware", {
+  app <- Ambiorix$new()
+
+  app$get(
+    "/",
+    function(req, res) res$send(req$value),
+    middleware = function(req, res) {
+      promises::then(later_value("async"), function(value) {
+        req$value <- value
+      })
+    }
+  )
+
+  expect_equal(call_async(app)$body, "async")
+})

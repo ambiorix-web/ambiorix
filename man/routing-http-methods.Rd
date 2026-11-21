@@ -24,6 +24,18 @@ a middleware, a parameter middleware, and request validation \cr
 with its \code{on_invalid}. \cr
 Defaults to \code{NULL}, the app's error handler.}
 
+\item{middleware}{Function or List /// Optional. \cr
+Middleware for this route only: a function that accepts \cr
+the request and the response, or a \code{list} of such \cr
+functions, run in order. \cr
+It runs after the middleware of the app and of the \cr
+routers, see \code{use()} in \code{\link{Routing}}, and before the \cr
+request validation, the parameter middleware and \cr
+\code{handler}. \cr
+Like any middleware, it may return a response to answer \cr
+the request there, or a promise to pause the rest. \cr
+Defaults to \code{NULL}, no middleware.}
+
 \item{docs}{OpenAPI docs /// Optional. \cr
 Documentation for the route, created with \code{\link[=openapi_docs]{openapi_docs()}}.
 When the app enables docs via \code{app$openapi()}, documented
@@ -94,6 +106,22 @@ app$post("/echo", function(req, res) {
 app$all("/health", function(req, res) {
   res$json(list(status = "ok"))
 })
+
+# middleware for one route
+authenticate <- function(req, res) {
+  if (!identical(req$get_header("authorization"), "secret")) {
+    res$status <- 401L
+    return(res$text("Unauthorised"))
+  }
+}
+
+app$get(
+  "/admin",
+  function(req, res) {
+    res$text("Welcome!")
+  },
+  middleware = authenticate
+)
 
 app$get(
   "/users/:id",

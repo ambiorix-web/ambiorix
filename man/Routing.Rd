@@ -464,7 +464,8 @@ route. Middleware of a router runs for the routes under its basepath,
 whichever router registered them: two routers mounted at \verb{/api} share
 their middleware, which also runs for the routes of a router at
 \verb{/api/public}. A router with an empty basepath is at the root, like
-the app.
+the app. For a single route, pass \code{middleware} when registering it,
+see \link{routing-http-methods}.
 
 \emph{Middleware may but does not have to return a response, unlike other methods such as \code{get}}
 Note that multiple routers and middlewares can be used.

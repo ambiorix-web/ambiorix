@@ -104,6 +104,13 @@
   value used to be ignored: the handler ran at once, and an error in the
   promise was lost. A request with no asynchronous step is answered
   synchronously, as before.
+- A route can have its own middleware: `get()`, `post()` and the other
+  route methods take a `middleware` argument, a function or a list of
+  functions that run for that route only, e.g.
+  `app$get("/admin", handler, middleware = authenticate)`. It runs after
+  the middleware of the app and of the routers, and before the request
+  validation, the parameter middleware and the handler. It is the fourth
+  argument, right before `docs`.
 - An asynchronous handler can `forward()`: a promise that resolves to
   `forward()` moves on to the next matching route. It used to be answered
   with *Must return a response*.
