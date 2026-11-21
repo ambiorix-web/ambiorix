@@ -726,7 +726,7 @@ potential updates to hooks in the future.}
   path = getOption("ambiorix.cookie.path", "/"),
   secure = getOption("ambiorix.cookie.secure", TRUE),
   http_only = getOption("ambiorix.cookie.httponly", TRUE),
-  same_site = getOption("ambiorix.cookie.savesite")
+  same_site = getOption("ambiorix.cookie.samesite")
 )}
     \if{html}{\out{</div>}}
   }
@@ -769,7 +769,7 @@ Defaults to the \code{ambiorix.cookie.httponly} option, \code{TRUE}.}
 Whether a cookie is sent with cross-origin requests, providing some
 protection against cross-site request forgery attacks (CSRF). Either
 \code{"Strict"}, \code{"Lax"}, or \code{"None"}. \cr
-Defaults to the \code{ambiorix.cookie.savesite} option.}
+Defaults to the \code{ambiorix.cookie.samesite} option.}
     }
     \if{html}{\out{</div>}}
   }

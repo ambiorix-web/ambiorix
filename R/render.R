@@ -252,7 +252,7 @@ use_html_template <- function() {
 render_tags <- function(lines, data) {
   new_lines <- c()
   n <- 0L
-  str <- ""
+  str <- character()
 
   for (i in seq_along(lines)) {
     line <- lines[i]
@@ -262,7 +262,7 @@ render_tags <- function(lines, data) {
     }
 
     if (!grepl("\\[%|%\\]", line) && n > 0L) {
-      str <- paste(str, line)
+      str <- c(str, line)
       next()
     }
 
@@ -271,18 +271,24 @@ render_tags <- function(lines, data) {
 
     n <- n + opened - closed
 
-    str <- paste(str, line)
+    str <- c(str, line)
 
     # all in one line we render and continue
     if (n == 0L) {
-      new_line <- glue::glue_data(data, str, .open = "[%", .close = "%]")
+      new_line <- glue::glue_data(
+        data,
+        paste0(str, collapse = "\n"),
+        .open = "[%",
+        .close = "%]",
+        .trim = FALSE
+      )
       new_lines <- c(new_lines, new_line)
-      str <- ""
+      str <- character()
       next
     }
   }
 
-  if (str != "") {
+  if (length(str) > 0L) {
     message("error")
   }
 
@@ -307,7 +313,7 @@ render_html <- function(expr) {
 
   htmltools::save_html(tags, file = tmp, background = "none")
 
-  paste0(read_lines(tmp), collapse = "")
+  paste0(read_lines(tmp), collapse = "\n")
 }
 
 #' Create a Renderer

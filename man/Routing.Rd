@@ -107,6 +107,50 @@ app$receive("hello", function(msg, ws){
 
 if(interactive())
  app$start()
+
+## ------------------------------------------------
+## Method `Routing$use()`
+## ------------------------------------------------
+
+app <- Ambiorix$new()
+
+# synchronous: runs for every route
+app$use(function(req, res) {
+  req$started <- Sys.time()
+})
+
+# asynchronous: the handler runs once the user is found
+find_user <- function(token) {
+  Sys.sleep(2)
+  if (identical(token, "secret")) list(name = "Jane")
+}
+
+app$use(function(req, res) {
+  token <- req$get_header("authorization")
+
+  promises::then(
+    # in a worker: `req` and `res` are copies in here
+    promise = future::future(find_user(token)),
+    # in the main process, once the worker is done
+    onFulfilled = function(user) {
+      if (is.null(user)) {
+        res$status <- 401L
+        return(res$send("Unauthorised"))
+      }
+
+      req$user <- user
+    }
+  )
+})
+
+app$get("/", function(req, res) {
+  res$sendf("Hello, \%s!", req$user$name)
+})
+
+if (interactive()) {
+  future::plan(future::multisession)
+  app$start()
+}
 }
 \seealso{
 \link{routing-http-methods}
@@ -279,6 +323,9 @@ middleware and the request validation, see \code{app$openapi()}, so
 \code{value} is the validated value when the route is documented, and
 right before the handler. A \code{forward()} runs it again for the next
 matching route. Return a response to answer the request there.
+
+Return a promise to do slow work without blocking the server, as in
+a middleware, see \code{use()}: the handler waits for it.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
@@ -417,15 +464,71 @@ route. Middleware of a router runs for the routes under its basepath,
 whichever router registered them: two routers mounted at \verb{/api} share
 their middleware, which also runs for the routes of a router at
 \verb{/api/public}. A router with an empty basepath is at the root, like
-the app.
+the app. For a single route, pass \code{middleware} when registering it,
+see \link{routing-http-methods}.
 
 \emph{Middleware may but does not have to return a response, unlike other methods such as \code{get}}
-Note that multiple routers and middlewares can be used.}
+Note that multiple routers and middlewares can be used.
+
+A middleware may return a promise, a \code{Future} or a \code{mirai} to do slow
+work, e.g. a database lookup, without blocking the server: the rest
+of the chain, i.e. the remaining middleware, the request validation,
+the parameter middleware and the handler, waits for it, while other
+requests are answered. A promise that resolves to a response answers
+the request there; one that rejects is answered by the error handler,
+see \code{set_error()}. \cr
+The work runs in another R process, on a copy of \code{req} and \code{res}:
+what is set on them there is lost. Return the value from the worker
+and set it on \code{req} in the main process, as below.}
     }
     \if{html}{\out{</div>}}
   }
   \subsection{Details}{
     Use a router or middleware
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{app <- Ambiorix$new()
+
+# synchronous: runs for every route
+app$use(function(req, res) {
+  req$started <- Sys.time()
+})
+
+# asynchronous: the handler runs once the user is found
+find_user <- function(token) {
+  Sys.sleep(2)
+  if (identical(token, "secret")) list(name = "Jane")
+}
+
+app$use(function(req, res) {
+  token <- req$get_header("authorization")
+
+  promises::then(
+    # in a worker: `req` and `res` are copies in here
+    promise = future::future(find_user(token)),
+    # in the main process, once the worker is done
+    onFulfilled = function(user) {
+      if (is.null(user)) {
+        res$status <- 401L
+        return(res$send("Unauthorised"))
+      }
+
+      req$user <- user
+    }
+  )
+})
+
+app$get("/", function(req, res) {
+  res$sendf("Hello, \%s!", req$user$name)
+})
+
+if (interactive()) {
+  future::plan(future::multisession)
+  app$start()
+}
+}
+    \if{html}{\out{</div>}}
   }
 }
 

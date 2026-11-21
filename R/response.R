@@ -749,7 +749,7 @@ Response <- R6::R6Class(
     #'   Whether a cookie is sent with cross-origin requests, providing some
     #'   protection against cross-site request forgery attacks (CSRF). Either
     #'   `"Strict"`, `"Lax"`, or `"None"`. \cr
-    #'   Defaults to the `ambiorix.cookie.savesite` option.
+    #'   Defaults to the `ambiorix.cookie.samesite` option.
     #'
     #' @return Invisibly returns self.
     cookie = function(
@@ -761,7 +761,7 @@ Response <- R6::R6Class(
       path = getOption("ambiorix.cookie.path", "/"),
       secure = getOption("ambiorix.cookie.secure", TRUE),
       http_only = getOption("ambiorix.cookie.httponly", TRUE),
-      same_site = getOption("ambiorix.cookie.savesite")
+      same_site = getOption("ambiorix.cookie.samesite")
     ) {
       assert_that(not_missing(name))
       assert_that(not_missing(value))
@@ -905,10 +905,12 @@ Response <- R6::R6Class(
 
       # collapse html
       if (ext == "html" || ext == "md") {
-        return(private$.run_post_hooks(
-          paste0(file_content, collapse = ""),
-          ext
-        ))
+        return(
+          private$.run_post_hooks(
+            paste0(file_content, collapse = "\n"),
+            ext
+          )
+        )
       }
 
       # parse R

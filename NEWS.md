@@ -59,6 +59,9 @@
   validation, right before the handler: an authentication middleware sees
   the request first, and `value` is the validated value on a documented
   route. It used to run before both, and received the raw string.
+- `res$cookie()` reads the default of `same_site` from the
+  `ambiorix.cookie.samesite` option. It used to read the misspelled
+  `ambiorix.cookie.savesite`, which is no longer read.
 
 **New Features**
 
@@ -91,6 +94,26 @@
     `openapi_docs(validate =)` overrides it per route.
 - Add `req$parse_form_urlencoded()`, next to `req$parse_json()` and
   `req$parse_multipart()`.
+- Middleware and parameter middleware can be asynchronous: `use()` and
+  `param()` accept a function that returns a promise, a `Future` or a
+  `mirai`, as a route handler does. The rest of the chain, i.e. the
+  remaining middleware, the request validation, the parameter middleware
+  and the handler, waits for it while the server answers other requests. A
+  promise that resolves to a response answers the request there, and one
+  that rejects is answered by the route's error handler. Such a return
+  value used to be ignored: the handler ran at once, and an error in the
+  promise was lost. A request with no asynchronous step is answered
+  synchronously, as before.
+- A route can have its own middleware: `get()`, `post()` and the other
+  route methods take a `middleware` argument, a function or a list of
+  functions that run for that route only, e.g.
+  `app$get("/admin", handler, middleware = authenticate)`. It runs after
+  the middleware of the app and of the routers, and before the request
+  validation, the parameter middleware and the handler. It is the fourth
+  argument, right before `docs`.
+- An asynchronous handler can `forward()`: a promise that resolves to
+  `forward()` moves on to the next matching route. It used to be answered
+  with *Must return a response*.
 
 **Bug Fixes**
 
@@ -108,15 +131,22 @@
 - Printing an app, a router, a websocket or OpenAPI docs left a cli list
   open, so every list printed afterwards in the session, by ambiorix or by
   anything else, was indented one level deeper.
-- `req$get_header()` errored whatever the header, *object 'req' not
-  found*; it returns the header's value, or `NULL` when it was not sent.
+- `req$get_header()` errored whatever the header, _object 'req' not
+  found_; it returns the header's value, or `NULL` when it was not sent.
 - A second `app$start()` on the same app, after `app$stop()` or an
   interrupt, compiled the routing tree on top of the previous compilation.
   Every mounted router's routes, middleware and websocket receivers were
   appended again: router middleware ran twice per request, receivers fired
   twice per message, and a router's routes also answered at the root,
   without their basepath. With OpenAPI on and an `operation_id` set, the
-  second start aborted with *Duplicated operation_id*.
+  second start aborted with _Duplicated operation_id_.
+- `res$render()` keeps the new lines of `.html` and `.R` templates; it
+  used to collapse the rendered template into a single line, so a `//`
+  comment in a `<script>` commented out the code after it, and `<pre>` and
+  `<textarea>` content lost its line breaks. A `[% %]` tag that spans
+  several lines keeps its line breaks too, and a line containing a tag no
+  longer gains a leading space. A post-hook now receives the content with
+  its new lines.
 
 # ambiorix 3.0.0
 
