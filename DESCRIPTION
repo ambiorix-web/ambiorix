@@ -45,4 +45,4 @@ Suggests:
 URL: https://github.com/ambiorix-web/ambiorix, https://ambiorix.dev
 BugReports: https://github.com/ambiorix-web/ambiorix/issues
 Config/testthat/edition: 3
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.1
