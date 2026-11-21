@@ -108,15 +108,22 @@
 - Printing an app, a router, a websocket or OpenAPI docs left a cli list
   open, so every list printed afterwards in the session, by ambiorix or by
   anything else, was indented one level deeper.
-- `req$get_header()` errored whatever the header, *object 'req' not
-  found*; it returns the header's value, or `NULL` when it was not sent.
+- `req$get_header()` errored whatever the header, _object 'req' not
+  found_; it returns the header's value, or `NULL` when it was not sent.
 - A second `app$start()` on the same app, after `app$stop()` or an
   interrupt, compiled the routing tree on top of the previous compilation.
   Every mounted router's routes, middleware and websocket receivers were
   appended again: router middleware ran twice per request, receivers fired
   twice per message, and a router's routes also answered at the root,
   without their basepath. With OpenAPI on and an `operation_id` set, the
-  second start aborted with *Duplicated operation_id*.
+  second start aborted with _Duplicated operation_id_.
+- `res$render()` keeps the new lines of `.html` and `.R` templates; it
+  used to collapse the rendered template into a single line, so a `//`
+  comment in a `<script>` commented out the code after it, and `<pre>` and
+  `<textarea>` content lost its line breaks. A `[% %]` tag that spans
+  several lines keeps its line breaks too, and a line containing a tag no
+  longer gains a leading space. A post-hook now receives the content with
+  its new lines.
 
 # ambiorix 3.0.0
 
