@@ -2,7 +2,7 @@
 
 # ambiorix
 
-<img src="man/figures/ambiorix.png" height = "200px"/>
+<img src="https://ambiorix.dev/images/ambiorix.png" height = "200px"/>
 
 <!-- badges: start -->
 
