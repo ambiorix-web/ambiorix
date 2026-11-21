@@ -75,7 +75,12 @@ test_that("app$openapi lets `info` override title, version and description", {
 
   info <- list(title = "Theirs", version = "3.0.0", description = "Other")
   expect_equal(
-    stored(title = "Mine", version = "2.0.0", description = "About", info = info),
+    stored(
+      title = "Mine",
+      version = "2.0.0",
+      description = "About",
+      info = info
+    ),
     info
   )
 
