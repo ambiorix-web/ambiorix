@@ -221,6 +221,9 @@ Routing <- R6::R6Class(
     #' right before the handler. A `forward()` runs it again for the next
     #' matching route. Return a response to answer the request there.
     #'
+    #' Return a promise to do slow work without blocking the server, as in
+    #' a middleware, see `use()`: the handler waits for it.
+    #'
     #' @param name Character vector /// Required. \cr
     #'   Name(s) of the parameter.
     #'
@@ -337,6 +340,58 @@ Routing <- R6::R6Class(
     #'
     #' _Middleware may but does not have to return a response, unlike other methods such as `get`_
     #' Note that multiple routers and middlewares can be used.
+    #'
+    #' A middleware may return a promise, a `Future` or a `mirai` to do slow
+    #' work, e.g. a database lookup, without blocking the server: the rest
+    #' of the chain, i.e. the remaining middleware, the request validation,
+    #' the parameter middleware and the handler, waits for it, while other
+    #' requests are answered. A promise that resolves to a response answers
+    #' the request there; one that rejects is answered by the error handler,
+    #' see `set_error()`. \cr
+    #' The work runs in another R process, on a copy of `req` and `res`:
+    #' what is set on them there is lost. Return the value from the worker
+    #' and set it on `req` in the main process, as below.
+    #'
+    #' @examples
+    #' app <- Ambiorix$new()
+    #'
+    #' # synchronous: runs for every route
+    #' app$use(function(req, res) {
+    #'   req$started <- Sys.time()
+    #' })
+    #'
+    #' # asynchronous: the handler runs once the user is found
+    #' find_user <- function(token) {
+    #'   Sys.sleep(2)
+    #'   if (identical(token, "secret")) list(name = "Jane")
+    #' }
+    #'
+    #' app$use(function(req, res) {
+    #'   token <- req$get_header("authorization")
+    #'
+    #'   promises::then(
+    #'     # in a worker: `req` and `res` are copies in here
+    #'     promise = future::future(find_user(token)),
+    #'     # in the main process, once the worker is done
+    #'     onFulfilled = function(user) {
+    #'       if (is.null(user)) {
+    #'         res$status <- 401L
+    #'         return(res$send("Unauthorised"))
+    #'       }
+    #'
+    #'       req$user <- user
+    #'     }
+    #'   )
+    #' })
+    #'
+    #' app$get("/", function(req, res) {
+    #'   res$sendf("Hello, %s!", req$user$name)
+    #' })
+    #'
+    #' if (interactive()) {
+    #'   future::plan(future::multisession)
+    #'   app$start()
+    #' }
     use = function(use) {
       assert_that(not_missing(use))
 
@@ -674,130 +729,51 @@ Routing <- R6::R6Class(
       invisible(self)
     },
     .call = function(req) {
-      request <- Request$new(req)
-      res <- Response$new()
+      private$.dispatch(Request$new(req), Response$new(), 1L)
+    },
+    # answer with the first matching route at or after `from`; a `forward()`
+    # moves on to the next one
+    .dispatch = function(request, res, from) {
       routes <- private$.compiled$routes
-      middleware <- private$.compiled$middleware
-      params <- private$.compiled$params
 
-      # loop over routes
       for (i in seq_along(routes)) {
-        # if path matches pattern and method
         if (
-          grepl(routes[[i]]$route$pattern, req$PATH_INFO) &&
-            req$REQUEST_METHOD %in% routes[[i]]$method
+          i < from ||
+            !grepl(routes[[i]]$route$pattern, request$PATH_INFO) ||
+            !request$REQUEST_METHOD %in% routes[[i]]$method
         ) {
-          .globals$infoLog$log(req$REQUEST_METHOD, "on", req$PATH_INFO)
+          next
+        }
 
-          basepath <- routes[[i]]$route$basepath
+        .globals$infoLog$log(request$REQUEST_METHOD, "on", request$PATH_INFO)
 
-          # a `return()` in here still leaves `.call()`
-          response <- tryCatch(
-            {
-              request$params <- set_params(
-                request$PATH_INFO,
-                routes[[i]]$route
-              )
+        response <- private$.run(request, res, routes[[i]], 1L)
 
-              # middleware:
-              for (j in seq_along(middleware)) {
-                mid_basepath <- attr(middleware[[j]], "basepath")
-                under_router <- identical(basepath, mid_basepath) ||
-                  startsWith(basepath, paste0(mid_basepath, "/"))
-
-                if (!under_router) {
-                  next
-                }
-
-                mid_res <- middleware[[j]](request, res)
-
-                if (is_response(mid_res)) {
-                  return(mid_res)
-                }
-              }
-
-              # validate the request against its documentation: after the
-              # middleware, so that e.g. authentication runs first
-              invalid <- private$.validate_request(
-                request,
-                res,
-                routes[[i]]
-              )
-
-              if (is_response(invalid)) {
-                return(invalid)
-              }
-
-              # parameter middleware
-              for (j in seq_along(params)) {
-                pn <- params[[j]]$params
-                pv <- request$params[[pn]]
-                mid_basepath <- attr(params[[j]], "basepath")
-                under_router <- identical(basepath, mid_basepath) ||
-                  startsWith(basepath, paste0(mid_basepath, "/"))
-
-                if (!under_router || is.null(pv)) {
-                  next
-                }
-
-                param_res <- params[[j]]$handler(
-                  request,
-                  res,
-                  pv,
-                  pn
-                )
-
-                if (is_response(param_res)) {
-                  return(param_res)
-                }
-              }
-
-              # get response
-              routes[[i]]$fun(request, res)
-            },
-            error = function(error) {
-              error
-            }
-          )
-
-          if (inherits(response, "error")) {
-            return(routes[[i]]$error(request, res, response))
-          }
-
-          if (inherits(x = response, what = c("promise", "Future", "mirai"))) {
-            return(
-              promises::then(
-                response,
-                onFulfilled = function(response) {
-                  response %response%
-                    response("Must return a response", status = 206L)
-                },
-                onRejected = function(error) {
-                  message(conditionMessage(error))
-                  .globals$errorLog$log(
-                    req$REQUEST_METHOD,
-                    "on",
-                    req$PATH_INFO,
-                    "-",
-                    "Server error"
-                  )
-
-                  routes[[i]]$error(request, res, error)
-                }
-              )
-            )
-          }
-
-          if (is_forward(response)) {
-            next
-          }
-
-          # if not a response return something that is
+        if (promises::is.promise(response)) {
           return(
-            response %response%
-              response("Must return a response", status = 206L)
+            promises::then(
+              promise = response,
+              onFulfilled = function(response) {
+                if (is_forward(response)) {
+                  return(private$.dispatch(request, res, i + 1L))
+                }
+
+                response %response%
+                  response("Must return a response", status = 206L)
+              }
+            )
           )
         }
+
+        if (is_forward(response)) {
+          next
+        }
+
+        # if not a response return something that is
+        return(
+          response %response%
+            response("Must return a response", status = 206L)
+        )
       }
 
       .globals$errorLog$log(
@@ -808,6 +784,88 @@ Routing <- R6::R6Class(
       )
 
       self$not_found(request, res)
+    },
+    # run the steps of a route from step `from`: the middleware, the request
+    # validation, the parameter middleware, then the handler. A step that
+    # returns a promise pauses the rest until it resolves.
+    .run = function(request, res, route, from) {
+      middleware <- private$.compiled$middleware
+      params <- private$.compiled$params
+      basepath <- route$route$basepath
+      n_mid <- length(middleware)
+      last <- n_mid + length(params) + 2L
+
+      under_router <- function(x) {
+        mid_basepath <- attr(x, "basepath")
+        identical(basepath, mid_basepath) ||
+          startsWith(basepath, paste0(mid_basepath, "/"))
+      }
+
+      for (k in from:last) {
+        out <- tryCatch(
+          {
+            if (k == 1L) {
+              request$params <- set_params(request$PATH_INFO, route$route)
+            }
+
+            if (k <= n_mid) {
+              if (under_router(middleware[[k]])) {
+                middleware[[k]](request, res)
+              }
+            } else if (k == n_mid + 1L) {
+              # after the middleware, so that e.g. authentication runs first
+              private$.validate_request(request, res, route)
+            } else if (k < last) {
+              param <- params[[k - n_mid - 1L]]
+              value <- request$params[[param$params]]
+
+              if (under_router(param) && !is.null(value)) {
+                param$handler(request, res, value, param$params)
+              }
+            } else {
+              route$fun(request, res)
+            }
+          },
+          error = function(error) {
+            error
+          }
+        )
+
+        if (inherits(out, "error")) {
+          return(route$error(request, res, out))
+        }
+
+        if (inherits(x = out, what = c("promise", "Future", "mirai"))) {
+          return(
+            promises::then(
+              out,
+              onFulfilled = function(value) {
+                if (k == last || is_response(value)) {
+                  return(value)
+                }
+
+                private$.run(request, res, route, k + 1L)
+              },
+              onRejected = function(error) {
+                message(conditionMessage(error))
+                .globals$errorLog$log(
+                  request$REQUEST_METHOD,
+                  "on",
+                  request$PATH_INFO,
+                  "-",
+                  "Server error"
+                )
+
+                route$error(request, res, error)
+              }
+            )
+          )
+        }
+
+        if (k == last || is_response(out)) {
+          return(out)
+        }
+      }
     },
     .wss = function(ws) {
       .globals$wsc <- append(.globals$wsc, Websocket$new(ws))
