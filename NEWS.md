@@ -94,6 +94,19 @@
     `openapi_docs(validate =)` overrides it per route.
 - Add `req$parse_form_urlencoded()`, next to `req$parse_json()` and
   `req$parse_multipart()`.
+- Middleware and parameter middleware can be asynchronous: `use()` and
+  `param()` accept a function that returns a promise, a `Future` or a
+  `mirai`, as a route handler does. The rest of the chain, i.e. the
+  remaining middleware, the request validation, the parameter middleware
+  and the handler, waits for it while the server answers other requests. A
+  promise that resolves to a response answers the request there, and one
+  that rejects is answered by the route's error handler. Such a return
+  value used to be ignored: the handler ran at once, and an error in the
+  promise was lost. A request with no asynchronous step is answered
+  synchronously, as before.
+- An asynchronous handler can `forward()`: a promise that resolves to
+  `forward()` moves on to the next matching route. It used to be answered
+  with *Must return a response*.
 
 **Bug Fixes**
 
