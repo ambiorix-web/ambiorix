@@ -33,8 +33,10 @@ Imports:
     promises (>= 1.5.0),
     R6 (>= 2.6.1)
 Suggests:
+    later,
     readr,
     readxl,
+    future,
     ggplot2,
     jsonlite,
     websocket,
