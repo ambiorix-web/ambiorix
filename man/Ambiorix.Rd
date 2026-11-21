@@ -500,6 +500,10 @@ URLs at which the API is served. A \code{list} of
 \href{https://spec.openapis.org/oas/v3.1.0#server-object}{server objects}
 instead of a character vector allows each to carry a \code{description} or
 \code{variables}. \cr
+The Swagger UI sends its requests to the server selected on the
+page. The browser blocks them when that URL is on another origin
+than the page, unless the app sends CORS headers; \code{localhost} and
+\verb{127.0.0.1} are two origins. \cr
 Defaults to \code{NULL}, a server relative to the document, \code{"."}: the
 directory \code{spec_path} is served from, which is the app's root. The
 specification's own default, \code{/}, is the root of the host, and

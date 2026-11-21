@@ -372,6 +372,10 @@ Ambiorix <- R6::R6Class(
     #'   [server objects](https://spec.openapis.org/oas/v3.1.0#server-object)
     #'   instead of a character vector allows each to carry a `description` or
     #'   `variables`. \cr
+    #'   The Swagger UI sends its requests to the server selected on the
+    #'   page. The browser blocks them when that URL is on another origin
+    #'   than the page, unless the app sends CORS headers; `localhost` and
+    #'   `127.0.0.1` are two origins. \cr
     #'   Defaults to `NULL`, a server relative to the document, `"."`: the
     #'   directory `spec_path` is served from, which is the app's root. The
     #'   specification's own default, `/`, is the root of the host, and
